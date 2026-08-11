@@ -1,6 +1,31 @@
 @import 'tailwindcss';
 
+:root {
+  --radius: 0.625rem;
+}
+
 @theme {
+  /* Tipografia */
+  --font-heading: 'Poppins', sans-serif;
+  --font-sans: 'Roboto', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.08);
+  --shadow-modal: 0 20px 40px rgb(0 0 0 / 0.16);
+
+  --text-display: 2.25rem;
+  --text-heading: 1.5rem;
+  --text-body: 1rem;
+  --text-caption: 0.875rem;
+
   /* Cores da UI Semânticas */
   --color-surface-app: oklch(0.97 0.005 264);
   --color-surface-card: oklch(1 0 0);
@@ -174,178 +199,21 @@
   --color-document-total-background: #fdf2f0;
 }
 
-:root {
-  color-scheme: light;
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
 
-  /* Cores da UI Semânticas */
-  --color-surface-app: oklch(0.97 0.005 264);
-  --color-surface-card: oklch(1 0 0);
-  --color-surface-popover: oklch(1 0 0);
-  --color-surface-sidebar: oklch(1 0 0);
-  --color-surface-subtle: oklch(0.97 0 0);
-  --color-surface-input: oklch(0.922 0 0);
+  body {
+    background-color: var(--color-surface-app);
+    color: var(--color-content-primary);
+  }
 
-  --color-content-primary: oklch(0.2 0 0);
-  --color-content-on-card: oklch(0.2 0 0);
-  --color-content-secondary: oklch(0.556 0 0);
-  --color-content-on-primary: oklch(0.985 0 0);
-  --color-content-on-secondary: oklch(0.205 0 0);
-  --color-content-on-subtle: oklch(0.205 0 0);
-  --color-content-sidebar: oklch(0.2 0 0);
-
-  --color-brand-primary: oklch(0.52 0.19 24);
-  --color-brand-primary-hover: color-mix(in oklch, var(--color-brand-primary) 90%, black);
-  --color-brand-primary-soft: color-mix(in oklch, var(--color-brand-primary) 5%, transparent);
-  --color-brand-primary-subtle: color-mix(in oklch, var(--color-brand-primary) 10%, transparent);
-  --color-brand-primary-border: color-mix(in oklch, var(--color-brand-primary) 40%, transparent);
-  --color-brand-primary-ring: color-mix(in oklch, var(--color-brand-primary) 20%, transparent);
-
-  --color-action-secondary: oklch(0.97 0 0);
-  --color-action-secondary-hover: color-mix(in oklch, var(--color-action-secondary) 80%, black);
-  --color-action-destructive: oklch(0.577 0.245 27.325);
-  --color-action-destructive-hover: color-mix(in oklch, var(--color-action-destructive) 90%, black);
-  --color-action-destructive-soft: color-mix(
-    in oklch,
-    var(--color-action-destructive) 5%,
-    transparent
-  );
-  --color-action-destructive-subtle: color-mix(
-    in oklch,
-    var(--color-action-destructive) 10%,
-    transparent
-  );
-  --color-action-destructive-border: color-mix(
-    in oklch,
-    var(--color-action-destructive) 30%,
-    transparent
-  );
-  --color-action-destructive-ring: color-mix(
-    in oklch,
-    var(--color-action-destructive) 20%,
-    transparent
-  );
-
-  --color-border-default: oklch(0.922 0 0);
-  --color-border-subtle: color-mix(in oklch, var(--color-border-default) 60%, transparent);
-  --color-border-muted: color-mix(in oklch, var(--color-border-default) 70%, transparent);
-  --color-focus-ring: oklch(0.708 0 0);
-  --color-focus-ring-soft: color-mix(in oklch, var(--color-focus-ring) 50%, transparent);
-
-  --color-chart-primary: oklch(0.52 0.19 24);
-  --color-chart-secondary: oklch(0.75 0.02 264);
-  --color-chart-tertiary: oklch(0.439 0 0);
-  --color-chart-quaternary: oklch(0.371 0 0);
-  --color-chart-quinary: oklch(0.269 0 0);
-
-  --color-sidebar-background: oklch(1 0 0);
-  --color-sidebar-content: oklch(0.2 0 0);
-  --color-sidebar-primary: oklch(0.52 0.19 24);
-  --color-sidebar-primary-content: oklch(0.985 0 0);
-  --color-sidebar-accent: oklch(0.97 0 0);
-  --color-sidebar-accent-content: oklch(0.205 0 0);
-  --color-sidebar-border: oklch(0.922 0 0);
-  --color-sidebar-ring: oklch(0.708 0 0);
-
-  /* Cores de status semânticas */
-  --color-status-success-background: #ecfdf5;
-  --color-status-success-background-subtle: #d1fae5;
-  --color-status-success-border: #a7f3d0;
-  --color-status-success-icon: #10b981;
-  --color-status-success-text: #047857;
-  --color-status-success-text-medium: #059669;
-  --color-status-success-text-strong: #065f46;
-
-  --color-status-warning-background: #fffbeb;
-  --color-status-warning-background-subtle: #fef3c7;
-  --color-status-warning-border: #fde68a;
-  --color-status-warning-border-strong: #fcd34d;
-  --color-status-warning-icon: #f59e0b;
-  --color-status-warning-text-medium: #d97706;
-  --color-status-warning-text: #b45309;
-  --color-status-warning-text-strong: #92400e;
-
-  --color-status-error-background: #fef2f2;
-  --color-status-error-background-subtle: #fee2e2;
-  --color-status-error-border: #fecaca;
-  --color-status-error-icon: #ef4444;
-  --color-status-error-text: #dc2626;
-  --color-status-error-text-strong: #b91c1c;
-
-  --color-status-info-background: #f0f9ff;
-  --color-status-info-background-subtle: #e0f2fe;
-  --color-status-info-border: #bae6fd;
-  --color-status-info-icon: #0ea5e9;
-  --color-status-info-text-medium: #0284c7;
-  --color-status-info-text: #0369a1;
-
-  --color-status-neutral-background: #f8fafc;
-  --color-status-neutral-background-subtle: #f1f5f9;
-  --color-status-neutral-border: #e2e8f0;
-  --color-status-neutral-icon: #64748b;
-  --color-status-neutral-icon-soft: #94a3b8;
-  --color-status-neutral-text: #475569;
-  --color-status-neutral-text-strong: #334155;
-
-  --color-status-rose-background: #fff1f2;
-  --color-status-rose-background-subtle: #ffe4e6;
-  --color-status-rose-border: #fecdd3;
-  --color-status-rose-icon: #f43f5e;
-  --color-status-rose-text: #e11d48;
-  --color-status-rose-text-strong: #be123c;
-
-  --color-status-purple-background: #faf5ff;
-  --color-status-purple-border: #e9d5ff;
-  --color-status-purple-icon: #a855f7;
-  --color-status-purple-text: #7e22ce;
-
-  --color-status-blue-background: #eff6ff;
-  --color-status-blue-border: #bfdbfe;
-  --color-status-blue-icon: #3b82f6;
-  --color-status-blue-text: #1d4ed8;
-
-  --color-status-gray-background: #f4f4f5;
-  --color-status-gray-border: #e4e4e7;
-  --color-status-gray-icon: #a1a1aa;
-  --color-status-gray-text: #52525b;
-
-  --color-status-violet-background: #f5f3ff;
-  --color-status-violet-background-subtle: #ede9fe;
-  --color-status-violet-border: #ddd6fe;
-  --color-status-violet-icon: #8b5cf6;
-  --color-status-violet-text: #6d28d9;
-
-  --color-status-teal-background: #f0fdfa;
-  --color-status-teal-border: #99f6e4;
-  --color-status-teal-text: #0f766e;
-
-  --color-status-violet-text-medium: #7c3aed;
-
-  /* Semânticas de visualização de dados */
-  --color-data-revenue: var(--color-status-info-icon);
-  --color-data-convenio-particular: var(--color-status-info-icon);
-  --color-data-convenio-convenio: var(--color-status-violet-icon);
-  --color-data-convenio-social: var(--color-status-success-icon);
-  --color-data-convenio-judicial: var(--color-status-warning-icon);
-  --color-data-program-dependencia-quimica: #c0392b;
-  --color-data-program-alcoolismo: var(--color-status-info-icon);
-  --color-data-program-saude-mental: var(--color-status-violet-icon);
-  --color-data-program-reinsercao-social: var(--color-status-success-icon);
-  --color-data-exit-alta-terapeutica: var(--color-status-success-icon);
-  --color-data-exit-desligamento: var(--color-status-warning-icon);
-  --color-data-exit-transferencia: var(--color-status-info-icon);
-  --color-data-exit-evasao: var(--color-status-rose-icon);
-  --color-data-fallback: #6b7280;
-
-  /* Overlay, tipografia cores de documento */
-  --color-overlay-backdrop: rgb(0 0 0 / 40%);
-  --color-utility-white: #ffffff;
-  --color-utility-black: #000000;
-  --color-utility-transparent: transparent;
-  --color-document-brand: #c0392b;
-  --color-document-ink: #1f2937;
-  --color-document-muted: #6b7280;
-  --color-document-light: #9ca3af;
-  --color-document-border: #e5e7eb;
-  --color-document-card-background: #f9fafb;
-  --color-document-total-background: #fdf2f0;
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
 }
