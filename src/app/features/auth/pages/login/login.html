@@ -1,4 +1,5 @@
 <main class="flex min-h-svh items-center justify-center bg-surface-app p-4">
+  <p-toast />
   <div
     class="grid w-full max-w-4xl overflow-hidden rounded-2xl bg-surface-card shadow-xl md:grid-cols-2"
   >
@@ -43,46 +44,63 @@
         </p>
       </div>
       <form class="space-y-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <label for="usuario" class="text-sm font-medium text-content-primary">Usuário</label>
-        <p-iconfield class="mb-2">
-          <p-inputicon>
-            <svg lucideUser class="w-4 h-4"></svg>
-          </p-inputicon>
-          <input
-            pInputText
-            formControlName="usuario"
-            [invalid]="isInvalid('usuario')"
-            autocomplete="off"
-            placeholder="Usuário"
-            inputId="usuario"
-            fluid
-          />
-        </p-iconfield>
-        @if (isInvalid('usuario')) {
-          <p-message severity="error" size="small" variant="simple"
-            >Usuário é obrigatório.</p-message
-          >
-        }
-        <label for="senha" class="text-sm font-medium text-content-primary">Senha</label>
-        <p-iconfield class="mb-2">
-          <p-inputicon>
-            <svg lucideLock class="w-4 h-4"></svg>
-          </p-inputicon>
-          <p-password
-            formControlName="senha"
-            [invalid]="isInvalid('senha')"
-            [toggleMask]="true"
-            [feedback]="false"
-            autocomplete="off"
-            placeholder="Senha"
-            inputId="senha"
-            fluid
-          />
-        </p-iconfield>
-        @if (isInvalid('senha')) {
-          <p-message severity="error" size="small" variant="simple">Senha é obrigatório.</p-message>
-        }
-        <p-button label="Entrar" iconPos="right" fluid>
+        <div class="flex flex-col gap-0.5">
+          <label for="usuario" class="text-sm font-medium text-content-primary">Usuário</label>
+          <p-iconfield class="mb-2">
+            <p-inputicon>
+              <svg lucideUser class="w-5 h-5 -mt-0.5"></svg>
+            </p-inputicon>
+            <input
+              pInputText
+              formControlName="usuario"
+              [invalid]="isInvalid('usuario')"
+              autocomplete="off"
+              placeholder="seu.usuario"
+              inputId="usuario"
+              fluid
+            />
+          </p-iconfield>
+          @if (isInvalid('usuario')) {
+            <p-message severity="error" size="small" variant="simple"
+              >Usuário é obrigatório.</p-message
+            >
+          }
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <label for="senha" class="text-sm font-medium text-content-primary">Senha</label>
+          <p-iconfield class="mb-2">
+            <p-inputicon>
+              <svg lucideLock class="w-4 h-4"></svg>
+            </p-inputicon>
+            <p-password
+              #passwordInput
+              formControlName="senha"
+              [invalid]="isInvalid('senha')"
+              [toggleMask]="true"
+              [feedback]="false"
+              autocomplete="off"
+              placeholder="••••••••••"
+              inputId="senha"
+              fluid
+              [pt]="{
+                pcInputText: {
+                  root: {
+                    class:
+                      passwordInput.unmasked && loginForm.get('senha')?.value
+                        ? ''
+                        : 'tracking-widest',
+                  },
+                },
+              }"
+            />
+          </p-iconfield>
+          @if (isInvalid('senha')) {
+            <p-message severity="error" size="small" variant="simple"
+              >Senha é obrigatório.</p-message
+            >
+          }
+        </div>
+        <p-button type="submit" label="Entrar" iconPos="right" fluid>
           <ng-template #icon>
             <svg lucideLogIn class="h-4 w-4 order-2" aria-hidden="true"></svg>
           </ng-template>

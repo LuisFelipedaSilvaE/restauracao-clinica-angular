@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 import { FormsModule } from '@angular/forms';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 import { PasswordModule } from 'primeng/password';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -29,6 +30,7 @@ import {
     ButtonModule,
     FormsModule,
     MessageModule,
+    ToastModule,
     LucideHeartHandshake,
     LucideLock,
     LucideLogIn,
@@ -53,6 +55,7 @@ export class Login {
 
   onSubmit() {
     this.formSubmitted = true;
+    console.log('enviado')
     if (this.loginForm.valid) {
       this.messageService.add({
         severity: 'success',
