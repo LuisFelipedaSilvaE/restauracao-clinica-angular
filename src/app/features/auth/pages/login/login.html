@@ -1,5 +1,4 @@
 <main class="flex min-h-svh items-center justify-center bg-surface-app p-4">
-  <p-toast />
   <div
     class="grid w-full max-w-4xl overflow-hidden rounded-2xl bg-surface-card shadow-xl md:grid-cols-2"
   >
@@ -60,10 +59,10 @@
               fluid
             />
           </p-iconfield>
-          @if (isInvalid('usuario')) {
-            <p-message severity="error" size="small" variant="simple"
-              >Usuário é obrigatório.</p-message
-            >
+          @if (getErrorMessage('usuario'); as msg) {
+            <p-message severity="error" size="small" variant="simple" class="border-error-left">
+              {{ msg }}
+            </p-message>
           }
         </div>
         <div class="flex flex-col gap-0.5">
@@ -94,13 +93,13 @@
               }"
             />
           </p-iconfield>
-          @if (isInvalid('senha')) {
-            <p-message severity="error" size="small" variant="simple"
-              >Senha é obrigatório.</p-message
-            >
+          @if (getErrorMessage('senha'); as msg) {
+            <p-message severity="error" size="small" variant="simple" class="border-error-left">
+              {{ msg }}
+            </p-message>
           }
         </div>
-        <p-button type="submit" label="Entrar" iconPos="right" fluid>
+        <p-button type="submit" label="Entrar" iconPos="right" [disabled]="loginForm.invalid" fluid>
           <ng-template #icon>
             <svg lucideLogIn class="h-4 w-4 order-2" aria-hidden="true"></svg>
           </ng-template>
