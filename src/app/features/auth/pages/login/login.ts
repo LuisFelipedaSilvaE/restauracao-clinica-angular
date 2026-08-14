@@ -48,23 +48,19 @@ import { Usuario } from '../../../../core/guards/models/usuario.model';
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
-  styles: [
-    `
-      :host ::ng-deep .border-error-left [data-pc-section='text'] {
-        border-left: 5px solid #ef4444;
-        padding-left: 8px;
-        border-radius: 4px;
-      }
-    `,
-  ],
 })
 export class Login {
-  messageService = inject(MessageService);
-  loginForm: FormGroup;
-  formSubmitted: boolean = false;
-  mask: boolean = false;
-  private router = inject(Router);
-  private auth = inject(Auth);
+  protected readonly messageService = inject(MessageService);
+  protected loginForm: FormGroup;
+  protected formSubmitted: boolean = false;
+  protected mask: boolean = false;
+  protected readonly messagePt = {
+    contentWrapper: {
+      class: 'pl-2 rounded-sm border-l-4 border-status-error-border-strong',
+    },
+  };
+  private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
   private readonly errorMessages: Record<string, (control: AbstractControl) => string> = {
     required: () => 'é obrigatório.',
@@ -118,10 +114,12 @@ export class Login {
       },
     });
   }
+
   isInvalid(controlName: string) {
     const control = this.loginForm.get(controlName);
     return control?.invalid && (control.touched || this.formSubmitted);
   }
+
   getErrorMessage(controlName: string): string | null {
     if (!this.isInvalid(controlName)) return null;
 

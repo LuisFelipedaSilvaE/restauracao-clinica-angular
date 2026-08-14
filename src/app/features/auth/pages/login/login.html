@@ -60,7 +60,13 @@
             />
           </p-iconfield>
           @if (getErrorMessage('usuario'); as msg) {
-            <p-message severity="error" size="small" variant="simple" class="border-error-left">
+            <p-message
+              severity="error"
+              size="small"
+              variant="simple"
+              [pt]="messagePt"
+              class="border-error-left"
+            >
               {{ msg }}
             </p-message>
           }
@@ -94,7 +100,13 @@
             />
           </p-iconfield>
           @if (getErrorMessage('senha'); as msg) {
-            <p-message severity="error" size="small" variant="simple" class="border-error-left">
+            <p-message
+              severity="error"
+              size="small"
+              variant="simple"
+              [pt]="messagePt"
+              class="border-error-left"
+            >
               {{ msg }}
             </p-message>
           }
