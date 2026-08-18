@@ -28,6 +28,7 @@ import {
 import { Router } from '@angular/router';
 import { Auth } from '../../../../core/services/auth';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
+import { Logo } from '../../../../shared/logo/logo';
 
 @Component({
   selector: 'app-login',
@@ -47,6 +48,7 @@ import { Usuario } from '../../../../core/guards/models/usuario.model';
     LucideLock,
     LucideUser,
     LucideLockKeyhole,
+    Logo,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
