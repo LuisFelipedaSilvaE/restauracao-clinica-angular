@@ -1,0 +1,8 @@
+<div class="flex items-center gap-2" [class]="wrapperClass()">
+  <main-icon [iconClass]="iconClass()" [wrapperClass]="iconWrapperClass()" />
+  @if (!hideText()) {
+    <span class="text-lg font-semibold text-content-primary" [class]="textClass()"
+      >Clínica Restauração</span
+    >
+  }
+</div>
