@@ -1,0 +1,26 @@
+<header class="w-full flex items-center justify-between p-4 gap-2 border-b-2 border-border-default">
+  <h3 class="text-lg">Olá, Doutora Rafaela</h3>
+  <p-iconfield class="basis-120">
+    <p-inputicon>
+      <svg lucideSearch class="w-4 h-4"></svg>
+    </p-inputicon>
+    <input
+      type="text"
+      pInputText
+      class="w-full"
+      placeholder="Buscar acolhidos, relatórios..."
+      [(ngModel)]="searchValue"
+    />
+  </p-iconfield>
+  <div class="flex items-center gap-2 text-content-secondary">
+    <div class="flex gap-1 items-center">
+      <svg lucideCalendar class="w-4 h-4"></svg>
+      <p>{{ dataFormatada() }}</p>
+    </div>
+    <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="secondary">
+      <ng-template #icon>
+        <svg lucideBell class="w-4 h-4"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+</header>
