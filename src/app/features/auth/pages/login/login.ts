@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -17,11 +17,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 
 import {
+  LucideDynamicIcon,
   LucideHeartHandshake,
   LucideLock,
   LucideLogIn,
   LucideUser,
   LucideLockKeyhole,
+  LucideLoaderCircle,
 } from '@lucide/angular';
 import { Router } from '@angular/router';
 import { Auth } from '../../../../core/services/auth';
@@ -40,9 +42,9 @@ import { Usuario } from '../../../../core/guards/models/usuario.model';
     FormsModule,
     MessageModule,
     ToastModule,
+    LucideDynamicIcon,
     LucideHeartHandshake,
     LucideLock,
-    LucideLogIn,
     LucideUser,
     LucideLockKeyhole,
   ],
@@ -51,16 +53,23 @@ import { Usuario } from '../../../../core/guards/models/usuario.model';
 })
 export class Login {
   protected readonly messageService = inject(MessageService);
-  protected loginForm: FormGroup;
-  protected formSubmitted: boolean = false;
-  protected mask: boolean = false;
+  private readonly router = inject(Router);
+  private readonly authService = inject(Auth);
+  protected readonly loginForm: FormGroup;
+  protected readonly formSubmitted = signal<boolean>(false);
+  protected readonly requestActive = signal<boolean>(false);
+  protected readonly loginButtonContent = computed(() => (this.requestActive() ? '' : 'Entrar'));
+  protected readonly loginButtonIcon = computed(() =>
+    this.requestActive() ? LucideLoaderCircle : LucideLogIn,
+  );
   protected readonly messagePt = {
     contentWrapper: {
       class: 'pl-2 rounded-sm border-l-4 border-status-error-border-strong',
     },
   };
-  private readonly router = inject(Router);
-  private readonly auth = inject(Auth);
+  protected readonly passwordInputPt = {
+    pcInputText: { root: { class: 'placeholder:tracking-widest' } },
+  };
 
   private readonly errorMessages: Record<string, (control: AbstractControl) => string> = {
     required: () => 'é obrigatório.',
@@ -85,7 +94,7 @@ export class Login {
   }
 
   onSubmit() {
-    this.formSubmitted = true;
+    this.toggleFormAndRequest();
 
     if (this.loginForm.invalid) return;
 
@@ -94,8 +103,9 @@ export class Login {
       password: this.loginForm.get('senha')?.value,
     };
 
-    this.auth.login(data).subscribe({
+    this.authService.login(data).subscribe({
       next: () => {
+        this.toggleFormAndRequest();
         this.messageService.add({
           severity: 'success',
           summary: 'Bem-vindo(a)!',
@@ -104,11 +114,12 @@ export class Login {
         });
         this.router.navigate(['/']);
       },
-      error: () => {
+      error: ({ error: { message } }) => {
+        this.toggleFormAndRequest();
         this.messageService.add({
           severity: 'error',
           summary: 'Erro no Login',
-          detail: 'Usuário ou senha incorretos.',
+          detail: message,
           life: 3000,
         });
       },
@@ -117,7 +128,7 @@ export class Login {
 
   isInvalid(controlName: string) {
     const control = this.loginForm.get(controlName);
-    return control?.invalid && (control.touched || this.formSubmitted);
+    return control?.invalid && (control.touched || this.formSubmitted());
   }
 
   getErrorMessage(controlName: string): string | null {
@@ -130,5 +141,10 @@ export class Login {
     if (!buildMessage) return null;
 
     return `${this.labels[controlName]} ${buildMessage(control)}`;
+  }
+
+  private toggleFormAndRequest(): void {
+    this.formSubmitted.update((value) => !value);
+    this.requestActive.update((value) => !value);
   }
 }

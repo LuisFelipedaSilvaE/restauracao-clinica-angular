@@ -80,6 +80,7 @@
             <p-password
               #passwordInput
               formControlName="senha"
+              [class.tracking-widest]="!passwordInput.unmasked"
               [invalid]="isInvalid('senha')"
               [toggleMask]="true"
               [feedback]="false"
@@ -87,16 +88,7 @@
               placeholder="••••••••••"
               inputId="senha"
               fluid
-              [pt]="{
-                pcInputText: {
-                  root: {
-                    class:
-                      passwordInput.unmasked && loginForm.get('senha')?.value
-                        ? ''
-                        : 'tracking-widest',
-                  },
-                },
-              }"
+              [pt]="passwordInputPt"
             />
           </p-iconfield>
           @if (getErrorMessage('senha'); as msg) {
@@ -111,9 +103,21 @@
             </p-message>
           }
         </div>
-        <p-button type="submit" label="Entrar" iconPos="right" [disabled]="loginForm.invalid" fluid>
+        <p-button
+          type="submit"
+          [pt]="{ root: { class: 'w-full!' } }"
+          [label]="loginButtonContent()"
+          [disabled]="loginForm.invalid || requestActive()"
+          iconPos="right"
+          fluid
+        >
           <ng-template #icon>
-            <svg lucideLogIn class="h-4 w-4 order-2" aria-hidden="true"></svg>
+            <svg
+              [lucideIcon]="loginButtonIcon()"
+              class="h-4 w-4 order-2"
+              [class.animate-spin]="requestActive()"
+              aria-hidden="true"
+            ></svg>
           </ng-template>
         </p-button>
       </form>
