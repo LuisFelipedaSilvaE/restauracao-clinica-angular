@@ -1,0 +1,52 @@
+<div class="flex w-full max-w-140 flex-col items-center text-center">
+  <div class="relative mb-2 h-42 w-42">
+    <div
+      class="absolute inset-0 rounded-full border border-dashed border-brand-primary/40 bg-brand-primary/5"
+    ></div>
+
+    <div
+      class="absolute left-1/2 top-1/2 flex h-19 w-19 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-card"
+    >
+      <svg lucideMapPinXInside class="h-8.5 w-8.5 stroke-brand-primary"></svg>
+    </div>
+
+    <div class="absolute right-5 top-3.5 h-2 w-2 rounded-full bg-brand-primary/40"></div>
+
+    <div class="absolute bottom-5.5 left-2.5 h-1.5 w-1.5 rounded-full bg-brand-primary/40"></div>
+
+    <div class="absolute bottom-2 right-8.5 h-1.25 w-1.25 rounded-full bg-brand-primary/40"></div>
+  </div>
+
+  <div
+    class="mb-2.5 font-heading text-sm font-semibold uppercase tracking-[0.08em] text-brand-primary"
+  >
+    Erro 404
+  </div>
+
+  <h1 class="mb-2.5 font-heading text-2xl font-semibold text-content-on-card">
+    Não encontramos esse endereço
+  </h1>
+
+  <p class="mb-7 max-w-105 text-[0.95rem] leading-[1.6] text-content-secondary">
+    A página que você tentou acessar não existe ou foi movida. Confira o link ou volte para uma área
+    conhecida do sistema.
+  </p>
+
+  <div class="mb-9 flex items-center gap-3">
+    <p-button routerLink="/dashboard" label="Voltar ao Dashboard">
+      <ng-template #icon>
+        <svg lucideHouse class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+    <p-button
+      severity="secondary"
+      [text]="true"
+      (onClick)="location.back()"
+      label="Página anterior"
+    >
+      <ng-template #icon>
+        <svg lucideArrowLeft fill="none" class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+</div>

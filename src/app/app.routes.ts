@@ -7,14 +7,20 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('../app/features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
-    canActivate: [authGuard],
-  },
-  {
     path: '',
     loadComponent: () => import('./layout/layout').then((m) => m.Layout),
     canActivate: [authGuard],
-    children: [],
+    children: [
+      {
+        path: '**',
+        loadComponent: () => import('./core/pages/not-found/not-found').then((m) => m.NotFound),
+        data: { inLayout: true },
+      },
+    ],
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./core/pages/not-found/not-found').then((m) => m.NotFound),
+    data: { inLayout: false },
   },
 ];
