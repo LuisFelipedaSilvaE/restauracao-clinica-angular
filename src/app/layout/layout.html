@@ -1,5 +1,9 @@
-<!-- <app-sidebar></app-sidebar> -->
-<app-header></app-header>
-<main>
-  <router-outlet></router-outlet>
-</main>
+<div class="flex">
+  <app-sidebar></app-sidebar>
+  <main class="flex grow flex-col">
+    <app-header></app-header>
+    <div class="p-2 grow">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

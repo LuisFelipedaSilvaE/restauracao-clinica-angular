@@ -1,1 +1,43 @@
-<p>sidebar works!</p>
+<aside class="h-screen p-2">
+  <div
+    class="flex flex-col gap-4 w-75 h-full bg-surface-card rounded-lg border-2 border-border-default"
+  >
+    <logo class="p-4" />
+    <div class="flex flex-col grow gap-1 p-2">
+      <h3 class="ml-3.5">Navegação</h3>
+      @for (route of routes(); track $index) {
+        <p-button
+          [routerLink]="[route.route]"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [severity]="rla.isActive ? null : 'secondary'"
+          [text]="!rla.isActive"
+          [label]="route.label"
+          [pt]="navButtonPt"
+          fluid
+        >
+          <ng-template #icon>
+            <svg [lucideIcon]="route.icon" class="h-4.5 w-4.5"></svg>
+          </ng-template>
+        </p-button>
+      }
+    </div>
+    <div class="flex items-center justify-between border-t-2 border-border-default p-2">
+      <div class="mt-2 flex items-center gap-3 rounded-md px-3 py-2">
+        <span
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary/10 text-sm font-semibold text-brand-primary"
+          >RA
+        </span>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold text-foreground">Dra. Rafaela</p>
+          <p class="text-xs text-content-secondary">Administrador</p>
+        </div>
+      </div>
+      <p-button [text]="true" severity="secondary" fluid>
+        <ng-template #icon>
+          <svg lucideLogOut class="h-4.5 w-4.5"></svg>
+        </ng-template>
+      </p-button>
+    </div>
+  </div>
+</aside>
