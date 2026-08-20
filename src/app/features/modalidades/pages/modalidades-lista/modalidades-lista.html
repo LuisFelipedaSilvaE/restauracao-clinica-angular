@@ -1,0 +1,25 @@
+<div class="flex gap-4 flex-col max-w-5xl mx-auto">
+  <div class="flex justify-between gap-2">
+    <div>
+      <h4 class="text-2xl font-semibold mb-1">Modalidades de entrada</h4>
+      <p class="text-sm text-content-secondary">
+        Gerencie as modalidades de acolhimento e a disponibilidade de vagas de cada uma.
+      </p>
+    </div>
+    <p-button label="Nova modalidade">
+      <ng-template #icon>
+        <svg lucidePlus class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+  <div class="flex justify-center items-center flex-wrap gap-2.5">
+    @for (item of infoModalidades(); track $index) {
+      <info-card [data]="item" />
+    }
+  </div>
+  <div class="flex items-center flex-wrap gap-2.5">
+    @for (item of modalidades(); track $index) {
+      <modalidade-card [data]="item" />
+    }
+  </div>
+</div>

@@ -12,7 +12,7 @@ import {
   LucideStethoscope,
   LucideUsersRound,
 } from '@lucide/angular';
-import { Logo } from '../../shared/logo/logo';
+import { Logo } from '../../shared/components/logo/logo';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 

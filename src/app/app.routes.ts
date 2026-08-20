@@ -12,6 +12,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'modalidades',
+        loadComponent: () =>
+          import('./features/modalidades/pages/modalidades-lista/modalidades-lista').then(
+            (m) => m.ModalidadesLista,
+          ),
+      },
+      {
         path: '**',
         loadComponent: () => import('./core/pages/not-found/not-found').then((m) => m.NotFound),
         data: { inLayout: true },

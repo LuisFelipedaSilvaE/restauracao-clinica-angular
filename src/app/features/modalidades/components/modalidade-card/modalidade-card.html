@@ -1,0 +1,22 @@
+<div class="flex items-center gap-2 w-full">
+  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().color">
+    <svg [lucideIcon]="data().icon" class="h-5 w-5"></svg>
+  </div>
+  <div>
+    <div class="flex items-center gap-2">
+      <h6 class="text-lg font-semibold">{{ data().value }}</h6>
+      <p-badge
+        [value]="`${data().totalVagas} Vagas`"
+        [iconColor]="data().color"
+        [customBadge]="data().color"
+      />
+    </div>
+
+    <p class="text-xs text-content-secondary">{{ data().label }}</p>
+  </div>
+</div>
+<div class="flex gap-4 w-full">
+  @for (item of computedInfoCards(); track $index) {
+    <info-card class="bg-surface-subtle! whitespace-nowrap p-3! grow!" [data]="item" />
+  }
+</div>

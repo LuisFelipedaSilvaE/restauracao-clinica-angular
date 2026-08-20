@@ -28,7 +28,7 @@ import {
 import { Router } from '@angular/router';
 import { Auth } from '../../../../core/services/auth';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
-import { Logo } from '../../../../shared/logo/logo';
+import { Logo } from '../../../../shared/components/logo/logo';
 
 @Component({
   selector: 'app-login',
