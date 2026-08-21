@@ -17,9 +17,9 @@
       <info-card [data]="item" />
     }
   </div>
-  <div class="flex items-center flex-wrap gap-2.5">
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
     @for (item of modalidades(); track $index) {
-      <modalidade-card [data]="item" />
+      <modalidade-card (statusModalidadeChange)="toggleModalidade($event)" [data]="item" />
     }
   </div>
 </div>

@@ -1,6 +1,6 @@
 <div class="flex items-center gap-2 w-full">
   <div class="w-fit p-2.5 rounded-md" [iconColor]="data().color">
-    <svg [lucideIcon]="data().icon" class="h-5 w-5"></svg>
+    <svg lucideLayers class="h-5 w-5"></svg>
   </div>
   <div>
     <div class="flex items-center gap-2">
@@ -14,9 +14,37 @@
 
     <p class="text-xs text-content-secondary">{{ data().label }}</p>
   </div>
+  <div class="flex justify-end items-start h-full grow gap-1">
+    <p-button severity="secondary" [text]="true">
+      <ng-template #icon>
+        <svg lucidePencil class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+    <p-button
+      (onClick)="toggleModalidade()"
+      [severity]="computedAtivaIcon().severity"
+      [text]="true"
+    >
+      <ng-template #icon>
+        <svg [lucideIcon]="computedAtivaIcon().icon" class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+    <p-button severity="danger" [text]="true">
+      <ng-template #icon>
+        <svg lucideTrash2 class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
 </div>
 <div class="flex gap-4 w-full">
   @for (item of computedInfoCards(); track $index) {
-    <info-card class="bg-surface-subtle! whitespace-nowrap p-3! grow!" [data]="item" />
+    <info-card class="bg-surface-subtle! whitespace-nowrap p-3!" [data]="item" />
   }
+</div>
+<div class="flex flex-col w-full">
+  <div class="flex justify-between w-full mb-1">
+    <p class="text-xs text-content-secondary">Ocupação</p>
+    <p class="text-xs text-content-on-card font-semibold">{{ computedOcupacao() }}</p>
+  </div>
+  <p-progressbar class="h-2!" showValue="false" [value]="50" [customProgressbar]="data().color" />
 </div>
