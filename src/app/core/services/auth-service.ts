@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Usuario } from '../guards/models/usuario.model';
 import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 const CHAVE_TOKEN = 'auth_token';
 
@@ -9,7 +10,7 @@ const CHAVE_TOKEN = 'auth_token';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseAPIUrl = 'http://localhost:8080/auth/login';
+  private baseAPIUrl = `${environment.apiUrl}/auth/login`;
   private http = inject(HttpClient);
   private internalIsAuthenticated = signal<boolean>(this.hasToken());
 

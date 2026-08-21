@@ -6,9 +6,9 @@ import { catchError, throwError } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  // if (req.url.includes('/auth/login')) {
-  //   return next(req);
-  // }
+  if (req.url.includes('/auth/login')) {
+    return next(req);
+  }
 
   const router = inject(Router);
   const authService = inject(AuthService);
