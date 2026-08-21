@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Auth } from '../../core/services/auth';
+import { AuthService } from '../../core/services/auth-service';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { InputIconModule } from 'primeng/inputicon';
@@ -26,7 +26,7 @@ import { Button, ButtonModule } from 'primeng/button';
   styleUrl: './header.css',
 })
 export class Header {
-  protected readonly authService = inject(Auth);
+  protected readonly authService = inject(AuthService);
   private readonly datePipe = inject(DatePipe);
   protected readonly searchValue = signal('');
   protected readonly dataAtual = signal(new Date());

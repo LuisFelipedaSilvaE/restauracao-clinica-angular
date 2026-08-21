@@ -26,7 +26,7 @@ import {
   LucideLoaderCircle,
 } from '@lucide/angular';
 import { Router } from '@angular/router';
-import { Auth } from '../../../../core/services/auth';
+import { AuthService } from '../../../../core/services/auth-service';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
 import { Logo } from '../../../../shared/components/logo/logo';
 
@@ -56,7 +56,7 @@ import { Logo } from '../../../../shared/components/logo/logo';
 export class Login {
   protected readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
-  private readonly authService = inject(Auth);
+  private readonly authService = inject(AuthService);
   protected readonly loginForm: FormGroup;
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly requestActive = signal<boolean>(false);
