@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormControl,
@@ -25,7 +25,7 @@ import {
   LucideLockKeyhole,
   LucideLoaderCircle,
 } from '@lucide/angular';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth-service';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
 import { Logo } from '../../../../shared/components/logo/logo';
@@ -53,9 +53,10 @@ import { Logo } from '../../../../shared/components/logo/logo';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   protected readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   protected readonly loginForm: FormGroup;
   protected readonly formSubmitted = signal<boolean>(false);
@@ -92,6 +93,19 @@ export class Login {
         Validators.maxLength(50),
       ]),
       senha: new FormControl('', [Validators.required, Validators.maxLength(128)]),
+    });
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      if (params['sessionExpired'] === 'true') {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Sessão expirada',
+          detail: 'Seu tempo de sessão expirou, faça login novamente.',
+          life: 3000,
+        });
+      }
     });
   }
 
