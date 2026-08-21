@@ -8,6 +8,8 @@ import { MessageService } from 'primeng/api';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptors/auth-interceptor';
 
 registerLocaleData(localePt);
 
@@ -25,5 +27,6 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     { provide: LOCALE_ID, useValue: 'pt-BR' },
+    provideHttpClient(withInterceptors([authInterceptor])),
   ],
 };
