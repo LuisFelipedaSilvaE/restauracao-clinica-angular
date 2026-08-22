@@ -5,6 +5,7 @@ import { tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { TokenPayload } from '../guards/models/token-payload.model';
 
 const CHAVE_TOKEN = 'auth_token';
 
