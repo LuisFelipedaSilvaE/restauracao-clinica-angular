@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Usuario } from '../guards/models/usuario.model';
 import { tap } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 const CHAVE_TOKEN = 'auth_token';
 
@@ -10,9 +12,10 @@ const CHAVE_TOKEN = 'auth_token';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseAPIUrl = `${environment.apiUrl}/auth/login`;
-  private http = inject(HttpClient);
-  private internalIsAuthenticated = signal<boolean>(this.hasToken());
+  private readonly baseAPIUrl = `${environment.apiUrl}/auth/login`;
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly internalIsAuthenticated = signal<boolean>(this.hasToken());
 
   isAuthenticated = this.internalIsAuthenticated.asReadonly();
 
@@ -20,6 +23,11 @@ export class AuthService {
     return this.http
       .post<{ token: string }>(this.baseAPIUrl, usuario)
       .pipe(tap((res) => this.setToken(res.token)));
+  }
+
+  logout() {
+    this.removeToken();
+    this.router.navigate(['/login']);
   }
 
   setToken(token: string) {
@@ -34,6 +42,22 @@ export class AuthService {
   removeToken() {
     localStorage.removeItem(CHAVE_TOKEN);
     this.internalIsAuthenticated.set(false);
+  }
+
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      return decoded.role;
+    } catch {
+      return null;
+    }
+  }
+
+  hasRole(role: string): boolean {
+    return this.getUserRole() === role;
   }
 
   private hasToken(): boolean {
