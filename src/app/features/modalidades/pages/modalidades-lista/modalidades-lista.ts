@@ -12,10 +12,18 @@ import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
 import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
+import { NewModalidadeDialog } from '../../components/new-modalidade-dialog/new-modalidade-dialog';
 
 @Component({
   selector: 'app-modalidades-lista',
-  imports: [ButtonModule, LucidePlus, InfoCard, ModalidadeCard, ModalidadeCard],
+  imports: [
+    ButtonModule,
+    LucidePlus,
+    InfoCard,
+    ModalidadeCard,
+    ModalidadeCard,
+    NewModalidadeDialog,
+  ],
   templateUrl: './modalidades-lista.html',
   styleUrl: './modalidades-lista.css',
 })
@@ -27,7 +35,7 @@ export class ModalidadesLista {
       label: 'Internação custeada integralmente pela família do acolhido.',
       totalVagas: 12,
       acolhidosAtivos: 4,
-      color: 'sky',
+      color: '#0084d1',
       ativa: true,
     },
     {
@@ -36,7 +44,7 @@ export class ModalidadesLista {
       label: 'Vagas conveniadas com o município por meio de contrato público.',
       totalVagas: 12,
       acolhidosAtivos: 4,
-      color: 'purple',
+      color: '#9810fa',
       ativa: true,
     },
     {
@@ -45,7 +53,7 @@ export class ModalidadesLista {
       label: 'Vaga beneficente ou bolsa social para pessoas em vulnerabilidade.',
       totalVagas: 12,
       acolhidosAtivos: 4,
-      color: 'green',
+      color: '#00a63e',
       ativa: true,
     },
   ]);
@@ -75,6 +83,11 @@ export class ModalidadesLista {
       color: 'green',
     },
   ]);
+  protected readonly newModalidadeVisible = signal<boolean>(false);
+
+  showDialog(): void {
+    this.newModalidadeVisible.set(true);
+  }
 
   toggleModalidade(dto: ToggleModalidadeDto): void {
     this.modalidades.update((value) => {

@@ -6,7 +6,7 @@
         Gerencie as modalidades de acolhimento e a disponibilidade de vagas de cada uma.
       </p>
     </div>
-    <p-button label="Nova modalidade">
+    <p-button (click)="showDialog()" label="Nova modalidade">
       <ng-template #icon>
         <svg lucidePlus class="h-5 w-5"></svg>
       </ng-template>
@@ -23,3 +23,4 @@
     }
   </div>
 </div>
+<new-modalidade-dialog [(visible)]="newModalidadeVisible" />

@@ -10,6 +10,7 @@ export class IconColor {
   color = input<string>('', { alias: 'iconColor' });
   iconTheme = computed<string>(() => {
     const options: Record<string, string> = {
+      brand: 'bg-brand-primary/5 [&>svg]:stroke-brand-primary',
       red: 'bg-red-50 [&>svg]:stroke-red-600',
       sky: 'bg-sky-50 [&>svg]:stroke-sky-600',
       amber: 'bg-amber-50 [&>svg]:stroke-amber-600',

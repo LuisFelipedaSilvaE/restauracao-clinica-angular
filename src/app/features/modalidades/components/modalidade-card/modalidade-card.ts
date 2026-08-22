@@ -38,7 +38,6 @@ interface ToggleModalidadeButton {
     LucideDynamicIcon,
     IconColor,
     BadgeModule,
-    CustomBadge,
     CustomProgressbar,
     InfoCard,
     ButtonModule,
@@ -53,7 +52,28 @@ interface ToggleModalidadeButton {
 export class ModalidadeCard {
   readonly data = input.required<ModalidadeCardContent>();
   readonly statusModalidadeChange = output<ToggleModalidadeDto>();
+  protected readonly theme = computed(() => {
+    const color = this.data().color;
 
+    return {
+      color: `color-mix(in oklch, ${color} 100%, transparent) !important`,
+      colorSoft: `color-mix(in oklch, ${color} 10%, transparent) !important`,
+    };
+  });
+  protected readonly progressBarPt = computed(() => {
+    return {
+      root: {
+        style: {
+          'background-color': this.theme().colorSoft,
+        },
+      },
+      value: {
+        style: {
+          'background-color': this.theme().color,
+        },
+      },
+    };
+  });
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
       value: this.data().acolhidosAtivos,
@@ -69,12 +89,12 @@ export class ModalidadeCard {
     };
     return [card1, card2];
   });
-  readonly computedOcupacao = computed<string>(() => {
-    if (this.data().acolhidosAtivos <= 0) return '0%';
-    if (this.data().acolhidosAtivos == this.data().totalVagas) return '100%';
+  readonly computedOcupacao = computed<number>(() => {
+    if (this.data().acolhidosAtivos <= 0) return 0;
+    if (this.data().acolhidosAtivos == this.data().totalVagas) return 100;
 
     const porcentagem = (this.data().acolhidosAtivos / this.data().totalVagas) * 100;
-    return `${Math.ceil(porcentagem).toString()}%`;
+    return Math.ceil(porcentagem);
   });
   readonly computedAtivaIcon = computed<ToggleModalidadeButton>(() => {
     return {

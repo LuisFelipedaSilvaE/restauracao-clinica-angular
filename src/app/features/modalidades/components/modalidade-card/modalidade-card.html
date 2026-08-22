@@ -1,14 +1,14 @@
 <div class="flex items-center gap-2 w-full">
-  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().color">
-    <svg lucideLayers class="h-5 w-5"></svg>
+  <div [style]="{ 'background-color': theme().colorSoft }" class="w-fit p-2.5 rounded-md">
+    <svg lucideLayers [style]="{ stroke: theme().color }" class="h-5 w-5"></svg>
   </div>
   <div>
     <div class="flex items-center gap-2">
       <h6 class="text-lg font-semibold">{{ data().value }}</h6>
       <p-badge
+        class="border rounded-full! text-[10px]! px-2! py-0.5! h-fit!"
         [value]="`${data().totalVagas} Vagas`"
         [iconColor]="data().color"
-        [customBadge]="data().color"
       />
     </div>
 
@@ -36,7 +36,7 @@
     </p-button>
   </div>
 </div>
-<div class="flex gap-4 w-full">
+<div class="flex grow items-end gap-4 w-full">
   @for (item of computedInfoCards(); track $index) {
     <info-card class="bg-surface-subtle! whitespace-nowrap p-3!" [data]="item" />
   }
@@ -44,7 +44,13 @@
 <div class="flex flex-col w-full">
   <div class="flex justify-between w-full mb-1">
     <p class="text-xs text-content-secondary">Ocupação</p>
-    <p class="text-xs text-content-on-card font-semibold">{{ computedOcupacao() }}</p>
+    <p class="text-xs text-content-on-card font-semibold">{{ `${computedOcupacao()}%` }}</p>
   </div>
-  <p-progressbar class="h-2!" showValue="false" [value]="50" [customProgressbar]="data().color" />
+  <p-progressbar
+    class="h-2! mb-2"
+    showValue="false"
+    [value]="computedOcupacao()"
+    [customProgressbar]="data().color"
+    [pt]="progressBarPt()"
+  />
 </div>
