@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +18,7 @@ export const routes: Routes = [
           import('./features/modalidades/pages/modalidades-lista/modalidades-lista').then(
             (m) => m.ModalidadesLista,
           ),
+        canActivate: [roleGuard('ADMIN')],
       },
       {
         path: '**',
