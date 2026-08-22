@@ -1,10 +1,10 @@
-<aside class="h-screen p-2">
+<aside class="sticky top-0 h-screen p-3">
   <div
     class="flex flex-col gap-4 w-75 h-full bg-surface-card rounded-lg border-2 border-border-default"
   >
-    <logo class="p-4" />
+    <logo class="p-4 mt-1.5" />
     <div class="flex flex-col grow gap-1 p-2">
-      <h3 class="ml-3.5">Navegação</h3>
+      <h3 class="ml-3 mb-2">Navegação</h3>
       @for (route of routes(); track $index) {
         <p-button
           [routerLink]="[route.route]"
@@ -33,7 +33,7 @@
           <p class="text-xs text-content-secondary">Administrador</p>
         </div>
       </div>
-      <p-button [text]="true" severity="secondary" fluid>
+      <p-button [text]="true" severity="secondary" fluid (click)="onLogoutClick()">
         <ng-template #icon>
           <svg lucideLogOut class="h-4.5 w-4.5"></svg>
         </ng-template>
