@@ -1,8 +1,8 @@
 <div class="flex">
   <app-sidebar></app-sidebar>
-  <main class="flex grow flex-col">
-    <app-header class="sticky top-0 z-10 block"></app-header>
-    <div class="p-4 grow">
+  <main class="grow py-4 px-4 lg:pl-0">
+    <div class="flex grow flex-col max-w-5xl gap-2 mx-auto">
+      <app-header></app-header>
       <router-outlet></router-outlet>
     </div>
   </main>

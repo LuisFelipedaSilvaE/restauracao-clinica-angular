@@ -6,10 +6,13 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { LucideBell, LucideCalendar, LucideSearch } from '@lucide/angular';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Button, ButtonModule } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-header',
+  host: {
+    class: 'sticky top-0 z-10 block',
+  },
   providers: [DatePipe],
   imports: [
     InputTextModule,
