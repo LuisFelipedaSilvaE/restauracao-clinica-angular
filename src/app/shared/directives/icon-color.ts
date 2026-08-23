@@ -1,23 +1,16 @@
 import { computed, Directive, input } from '@angular/core';
+import { createThemeColors } from '../utils/create-theme-colors';
 
 @Directive({
   selector: '[iconColor]',
   host: {
-    '[class]': 'iconTheme()',
+    '[style.backgroundColor]': 'theme().backgroundColor',
+    '[style.--icone-stroke]': 'theme().color',
+    '[class]': '"[&>svg]:stroke-(--icone-stroke)"',
   },
 })
 export class IconColor {
   color = input<string>('', { alias: 'iconColor' });
-  iconTheme = computed<string>(() => {
-    const options: Record<string, string> = {
-      brand: 'bg-brand-primary/5 [&>svg]:stroke-brand-primary',
-      red: 'bg-red-50 [&>svg]:stroke-red-600',
-      sky: 'bg-sky-50 [&>svg]:stroke-sky-600',
-      amber: 'bg-amber-50 [&>svg]:stroke-amber-600',
-      green: 'bg-green-50 [&>svg]:stroke-green-600',
-      purple: 'bg-purple-50 [&>svg]:stroke-purple-600',
-      gray: 'bg-gray-50 [&>svg]:stroke-gray-600',
-    };
-    return options[this.color()];
-  });
+
+  theme = createThemeColors(this.color);
 }

@@ -1,26 +1,34 @@
-<div class="flex gap-4 flex-col max-w-5xl mx-auto">
-  <div class="flex justify-between gap-2">
-    <div>
-      <h4 class="text-2xl font-semibold mb-1">Modalidades de entrada</h4>
-      <p class="text-sm text-content-secondary">
-        Gerencie as modalidades de acolhimento e a disponibilidade de vagas de cada uma.
-      </p>
-    </div>
-    <p-button (click)="showDialog()" label="Nova modalidade">
-      <ng-template #icon>
-        <svg lucidePlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+<div class="flex flex-col md:justify-between md:flex-row gap-2">
+  <div>
+    <h4 class="text-2xl font-semibold mb-1">Modalidades de entrada</h4>
+    <p class="text-sm text-content-secondary">
+      Gerencie as modalidades de acolhimento e a disponibilidade de vagas de cada uma.
+    </p>
   </div>
-  <div class="flex justify-center items-center flex-wrap gap-2.5">
-    @for (item of infoModalidades(); track $index) {
-      <info-card [data]="item" />
-    }
-  </div>
-  <div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
-    @for (item of modalidades(); track $index) {
-      <modalidade-card (statusModalidadeChange)="toggleModalidade($event)" [data]="item" />
-    }
-  </div>
+  <p-button (onClick)="showDialog('registro')" label="Nova modalidade" class="text-nowrap">
+    <ng-template #icon>
+      <svg lucidePlus class="h-5 w-5"></svg>
+    </ng-template>
+  </p-button>
 </div>
-<new-modalidade-dialog [(visible)]="newModalidadeVisible" />
+<div class="flex justify-center items-center flex-wrap gap-2.5">
+  @for (item of infoModalidades(); track $index) {
+    <info-card [data]="item" />
+  }
+</div>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
+  @for (item of modalidades(); track $index) {
+    <modalidade-card
+      (statusModalidadeChange)="toggleModalidade($event)"
+      (onEditarModalidade)="editarModalidade($event)"
+      [data]="item"
+    />
+  }
+</div>
+
+<modalidade-dialog
+  [visible]="dialogVisible()"
+  (visibleChange)="closeDialog($event)"
+  [type]="dialogType()"
+  [modalidade]="modalidadeParaAtualizar()"
+/>

@@ -13,15 +13,18 @@ import {
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
 import { BadgeModule } from 'primeng/badge';
-import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
+import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
+import { CustomBadge } from '../../../../shared/directives/custom-badge';
+import { Modalidade } from '../../interfaces/modalidade';
+import { TooltipModule } from 'primeng/tooltip';
 
 interface ToggleModalidadeButton {
+  tooltipValue: string;
   severity: ButtonSeverity;
   icon: LucideIcon;
 }
@@ -37,14 +40,16 @@ interface ToggleModalidadeButton {
   imports: [
     LucideDynamicIcon,
     IconColor,
-    BadgeModule,
     CustomProgressbar,
+    CustomBadge,
+    BadgeModule,
     InfoCard,
     ButtonModule,
     ProgressBarModule,
     LucidePencil,
     LucideLayers,
     LucideTrash2,
+    TooltipModule,
   ],
   templateUrl: './modalidade-card.html',
   styleUrl: './modalidade-card.css',
@@ -52,54 +57,36 @@ interface ToggleModalidadeButton {
 export class ModalidadeCard {
   readonly data = input.required<ModalidadeCardContent>();
   readonly statusModalidadeChange = output<ToggleModalidadeDto>();
-  protected readonly theme = computed(() => {
-    const color = this.data().color;
-
-    return {
-      color: `color-mix(in oklch, ${color} 100%, transparent) !important`,
-      colorSoft: `color-mix(in oklch, ${color} 10%, transparent) !important`,
-    };
-  });
-  protected readonly progressBarPt = computed(() => {
-    return {
-      root: {
-        style: {
-          'background-color': this.theme().colorSoft,
-        },
-      },
-      value: {
-        style: {
-          'background-color': this.theme().color,
-        },
-      },
-    };
-  });
+  readonly onEditarModalidade = output<Modalidade>();
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
       value: this.data().acolhidosAtivos,
       label: 'Acolhidos ativos',
       icon: LucideUsersRound,
-      color: 'gray',
+      color: '#4a5565',
     };
     const card2 = {
-      value: this.data().totalVagas - this.data().acolhidosAtivos,
+      value: this.data().vagasMaximas - this.data().acolhidosAtivos,
       label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
-      color: 'sky',
+      color: '#00a63e',
     };
     return [card1, card2];
   });
   readonly computedOcupacao = computed<number>(() => {
     if (this.data().acolhidosAtivos <= 0) return 0;
-    if (this.data().acolhidosAtivos == this.data().totalVagas) return 100;
+    if (this.data().acolhidosAtivos == this.data().vagasMaximas) return 100;
 
-    const porcentagem = (this.data().acolhidosAtivos / this.data().totalVagas) * 100;
+    const porcentagem = (this.data().acolhidosAtivos / this.data().vagasMaximas) * 100;
     return Math.ceil(porcentagem);
   });
-  readonly computedAtivaIcon = computed<ToggleModalidadeButton>(() => {
+  readonly computedModalidadeAtivaBtn = computed<ToggleModalidadeButton>(() => {
+    const ativa = this.data().ativa;
+
     return {
-      severity: this.data().ativa ? 'warn' : 'success',
-      icon: this.data().ativa ? LucidePowerOff : LucidePower,
+      tooltipValue: ativa ? 'Desativar modalidade' : 'Ativar modalidade',
+      severity: ativa ? 'warn' : 'success',
+      icon: ativa ? LucidePowerOff : LucidePower,
     };
   });
 
@@ -110,5 +97,10 @@ export class ModalidadeCard {
     };
 
     this.statusModalidadeChange.emit(dto);
+  }
+
+  editarModalidade(): void {
+    const { acolhidosAtivos, ...modalidade } = this.data();
+    this.onEditarModalidade.emit(modalidade);
   }
 }

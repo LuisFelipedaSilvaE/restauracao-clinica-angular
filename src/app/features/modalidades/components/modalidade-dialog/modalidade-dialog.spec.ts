@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewModalidadeDialog } from './new-modalidade-dialog';
+import { ModalidadeDialog } from './modalidade-dialog';
 
-describe('NewModalidadeDialog', () => {
-  let component: NewModalidadeDialog;
-  let fixture: ComponentFixture<NewModalidadeDialog>;
+describe('ModalidadeDialog', () => {
+  let component: ModalidadeDialog;
+  let fixture: ComponentFixture<ModalidadeDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NewModalidadeDialog],
+      imports: [ModalidadeDialog],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(NewModalidadeDialog);
+    fixture = TestBed.createComponent(ModalidadeDialog);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -12,18 +12,15 @@ import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
 import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
-import { NewModalidadeDialog } from '../../components/new-modalidade-dialog/new-modalidade-dialog';
+import { ModalidadeDialog } from '../../components/modalidade-dialog/modalidade-dialog';
+import { Modalidade } from '../../interfaces/modalidade';
 
 @Component({
   selector: 'app-modalidades-lista',
-  imports: [
-    ButtonModule,
-    LucidePlus,
-    InfoCard,
-    ModalidadeCard,
-    ModalidadeCard,
-    NewModalidadeDialog,
-  ],
+  host: {
+    class: 'flex gap-4 flex-col',
+  },
+  imports: [ButtonModule, LucidePlus, InfoCard, ModalidadeCard, ModalidadeCard, ModalidadeDialog],
   templateUrl: './modalidades-lista.html',
   styleUrl: './modalidades-lista.css',
 })
@@ -31,30 +28,30 @@ export class ModalidadesLista {
   protected readonly modalidades = signal<ModalidadeCardContent[]>([
     {
       id: 1,
-      value: 'Particular',
-      label: 'Internação custeada integralmente pela família do acolhido.',
-      totalVagas: 12,
-      acolhidosAtivos: 4,
-      color: '#0084d1',
+      cnpj: '00.000.000/0000-00',
+      descricao: 'Particular',
+      vagasMaximas: 12,
+      corIdentificacao: '#0084d1',
       ativa: true,
+      acolhidosAtivos: 4,
     },
     {
       id: 2,
-      value: 'Prefeitura',
-      label: 'Vagas conveniadas com o município por meio de contrato público.',
-      totalVagas: 12,
-      acolhidosAtivos: 4,
-      color: '#9810fa',
+      cnpj: '11.111.111/1111-11',
+      descricao: 'Prefeitura',
+      vagasMaximas: 12,
+      corIdentificacao: '#9810fa',
       ativa: true,
+      acolhidosAtivos: 4,
     },
     {
       id: 3,
-      value: 'Social',
-      label: 'Vaga beneficente ou bolsa social para pessoas em vulnerabilidade.',
-      totalVagas: 12,
-      acolhidosAtivos: 4,
-      color: '#00a63e',
+      cnpj: '22.222.222/2222-22',
+      descricao: 'Social',
+      vagasMaximas: 12,
+      corIdentificacao: '#00a63e',
       ativa: true,
+      acolhidosAtivos: 4,
     },
   ]);
   protected readonly infoModalidades = signal<InfoCardContent[]>([
@@ -62,31 +59,44 @@ export class ModalidadesLista {
       value: 3,
       label: 'Modalidades',
       icon: LucideLayoutGrid,
-      color: 'red',
+      color: '#e7000b',
     },
     {
       value: 30,
       label: 'Vagas totais',
       icon: LucideLayers,
-      color: 'sky',
+      color: '#0084d1',
     },
     {
       value: 11,
-      label: 'Vagas totais',
+      label: 'Vagas ocupadas',
       icon: LucideUsersRound,
-      color: 'amber',
+      color: '#e17100',
     },
     {
       value: 19,
-      label: 'Vagas totais',
+      label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
-      color: 'green',
+      color: '#00a63e',
     },
   ]);
-  protected readonly newModalidadeVisible = signal<boolean>(false);
+  protected readonly modalidadeParaAtualizar = signal<Modalidade | null>(null);
+  protected readonly dialogVisible = signal<boolean>(false);
+  protected readonly dialogType = signal<string>('regitro');
 
-  showDialog(): void {
-    this.newModalidadeVisible.set(true);
+  showDialog(type: string): void {
+    this.dialogVisible.set(true);
+    this.dialogType.set(type);
+  }
+
+  closeDialog(state: boolean): void {
+    this.dialogVisible.set(state);
+    this.modalidadeParaAtualizar.set(null);
+  }
+
+  editarModalidade(modalidade: Modalidade) {
+    this.modalidadeParaAtualizar.set(modalidade);
+    this.showDialog('atualizacao');
   }
 
   toggleModalidade(dto: ToggleModalidadeDto): void {

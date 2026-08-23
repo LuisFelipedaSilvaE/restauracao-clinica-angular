@@ -1,0 +1,121 @@
+<p-dialog
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  [focusOnShow]="false"
+  [pt]="dialogPt"
+>
+  <ng-template #header>
+    <info-card class="p-0! border-none! bg-transparent" [data]="headerInfo()" />
+  </ng-template>
+  <form [formGroup]="modalidadeForm" class="flex flex-col gap-4 pt-5">
+    <div class="flex flex-col gap-1">
+      <label for="descricao" class="font-semibold text-xs">
+        Descrição <span class="text-red-600">*</span>
+      </label>
+      <input
+        pInputText
+        formControlName="descricao"
+        type="text"
+        name="descricao"
+        id="descricao"
+        placeholder="Ex: Particular, Convênio..."
+      />
+      @if (getErrorMessage('descricao'); as msg) {
+        <p-message
+          severity="error"
+          size="small"
+          variant="simple"
+          [pt]="messagePt"
+          class="border-error-left"
+        >
+          {{ msg }}
+        </p-message>
+      }
+    </div>
+    <div class="flex flex-col gap-1">
+      <label for="cnpj" class="font-semibold text-xs">
+        CNPJ <span class="text-red-600">*</span>
+      </label>
+      <input
+        pInputText
+        formControlName="cnpj"
+        pInputMask="**.***.***/****-99"
+        placeholder="SS.SSS.SSS/SSSS-NN"
+        type="text"
+        name="cnpj"
+        id="cnpj"
+        class="uppercase"
+      />
+      @if (getErrorMessage('cnpj'); as msg) {
+        <p-message
+          severity="error"
+          size="small"
+          variant="simple"
+          [pt]="messagePt"
+          class="border-error-left"
+        >
+          {{ msg }}
+        </p-message>
+      }
+    </div>
+    <div class="flex flex-col gap-1">
+      <label for="vagasMaximas" class="font-semibold text-xs"
+        >Quantidade de Vagas <span class="text-red-600">*</span>
+      </label>
+      <p-inputnumber formControlName="vagasMaximas" inputId="vagasMaximas" [min]="0" />
+      @if (getErrorMessage('vagasMaximas'); as msg) {
+        <p-message
+          severity="error"
+          size="small"
+          variant="simple"
+          [pt]="messagePt"
+          class="border-error-left"
+        >
+          {{ msg }}
+        </p-message>
+      }
+    </div>
+    <div class="flex flex-col gap-1">
+      <label for="corIdentificacao" class="font-semibold text-xs">
+        Cor de identificação <span class="text-red-600">*</span>
+      </label>
+      <p-colorpicker
+        formControlName="corIdentificacao"
+        inputId="corIdentificacao"
+        appendTo="body"
+      />
+      @if (getErrorMessage('corIdentificacao'); as msg) {
+        <p-message
+          severity="error"
+          size="small"
+          variant="simple"
+          [pt]="messagePt"
+          class="border-error-left"
+        >
+          {{ msg }}
+        </p-message>
+      }
+    </div>
+  </form>
+
+  <div class="my-4">
+    <p class="text-content-secondary font-semibold text-xs mb-1">Pré-Visualização</p>
+    @if (modalidadeForm.valid) {
+      <modalidade-card [data]="modalidadePreview()!" />
+    } @else {
+      <p-skeleton class="h-49.5!" />
+      <p class="text-content-secondary font-bold text-xs mt-1 text-center">
+        Preencha todos os campos corretamente para visualizar.
+      </p>
+    }
+  </div>
+  <div class="flex justify-end gap-2">
+    <p-button label="Cancelar" severity="secondary" (click)="visibleChange.emit(false)" />
+    <p-button [label]="actionBtnLabel()" (click)="visibleChange.emit(false)">
+      <ng-template #icon>
+        <svg lucideCheck class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+</p-dialog>

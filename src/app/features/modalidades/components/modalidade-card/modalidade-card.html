@@ -1,37 +1,36 @@
 <div class="flex items-center gap-2 w-full">
-  <div [style]="{ 'background-color': theme().colorSoft }" class="w-fit p-2.5 rounded-md">
-    <svg lucideLayers [style]="{ stroke: theme().color }" class="h-5 w-5"></svg>
+  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().corIdentificacao">
+    <svg lucideLayers class="h-5 w-5"></svg>
   </div>
-  <div>
-    <div class="flex items-center gap-2">
-      <h6 class="text-lg font-semibold">{{ data().value }}</h6>
-      <p-badge
-        class="border rounded-full! text-[10px]! px-2! py-0.5! h-fit!"
-        [value]="`${data().totalVagas} Vagas`"
-        [iconColor]="data().color"
-      />
-    </div>
-
-    <p class="text-xs text-content-secondary">{{ data().label }}</p>
+  <div class="flex items-center gap-2 grow">
+    <h6 class="text-lg font-semibold">{{ data().descricao }}</h6>
+    <p-badge
+      class="border rounded-full! text-[10px]! px-2! py-0.5! h-fit!"
+      [value]="`${data().vagasMaximas} Vagas`"
+      [customBadge]="data().corIdentificacao"
+    />
   </div>
-  <div class="flex justify-end items-start h-full grow gap-1">
-    <p-button severity="secondary" [text]="true">
+  <div class="flex justify-end items-start h-full gap-1">
+    <p-button
+      (onClick)="editarModalidade()"
+      pTooltip="Editar modalidade"
+      tooltipPosition="top"
+      severity="secondary"
+      [text]="true"
+    >
       <ng-template #icon>
         <svg lucidePencil class="h-5 w-5"></svg>
       </ng-template>
     </p-button>
     <p-button
       (onClick)="toggleModalidade()"
-      [severity]="computedAtivaIcon().severity"
+      [severity]="computedModalidadeAtivaBtn().severity"
+      [pTooltip]="computedModalidadeAtivaBtn().tooltipValue"
+      tooltipPosition="top"
       [text]="true"
     >
       <ng-template #icon>
-        <svg [lucideIcon]="computedAtivaIcon().icon" class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
-    <p-button severity="danger" [text]="true">
-      <ng-template #icon>
-        <svg lucideTrash2 class="h-5 w-5"></svg>
+        <svg [lucideIcon]="computedModalidadeAtivaBtn().icon" class="h-5 w-5"></svg>
       </ng-template>
     </p-button>
   </div>
@@ -50,7 +49,6 @@
     class="h-2! mb-2"
     showValue="false"
     [value]="computedOcupacao()"
-    [customProgressbar]="data().color"
-    [pt]="progressBarPt()"
+    [customProgressbar]="data().corIdentificacao"
   />
 </div>
