@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-header',
   host: {
-    class: 'sticky top-0 z-10 block',
+    class: 'sticky top-4 z-10',
   },
   providers: [DatePipe],
   imports: [
