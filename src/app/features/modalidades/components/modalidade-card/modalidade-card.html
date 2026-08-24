@@ -2,10 +2,10 @@
   <div class="w-fit p-2.5 rounded-md" [iconColor]="data().corIdentificacao">
     <svg lucideLayers class="h-5 w-5"></svg>
   </div>
-  <div class="flex items-center gap-2 grow">
-    <h6 class="text-lg font-semibold">{{ data().descricao }}</h6>
+  <div class="flex items-center gap-2 grow min-w-0">
+    <h6 class="truncate text-lg font-semibold">{{ data().descricao }}</h6>
     <p-badge
-      class="border rounded-full! text-[10px]! px-2! py-0.5! h-fit!"
+      class="shrink-0 border rounded-full! text-[10px]! px-2! py-0.5! h-fit! text-nowrap"
       [value]="`${data().vagasMaximas} Vagas`"
       [customBadge]="data().corIdentificacao"
     />
