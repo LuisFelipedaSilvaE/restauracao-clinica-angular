@@ -1,0 +1,78 @@
+<div
+  class="flex flex-col gap-2 rounded-xl border border-border-default bg-surface-card p-4 lg:flex-row lg:items-center"
+>
+  <p-iconfield class="w-full lg:w-fit lg:basis-xs">
+    <p-inputicon>
+      <svg lucideSearch class="w-4 h-4"></svg>
+    </p-inputicon>
+    <input
+      pInputText
+      [ngModel]="busca()"
+      (ngModelChange)="this.buscaChange.emit($event)"
+      placeholder="Buscar por nome, CPF ou e-mail..."
+      class="w-full"
+    />
+  </p-iconfield>
+  <div class="flex flex-wrap justify-center items-center gap-2 flex-1">
+    <p-iconfield class="relative flex items-center">
+      <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
+        <svg lucideBriefcase class="h-5 w-5"></svg>
+      </p-inputicon>
+      <p-select
+        [options]="cargos"
+        [ngModel]="cargoSelecionado()"
+        (ngModelChange)="this.cargoSelecionadoChange.emit($event)"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione um cargo"
+        class="w-full pl-7.5"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <p>
+            Cargo: <span>{{ selectedOption.name }}</span>
+          </p>
+        </ng-template>
+      </p-select>
+    </p-iconfield>
+    <p-iconfield class="relative flex items-center">
+      <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
+        <svg lucideSlidersHorizontal class="h-5 w-5"></svg>
+      </p-inputicon>
+      <p-select
+        [options]="status"
+        [ngModel]="statusSelecionado()"
+        (ngModelChange)="this.statusSelecionadoChange.emit($event)"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione o status"
+        class="w-full pl-7.5"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <p>
+            Status: <span>{{ selectedOption.name }}</span>
+          </p>
+        </ng-template>
+      </p-select>
+    </p-iconfield>
+    <p-iconfield class="relative flex items-center">
+      <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
+        <svg lucideCake class="h-5 w-5"></svg>
+      </p-inputicon>
+      <p-select
+        [options]="mesesDeNascimento"
+        [ngModel]="mesSelecionado()"
+        (ngModelChange)="this.mesSelecionadoChange.emit($event)"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione o mês"
+        class="w-full pl-7.5"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <p>
+            Nascimento: <span>{{ selectedOption.name }}</span>
+          </p>
+        </ng-template>
+      </p-select>
+    </p-iconfield>
+  </div>
+</div>

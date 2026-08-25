@@ -1,0 +1,72 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col md:justify-between md:flex-row gap-2">
+    <div>
+      <h4 class="text-2xl font-semibold mb-1">Funcionários</h4>
+      <p class="text-sm text-content-secondary">
+        Consulte, filtre e gerencie todos os funcionários atualmente vinculados à comunidade.
+      </p>
+    </div>
+    <p-button label="Novo colaborador" class="text-nowrap">
+      <ng-template #icon>
+        <svg lucideUserRoundPlus class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+  <div class="flex justify-center items-center flex-wrap gap-2.5">
+    @for (item of infoFuncionarios(); track $index) {
+      <info-card [data]="item" />
+    }
+  </div>
+</div>
+
+<div class="flex flex-col gap-2">
+  <filter-funcionarios-card
+    [(busca)]="busca"
+    [(cargoSelecionado)]="cargoSelecionado"
+    [(statusSelecionado)]="statusSelecionado"
+    [(mesSelecionado)]="mesSelecionado"
+  />
+
+  <p-dataview
+    [value]="funcionariosCardsFiltrados()"
+    [paginator]="true"
+    [rows]="10"
+    layout="list"
+    [pt]="dataviewPt"
+  >
+    <ng-template #list let-items>
+      <div class="flex flex-col gap-2">
+        @for (funcionario of items; track $index; let first = $first) {
+          <funcionario-card [data]="funcionario" />
+        }
+      </div>
+    </ng-template>
+    <ng-template #emptymessage>
+      <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
+        <span
+          class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideSearchX class="h-7.5 w-7.5"></svg>
+        </span>
+        <div>
+          <h3 class="font-heading text-base font-semibold text-content-primary">
+            Nenhum funcionário encontrado
+          </h3>
+          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
+            Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca
+            ou limpar os filtros.
+          </p>
+        </div>
+        <p-button
+          severity="secondary"
+          [text]="true"
+          (onClick)="clearFilters()"
+          label="Limpar filtros"
+        >
+          <svg lucideFunnelX class="h-5 w-5"></svg>
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dataview>
+</div>
