@@ -18,7 +18,7 @@ import { Modalidade } from '../../interfaces/modalidade';
 @Component({
   selector: 'app-modalidades-lista',
   host: {
-    class: 'flex gap-4 flex-col',
+    class: 'flex gap-8 flex-col',
   },
   imports: [ButtonModule, LucidePlus, InfoCard, ModalidadeCard, ModalidadeCard, ModalidadeDialog],
   templateUrl: './modalidades-lista.html',
