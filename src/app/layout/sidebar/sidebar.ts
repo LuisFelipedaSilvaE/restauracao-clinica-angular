@@ -16,6 +16,7 @@ import { Logo } from '../../shared/components/logo/logo';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
+import { ProfileColor } from '../../shared/directives/profile-color';
 
 interface ButtonRoute {
   label: string;
@@ -25,7 +26,7 @@ interface ButtonRoute {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [LucideDynamicIcon, LucideLogOut, Logo, ButtonModule, RouterModule],
+  imports: [LucideDynamicIcon, LucideLogOut, Logo, ButtonModule, RouterModule, ProfileColor],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
