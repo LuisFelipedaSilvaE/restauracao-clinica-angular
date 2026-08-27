@@ -1,0 +1,35 @@
+<p-dialog
+  [modal]="true"
+  [visible]="visible()"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  (visibleChange)="visibleChange.emit($event)"
+  (onHide)="hidden.emit()"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">{{ title() }}</h2>
+  </ng-template>
+
+  <p class="text-sm text-content-secondary">
+    {{ message() }}
+  </p>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (click)="visibleChange.emit(false)"
+    />
+
+    <p-button
+      [label]="confirmLabel()"
+      [severity]="severity()"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (click)="onConfirm.emit()"
+    />
+  </ng-template>
+</p-dialog>
