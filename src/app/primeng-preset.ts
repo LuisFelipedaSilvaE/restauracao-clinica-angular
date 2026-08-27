@@ -165,6 +165,47 @@ const PresetClinicaRestauracao = definePreset(Aura, {
       },
     },
   },
+
+  components: {
+    button: {
+      colorScheme: {
+        light: {
+          root: {
+            success: {
+              background: 'var(--color-status-success-icon)',
+              hoverBackground: 'var(--color-status-success-text-medium)',
+              activeBackground: 'var(--color-status-success-text)',
+              borderColor: 'var(--color-status-success-icon)',
+              hoverBorderColor: 'var(--color-status-success-text-medium)',
+              activeBorderColor: 'var(--color-status-success-text)',
+              color: 'white',
+              hoverColor: 'white',
+              activeColor: 'white',
+              focusRing: {
+                color: 'var(--color-status-success-icon)',
+                shadow: 'none',
+              },
+            },
+            danger: {
+              background: 'var(--color-action-destructive)',
+              hoverBackground: 'color-mix(in oklch, var(--color-action-destructive) 85%, black)',
+              activeBackground: 'color-mix(in oklch, var(--color-action-destructive) 70%, black)',
+              borderColor: 'var(--color-action-destructive)',
+              hoverBorderColor: 'color-mix(in oklch, var(--color-action-destructive) 85%, black)',
+              activeBorderColor: 'color-mix(in oklch, var(--color-action-destructive) 70%, black)',
+              color: 'white',
+              hoverColor: 'white',
+              activeColor: 'white',
+              focusRing: {
+                color: 'var(--color-action-destructive)',
+                shadow: 'none',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 });
 
 export default PresetClinicaRestauracao;
