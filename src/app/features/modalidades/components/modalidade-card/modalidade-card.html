@@ -1,13 +1,13 @@
 <div class="flex items-center gap-2 w-full">
-  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().corIdentificacao">
+  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().cor">
     <svg lucideLayers class="h-5 w-5"></svg>
   </div>
   <div class="flex items-center gap-2 grow min-w-0">
     <h6 class="truncate text-lg font-semibold">{{ data().descricao }}</h6>
     <p-badge
       class="shrink-0 border rounded-full! text-[10px]! px-2! py-0.5! h-fit! text-nowrap"
-      [value]="`${data().vagasMaximas} Vagas`"
-      [customBadge]="data().corIdentificacao"
+      [value]="`${data().maxVagas} Vagas`"
+      [customBadge]="data().cor"
     />
   </div>
   <div class="flex justify-end items-start h-full gap-1">
@@ -49,6 +49,6 @@
     class="h-2! mb-2"
     showValue="false"
     [value]="computedOcupacao()"
-    [customProgressbar]="data().corIdentificacao"
+    [customProgressbar]="data().cor"
   />
 </div>

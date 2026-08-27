@@ -1,9 +1,7 @@
-export interface Modalidade {
-  id: number;
+export interface ModalidadeRequest {
   descricao: string;
   cnpj: string | null;
   maxVagas: number;
-  ativo: boolean;
   pagamento: boolean;
   cor: string;
 }

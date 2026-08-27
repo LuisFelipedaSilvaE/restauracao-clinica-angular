@@ -2,7 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Modalidade } from '../interfaces/modalidade';
-import { finalize, Observable, of, shareReplay, tap } from 'rxjs';
+import { ModalidadeRequest } from '../interfaces/modalidade-request';
+import { finalize, Observable, of, tap } from 'rxjs';
+
+type LoadingType = 'list' | 'mutation';
 
 @Injectable({
   providedIn: 'root',
@@ -14,14 +17,17 @@ export class ModalidadesService {
   private readonly internalModalidades = signal<Modalidade[]>([]);
   readonly modalidades = this.internalModalidades.asReadonly();
 
-  private readonly carregado = signal(false);
-  private requisicaoEmAndamento$: Observable<Modalidade[]> | null = null;
+  private readonly listaCarregada = signal(false);
 
-  private readonly internalLoadingList = signal(false);
-  readonly loadingList = this.internalLoadingList.asReadonly();
+  private readonly internalLoading = signal<Record<LoadingType, boolean>>({
+    list: false,
+    mutation: false,
+  });
+  readonly loading = this.internalLoading.asReadonly();
 
-  private readonly internalLoadingMutation = signal(false);
-  readonly loadingMutation = this.internalLoadingMutation.asReadonly();
+  private setLoading(type: LoadingType, value: boolean): void {
+    this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
+  }
 
   private substituirModalidadeNaLista(modalidadeAtualizada: Modalidade) {
     this.internalModalidades.update((modalidades) =>
@@ -33,47 +39,39 @@ export class ModalidadesService {
     );
   }
 
-  private atualizarStatusNaLista(id: number, ativa: boolean) {
+  private atualizarStatusNaLista(id: number, ativo: boolean): void {
     this.internalModalidades.update((modalidades) => {
       const atualizada = modalidades.map((modalidade) =>
-        modalidade.id === id ? { ...modalidade, ativa } : modalidade,
+        modalidade.id === id ? { ...modalidade, ativo } : modalidade,
       );
       return this.ordenarPorStatus(atualizada);
     });
   }
 
   private ordenarPorStatus(modalidades: Modalidade[]): Modalidade[] {
-    return [...modalidades].sort((a, b) => Number(b.ativa) - Number(a.ativa));
+    return [...modalidades].sort((a, b) => Number(b.ativo) - Number(a.ativo));
   }
 
   getAllModalidades(forceRefresh = false): Observable<Modalidade[]> {
-    if (this.carregado() && !forceRefresh) {
+    if (this.listaCarregada() && !forceRefresh) {
       return of(this.internalModalidades());
     }
 
-    if (this.requisicaoEmAndamento$) {
-      return this.requisicaoEmAndamento$;
-    }
+    this.setLoading('list', true);
 
-    this.internalLoadingList.set(true);
-
-    this.requisicaoEmAndamento$ = this.http.get<Modalidade[]>(this.baseAPIUrl).pipe(
+    return this.http.get<Modalidade[]>(this.baseAPIUrl).pipe(
       tap((modalidades) => {
         this.internalModalidades.set(this.ordenarPorStatus(modalidades));
-        this.carregado.set(true);
+        this.listaCarregada.set(true);
       }),
       finalize(() => {
-        this.internalLoadingList.set(false);
-        this.requisicaoEmAndamento$ = null;
+        this.setLoading('list', false);
       }),
-      shareReplay(1),
     );
-
-    return this.requisicaoEmAndamento$;
   }
 
-  createModalidade(modalidade: Modalidade): Observable<Modalidade> {
-    this.internalLoadingMutation.set(true);
+  createModalidade(modalidade: ModalidadeRequest): Observable<Modalidade> {
+    this.setLoading('mutation', true);
 
     return this.http.post<Modalidade>(this.baseAPIUrl, modalidade).pipe(
       tap((newModalidade) => {
@@ -81,34 +79,34 @@ export class ModalidadesService {
           this.ordenarPorStatus([...modalidades, newModalidade]),
         );
       }),
-      finalize(() => this.internalLoadingMutation.set(false)),
+      finalize(() => this.setLoading('mutation', false)),
     );
   }
 
-  updateModalidade(id: number, modalidade: Modalidade): Observable<Modalidade> {
-    this.internalLoadingMutation.set(true);
+  updateModalidade(id: number, modalidade: ModalidadeRequest): Observable<Modalidade> {
+    this.setLoading('mutation', true);
 
     return this.http.put<Modalidade>(`${this.baseAPIUrl}/${id}`, modalidade).pipe(
       tap((modalidadeAtualizada) => this.substituirModalidadeNaLista(modalidadeAtualizada)),
-      finalize(() => this.internalLoadingMutation.set(false)),
+      finalize(() => this.setLoading('mutation', false)),
     );
   }
 
   deactivateModalidade(id: number): Observable<void> {
-    this.internalLoadingMutation.set(true);
+    this.setLoading('mutation', true);
 
     return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
       tap(() => this.atualizarStatusNaLista(id, false)),
-      finalize(() => this.internalLoadingMutation.set(false)),
+      finalize(() => this.setLoading('mutation', false)),
     );
   }
 
   activateModalidade(id: number): Observable<void> {
-    this.internalLoadingMutation.set(true);
+    this.setLoading('mutation', true);
 
     return this.http.put<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(
       tap(() => this.atualizarStatusNaLista(id, true)),
-      finalize(() => this.internalLoadingMutation.set(false)),
+      finalize(() => this.setLoading('mutation', false)),
     );
   }
 }

@@ -34,7 +34,7 @@ interface ToggleModalidadeButton {
     class:
       'flex flex-col items-center gap-2 bg-surface-card border border-border-default rounded-lg p-4 min-w-sm',
     '[class]':
-      "!data().ativa ? 'bg-muted! bg-surface-subtle! border-dashed! border-border-muted! bg-surface-subtle!' : ''",
+      "!data().ativo ? 'bg-muted! bg-surface-subtle! border-dashed! border-border-muted! bg-surface-subtle!' : ''",
   },
   imports: [
     LucideDynamicIcon,
@@ -64,7 +64,7 @@ export class ModalidadeCard {
       color: '#4a5565',
     };
     const card2 = {
-      value: this.data().vagasMaximas - this.data().acolhidosAtivos,
+      value: this.data().maxVagas - this.data().acolhidosAtivos,
       label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
       color: '#00a63e',
@@ -73,25 +73,25 @@ export class ModalidadeCard {
   });
   readonly computedOcupacao = computed<number>(() => {
     if (this.data().acolhidosAtivos <= 0) return 0;
-    if (this.data().acolhidosAtivos == this.data().vagasMaximas) return 100;
+    if (this.data().acolhidosAtivos == this.data().maxVagas) return 100;
 
-    const porcentagem = (this.data().acolhidosAtivos / this.data().vagasMaximas) * 100;
+    const porcentagem = (this.data().acolhidosAtivos / this.data().maxVagas) * 100;
     return Math.ceil(porcentagem);
   });
   readonly computedModalidadeAtivaBtn = computed<ToggleModalidadeButton>(() => {
-    const ativa = this.data().ativa;
+    const ativo = this.data().ativo;
 
     return {
-      tooltipValue: ativa ? 'Desativar modalidade' : 'Ativar modalidade',
-      severity: ativa ? 'warn' : 'success',
-      icon: ativa ? LucidePowerOff : LucidePower,
+      tooltipValue: ativo ? 'Desativar modalidade' : 'Ativar modalidade',
+      severity: ativo ? 'warn' : 'success',
+      icon: ativo ? LucidePowerOff : LucidePower,
     };
   });
 
   toggleModalidade(): void {
     const dto: ToggleModalidadeDto = {
       id: this.data().id,
-      ativa: !this.data().ativa,
+      ativo: !this.data().ativo,
     };
 
     this.statusModalidadeChange.emit(dto);

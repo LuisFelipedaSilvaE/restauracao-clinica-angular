@@ -15,7 +15,14 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { ModalidadeCard } from '../modalidade-card/modalidade-card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MessageModule } from 'primeng/message';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { Modalidade } from '../../interfaces/modalidade';
+import { ModalidadeRequest } from '../../interfaces/modalidade-request';
+import { ModalidadesService } from '../../services/modalidades-service';
+import { MessageService } from 'primeng/api';
+import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
+
+type DialogType = 'registro' | 'atualizacao';
 
 @Component({
   selector: 'modalidade-dialog',
@@ -31,25 +38,38 @@ import { Modalidade } from '../../interfaces/modalidade';
     ModalidadeCard,
     SkeletonModule,
     MessageModule,
+    SelectButtonModule,
     LucideCheck,
   ],
   templateUrl: './modalidade-dialog.html',
   styleUrl: './modalidade-dialog.css',
 })
 export class ModalidadeDialog {
+  protected readonly fb = inject(FormBuilder);
+  private readonly modalidadesService = inject(ModalidadesService);
+  private readonly messageService = inject(MessageService);
+
   readonly visible = input.required<boolean>();
-  readonly type = input.required<string>();
+  readonly type = input.required<DialogType>();
   readonly modalidade = input<Modalidade | null>();
   readonly visibleChange = output<boolean>();
-  protected readonly fb = inject(FormBuilder);
+  protected readonly loading = this.modalidadesService.loading;
+
+  protected readonly pagamentoOptions = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
+
   protected readonly modalidadeForm = this.fb.group({
     descricao: ['', [Validators.required]],
-    cnpj: ['', [Validators.required]],
-    vagasMaximas: ['', [Validators.required]],
-    corIdentificacao: ['', [Validators.required]],
+    cnpj: ['', [cnpjValidator]],
+    maxVagas: ['', [Validators.required]],
+    pagamento: [true, [Validators.required]],
+    cor: ['', [Validators.required]],
   });
+
   protected readonly formSubmitted = signal<boolean>(false);
-  protected readonly requestActive = signal<boolean>(false);
+
   protected readonly dialogPt = {
     root: {
       class: 'min-w-md',
@@ -58,17 +78,20 @@ export class ModalidadeDialog {
       class: 'bg-brand-primary/5',
     },
   };
+
   protected readonly messagePt = {
     contentWrapper: {
       class: 'pl-2 rounded-sm border-l-4 border-status-error-border-strong',
     },
   };
+
   private readonly labels: Record<string, string> = {
     descricao: 'Descrição',
-    cnpj: 'CNPJ',
-    vagasMaximas: 'Quantidade de Vagas',
-    corIdentificacao: 'Cor de Identificação',
+    maxVagas: 'Quantidade de Vagas',
+    pagamento: 'Pagamento Obrigatório',
+    cor: 'Cor de Identificação',
   };
+
   protected readonly headerInfo = computed<InfoCardContent>(() => {
     const type = this.type();
 
@@ -92,6 +115,7 @@ export class ModalidadeDialog {
       color: '#be222d',
     };
   });
+
   protected readonly actionBtnLabel = computed(() => {
     const config: Record<string, string> = {
       registro: 'Criar modalidade',
@@ -102,16 +126,18 @@ export class ModalidadeDialog {
 
     return safeConfig;
   });
+
   protected readonly modalidadePreview = toSignal<ModalidadeCardContent>(
     this.modalidadeForm.valueChanges.pipe(
       startWith(this.modalidadeForm.value),
       map((formValue) => ({
         descricao: formValue.descricao ?? '',
-        cnpj: formValue.cnpj ?? '',
-        vagasMaximas: Number(formValue.vagasMaximas ?? 0),
-        corIdentificacao: formValue.corIdentificacao ?? '',
+        cnpj: formValue.cnpj?.trim() || null,
+        maxVagas: Number(formValue.maxVagas ?? 0),
+        cor: formValue.cor ?? '',
         acolhidosAtivos: 0,
-        ativa: true,
+        ativo: true,
+        pagamento: formValue.pagamento ?? true,
         id: 0,
       })),
     ),
@@ -119,19 +145,35 @@ export class ModalidadeDialog {
 
   constructor() {
     effect(() => {
+      if (!this.visible()) return;
+
       const data = this.modalidade();
+      this.formSubmitted.set(false);
 
       if (data) {
         this.modalidadeForm.patchValue({
           descricao: data.descricao,
-          cnpj: data.cnpj,
-          vagasMaximas: data.vagasMaximas.toString(),
-          corIdentificacao: data.corIdentificacao,
+          cnpj: this.formatarCnpj(data.cnpj),
+          maxVagas: data.maxVagas.toString(),
+          pagamento: data.pagamento,
+          cor: data.cor,
         });
       } else {
-        this.modalidadeForm.reset();
+        this.modalidadeForm.reset({
+          pagamento: true,
+        });
       }
     });
+  }
+
+  private formatarCnpj(cnpj: string | null): string {
+    if (!cnpj) return '';
+
+    const valor = cnpj.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+
+    if (valor.length !== 14) return valor;
+
+    return `${valor.slice(0, 2)}.${valor.slice(2, 5)}.${valor.slice(5, 8)}/${valor.slice(8, 12)}-${valor.slice(12)}`;
   }
 
   isInvalid(controlName: string) {
@@ -142,11 +184,58 @@ export class ModalidadeDialog {
   getErrorMessage(controlName: string): string | null {
     if (!this.isInvalid(controlName)) return null;
 
+    if (controlName === 'cnpj') {
+      return 'Informe um CNPJ válido';
+    }
+
     return `${this.labels[controlName]} é obrigatório`;
   }
 
-  private toggleFormAndRequest(): void {
-    this.formSubmitted.update((value) => !value);
-    this.requestActive.update((value) => !value);
+  onSubmit(): void {
+    this.formSubmitted.set(true);
+
+    if (this.modalidadeForm.invalid) return;
+
+    const cnpj = this.modalidadeForm.controls.cnpj.value?.trim().toUpperCase();
+    const data: ModalidadeRequest = {
+      descricao: this.modalidadeForm.controls.descricao.value ?? '',
+      cnpj: cnpj || null,
+      maxVagas: Number(this.modalidadeForm.controls.maxVagas.value),
+      pagamento: this.modalidadeForm.controls.pagamento.value ?? true,
+      cor: this.modalidadeForm.controls.cor.value ?? '',
+    };
+
+    if (this.type() === 'registro') {
+      this.modalidadesService.createModalidade(data).subscribe({
+        next: () => {
+          this.visibleChange.emit(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Modalidade Criada!',
+            detail: 'Criação da modalidade realizada com sucesso.',
+            life: 3000,
+          });
+        },
+        error: () => {},
+      });
+
+      return;
+    }
+    const id = this.modalidade()?.id;
+
+    if (id === undefined) return;
+
+    this.modalidadesService.updateModalidade(id, data).subscribe({
+      next: () => {
+        this.visibleChange.emit(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Modalidade Atualizada!',
+          detail: 'Atualização da modalidade realizada com sucesso.',
+          life: 3000,
+        });
+      },
+      error: () => {},
+    });
   }
 }

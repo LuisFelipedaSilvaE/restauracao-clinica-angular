@@ -8,7 +8,7 @@
   <ng-template #header>
     <info-card class="p-0! border-none! bg-transparent" [data]="headerInfo()" />
   </ng-template>
-  <form [formGroup]="modalidadeForm" class="flex flex-col gap-4 pt-5">
+  <form [formGroup]="modalidadeForm" class="flex flex-col gap-4 pt-5" (ngSubmit)="onSubmit()">
     <div class="flex flex-col gap-1">
       <label for="descricao" class="font-semibold text-xs">
         Descrição <span class="text-red-600">*</span>
@@ -27,21 +27,19 @@
           size="small"
           variant="simple"
           [pt]="messagePt"
-          class="border-error-left"
+          class="border-error-left mt-1.5"
         >
           {{ msg }}
         </p-message>
       }
     </div>
     <div class="flex flex-col gap-1">
-      <label for="cnpj" class="font-semibold text-xs">
-        CNPJ <span class="text-red-600">*</span>
-      </label>
+      <label for="cnpj" class="font-semibold text-xs"> CNPJ </label>
       <input
         pInputText
         formControlName="cnpj"
         pInputMask="**.***.***/****-99"
-        placeholder="SS.SSS.SSS/SSSS-NN"
+        placeholder="AA.AAA.AAA/AAAA-00"
         type="text"
         name="cnpj"
         id="cnpj"
@@ -53,69 +51,102 @@
           size="small"
           variant="simple"
           [pt]="messagePt"
-          class="border-error-left"
+          class="border-error-left mt-1.5"
         >
           {{ msg }}
         </p-message>
       }
     </div>
     <div class="flex flex-col gap-1">
-      <label for="vagasMaximas" class="font-semibold text-xs"
+      <label for="maxVagas" class="font-semibold text-xs"
         >Quantidade de Vagas <span class="text-red-600">*</span>
       </label>
-      <p-inputnumber formControlName="vagasMaximas" inputId="vagasMaximas" [min]="0" />
-      @if (getErrorMessage('vagasMaximas'); as msg) {
+      <p-inputnumber formControlName="maxVagas" inputId="maxVagas" [min]="0" />
+      @if (getErrorMessage('maxVagas'); as msg) {
         <p-message
           severity="error"
           size="small"
           variant="simple"
           [pt]="messagePt"
-          class="border-error-left"
+          class="border-error-left mt-1.5"
         >
           {{ msg }}
         </p-message>
       }
     </div>
     <div class="flex flex-col gap-1">
-      <label for="corIdentificacao" class="font-semibold text-xs">
-        Cor de identificação <span class="text-red-600">*</span>
+      <label id="pagamento-label" class="font-semibold text-xs">
+        Pagamento Obrigatório? <span class="text-red-600">*</span>
       </label>
-      <p-colorpicker
-        formControlName="corIdentificacao"
-        inputId="corIdentificacao"
-        appendTo="body"
+      <p-selectbutton
+        [options]="pagamentoOptions"
+        formControlName="pagamento"
+        optionLabel="label"
+        optionValue="value"
+        [multiple]="false"
+        [allowEmpty]="false"
+        [fluid]="true"
+        ariaLabelledBy="pagamento-label"
       />
-      @if (getErrorMessage('corIdentificacao'); as msg) {
+      @if (getErrorMessage('pagamento'); as msg) {
         <p-message
           severity="error"
           size="small"
           variant="simple"
           [pt]="messagePt"
-          class="border-error-left"
+          class="border-error-left mt-2"
         >
           {{ msg }}
         </p-message>
       }
     </div>
-  </form>
+    <div class="flex flex-col gap-1">
+      <label for="cor" class="font-semibold text-xs">
+        Cor de identificação <span class="text-red-600">*</span>
+      </label>
+      <p-colorpicker formControlName="cor" inputId="cor" appendTo="body" />
+      @if (getErrorMessage('cor'); as msg) {
+        <p-message
+          severity="error"
+          size="small"
+          variant="simple"
+          [pt]="messagePt"
+          class="border-error-left mt-1.5"
+        >
+          {{ msg }}
+        </p-message>
+      }
+    </div>
 
-  <div class="my-4">
-    <p class="text-content-secondary font-semibold text-xs mb-1">Pré-Visualização</p>
-    @if (modalidadeForm.valid) {
-      <modalidade-card [data]="modalidadePreview()!" />
-    } @else {
-      <p-skeleton class="h-49.5!" />
-      <p class="text-content-secondary font-bold text-xs mt-1 text-center">
-        Preencha todos os campos corretamente para visualizar.
-      </p>
-    }
-  </div>
-  <div class="flex justify-end gap-2">
-    <p-button label="Cancelar" severity="secondary" (click)="visibleChange.emit(false)" />
-    <p-button [label]="actionBtnLabel()" (click)="visibleChange.emit(false)">
-      <ng-template #icon>
-        <svg lucideCheck class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
-  </div>
+    <div class="my-4">
+      <p class="text-content-secondary font-semibold text-xs mb-1">Pré-Visualização</p>
+      @if (modalidadeForm.valid) {
+        <modalidade-card [data]="modalidadePreview()!" />
+      } @else {
+        <p-skeleton class="h-49.5!" />
+        <p class="text-content-secondary font-bold text-xs mt-1 text-center">
+          Preencha todos os campos corretamente para visualizar.
+        </p>
+      }
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [disabled]="loading().mutation"
+        (click)="visibleChange.emit(false)"
+      />
+      <p-button
+        type="submit"
+        [label]="actionBtnLabel()"
+        [loading]="loading().mutation"
+        [disabled]="loading().mutation"
+      >
+        <ng-template #icon>
+          <svg lucideCheck class="h-5 w-5"></svg>
+        </ng-template>
+      </p-button>
+    </div>
+  </form>
 </p-dialog>
