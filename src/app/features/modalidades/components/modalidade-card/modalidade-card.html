@@ -11,7 +11,8 @@
     />
   </div>
   <div class="flex justify-end items-start h-full gap-1">
-    <p-button
+   <p-button
+      [class]="!data().ativo ? '-z-10!' : ''"
       (onClick)="editarModalidade()"
       pTooltip="Editar modalidade"
       tooltipPosition="top"
@@ -47,6 +48,7 @@
   </div>
   <p-progressbar
     class="h-2! mb-2"
+    [class]="!data().ativo ? '-z-10!' : ''"
     showValue="false"
     [value]="computedOcupacao()"
     [customProgressbar]="data().cor"
