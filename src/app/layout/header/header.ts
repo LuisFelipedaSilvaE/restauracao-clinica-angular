@@ -4,14 +4,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
-import { LucideBell, LucideCalendar, LucideSearch } from '@lucide/angular';
+import { LucideBell, LucideCalendar, LucideSearch, LucideMenu, LucideX } from '@lucide/angular';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { MobileNav } from '../mobile-nav/mobile-nav';
 
 @Component({
   selector: 'app-header',
   host: {
-    class: 'sticky top-4 z-10',
+    class: 'sticky top-4 z-20',
   },
   providers: [DatePipe],
   imports: [
@@ -23,7 +24,10 @@ import { ButtonModule } from 'primeng/button';
     LucideSearch,
     LucideCalendar,
     LucideBell,
+    LucideMenu,
+    LucideX,
     CommonModule,
+    MobileNav,
   ],
   templateUrl: './header.html',
   styleUrl: './header.css',
@@ -33,6 +37,12 @@ export class Header {
   private readonly datePipe = inject(DatePipe);
   protected readonly searchValue = signal('');
   protected readonly dataAtual = signal(new Date());
+  protected readonly isMobileNavOpen = signal(false);
+
+  toggleMobileNav(): void {
+    this.isMobileNavOpen.update((open) => !open);
+  }
+
   protected readonly dataFormatada = computed(() => {
     const data = this.dataAtual();
 

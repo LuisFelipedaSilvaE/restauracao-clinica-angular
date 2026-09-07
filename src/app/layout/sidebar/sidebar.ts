@@ -1,28 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  LucideBriefcase,
-  LucideChartColumn,
-  LucideClipboardCheck,
-  LucideDynamicIcon,
-  LucideFileText,
-  LucideIcon,
-  LucideLayers,
-  LucideLayoutDashboard,
-  LucideLogOut,
-  LucideStethoscope,
-  LucideUsersRound,
-} from '@lucide/angular';
+import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { Logo } from '../../shared/components/logo/logo';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
 import { ProfileColor } from '../../shared/directives/profile-color';
-
-interface ButtonRoute {
-  label: string;
-  route: string;
-  icon: LucideIcon;
-}
+import { NAVIGATION_ROUTES } from '../navigation-routes';
 
 @Component({
   selector: 'app-sidebar',
@@ -33,16 +16,7 @@ interface ButtonRoute {
 export class Sidebar {
   private readonly authService = inject(AuthService);
   protected readonly activeRoute = inject(ActivatedRoute);
-  protected readonly routes = signal<ButtonRoute[]>([
-    { label: 'Dashboard', route: 'dashboard', icon: LucideLayoutDashboard },
-    { label: 'Modalidades', route: 'modalidades', icon: LucideLayers },
-    { label: 'Acolhidos', route: 'acolhidos', icon: LucideUsersRound },
-    { label: 'Funcionários', route: 'funcionarios', icon: LucideBriefcase },
-    { label: 'Relatórios', route: 'relatorios', icon: LucideChartColumn },
-    { label: 'Declarações', route: 'declaracoes', icon: LucideFileText },
-    { label: 'Laudos', route: 'laudos', icon: LucideClipboardCheck },
-    { label: 'Triagens', route: 'triagens', icon: LucideStethoscope },
-  ]);
+  protected readonly routes = signal(NAVIGATION_ROUTES);
   protected readonly navButtonPt = {
     root: {
       class: 'justify-start!',

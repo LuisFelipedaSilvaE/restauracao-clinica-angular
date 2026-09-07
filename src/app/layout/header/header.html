@@ -1,9 +1,26 @@
-<header>
+<header class="relative">
   <div class="h-6 -top-4 w-full bg-surface-app absolute"></div>
   <div
-    class="flex p-4 gap-4 bg-surface-card/80 border-border-default border-2 rounded-lg backdrop-blur-sm"
+    class="flex items-center justify-center p-4 gap-4 bg-surface-card/80 relative z-10 border-border-default border-2 rounded-lg backdrop-blur-sm"
   >
-    <div class="flex grow">
+    <div>
+      <p-button
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        class="lg:hidden flex"
+        (click)="toggleMobileNav()"
+      >
+        <ng-template #icon>
+          @if (isMobileNavOpen()) {
+            <svg lucideX class="w-6 h-6 text-content-secondary"></svg>
+          } @else {
+            <svg lucideMenu class="w-6 h-6 text-content-secondary"></svg>
+          }
+        </ng-template>
+      </p-button>
+    </div>
+    <div class="flex grow justify-center md:justify-start">
       <p-iconfield class="basis-120">
         <p-inputicon>
           <svg lucideSearch class="w-4 h-4"></svg>
@@ -18,15 +35,23 @@
       </p-iconfield>
     </div>
     <div class="flex items-center gap-2 text-content-secondary">
-      <div class="flex gap-2 items-center">
+      <div class="md:flex hidden gap-2 items-center">
         <svg lucideCalendar class="w-4 h-4"></svg>
         <p class="text-sm">{{ dataFormatada() }}</p>
       </div>
-      <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="secondary">
+      <p-button
+        icon="pi pi-check"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        class="md:flex hidden"
+      >
         <ng-template #icon>
           <svg lucideBell class="w-4 h-4"></svg>
         </ng-template>
       </p-button>
     </div>
   </div>
+
+  <app-mobile-nav [isOpen]="isMobileNavOpen()" (closeMenu)="isMobileNavOpen.set(false)" />
 </header>

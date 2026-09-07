@@ -1,0 +1,49 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 mt-18 bg-surface-app lg:hidden" (click)="onBackdropClick()"></div>
+
+  <div
+    class="mobile-nav-menu relative z-40 mt-2 flex flex-col h-[calc(100dvh-118px)] overflow-y-auto rounded-lg border-2 border-border-default bg-surface-card/95 p-2 backdrop-blur-md shadow-2xl lg:hidden"
+  >
+    <div class="flex flex-col grow gap-1 p-1">
+      <h3 class="ml-3 my-1.5 text-xs font-semibold uppercase tracking-wider text-content-secondary">
+        Navegação
+      </h3>
+      @for (route of routes(); track $index) {
+        <p-button
+          [routerLink]="[route.route]"
+          routerLinkActive
+          #rla="routerLinkActive"
+          [severity]="rla.isActive ? null : 'secondary'"
+          [text]="!rla.isActive"
+          [label]="route.label"
+          [pt]="navButtonPt"
+          fluid
+          (click)="onNavigate()"
+        >
+          <ng-template #icon>
+            <svg [lucideIcon]="route.icon" class="h-4.5 w-4.5"></svg>
+          </ng-template>
+        </p-button>
+      }
+    </div>
+    <div class="pt-4 flex items-center justify-between border-t-2 border-border-default p-2">
+      <div class="flex items-center gap-3 rounded-md px-2 py-1">
+        <span
+          class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+          [profileColor]="'#be222d'"
+        >
+          RA
+        </span>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold text-foreground">Dra. Rafaela</p>
+          <p class="text-xs text-content-secondary">Administrador</p>
+        </div>
+      </div>
+      <p-button [text]="true" severity="secondary" (click)="onLogoutClick()">
+        <ng-template #icon>
+          <svg lucideLogOut class="h-4.5 w-4.5"></svg>
+        </ng-template>
+      </p-button>
+    </div>
+  </div>
+}
