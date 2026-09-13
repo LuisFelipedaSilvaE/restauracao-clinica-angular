@@ -4,7 +4,7 @@ import { roleGuard } from './core/guards/role-guard';
 import { Layout } from './layout/layout';
 import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
-import { NotFound } from './core/pages/not-found/not-found';
+import { ErrorPage } from './core/pages/error-page/error-page';
 
 export const routes: Routes = [
   {
@@ -12,10 +12,21 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
+    path: 'acesso-negado',
+    component: ErrorPage,
+    canActivate: [authGuard],
+    data: { status: 403 },
+  },
+  {
     path: '',
     component: Layout,
     canActivate: [authGuard],
     children: [
+      {
+        path: '',
+        redirectTo: 'modalidades',
+        pathMatch: 'full',
+      },
       {
         path: 'modalidades',
         component: ModalidadesLista,
@@ -26,16 +37,11 @@ export const routes: Routes = [
         component: FuncionariosLista,
         canActivate: [roleGuard('ADMIN')],
       },
-      {
-        path: '**',
-        component: NotFound,
-        data: { inLayout: true },
-      },
     ],
   },
   {
     path: '**',
-    component: NotFound,
-    data: { inLayout: false },
+    component: ErrorPage,
+    data: { status: 404 },
   },
 ];

@@ -11,7 +11,6 @@ export function roleGuard(role: string): CanActivateFn {
       return true;
     }
 
-    router.navigate(['/acesso-negado']);
-    return false;
+    return router.createUrlTree(['/acesso-negado']);
   };
 }
