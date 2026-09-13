@@ -130,14 +130,8 @@ export class Login implements OnInit {
         });
         this.router.navigate(['/']);
       },
-      error: ({ error: { message } }) => {
+      error: () => {
         this.toggleFormAndRequest();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro no Login',
-          detail: message,
-          life: 3000,
-        });
       },
     });
   }

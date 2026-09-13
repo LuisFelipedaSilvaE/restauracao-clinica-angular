@@ -16,7 +16,6 @@ import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
 import { ModalidadeDialog } from '../../components/modalidade-dialog/modalidade-dialog';
 import { Modalidade } from '../../interfaces/modalidade';
 import { ModalidadesService } from '../../services/modalidades-service';
-import { MessageService } from 'primeng/api';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -44,7 +43,6 @@ type DialogType = 'registro' | 'atualizacao';
 })
 export class ModalidadesLista implements OnInit {
   private readonly modalidadesService = inject(ModalidadesService);
-  private readonly messageService = inject(MessageService);
 
   protected readonly modalidades = computed<ModalidadeCardContent[]>(() => {
     return this.modalidadesService.modalidades().map((modalidade) => {
@@ -156,14 +154,7 @@ export class ModalidadesLista implements OnInit {
 
   ngOnInit(): void {
     this.modalidadesService.getAllModalidades().subscribe({
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro ao carregar modalidades',
-          detail: err?.error?.message ?? 'Não foi possível carregar as modalidades.',
-          life: 3000,
-        });
-      },
+      error: () => {},
     });
   }
 }
