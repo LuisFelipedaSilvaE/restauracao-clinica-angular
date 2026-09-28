@@ -6,7 +6,7 @@
         Gerencie as modalidades de acolhimento e a disponibilidade de vagas de cada uma.
       </p>
     </div>
-    <p-button (onClick)="showDialog('registro')" label="Nova modalidade" class="text-nowrap">
+    <p-button routerLink="criar" label="Nova modalidade" class="text-nowrap">
       <ng-template #icon>
         <svg lucidePlus class="h-5 w-5"></svg>
       </ng-template>
@@ -62,7 +62,6 @@
     @for (item of modalidades(); track $index) {
       <modalidade-card
         (statusModalidadeChange)="toggleModalidade($event)"
-        (onEditarModalidade)="editarModalidade($event)"
         [data]="item"
       />
     } @empty {
@@ -83,7 +82,7 @@
             Não há modalidades de acolhimento cadastradas no momento.
           </p>
         </div>
-        <p-button (onClick)="showDialog('registro')" label="Cadastrar primeira modalidade">
+        <p-button routerLink="criar" label="Cadastrar primeira modalidade">
           <ng-template #icon>
             <svg lucidePlus class="h-5 w-5"></svg>
           </ng-template>
@@ -92,13 +91,6 @@
     }
   }
 </div>
-
-<modalidade-dialog
-  [visible]="dialogVisible()"
-  (visibleChange)="closeDialog($event)"
-  [type]="dialogType()"
-  [modalidade]="modalidadeParaAtualizar()"
-/>
 
 <confirm-dialog
   [visible]="dialogConfirmVisible()"

@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   LucideDoorOpen,
   LucideFolderX,
@@ -13,14 +14,10 @@ import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
 import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
-import { ModalidadeDialog } from '../../components/modalidade-dialog/modalidade-dialog';
-import { Modalidade } from '../../interfaces/modalidade';
 import { ModalidadesService } from '../../services/modalidades-service';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
-
-type DialogType = 'registro' | 'atualizacao';
 
 @Component({
   selector: 'app-modalidades-lista',
@@ -33,10 +30,10 @@ type DialogType = 'registro' | 'atualizacao';
     LucideFolderX,
     InfoCard,
     ModalidadeCard,
-    ModalidadeDialog,
     IconColor,
     ConfirmDialog,
     SkeletonModule,
+    RouterLink,
   ],
   templateUrl: './modalidades-lista.html',
   styleUrl: './modalidades-lista.css',
@@ -46,14 +43,14 @@ export class ModalidadesLista implements OnInit {
 
   protected readonly modalidades = computed<ModalidadeCardContent[]>(() => {
     return this.modalidadesService.modalidades().map((modalidade) => {
-      return { ...modalidade, acolhidosAtivos: 10 };
+      return { ...modalidade, acolhidosAtivos: Math.min(10, modalidade.maxVagas) };
     });
   });
 
   protected readonly infoModalidades = computed<InfoCardContent[]>(() => {
     const lista = this.modalidades();
-    const vagasTotais = lista.reduce((acc, m) => acc + m.maxVagas, 0);
-    const vagasOcupadas = lista.reduce((acc, m) => acc + m.acolhidosAtivos, 0);
+    const vagasTotais = lista.reduce((acc, m) => (m.ativo ? acc + m.maxVagas : acc), 0);
+    const vagasOcupadas = lista.reduce((acc, m) => (m.ativo ? acc + m.acolhidosAtivos : acc), 0);
 
     return [
       {
@@ -83,23 +80,10 @@ export class ModalidadesLista implements OnInit {
     ];
   });
 
-  protected readonly modalidadeParaAtualizar = signal<Modalidade | null>(null);
-  protected readonly dialogVisible = signal<boolean>(false);
   protected readonly dialogConfirmVisible = signal<boolean>(false);
-  protected readonly dialogType = signal<DialogType>('registro');
   protected readonly acaoPendente = signal<ToggleModalidadeDto | null>(null);
   protected readonly loading = this.modalidadesService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
-
-  showDialog(type: DialogType): void {
-    this.dialogVisible.set(true);
-    this.dialogType.set(type);
-  }
-
-  closeDialog(state: boolean): void {
-    this.dialogVisible.set(state);
-    this.modalidadeParaAtualizar.set(null);
-  }
 
   closeConfirmDialog(state: boolean): void {
     this.dialogConfirmVisible.set(state);
@@ -140,11 +124,6 @@ export class ModalidadesLista implements OnInit {
       next: () => this.closeConfirmDialog(false),
       error: () => {},
     });
-  }
-
-  editarModalidade(modalidade: Modalidade) {
-    this.modalidadeParaAtualizar.set(modalidade);
-    this.showDialog('atualizacao');
   }
 
   toggleModalidade(dto: ToggleModalidadeDto): void {
