@@ -1,4 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   LucideDoorOpen,
   LucideDynamicIcon,
@@ -8,6 +9,7 @@ import {
   LucidePowerOff,
   LucideLayers,
   LucideIcon,
+  LucideEye
 } from '@lucide/angular';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
@@ -19,7 +21,6 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
 import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
 import { CustomBadge } from '../../../../shared/directives/custom-badge';
-import { Modalidade } from '../../interfaces/modalidade';
 import { TooltipModule } from 'primeng/tooltip';
 
 interface ToggleModalidadeButton {
@@ -48,14 +49,16 @@ interface ToggleModalidadeButton {
     LucidePencil,
     LucideLayers,
     TooltipModule,
+    RouterLink,
+    LucideEye,
   ],
   templateUrl: './modalidade-card.html',
   styleUrl: './modalidade-card.css',
 })
 export class ModalidadeCard {
   readonly data = input.required<ModalidadeCardContent>();
+  readonly showActions = input(true);
   readonly statusModalidadeChange = output<ToggleModalidadeDto>();
-  readonly onEditarModalidade = output<Modalidade>();
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
       value: this.data().acolhidosAtivos,
@@ -95,10 +98,5 @@ export class ModalidadeCard {
     };
 
     this.statusModalidadeChange.emit(dto);
-  }
-
-  editarModalidade(): void {
-    const { acolhidosAtivos, ...modalidade } = this.data();
-    this.onEditarModalidade.emit(modalidade);
   }
 }
