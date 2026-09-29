@@ -28,7 +28,7 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
 @Component({
   selector: 'app-modalidade-detalhada',
   host: {
-    class: 'mx-auto flex w-full max-w-2xl flex-col gap-6',
+    class: 'mx-auto flex w-full flex-col gap-6',
   },
   imports: [
     ButtonModule,

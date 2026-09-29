@@ -1,14 +1,14 @@
-<div class="flex items-center gap-2 w-full">
+<div class="flex items-center gap-4 w-full">
   <div class="w-fit p-2.5 rounded-md" [iconColor]="data().cor">
     <svg lucideLayers class="h-5 w-5"></svg>
   </div>
-  <div class="flex items-center gap-2 grow min-w-0">
+  <div class="flex items-center gap-4 grow min-w-0">
     @if (showActions()) {
-      <h2 class="truncate text-lg font-medium tracking-tight">
+      <h6 class="truncate text-lg font-medium tracking-tight">
         {{ data().descricao }}
-      </h2>
+      </h6>
     } @else {
-      <h2 class="truncate text-lg font-medium tracking-tight">{{ data().descricao }}</h2>
+      <h6 class="truncate text-lg font-medium tracking-tight">{{ data().descricao }}</h6>
     }
     <p-badge
       class="shrink-0 border rounded-full! text-[10px]! px-2! py-0.5! h-fit! text-nowrap"
