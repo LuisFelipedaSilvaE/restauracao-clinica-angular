@@ -34,6 +34,7 @@
             name="descricao"
             [invalid]="isInvalid('descricao')"
             placeholder="Ex.: Particular, Convênio, Bolsa social..."
+            autocomplete="off"
           />
           @if (getErrorMessage('descricao'); as msg) {
             <p-message severity="error" size="small" variant="simple" [pt]="messagePt" class="mt-1">
@@ -54,6 +55,7 @@
             class="uppercase"
             [invalid]="isInvalid('cnpj')"
             placeholder="AA.AAA.AAA/AAAA-00"
+            autocomplete="off"
           />
           <p class="text-xs text-content-secondary">
             Opcional. Usado na emissão de documentos e comprovantes.
@@ -77,6 +79,7 @@
             styleClass="w-full"
             placeholder="Ex.: 40"
             [invalid]="isInvalid('maxVagas')"
+            autocomplete="off"
           />
           <p class="text-xs text-content-secondary">Capacidade total oferecida.</p>
           @if (getErrorMessage('maxVagas'); as msg) {
