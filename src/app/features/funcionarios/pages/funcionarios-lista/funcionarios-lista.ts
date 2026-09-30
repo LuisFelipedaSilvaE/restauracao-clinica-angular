@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import {
   LucideBriefcase,
@@ -15,6 +15,8 @@ import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioCard } from '../../components/funcionario-card/funcionario-card';
 import { FilterFuncionariosCard } from '../../components/filter-funcionarios-card/filter-funcionarios-card';
 import { IconColor } from '../../../../shared/directives/icon-color';
+import { FuncionariosService } from '../../services/funcionarios-service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -31,43 +33,14 @@ import { IconColor } from '../../../../shared/directives/icon-color';
     LucideFunnelX,
     LucideSearchX,
     IconColor,
+    RouterLink,
   ],
   templateUrl: './funcionarios-lista.html',
   styleUrl: './funcionarios-lista.css',
 })
-export class FuncionariosLista {
-  protected readonly funcionarios = signal<Funcionario[]>([
-    {
-      id: 1,
-      nome: 'Dario Klein Alves',
-      cpf: '111.111.111-11',
-      role: 'Monitor',
-      telefone: '(18) 11111-1111',
-      email: 'exemplo1@email.com',
-      dataNascimento: new Date(2026, 2, 14),
-      ativo: true,
-    },
-    {
-      id: 2,
-      nome: 'Jonathan Joestar',
-      cpf: '222.222.222-22',
-      role: 'Psicólogo(a)',
-      telefone: '(18) 22222-2222',
-      email: 'exemplo2@email.com',
-      dataNascimento: new Date(2026, 6, 22),
-      ativo: false,
-    },
-    {
-      id: 3,
-      nome: 'Pedro Costa Moura',
-      cpf: '333.333.333-33',
-      role: 'Coordenador',
-      telefone: '(18) 33333-3333',
-      email: 'exemplo3@email.com',
-      dataNascimento: new Date(2026, 10, 5),
-      ativo: true,
-    },
-  ]);
+export class FuncionariosLista implements OnInit {
+  protected readonly funcionariosService = inject(FuncionariosService);
+  protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
     const busca = (this.busca() || '').toLowerCase().replace(/\s/g, '');
     const statusFiltro = this.statusSelecionado();
@@ -87,42 +60,42 @@ export class FuncionariosLista {
         (statusFiltro === 'ativo' ? funcionario.ativo : !funcionario.ativo);
       const validMes = mesFiltro === null || funcionario.dataNascimento?.getMonth() === mesFiltro;
       const validCargo =
-        cargoFiltro === null || funcionario.role?.toLowerCase().includes(cargoFiltro);
+        cargoFiltro === null || funcionario.cargo?.nome.toLowerCase().includes(cargoFiltro);
 
       return validBusca && validStatus && validMes && validCargo;
     });
 
     return funcionariosFiltrados.map((funcionario) => {
-      const siglaNome = funcionario.nome
-        .split(' ')
-        .slice(0, 2)
-        .map((p) => p.charAt(0))
-        .join('')
-        .toUpperCase();
-
-      return { ...funcionario, siglaNome, severity: 'warn' };
+      return { ...funcionario, severity: 'warn' };
     });
   });
-  protected readonly infoFuncionarios = signal<InfoCardContent[]>([
-    {
-      value: 3,
-      label: 'Total de funcionários',
-      icon: LucideUsersRound,
-      color: '#e7000b',
-    },
-    {
-      value: 14,
-      label: 'Ativos',
-      icon: LucideBriefcase,
-      color: '#00a63e',
-    },
-    {
-      value: 2,
-      label: 'Inativos',
-      icon: LucideUsersRound,
-      color: '#4a5565',
-    },
-  ]);
+  protected readonly infoFuncionarios = computed<InfoCardContent[]>(() => {
+    const funcionarios = this.funcionarios();
+    const total = funcionarios.length;
+    const ativos = funcionarios.filter((f) => f.ativo).length;
+    const inativos = funcionarios.filter((f) => !f.ativo).length;
+
+    return [
+      {
+        value: total,
+        label: 'Total de funcionários',
+        icon: LucideUsersRound,
+        color: '#e7000b',
+      },
+      {
+        value: ativos,
+        label: 'Ativos',
+        icon: LucideBriefcase,
+        color: '#00a63e',
+      },
+      {
+        value: inativos,
+        label: 'Inativos',
+        icon: LucideUsersRound,
+        color: '#4a5565',
+      },
+    ];
+  });
   protected readonly dataviewPt = {
     root: {
       class: 'flex! flex-col gap-2',
@@ -140,6 +113,10 @@ export class FuncionariosLista {
   protected readonly cargoSelecionado = signal('todos');
   protected readonly statusSelecionado = signal('todos');
   protected readonly mesSelecionado = signal('todos');
+
+  ngOnInit(): void {
+    this.funcionariosService.getAllFuncionarios();
+  }
 
   clearFilters(): void {
     this.busca.set('');

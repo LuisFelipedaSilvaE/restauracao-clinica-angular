@@ -4,8 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { Modalidade } from '../interfaces/modalidade';
 import { ModalidadeRequest } from '../interfaces/modalidade-request';
 import { finalize, Observable, of, tap } from 'rxjs';
-
-type LoadingType = 'list' | 'mutation';
+import { LoadingType } from '../../../shared/types/loading-type';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +20,7 @@ export class ModalidadesService {
 
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
+    detail: false,
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
