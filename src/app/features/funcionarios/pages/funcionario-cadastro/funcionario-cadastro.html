@@ -1,0 +1,397 @@
+<p-button
+  severity="secondary"
+  [text]="true"
+  routerLink="/funcionarios"
+  label="Voltar para funcionários"
+  class="w-fit"
+>
+  <svg lucideArrowLeft class="h-4 w-4"></svg>
+</p-button>
+<form-header [data]="header" />
+<card>
+  <form [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="cadastrarFuncionario()">
+    <fieldset class="space-y-4">
+      <legend class="font-semibold">Dados pessoais</legend>
+      <div class="space-y-1">
+        <label for="nome" class="flex items-center gap-1 text-xs font-medium text-foreground">
+          Nome completo<span class="text-red-600">*</span>
+        </label>
+        <input
+          pInputText
+          id="nome"
+          name="nome"
+          formControlName="nome"
+          placeholder="Ex.: Maria da Silva"
+          [invalid]="isInvalid('nome')"
+          fluid
+          autocomplete="off"
+        />
+        @if (getErrorMessage('nome'); as msg) {
+          <p-message severity="error" size="small" variant="simple" customErrorMessage>
+            {{ msg }}
+          </p-message>
+        }
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1">
+          <label for="cpf" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            CPF<span class="text-red-600">*</span>
+          </label>
+          <input
+            pInputText
+            id="cpf"
+            name="cpf"
+            formControlName="cpf"
+            placeholder="000.000.000-00"
+            pInputMask="999.999.999-99"
+            [invalid]="isInvalid('cpf')"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('cpf'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+        <div class="space-y-1">
+          <label
+            for="dataNascimento"
+            class="flex items-center gap-1 text-xs font-medium text-foreground"
+          >
+            Data de nascimento<span class="text-red-600">*</span>
+          </label>
+          <p-datepicker
+            inputId="dataNascimento"
+            name="dataNascimento"
+            formControlName="dataNascimento"
+            placeholder="dd/mm/aaaa"
+            [showButtonBar]="true"
+            [readonlyInput]="true"
+            [maxDate]="minDataNascimento"
+            [defaultDate]="minDataNascimento"
+            [invalid]="isInvalid('dataNascimento')"
+            dateFormat="dd/mm/yy"
+            fluid
+          />
+          @if (getErrorMessage('dataNascimento'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="space-y-4">
+      <legend class="font-semibold">Vínculo</legend>
+      <div class="space-y-1">
+        <label
+          for="dataAdmissao"
+          class="flex items-center gap-1 text-xs font-medium text-foreground"
+        >
+          Data de admissão<span class="text-red-600">*</span>
+        </label>
+        <p-datepicker
+          inputId="dataAdmissao"
+          name="dataAdmissao"
+          formControlName="dataAdmissao"
+          placeholder="dd/mm/aaaa"
+          [showButtonBar]="true"
+          [readonlyInput]="true"
+          [invalid]="isInvalid('dataAdmissao')"
+          dateFormat="dd/mm/yy"
+          fluid
+        />
+        @if (getErrorMessage('dataAdmissao'); as msg) {
+          <p-message severity="error" size="small" variant="simple" customErrorMessage>
+            {{ msg }}
+          </p-message>
+        }
+      </div>
+    </fieldset>
+    <fieldset class="space-y-4">
+      <legend class="font-semibold">Contato</legend>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1">
+          <label for="email" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            E-mail<span class="text-red-600">*</span>
+          </label>
+          <input
+            pInputText
+            id="email"
+            name="email"
+            formControlName="email"
+            placeholder="nome@clinica.org"
+            [invalid]="isInvalid('email')"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('email'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+          @if (getErrorMessage('email', 'email'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+        <div class="space-y-1">
+          <label for="telefone" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            Telefone<span class="text-red-600">*</span>
+          </label>
+          <input
+            pInputText
+            id="telefone"
+            name="telefone"
+            formControlName="telefone"
+            pInputMask="(99) 99999-9999"
+            placeholder="(00) 00000-0000"
+            [invalid]="isInvalid('telefone')"
+            [autoClear]="false"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('telefone'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="space-y-4">
+      <legend class="font-semibold">Endereço</legend>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="space-y-1">
+          <label for="cep" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            CEP<span class="text-red-600">*</span>
+          </label>
+          <input
+            pInputText
+            id="cep"
+            name="cep"
+            formControlName="cep"
+            pInputMask="99999-999"
+            placeholder="00000-000"
+            [invalid]="isInvalid('cep')"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('cep'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+        <div class="sm:col-span-2">
+          <div class="space-y-1">
+            <label
+              for="logradouro"
+              class="flex items-center gap-1 text-xs font-medium text-foreground"
+            >
+              Logradouro<span class="text-red-600">*</span>
+            </label>
+            <input
+              pInputText
+              id="logradouro"
+              name="logradouro"
+              formControlName="logradouro"
+              placeholder="Rua, avenida..."
+              [invalid]="isInvalid('logradouro')"
+              fluid
+              autocomplete="off"
+            />
+            @if (getErrorMessage('logradouro'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-4">
+        <div class="space-y-1">
+          <label for="numero" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            Número
+          </label>
+          <input
+            pInputText
+            id="numero"
+            name="numero"
+            formControlName="numero"
+            pKeyFilter="int"
+            placeholder="Nº"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('numero'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+        <div class="sm:col-span-3">
+          <div class="space-y-1">
+            <label for="bairro" class="flex items-center gap-1 text-xs font-medium text-foreground">
+              Bairro<span class="text-red-600">*</span>
+            </label>
+            <input
+              pInputText
+              id="bairro"
+              name="bairro"
+              formControlName="bairro"
+              placeholder="Bairro"
+              [invalid]="isInvalid('bairro')"
+              fluid
+              autocomplete="off"
+            />
+            @if (getErrorMessage('bairro'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="sm:col-span-2">
+          <div class="space-y-1">
+            <label for="cidade" class="flex items-center gap-1 text-xs font-medium text-foreground">
+              Cidade<span class="text-red-600">*</span>
+            </label>
+            <input
+              pInputText
+              id="cidade"
+              name="cidade"
+              formControlName="cidade"
+              placeholder="Cidade"
+              [invalid]="isInvalid('cidade')"
+              fluid
+              autocomplete="off"
+            />
+            @if (getErrorMessage('cidade'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+        </div>
+        <div class="relative">
+          <div class="space-y-1">
+            <label for="estado" class="flex items-center gap-1 text-xs font-medium text-foreground">
+              Estado<span class="text-red-600">*</span>
+            </label>
+            <div class="relative">
+              <p-select
+                id="estado"
+                name="estado"
+                [options]="estados"
+                formControlName="estado"
+                placeholder="Selecione um estado"
+                [invalid]="isInvalid('estado')"
+                fluid
+              />
+              @if (getErrorMessage('estado'); as msg) {
+                <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                  {{ msg }}
+                </p-message>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="space-y-4">
+      <div class="flex items-center justify-between">
+        <legend class="font-semibold">Acesso ao sistema</legend>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2" formGroupName="usuario">
+        <div class="space-y-1 sm:col-span-2">
+          <label for="cargo" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            Cargo<span class="text-red-600">*</span>
+          </label>
+          <div class="relative">
+            <p-select
+              id="cargo"
+              name="cargo"
+              [options]="cargos()"
+              formControlName="cargo"
+              optionLabel="nome"
+              optionValue="id"
+              placeholder="Selecione um cargo"
+              [invalid]="isInvalid('usuario.cargo')"
+              fluid
+            />
+            @if (getErrorMessage('usuario.cargo'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label for="username" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            Usuário<span class="text-red-600">*</span>
+          </label>
+          <input
+            pInputText
+            id="username"
+            name="username"
+            formControlName="username"
+            placeholder="usuario.do.funcionario"
+            [invalid]="isInvalid('usuario.username')"
+            [pKeyFilter]="blockspace"
+            fluid
+            autocomplete="off"
+          />
+          @if (getErrorMessage('usuario.username'); as msg) {
+            <p-message severity="error" size="small" variant="simple" customErrorMessage>
+              {{ msg }}
+            </p-message>
+          }
+        </div>
+        <div class="space-y-1">
+          <label for="password" class="flex items-center gap-1 text-xs font-medium text-foreground">
+            Senha<span class="text-red-600">*</span>
+          </label>
+          <div class="relative">
+            <p-password
+              #passwordInput
+              id="password"
+              name="password"
+              formControlName="password"
+              [class.tracking-widest]="!passwordInput.unmasked"
+              [invalid]="isInvalid('senha')"
+              [toggleMask]="true"
+              [feedback]="false"
+              [pKeyFilter]="blockspace"
+              autocomplete="off"
+              placeholder="••••••••••"
+              [invalid]="isInvalid('usuario.password')"
+              [pt]="passwordInputPt"
+              fluid
+            />
+            @if (getErrorMessage('usuario.password'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    <p-divider />
+    <div class="flex justify-end gap-2">
+      <p-button
+        (onClick)="limparCadastro()"
+        severity="secondary"
+        variant="outlined"
+        label="Cancelar"
+      />
+      <p-button type="submit" severity="primary" label="Cadastrar colaborador" />
+    </div>
+  </form>
+</card>
