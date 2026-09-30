@@ -123,11 +123,11 @@ const PresetClinicaRestauracao = definePreset(Aura, {
           option: {
             focusBackground: 'var(--color-surface-subtle)',
             selectedBackground: '{highlight.background}',
-            selectedFocusBackground: '{highlight.focus.background}',
+            selectedFocusBackground: '{highlight.focusBackground}',
             color: '{text.color}',
-            focusColor: '{text.hover.color}',
+            focusColor: '{text.hoverColor}',
             selectedColor: '{highlight.color}',
-            selectedFocusColor: '{highlight.focus.color}',
+            selectedFocusColor: '{highlight.focusColor}',
             icon: {
               color: 'var(--color-content-secondary)',
               focusColor: 'var(--color-content-primary)',
