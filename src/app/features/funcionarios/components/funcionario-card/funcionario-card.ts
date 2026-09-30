@@ -1,40 +1,76 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
-import { LucideCake, LucideMail, LucidePencil, LucidePhone, LucidePowerOff } from '@lucide/angular';
+import {
+  LucideCake,
+  LucideDynamicIcon,
+  LucideEye,
+  LucideMail,
+  LucidePencil,
+  LucidePhone,
+  LucidePower,
+  LucidePowerOff,
+} from '@lucide/angular';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
+import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
+import { FuncionariosService } from '../../services/funcionarios-service';
+import { TooltipModule } from 'primeng/tooltip';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'funcionario-card',
   host: {
     class:
-      'group flex flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 transition-colors hover:border-brand-primary/40 sm:flex-row sm:items-center',
+      'group flex flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 transition-colors sm:flex-row sm:items-center relative',
+    '[class]':
+      "!data().ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
     ButtonModule,
     TagModule,
+    TooltipModule,
     CommonModule,
+    LucideDynamicIcon,
     LucideMail,
     LucidePhone,
     LucideCake,
     LucidePencil,
-    LucidePowerOff,
+    LucideEye,
     ProfileColor,
+    SiglaNomePipe,
+    RouterLink,
   ],
   templateUrl: './funcionario-card.html',
   styleUrl: './funcionario-card.css',
 })
 export class FuncionarioCard {
+  private readonly funcionariosService = inject(FuncionariosService);
+  private readonly router = inject(Router);
   readonly data = input.required<FuncionarioCardContent>();
-  protected readonly activeConfig = computed<{
-    severity: 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | null | undefined;
-    label: string;
-  }>(() => {
+  protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {
-      severity: this.data().ativo ? 'success' : 'secondary',
-      label: this.data().ativo ? 'Ativo' : 'Inativo',
+      button: {
+        severity: this.data()!.ativo ? 'warn' : 'success',
+        icon: this.data()!.ativo ? LucidePowerOff : LucidePower,
+      },
+      severity: this.data()!.ativo ? 'success' : 'secondary',
+      label: this.data()!.ativo ? 'Ativo' : 'Inativo',
+      tooltipValue: this.data()!.ativo ? 'Inativar Funcionário' : 'Ativar Funcionário',
     };
   });
+
+  toggleFuncionario(): void {
+    const acao$ = this.data()?.ativo
+      ? this.funcionariosService.deactivateFuncionario(this.data()!.id)
+      : this.funcionariosService.activateFuncionario(this.data()!.id);
+
+    acao$.subscribe();
+  }
+
+  seeDetails(): void {
+    this.router.navigate(['/funcionarios', this.data().id]);
+  }
 }
