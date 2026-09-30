@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -46,6 +46,7 @@ type ModoForm = 'registro' | 'atualizacao';
     FormHeader,
     ModalidadeCard,
     LucideArrowLeft,
+    RouterLink
   ],
   templateUrl: './modalidade-cadastro.html',
   styleUrl: './modalidade-cadastro.css',
@@ -66,7 +67,7 @@ export class ModalidadeCadastro implements OnInit {
   protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
 
   protected readonly modalidadeForm = this.fb.group({
-    descricao: ['', [Validators.required]],
+    descricao: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
     cnpj: ['', [cnpjValidator]],
     maxVagas: [null as number | null, [Validators.required, Validators.min(1)]],
     pagamento: [true, [Validators.required]],
@@ -195,11 +196,34 @@ export class ModalidadeCadastro implements OnInit {
   }
 
   protected getErrorMessage(controlName: string): string | null {
-    if (!this.isInvalid(controlName)) return null;
+    const control = this.modalidadeForm.get(controlName);
 
-    if (controlName === 'cnpj') return 'Informe um CNPJ válido';
+    if (!this.isInvalid(controlName) || !control?.errors) return null;
 
-    return `${this.labels[controlName]} é obrigatório`;
+    if (control.errors['required']) {
+      return `${this.labels[controlName]} é obrigatório`;
+    }
+
+    if (control.errors['minlength']) {
+      const { requiredLength } = control.errors['minlength'];
+      return `${this.labels[controlName]} deve ter pelo menos ${requiredLength} caracteres`;
+    }
+
+    if (control.errors['maxlength']) {
+      const { requiredLength } = control.errors['maxlength'];
+      return `${this.labels[controlName]} deve ter no máximo ${requiredLength} caracteres`;
+    }
+
+    if (control.errors['cnpjInvalido']) {
+      return 'Informe um CNPJ válido';
+    }
+
+    if (control.errors['min']) {
+      const { min } = control.errors['min'];
+      return `${this.labels[controlName]} deve ser de no mínimo ${min}`;
+    }
+
+    return `${this.labels[controlName]} é inválido`;
   }
 
   protected voltarParaLista(): void {
