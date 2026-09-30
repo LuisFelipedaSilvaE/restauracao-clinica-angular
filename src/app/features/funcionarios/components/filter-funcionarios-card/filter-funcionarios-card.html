@@ -10,7 +10,7 @@
       [ngModel]="busca()"
       (ngModelChange)="this.buscaChange.emit($event)"
       placeholder="Buscar por nome, CPF ou e-mail..."
-      class="w-full"
+      class="w-full placeholder:text-sm"
     />
   </p-iconfield>
   <div class="flex flex-wrap justify-center items-center gap-2 flex-1">
@@ -28,7 +28,7 @@
         class="w-full pl-7.5"
       >
         <ng-template #selectedItem let-selectedOption>
-          <p>
+          <p class="text-sm">
             Cargo: <span>{{ selectedOption.name }}</span>
           </p>
         </ng-template>
@@ -48,7 +48,7 @@
         class="w-full pl-7.5"
       >
         <ng-template #selectedItem let-selectedOption>
-          <p>
+          <p class="text-sm">
             Status: <span>{{ selectedOption.name }}</span>
           </p>
         </ng-template>
@@ -68,7 +68,7 @@
         class="w-full pl-7.5"
       >
         <ng-template #selectedItem let-selectedOption>
-          <p>
+          <p class="text-sm">
             Nascimento: <span>{{ selectedOption.name }}</span>
           </p>
         </ng-template>
