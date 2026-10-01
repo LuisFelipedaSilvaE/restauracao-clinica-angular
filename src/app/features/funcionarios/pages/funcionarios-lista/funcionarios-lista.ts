@@ -17,6 +17,8 @@ import { FilterFuncionariosCard } from '../../components/filter-funcionarios-car
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { RouterLink } from '@angular/router';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -34,6 +36,7 @@ import { RouterLink } from '@angular/router';
     LucideSearchX,
     IconColor,
     RouterLink,
+    ConfirmDialog,
   ],
   templateUrl: './funcionarios-lista.html',
   styleUrl: './funcionarios-lista.css',
@@ -58,7 +61,7 @@ export class FuncionariosLista implements OnInit {
       const validStatus =
         statusFiltro === 'todos' ||
         (statusFiltro === 'ativo' ? funcionario.ativo : !funcionario.ativo);
-      const validMes = mesFiltro === null || funcionario.dataNascimento?.getMonth() === mesFiltro;
+      const validMes = mesFiltro === null || Number(1) === mesFiltro;
       const validCargo =
         cargoFiltro === null || funcionario.cargo?.nome.toLowerCase().includes(cargoFiltro);
 
@@ -113,9 +116,54 @@ export class FuncionariosLista implements OnInit {
   protected readonly cargoSelecionado = signal('todos');
   protected readonly statusSelecionado = signal('todos');
   protected readonly mesSelecionado = signal('todos');
+  protected readonly dialogConfirmVisible = signal<boolean>(false);
+  protected readonly acaoPendente = signal<ToggleFuncionarioDto | null>(null);
+  protected readonly loading = this.funcionariosService.loading;
 
   ngOnInit(): void {
-    this.funcionariosService.getAllFuncionarios();
+    this.funcionariosService.getAllFuncionarios().subscribe();
+  }
+
+  limparAcaoPendente(): void {
+    this.acaoPendente.set(null);
+  }
+
+  toggleFuncionario(dto: ToggleFuncionarioDto): void {
+    this.acaoPendente.set(dto);
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected readonly confirmTitle = computed(() => {
+    return this.acaoPendente()?.ativo ? 'Ativar funcionário' : 'Desativar funcionário';
+  });
+
+  protected readonly confirmMessage = computed(() => {
+    return this.acaoPendente()?.ativo
+      ? 'Deseja ativar este funcionário? Ele voltará a ficar disponível.'
+      : 'Deseja desativar este funcionário? Ele deixará de ficar disponível.';
+  });
+
+  protected readonly confirmLabel = computed(() => {
+    return this.acaoPendente()?.ativo ? 'Ativar' : 'Desativar';
+  });
+
+  protected readonly confirmSeverity = computed<'success' | 'danger'>(() => {
+    return this.acaoPendente()?.ativo ? 'success' : 'danger';
+  });
+
+  confirmarAlteracaoStatus(): void {
+    const dto = this.acaoPendente();
+
+    if (!dto) return;
+
+    const acao$ = dto.ativo
+      ? this.funcionariosService.activateFuncionario(dto.id)
+      : this.funcionariosService.deactivateFuncionario(dto.id);
+
+    acao$.subscribe({
+      next: () => this.dialogConfirmVisible.set(false),
+      error: () => {},
+    });
   }
 
   clearFilters(): void {

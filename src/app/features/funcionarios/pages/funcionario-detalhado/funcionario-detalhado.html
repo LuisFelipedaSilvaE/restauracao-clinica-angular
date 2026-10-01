@@ -15,28 +15,29 @@
     <span
       class="flex h-15 w-15 shrink-0 items-center justify-center rounded-full text-xl font-semibold"
       [profileColor]="'#be222d'"
-      >{{ data()?.nome | siglaNome }}
+      >{{ funcionario()?.nome | siglaNome }}
     </span>
-    <div class="flex flex-col gap-2">
-      <h3 class="font-semibold text-xl">{{ data()?.nome }}</h3>
+    <div class="flex flex-col gap-1">
+      <h3 class="font-semibold text-xl">{{ funcionario()?.nome }}</h3>
       <div class="flex gap-2">
         <p-tag [value]="activeConfig()?.label" [severity]="activeConfig()?.severity" />
-        <p-tag [value]="data()?.cargo.nome" />
+        <p-tag [value]="funcionario()?.cargo.nome" />
       </div>
     </div>
   </div>
   <div class="flex gap-2">
+    @if (funcionario()?.ativo) {
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        label="Editar"
+        [routerLink]="['/funcionarios', 'editar-funcionario', funcionario()?.id]"
+      >
+        <svg lucidePencil class="h-4 w-4"></svg>
+      </p-button>
+    }
     <p-button
-      severity="secondary"
-      variant="outlined"
-      label="Editar"
-      [class]="!data()?.ativo ? '-z-10!' : ''"
-      [routerLink]="['/funcionarios', 'editar-funcionario', data()?.id]"
-    >
-      <svg lucidePencil class="h-4 w-4"></svg>
-    </p-button>
-    <p-button
-      (onClick)="toggleFuncionario()"
+      (onClick)="confirmarAlteracao.set(true)"
       [label]="activeConfig()?.button.label"
       [severity]="activeConfig()?.button.severity"
       variant="outlined"
@@ -60,7 +61,7 @@
       </div>
       <div>
         <p class="uppercase text-content-secondary text-sm">cpf</p>
-        <p class="font-heading text-md font-medium">{{ data()?.cpf }}</p>
+        <p class="font-heading text-md font-medium">{{ funcionario()?.cpf }}</p>
       </div>
     </div>
     <div class="flex gap-2 items-center">
@@ -72,7 +73,7 @@
       </div>
       <div>
         <p class="uppercase text-content-secondary text-sm">cargo</p>
-        <p class="font-heading text-md font-medium">{{ data()?.cargo.nome }}</p>
+        <p class="font-heading text-md font-medium">{{ funcionario()?.cargo.nome }}</p>
       </div>
     </div>
     <div class="flex gap-2 items-center">
@@ -84,7 +85,7 @@
       </div>
       <div>
         <p class="uppercase text-content-secondary text-sm">e-mail</p>
-        <p class="font-heading text-md font-medium">{{ data()?.email }}</p>
+        <p class="font-heading text-md font-medium">{{ funcionario()?.email }}</p>
       </div>
     </div>
     <div class="flex gap-2 items-center">
@@ -96,7 +97,7 @@
       </div>
       <div>
         <p class="uppercase text-content-secondary text-sm">telefone</p>
-        <p class="font-heading text-md font-medium">{{ data()?.telefone }}</p>
+        <p class="font-heading text-md font-medium">{{ funcionario()?.telefone }}</p>
       </div>
     </div>
     <div class="flex gap-2 items-center">
@@ -122,7 +123,9 @@
       </div>
       <div>
         <p class="uppercase text-content-secondary text-sm">admissão</p>
-        <p class="font-heading text-md font-medium">23/23/2023</p>
+        <p class="font-heading text-md font-medium">
+          {{ funcionario()?.dataAdmissao | date: 'dd/MM/yyyy' }}
+        </p>
       </div>
     </div>
   </div>
@@ -139,7 +142,19 @@
     </div>
     <div>
       <p class="uppercase text-content-secondary text-sm">endereço completo</p>
-      <p class="font-heading text-md font-medium">{{ `${data()?.endereco} · ${data()?.cep}` }}</p>
+      <p class="font-heading text-md font-medium">
+        {{ `${funcionario()?.endereco} · ${funcionario()?.cep}` }}
+      </p>
     </div>
   </div>
 </div>
+
+<confirm-dialog
+  [(visible)]="confirmarAlteracao"
+  [title]="toggleLabel() + ' funcionário'"
+  [message]="toggleMessage()"
+  [confirmLabel]="toggleLabel()"
+  [severity]="toggleSeverity()"
+  [loading]="loading().mutation"
+  (onConfirm)="alterarStatus()"
+/>

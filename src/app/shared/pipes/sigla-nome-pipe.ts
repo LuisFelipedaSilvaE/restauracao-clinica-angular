@@ -6,6 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SiglaNomePipe implements PipeTransform {
   transform(value: string): string {
+    if (!value) {
+      return '';
+    }
+
     const nomes: string[] = value.split(' ');
 
     if (!nomes) {

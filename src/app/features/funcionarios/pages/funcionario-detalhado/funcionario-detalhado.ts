@@ -23,6 +23,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -47,40 +48,62 @@ import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
     CommonModule,
     RouterLink,
     SiglaNomePipe,
+    ConfirmDialog,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',
 })
 export class FuncionarioDetalhado implements OnInit {
+  protected funcionario = signal<Funcionario | undefined>(undefined);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly datePipe = inject(DatePipe);
-  protected data = signal<Funcionario | undefined>(undefined);
+  protected readonly loading = this.funcionariosService.loading;
+  protected readonly confirmarAlteracao = signal(false);
   protected dataNascimentoNormalizada: string = '';
   protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {
       button: {
-        severity: this.data()!.ativo ? 'warn' : 'success',
-        label: this.data()!.ativo ? 'Inativar' : 'Ativar',
-        icon: this.data()!.ativo ? LucidePowerOff : LucidePower,
+        severity: this.funcionario()?.ativo ? 'warn' : 'success',
+        label: this.funcionario()?.ativo ? 'Inativar' : 'Ativar',
+        icon: this.funcionario()?.ativo ? LucidePowerOff : LucidePower,
       },
-      severity: this.data()!.ativo ? 'success' : 'secondary',
-      label: this.data()!.ativo ? 'Ativo' : 'Inativo',
+      severity: this.funcionario()?.ativo ? 'success' : 'secondary',
+      label: this.funcionario()?.ativo ? 'Ativo' : 'Inativo',
     };
   });
+  protected readonly toggleLabel = computed(() =>
+    this.funcionario()?.ativo ? 'Inativar' : 'Ativar',
+  );
+  protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
+    this.funcionario()?.ativo ? 'danger' : 'success',
+  );
+  protected readonly toggleMessage = computed(() =>
+    this.funcionario()?.ativo
+      ? 'Deseja inativar este funcionario? Ele deixará de ficar disponível.'
+      : 'Deseja ativar este funcionario? Ele voltará a ficar disponível.',
+  );
 
   ngOnInit(): void {
     this.getFuncionario();
   }
+  protected alterarStatus(): void {
+    const funcionario = this.funcionario();
+    if (!funcionario) return;
 
-  toggleFuncionario(): void {
-    const acao$ = this.data()?.ativo
-      ? this.funcionariosService.deactivateFuncionario(this.data()!.id)
-      : this.funcionariosService.activateFuncionario(this.data()!.id);
+    const proximoStatus = !funcionario.ativo;
+    const acao$ = proximoStatus
+      ? this.funcionariosService.activateFuncionario(funcionario.id)
+      : this.funcionariosService.deactivateFuncionario(funcionario.id);
 
     acao$.subscribe({
-      next: (res) => this.data.set(res),
+      next: () => {
+        this.funcionario.update((atual) =>
+          atual ? { ...atual, ativo: proximoStatus } : undefined,
+        );
+        this.confirmarAlteracao.set(false);
+      },
     });
   }
 
@@ -94,11 +117,12 @@ export class FuncionarioDetalhado implements OnInit {
 
     this.funcionariosService.getFuncionarioById(id).subscribe({
       next: (res) => {
-        this.data.set(res);
+        this.funcionario.set(res);
+        this.dataNascimentoNormalizada = this.normalizeDataNascimento(
+          this.funcionario()?.dataNascimento!,
+        );
       },
     });
-
-    this.dataNascimentoNormalizada = this.normalizeDataNascimento(this.data()!.dataNascimento!);
   }
 
   normalizeDataNascimento(dataNascimento: Date): string {

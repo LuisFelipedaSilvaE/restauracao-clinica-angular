@@ -4,56 +4,34 @@
   <span
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
     [profileColor]="'#be222d'"
-    >{{ data().nome | siglaNome }}
+    >{{ funcionario().nome | siglaNome }}
   </span>
   <div class="min-w-0">
     <div class="flex flex-wrap items-center gap-2">
       <p class="truncate text-sm font-semibold text-foreground">
-        {{ data().nome }}
+        {{ funcionario().nome }}
       </p>
-      <p-tag [value]="data().cargo?.nome" />
+      <p-tag [value]="funcionario().cargo?.nome" />
     </div>
-    <p class="truncate text-xs text-content-secondary">{{ data().cpf }}</p>
+    <p class="truncate text-xs text-content-secondary">{{ funcionario().cpf }}</p>
   </div>
 </div>
 <div class="hidden min-w-0 flex-col gap-2 text-xs text-content-secondary xl:flex xl:w-56">
   <span class="flex items-center gap-2 truncate">
-    <svg lucideMail class="h-5 w-5"></svg> {{ data().email }}
+    <svg lucideMail class="h-5 w-5"></svg> {{ funcionario().email }}
   </span>
   <span class="flex items-center gap-2 truncate">
-    <svg lucidePhone class="h-5 w-5"></svg>{{ data().telefone }}</span
+    <svg lucidePhone class="h-5 w-5"></svg>{{ funcionario().telefone }}</span
   >
 </div>
 <div class="hidden min-w-0 flex-col gap-2 text-xs text-content-secondary md:flex md:w-32">
   <span class="flex items-center gap-2 truncate">
-    <svg lucideCake class="h-5 w-5"></svg> {{ data().dataNascimento | date: 'dd/MM/yyyy' }} </span
+    <svg lucideCake class="h-5 w-5"></svg>
+    {{ funcionario().dataNascimento | date: 'dd/MM/yyyy' }} </span
   ><span class="pl-5">45 anos</span>
 </div>
 <p-tag [value]="activeConfig().label" [severity]="activeConfig().severity" />
 <div class="flex shrink-0 items-center gap-1">
-  <p-button
-    [text]="true"
-    [class]="!data().ativo ? '-z-10!' : ''"
-    severity="secondary"
-    pTooltip="Editar Funcionário"
-    tooltipPosition="top"
-    [routerLink]="['/funcionarios', 'editar-funcionario', data()?.id]"
-  >
-    <ng-template #icon>
-      <svg lucidePencil class="h-5 w-5"></svg>
-    </ng-template>
-  </p-button>
-  <p-button
-    [text]="true"
-    (onClick)="toggleFuncionario()"
-    [severity]="activeConfig()?.button.severity"
-    [pTooltip]="activeConfig().tooltipValue"
-    tooltipPosition="top"
-  >
-    <ng-template #icon>
-      <svg [lucideIcon]="activeConfig()?.button.icon" class="h-5 w-5"></svg>
-    </ng-template>
-  </p-button>
   <p-button
     [text]="true"
     severity="info"
@@ -62,7 +40,31 @@
     tooltipPosition="top"
   >
     <ng-template #icon>
-      <svg lucideEye class="h-5 w-5"></svg>
+      <svg lucideEye class="h-4.5 w-4.5"></svg>
+    </ng-template>
+  </p-button>
+  @if (funcionario().ativo) {
+    <p-button
+      [text]="true"
+      severity="secondary"
+      pTooltip="Editar Funcionário"
+      tooltipPosition="top"
+      [routerLink]="['/funcionarios', 'editar-funcionario', funcionario()?.id]"
+    >
+      <ng-template #icon>
+        <svg lucidePencil class="h-4 w-4"></svg>
+      </ng-template>
+    </p-button>
+  }
+  <p-button
+    [text]="true"
+    (onClick)="toggleFuncionario()"
+    [severity]="activeConfig()?.button.severity"
+    [pTooltip]="activeConfig().tooltipValue"
+    tooltipPosition="top"
+  >
+    <ng-template #icon>
+      <svg [lucideIcon]="activeConfig()?.button.icon" class="h-4 w-4"></svg>
     </ng-template>
   </p-button>
 </div>

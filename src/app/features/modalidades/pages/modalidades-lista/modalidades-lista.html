@@ -60,10 +60,7 @@
     }
   } @else {
     @for (item of modalidades(); track $index) {
-      <modalidade-card
-        (statusModalidadeChange)="toggleModalidade($event)"
-        [data]="item"
-      />
+      <modalidade-card (statusModalidadeChange)="toggleModalidade($event)" [modalidade]="item" />
     } @empty {
       <div
         class="col-span-full flex flex-col items-center justify-center gap-4 px-4 py-10 text-center"
@@ -93,13 +90,12 @@
 </div>
 
 <confirm-dialog
-  [visible]="dialogConfirmVisible()"
+  [(visible)]="dialogConfirmVisible"
   [title]="confirmTitle()"
   [message]="confirmMessage()"
   [confirmLabel]="confirmLabel()"
   [severity]="confirmSeverity()"
   [loading]="loading().mutation"
-  (visibleChange)="closeConfirmDialog($event)"
   (hidden)="limparAcaoPendente()"
   (onConfirm)="confirmarAlteracaoStatus()"
 />

@@ -41,7 +41,10 @@
     <ng-template #list let-items>
       <div class="flex flex-col gap-2">
         @for (funcionario of items; track $index; let first = $first) {
-          <funcionario-card [data]="funcionario" />
+          <funcionario-card
+            [funcionario]="funcionario"
+            (statusFuncionarioChange)="toggleFuncionario($event)"
+          />
         }
       </div>
     </ng-template>
@@ -74,3 +77,13 @@
     </ng-template>
   </p-dataview>
 </div>
+<confirm-dialog
+  [(visible)]="dialogConfirmVisible"
+  [title]="confirmTitle()"
+  [message]="confirmMessage()"
+  [confirmLabel]="confirmLabel()"
+  [severity]="confirmSeverity()"
+  [loading]="loading().mutation"
+  (hidden)="limparAcaoPendente()"
+  (onConfirm)="confirmarAlteracaoStatus()"
+/>

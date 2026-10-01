@@ -12,61 +12,9 @@ import { LoadingType } from '../../../shared/types/loading-type';
 export class FuncionariosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/funcionarios`;
   private readonly http = inject(HttpClient);
-  private readonly internalFuncionarios = signal<Funcionario[]>([
-    {
-      id: 1,
-      nome: 'Dario Klein Alves',
-      cpf: '111.111.111-11',
-      cargo: {
-        id: 7,
-        nome: 'Monitor',
-        ativo: true,
-      },
-      telefone: '(18) 11111-1111',
-      email: 'exemplo1@email.com',
-      dataNascimento: new Date(2006, 2, 14),
-      dataAdmissao: new Date(2026, 10, 14),
-      endereco: 'Rua XV de Novembro · Boa Vista · Salvador - SP',
-      cep: '11378-910',
-      ativo: true,
-    },
-    {
-      id: 2,
-      nome: 'Jonathan Joestar',
-      cpf: '222.222.222-22',
-      cargo: {
-        id: 6,
-        nome: 'Psicólogo(a)',
-        ativo: true,
-      },
-      telefone: '(18) 22222-2222',
-      email: 'exemplo2@email.com',
-      dataNascimento: new Date(1976, 6, 22),
-      endereco: 'Rua XV de Novembro, 380 · Boa Vista · Salvador - SP',
-      cep: '11378-910',
-      ativo: false,
-    },
-    {
-      id: 3,
-      nome: 'Pedro Costa Moura',
-      cpf: '333.333.333-33',
-      cargo: {
-        id: 2,
-        nome: 'Coordenador',
-        ativo: true,
-      },
-      telefone: '(18) 33333-3333',
-      email: 'exemplo3@email.com',
-      dataNascimento: new Date(1995, 10, 5),
-      endereco: 'Rua XV de Novembro, 380 · Boa Vista · Salvador - SP',
-      cep: '11378-910',
-      ativo: true,
-    },
-  ]);
+  private readonly internalFuncionarios = signal<Funcionario[]>([]);
   readonly funcionarios = this.internalFuncionarios.asReadonly();
-
   private readonly listaCarregada = signal(false);
-
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
     detail: false,
@@ -77,8 +25,7 @@ export class FuncionariosService {
   createFuncionario(funcionario: FuncionarioRequest): Observable<Funcionario> {
     this.setLoading('mutation', true);
 
-    const func: Funcionario = { ...funcionario, id: this.internalFuncionarios().length + 1 };
-    return of(func).pipe(
+    return this.http.post<Funcionario>(this.baseAPIUrl, funcionario).pipe(
       tap((newfuncionario) => {
         this.internalFuncionarios.update((funcionarios) =>
           this.ordenarPorStatus([...funcionarios, newfuncionario]),
@@ -86,29 +33,16 @@ export class FuncionariosService {
       }),
       finalize(() => this.setLoading('mutation', false)),
     );
-
-    // return this.http.post<Funcionario>(this.baseAPIUrl, funcionario).pipe(
-    //   tap((newfuncionario) => {
-    //     this.internalFuncionarios.update((funcionarios) =>
-    //       this.ordenarPorStatus([...funcionarios, newfuncionario]),
-    //     );
-    //   }),
-    //   finalize(() => this.setLoading('mutation', false)),
-    // );
   }
 
   getFuncionarioById(id: number): Observable<Funcionario | undefined> {
     this.setLoading('detail', false);
-    const funcionarioOriginal: Funcionario | undefined = this.internalFuncionarios().find(
-      (f) => f.id === id,
-    );
 
-    return of(funcionarioOriginal);
-    // return this.http.get<Funcionario>(`${this.baseAPIUrl}/${id}`).pipe(
-    //   finalize(() => {
-    //     this.setLoading('detail', false);
-    //   }),
-    // );
+    return this.http.get<Funcionario>(`${this.baseAPIUrl}/${id}`).pipe(
+      finalize(() => {
+        this.setLoading('detail', false);
+      }),
+    );
   }
 
   private setLoading(type: LoadingType, value: boolean): void {
@@ -165,53 +99,23 @@ export class FuncionariosService {
     );
   }
 
-  deactivateFuncionario(id: number): Observable<Funcionario | undefined> {
+  deactivateFuncionario(id: number): Observable<void> {
     this.setLoading('mutation', true);
-    const funcionarioOriginal: Funcionario | undefined = this.internalFuncionarios().find(
-      (f) => f.id === id,
-    );
 
-    return of(undefined).pipe(
-      map(() => {
-        if (!funcionarioOriginal) return undefined;
-        return { ...funcionarioOriginal!, ativo: false };
-      }),
-      tap(() => this.atualizarStatusNaLista(id, false)),
-      finalize(() => this.setLoading('mutation', false)),
-    );
-
-    // return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
-    //   map(() => {
-    //     if (!funcionarioOriginal) return undefined;
-    //     return { ...funcionarioOriginal!, ativo: false };
-    //   }),
-    // tap(() => this.atualizarStatusNaLista(id, false)),
-    // finalize(() => this.setLoading('mutation', false)),
-    // );
+    return this.http
+      .patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { dataDemissao: new Date() })
+      .pipe(
+        tap(() => this.atualizarStatusNaLista(id, false)),
+        finalize(() => this.setLoading('mutation', false)),
+      );
   }
 
-  activateFuncionario(id: number): Observable<Funcionario | undefined> {
+  activateFuncionario(id: number): Observable<void> {
     this.setLoading('mutation', true);
-    const funcionarioOriginal: Funcionario | undefined = this.internalFuncionarios().find(
-      (f) => f.id === id,
-    );
 
-    return of(undefined).pipe(
-      map(() => {
-        if (!funcionarioOriginal) return undefined;
-        return { ...funcionarioOriginal!, ativo: true };
-      }),
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/reactivate`, null).pipe(
       tap(() => this.atualizarStatusNaLista(id, true)),
       finalize(() => this.setLoading('mutation', false)),
     );
-
-    // return this.http.put<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(
-    //   map(() => {
-    //     if(!funcionarioOriginal) return undefined
-    //     return { ...funcionarioOriginal!, ativo: true };
-    //   }),
-    //   tap(() => this.atualizarStatusNaLista(id, true)),
-    //   finalize(() => this.setLoading('mutation', false)),
-    // );
   }
 }

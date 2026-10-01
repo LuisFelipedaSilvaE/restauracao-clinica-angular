@@ -22,6 +22,9 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { Modalidade } from '../../interfaces/modalidade';
 import { ModalidadesService } from '../../services/modalidades-service';
+import { BadgeModule } from 'primeng/badge';
+import { CustomBadge } from '../../../../shared/directives/custom-badge';
+import { TagModule } from 'primeng/tag';
 
 const ACOLHIDOS_ATIVOS_MOCK = 10;
 
@@ -47,6 +50,9 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
     LucideHandCoins,
     LucideSquareDashedText,
     LucidePaintBucket,
+    BadgeModule,
+    TagModule,
+    CustomBadge,
   ],
   templateUrl: './modalidade-detalhada.html',
   styleUrl: './modalidade-detalhada.css',
@@ -72,6 +78,9 @@ export class ModalidadeDetalhada implements OnInit {
   );
   protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
     this.modalidade()?.ativo ? 'danger' : 'success',
+  );
+  protected readonly tagSeverity = computed<'secondary' | 'success'>(() =>
+    this.modalidade()?.ativo ? 'success' : 'secondary',
   );
   protected readonly toggleMessage = computed(() =>
     this.modalidade()?.ativo
@@ -128,14 +137,6 @@ export class ModalidadeDetalhada implements OnInit {
     this.router.navigate(['/modalidades']);
   }
 
-  protected abrirConfirmacao(): void {
-    this.confirmarAlteracao.set(true);
-  }
-
-  protected fecharConfirmacao(visivel: boolean): void {
-    this.confirmarAlteracao.set(visivel);
-  }
-
   protected alterarStatus(): void {
     const modalidade = this.modalidade();
     if (!modalidade) return;
@@ -148,9 +149,8 @@ export class ModalidadeDetalhada implements OnInit {
     acao$.subscribe({
       next: () => {
         this.modalidade.update((atual) => (atual ? { ...atual, ativo: proximoStatus } : null));
-        this.fecharConfirmacao(false);
+        this.confirmarAlteracao.set(false);
       },
-      error: () => {},
     });
   }
 

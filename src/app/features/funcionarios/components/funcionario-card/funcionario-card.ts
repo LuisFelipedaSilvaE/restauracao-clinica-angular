@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -19,6 +19,7 @@ import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-con
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { TooltipModule } from 'primeng/tooltip';
 import { Router, RouterLink } from '@angular/router';
+import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 
 @Component({
   selector: 'funcionario-card',
@@ -26,7 +27,7 @@ import { Router, RouterLink } from '@angular/router';
     class:
       'group flex flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 transition-colors sm:flex-row sm:items-center relative',
     '[class]':
-      "!data().ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
+      "!funcionario().ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
     ButtonModule,
@@ -49,28 +50,30 @@ import { Router, RouterLink } from '@angular/router';
 export class FuncionarioCard {
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly router = inject(Router);
-  readonly data = input.required<FuncionarioCardContent>();
+  readonly funcionario = input.required<FuncionarioCardContent>();
+  readonly statusFuncionarioChange = output<ToggleFuncionarioDto>();
   protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {
       button: {
-        severity: this.data()!.ativo ? 'warn' : 'success',
-        icon: this.data()!.ativo ? LucidePowerOff : LucidePower,
+        severity: this.funcionario()!.ativo ? 'warn' : 'success',
+        icon: this.funcionario()!.ativo ? LucidePowerOff : LucidePower,
       },
-      severity: this.data()!.ativo ? 'success' : 'secondary',
-      label: this.data()!.ativo ? 'Ativo' : 'Inativo',
-      tooltipValue: this.data()!.ativo ? 'Inativar Funcionário' : 'Ativar Funcionário',
+      severity: this.funcionario()!.ativo ? 'success' : 'secondary',
+      label: this.funcionario()!.ativo ? 'Ativo' : 'Inativo',
+      tooltipValue: this.funcionario()!.ativo ? 'Inativar Funcionário' : 'Ativar Funcionário',
     };
   });
 
   toggleFuncionario(): void {
-    const acao$ = this.data()?.ativo
-      ? this.funcionariosService.deactivateFuncionario(this.data()!.id)
-      : this.funcionariosService.activateFuncionario(this.data()!.id);
+    const dto: ToggleFuncionarioDto = {
+      id: this.funcionario().id,
+      ativo: !this.funcionario().ativo,
+    };
 
-    acao$.subscribe();
+    this.statusFuncionarioChange.emit(dto);
   }
 
   seeDetails(): void {
-    this.router.navigate(['/funcionarios', this.data().id]);
+    this.router.navigate(['/funcionarios', this.funcionario().id]);
   }
 }

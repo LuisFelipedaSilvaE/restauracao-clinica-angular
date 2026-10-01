@@ -9,7 +9,7 @@ import {
   LucidePowerOff,
   LucideLayers,
   LucideIcon,
-  LucideEye
+  LucideEye,
 } from '@lucide/angular';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
@@ -35,7 +35,7 @@ interface ToggleModalidadeButton {
     class:
       'flex relative flex-col items-center gap-2 bg-surface-card border border-border-default rounded-lg p-4 min-w-sm overflow-hidden',
     '[class]':
-      "!data().ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
+      "!modalidade()?.ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
   },
   imports: [
     LucideDynamicIcon,
@@ -56,18 +56,18 @@ interface ToggleModalidadeButton {
   styleUrl: './modalidade-card.css',
 })
 export class ModalidadeCard {
-  readonly data = input.required<ModalidadeCardContent>();
+  readonly modalidade = input.required<ModalidadeCardContent>();
   readonly showActions = input(true);
   readonly statusModalidadeChange = output<ToggleModalidadeDto>();
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
-      value: this.data().acolhidosAtivos,
+      value: this.modalidade().acolhidosAtivos,
       label: 'Acolhidos ativos',
       icon: LucideUsersRound,
       color: '#4a5565',
     };
     const card2 = {
-      value: this.data().maxVagas - this.data().acolhidosAtivos,
+      value: this.modalidade().maxVagas - this.modalidade().acolhidosAtivos,
       label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
       color: '#00a63e',
@@ -75,14 +75,14 @@ export class ModalidadeCard {
     return [card1, card2];
   });
   readonly computedOcupacao = computed<number>(() => {
-    if (this.data().acolhidosAtivos <= 0) return 0;
-    if (this.data().acolhidosAtivos == this.data().maxVagas) return 100;
+    if (this.modalidade().acolhidosAtivos <= 0) return 0;
+    if (this.modalidade().acolhidosAtivos == this.modalidade().maxVagas) return 100;
 
-    const porcentagem = (this.data().acolhidosAtivos / this.data().maxVagas) * 100;
+    const porcentagem = (this.modalidade().acolhidosAtivos / this.modalidade().maxVagas) * 100;
     return Math.ceil(porcentagem);
   });
   readonly computedModalidadeAtivaBtn = computed<ToggleModalidadeButton>(() => {
-    const ativo = this.data().ativo;
+    const ativo = this.modalidade().ativo;
 
     return {
       tooltipValue: ativo ? 'Desativar modalidade' : 'Ativar modalidade',
@@ -93,8 +93,8 @@ export class ModalidadeCard {
 
   toggleModalidade(): void {
     const dto: ToggleModalidadeDto = {
-      id: this.data().id,
-      ativo: !this.data().ativo,
+      id: this.modalidade().id,
+      ativo: !this.modalidade().ativo,
     };
 
     this.statusModalidadeChange.emit(dto);

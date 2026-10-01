@@ -1,47 +1,47 @@
 <div class="flex items-center gap-4 w-full">
-  <div class="w-fit p-2.5 rounded-md" [iconColor]="data().cor">
+  <div class="w-fit p-2.5 rounded-md" [iconColor]="modalidade().cor">
     <svg lucideLayers class="h-5 w-5"></svg>
   </div>
   <div class="flex items-center gap-4 grow min-w-0">
     @if (showActions()) {
       <h6 class="truncate text-lg font-medium tracking-tight">
-        {{ data().descricao }}
+        {{ modalidade().descricao }}
       </h6>
     } @else {
-      <h6 class="truncate text-lg font-medium tracking-tight">{{ data().descricao }}</h6>
+      <h6 class="truncate text-lg font-medium tracking-tight">{{ modalidade().descricao }}</h6>
     }
     <p-badge
-      class="shrink-0 border rounded-full! text-[10px]! px-2! py-0.5! h-fit! text-nowrap"
-      [value]="`${data().maxVagas} Vagas`"
-      [customBadge]="data().cor"
+      class="shrink-0"
+      [value]="`${modalidade().maxVagas} Vagas`"
+      [customBadge]="modalidade().cor"
     />
   </div>
   @if (showActions()) {
-    <div class="flex justify-end items-start h-full">
+    <div class="flex justify-end items-start h-full gap-1">
       <p-button
-        [class]="!data().ativo ? '-z-10!' : ''"
-        [routerLink]="data().id"
+        [routerLink]="modalidade().id"
         pTooltip="Visualizar modalidade"
         tooltipPosition="top"
-        severity="secondary"
+        severity="info"
         [text]="true"
       >
         <ng-template #icon>
           <svg lucideEye class="h-4.5 w-4.5"></svg>
         </ng-template>
       </p-button>
-      <p-button
-        [class]="!data().ativo ? '-z-10!' : ''"
-        [routerLink]="data().id + '/editar'"
-        pTooltip="Editar modalidade"
-        tooltipPosition="top"
-        severity="secondary"
-        [text]="true"
-      >
-        <ng-template #icon>
-          <svg lucidePencil class="h-4 w-4"></svg>
-        </ng-template>
-      </p-button>
+      @if (modalidade().ativo) {
+        <p-button
+          [routerLink]="modalidade().id + '/editar'"
+          pTooltip="Editar modalidade"
+          tooltipPosition="top"
+          severity="secondary"
+          [text]="true"
+        >
+          <ng-template #icon>
+            <svg lucidePencil class="h-4 w-4"></svg>
+          </ng-template>
+        </p-button>
+      }
       <p-button
         (onClick)="toggleModalidade()"
         [severity]="computedModalidadeAtivaBtn().severity"
@@ -56,7 +56,7 @@
     </div>
   }
 </div>
-<div class="flex grow items-end gap-4 w-full">
+<div class="flex items-start gap-4 w-full">
   @for (item of computedInfoCards(); track $index) {
     <info-card class="bg-surface-subtle! whitespace-nowrap p-3!" [data]="item" />
   }
@@ -68,11 +68,13 @@
       {{ `${showActions() ? computedOcupacao() : 50}%` }}
     </p>
   </div>
-  <p-progressbar
-    class="h-2! mb-2"
-    [class]="!data().ativo ? '-z-10!' : ''"
-    showValue="false"
-    [value]="showActions() ? computedOcupacao() : 50"
-    [customProgressbar]="data().cor"
-  />
+
+  @if (modalidade().ativo) {
+    <p-progressbar
+      class="h-2! mb-2"
+      showValue="false"
+      [value]="showActions() ? computedOcupacao() : 50"
+      [customProgressbar]="modalidade().cor"
+    />
+  }
 </div>

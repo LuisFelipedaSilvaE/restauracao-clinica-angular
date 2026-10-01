@@ -2,18 +2,21 @@
   routerLink="/modalidades"
   class="group flex w-fit items-center gap-2 text-sm font-medium text-content-secondary transition-colors hover:text-content-primary cursor-pointer"
 >
-  <svg lucideArrowLeft class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+  <svg lucideArrowLeft class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"></svg>
   Voltar para modalidades
 </button>
 
 @if (carregando()) {
   <card class="flex flex-col gap-6 p-6!">
     <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <p-skeleton class="h-14! w-14! rounded-xl!" />
+      <div class="flex items-center gap-2">
+        <p-skeleton class="h-15! w-15! rounded-xl!" />
         <div class="flex flex-col gap-2">
-          <p-skeleton class="h-6! w-36! rounded-md!" />
-          <p-skeleton class="h-5! w-24! rounded-full!" />
+          <div class="flex gap-2">
+            <p-skeleton class="h-6! w-36! rounded-md!" />
+            <p-skeleton class="h-4! w-12! rounded-full!" />
+          </div>
+          <p-skeleton class="h-5! w-16! rounded-full!" />
         </div>
       </div>
       <p-skeleton class="h-10! w-28! rounded-md!" />
@@ -24,7 +27,7 @@
     <p-skeleton class="h-5! w-48! rounded-md!" />
     <div class="grid gap-5 sm:grid-cols-2">
       @for (_ of [1, 2, 3, 4, 5]; track $index) {
-        <div class="flex gap-3">
+        <div class="flex gap-2">
           <p-skeleton class="h-8! w-8! shrink-0! rounded-md!" />
           <div class="flex flex-1 flex-col gap-2">
             <p-skeleton class="h-3! w-20! rounded-md!" />
@@ -37,61 +40,49 @@
 } @else if (modalidade(); as modalidade) {
   <card class="flex flex-col gap-5 p-5! md:p-6!">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center justify-center gap-2">
         <span
-          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+          class="flex h-15 w-15 shrink-0 items-center justify-center rounded-xl"
           [iconColor]="modalidade.cor"
         >
-          <svg lucideLayers class="h-6 w-6" />
+          <svg lucideLayers class="h-6 w-6"></svg>
         </span>
-        <div class="min-w-0 space-y-1.5">
-          <h1 class="truncate text-xl font-semibold">{{ modalidade.descricao }}</h1>
-          <div class="flex flex-wrap items-center gap-2">
-            <span
-              class="rounded-full border px-2.5 py-0.5 text-xs font-semibold"
-              [style.backgroundColor]="
-                'color-mix(in oklch, ' + modalidade.cor + ' 8%, transparent)'
-              "
-              [style.borderColor]="'color-mix(in oklch, ' + modalidade.cor + ' 20%, transparent)'"
-              [style.color]="modalidade.cor"
-            >
-              {{ modalidade.maxVagas }} vagas
-            </span>
-            <span
-              class="flex items-center gap-1.5 rounded-full border border-border-default px-2.5 py-1 text-xs font-medium text-content-secondary"
-            >
-              <span
-                class="h-1.5 w-1.5 rounded-full"
-                [style.backgroundColor]="modalidade.ativo ? modalidade.cor : '#64748b'"
-              ></span>
-              {{ statusLabel() }}
-            </span>
+        <div class="flex flex-col gap-1 min-w-0">
+          <div class="flex gap-2">
+            <h1 class="truncate text-xl font-semibold">{{ modalidade.descricao }}</h1>
+            <p-badge [value]="`${modalidade.maxVagas} vagas`" [customBadge]="modalidade.cor" />
+          </div>
+          <div class="flex flex-wrap items-end gap-2">
+            <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
           </div>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <p-button
-          label="Editar"
-          severity="secondary"
-          [routerLink]="['/modalidades', modalidade.id, 'editar']"
-        >
-          <ng-template #icon>
-            <svg lucidePencil class="h-4 w-4" />
-          </ng-template>
-        </p-button>
+        @if (modalidade.ativo) {
+          <p-button
+            label="Editar"
+            severity="secondary"
+            variant="outlined"
+            [routerLink]="['/modalidades', modalidade.id, 'editar']"
+          >
+            <ng-template #icon>
+              <svg lucidePencil class="h-4 w-4"></svg>
+            </ng-template>
+          </p-button>
+        }
         <p-button
           [label]="toggleLabel()"
-          [severity]="modalidade.ativo ? 'danger' : 'success'"
+          [severity]="modalidade.ativo ? 'warn' : 'success'"
           [outlined]="true"
           [disabled]="loading().mutation"
-          (onClick)="abrirConfirmacao()"
+          (onClick)="this.confirmarAlteracao.set(true)"
         >
           <ng-template #icon>
             @if (modalidade.ativo) {
-              <svg lucidePowerOff class="h-4 w-4" />
+              <svg lucidePowerOff class="h-4 w-4"></svg>
             } @else {
-              <svg lucidePower class="h-4 w-4" />
+              <svg lucidePower class="h-4 w-4"></svg>
             }
           </ng-template>
         </p-button>
@@ -106,7 +97,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideSquareDashedText class="h-4 w-4" />
+          <svg lucideSquareDashedText class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -120,7 +111,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideLayers class="h-4 w-4" />
+          <svg lucideLayers class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">CNPJ</dt>
@@ -132,7 +123,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideDoorOpen class="h-4 w-4" />
+          <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -146,7 +137,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideCheck class="h-4 w-4" />
+          <svg lucideCheck class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -160,7 +151,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideDoorOpen class="h-4 w-4" />
+          <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -174,7 +165,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucideHandCoins class="h-4 w-4" />
+          <svg lucideHandCoins class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -188,7 +179,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          <svg lucidePaintBucket class="h-4 w-4" />
+          <svg lucidePaintBucket class="h-4 w-4"></svg>
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
@@ -206,9 +197,9 @@
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
           @if (modalidade.ativo) {
-            <svg lucidePower class="h-4 w-4" />
+            <svg lucidePower class="h-4 w-4"></svg>
           } @else {
-            <svg lucidePowerOff class="h-4 w-4" />
+            <svg lucidePowerOff class="h-4 w-4"></svg>
           }
         </span>
         <div class="min-w-0 space-y-0.5">
@@ -221,12 +212,11 @@
 }
 
 <confirm-dialog
-  [visible]="confirmarAlteracao()"
+  [(visible)]="confirmarAlteracao"
   [title]="toggleLabel() + ' modalidade'"
   [message]="toggleMessage()"
   [confirmLabel]="toggleLabel()"
   [severity]="toggleSeverity()"
   [loading]="loading().mutation"
-  (visibleChange)="fecharConfirmacao($event)"
   (onConfirm)="alterarStatus()"
 />

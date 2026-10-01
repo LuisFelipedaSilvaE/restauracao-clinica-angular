@@ -85,10 +85,6 @@ export class ModalidadesLista implements OnInit {
   protected readonly loading = this.modalidadesService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
 
-  closeConfirmDialog(state: boolean): void {
-    this.dialogConfirmVisible.set(state);
-  }
-
   limparAcaoPendente(): void {
     this.acaoPendente.set(null);
   }
@@ -121,7 +117,7 @@ export class ModalidadesLista implements OnInit {
       : this.modalidadesService.deactivateModalidade(dto.id);
 
     acao$.subscribe({
-      next: () => this.closeConfirmDialog(false),
+      next: () => this.dialogConfirmVisible.set(false),
       error: () => {},
     });
   }
