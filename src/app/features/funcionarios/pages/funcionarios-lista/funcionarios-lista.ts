@@ -45,7 +45,7 @@ export class FuncionariosLista implements OnInit {
   protected readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
-    const busca = (this.busca() || '').toLowerCase().replace(/\s/g, '');
+    const busca = (this.busca() || '').toLowerCase().replace(/[\s\D]/g, '');
     const statusFiltro = this.statusSelecionado();
     const mesFiltro = this.mesSelecionado() === 'todos' ? null : Number(this.mesSelecionado());
     const cargoFiltro =
@@ -53,15 +53,16 @@ export class FuncionariosLista implements OnInit {
 
     const funcionariosFiltrados: Funcionario[] = this.funcionarios().filter((funcionario) => {
       const nome = funcionario.nome.toLowerCase().replace(/\s/g, '');
-      const cpf = funcionario.cpf?.replace(/\D/g, '') || '';
-      const email = funcionario.email?.toLowerCase() || '';
+      const cpf = funcionario.cpf.replace(/\D/g, '') || '';
+      const email = funcionario.email.toLowerCase() || '';
+      const mesAniversario = new Date(funcionario.dataNascimento) || null;
 
       const validBusca =
         !busca || nome.includes(busca) || cpf.includes(busca) || email.includes(busca);
       const validStatus =
         statusFiltro === 'todos' ||
         (statusFiltro === 'ativo' ? funcionario.ativo : !funcionario.ativo);
-      const validMes = mesFiltro === null || Number(1) === mesFiltro;
+      const validMes = mesFiltro === null || mesAniversario.getMonth() === mesFiltro;
       const validCargo =
         cargoFiltro === null || funcionario.cargo?.nome.toLowerCase().includes(cargoFiltro);
 
