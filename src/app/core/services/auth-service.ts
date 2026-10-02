@@ -82,4 +82,28 @@ export class AuthService {
       return false;
     }
   }
+
+  getUsername(): string | null {
+    const token = this.getToken();
+
+    if (!token || !this.isTokenValid()) return null;
+
+    try {
+      return jwtDecode<TokenPayload>(token).sub;
+    } catch {
+      return null;
+    }
+  }
+
+  getUserRoleLabel(): string {
+    const role = this.getUserRole();
+
+    const labels: Record<string, string> = {
+      ADMIN: 'Administrador',
+      USER: 'Usuário',
+      NO_ACCESS: 'Sem acesso',
+    };
+
+    return role ? (labels[role] ?? role) : 'Usuário';
+  }
 }

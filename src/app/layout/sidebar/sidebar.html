@@ -27,11 +27,13 @@
         <span
           class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
           [profileColor]="'#be222d'"
-          >RA
+          >{{ username?.charAt(0).toUpperCase() + username?.charAt(1).toUpperCase() }}
         </span>
         <div class="leading-tight">
-          <p class="text-sm font-semibold text-foreground">Dra. Rafaela</p>
-          <p class="text-xs text-content-secondary">Administrador</p>
+          <p class="text-sm font-semibold text-foreground">
+            {{ username?.charAt(0).toUpperCase() + username?.slice(1) }}
+          </p>
+          <p class="text-xs text-content-secondary">{{ userRole }}</p>
         </div>
       </div>
       <p-button [text]="true" severity="secondary" fluid (click)="onLogoutClick()">

@@ -32,6 +32,8 @@ import { NAVIGATION_ROUTES } from '../navigation-routes';
 })
 export class MobileNav {
   private readonly authService = inject(AuthService);
+  protected readonly username = this.authService.getUsername();
+  protected readonly userRole = this.authService.getUserRoleLabel();
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly renderer = inject(Renderer2);

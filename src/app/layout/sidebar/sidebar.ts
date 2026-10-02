@@ -15,6 +15,8 @@ import { NAVIGATION_ROUTES } from '../navigation-routes';
 })
 export class Sidebar {
   private readonly authService = inject(AuthService);
+  protected readonly username = this.authService.getUsername();
+  protected readonly userRole = this.authService.getUserRoleLabel();
   protected readonly activeRoute = inject(ActivatedRoute);
   protected readonly routes = signal(NAVIGATION_ROUTES);
   protected readonly navButtonPt = {
