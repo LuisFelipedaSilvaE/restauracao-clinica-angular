@@ -16,8 +16,7 @@ export class AuthService {
   private readonly baseAPIUrl = `${environment.apiUrl}/auth/login`;
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly internalIsAuthenticated = signal<boolean>(this.hasToken());
-
+  private readonly internalIsAuthenticated = signal<boolean>(this.isTokenValid());
   isAuthenticated = this.internalIsAuthenticated.asReadonly();
 
   login(usuario: Usuario) {
@@ -33,6 +32,12 @@ export class AuthService {
 
   setToken(token: string) {
     localStorage.setItem(CHAVE_TOKEN, token);
+
+    if (!this.isTokenValid()) {
+      this.removeToken();
+      return;
+    }
+
     this.internalIsAuthenticated.set(true);
   }
 
@@ -47,11 +52,11 @@ export class AuthService {
 
   getUserRole(): string | null {
     const token = this.getToken();
-    if (!token) return null;
+    if (!token || !this.isTokenValid()) return null;
 
     try {
-      const decoded = jwtDecode<TokenPayload>(token);
-      return decoded.role;
+      const payload = jwtDecode<TokenPayload>(token);
+      return payload.role;
     } catch {
       return null;
     }
@@ -61,7 +66,20 @@ export class AuthService {
     return this.getUserRole() === role;
   }
 
-  private hasToken(): boolean {
-    return !!localStorage.getItem(CHAVE_TOKEN);
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payload = jwtDecode<TokenPayload>(token);
+
+      if (typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now()) {
+        return false;
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
