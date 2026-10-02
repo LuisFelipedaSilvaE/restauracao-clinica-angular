@@ -75,10 +75,12 @@
             inputId="maxVagas"
             name="maxVagas"
             [min]="0"
+            [maxFractionDigits]="0"
             styleClass="w-full"
             placeholder="Ex.: 40"
             [invalid]="isInvalid('maxVagas')"
             autocomplete="off"
+            locale="pt-BR"
           />
           <p class="text-xs text-content-secondary">Capacidade total oferecida.</p>
           @if (getErrorMessage('maxVagas'); as msg) {

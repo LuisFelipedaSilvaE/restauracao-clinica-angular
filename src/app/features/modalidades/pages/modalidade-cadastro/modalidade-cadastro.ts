@@ -24,6 +24,7 @@ import { ModalidadeRequest } from '../../interfaces/modalidade-request';
 import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
+import { integerValidator } from '../../../../shared/validators/integer-validator';
 
 type ModoForm = 'registro' | 'atualizacao';
 
@@ -46,7 +47,7 @@ type ModoForm = 'registro' | 'atualizacao';
     FormHeader,
     ModalidadeCard,
     LucideArrowLeft,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './modalidade-cadastro.html',
   styleUrl: './modalidade-cadastro.css',
@@ -69,10 +70,15 @@ export class ModalidadeCadastro implements OnInit {
   protected readonly modalidadeForm = this.fb.group({
     descricao: [
       '',
-      [Validators.required, Validators.pattern(/.*\S.*/), Validators.minLength(3), Validators.maxLength(200)],
+      [
+        Validators.required,
+        Validators.pattern(/.*\S.*/),
+        Validators.minLength(3),
+        Validators.maxLength(200),
+      ],
     ],
     cnpj: ['', [cnpjValidator]],
-    maxVagas: [null as number | null, [Validators.required, Validators.min(0)]],
+    maxVagas: [null as number | null, [Validators.required, Validators.min(0), integerValidator]],
     pagamento: [true, [Validators.required]],
     cor: ['#3b82f6', [Validators.required]],
   });
@@ -115,16 +121,20 @@ export class ModalidadeCadastro implements OnInit {
   protected readonly modalidadePreview = toSignal<ModalidadeCardContent>(
     this.modalidadeForm.valueChanges.pipe(
       startWith(this.modalidadeForm.value),
-      map((formValue) => ({
-        id: 0,
-        descricao: formValue.descricao ?? '',
-        cnpj: formValue.cnpj?.trim() || null,
-        maxVagas: Number(formValue.maxVagas ?? 1),
-        ativo: true,
-        pagamento: formValue.pagamento ?? true,
-        cor: formValue.cor ?? '',
-        acolhidosAtivos: 0,
-      })),
+      map((formValue) => {
+        const maxVagas = Number(formValue.maxVagas ?? 0);
+
+        return {
+          id: 0,
+          descricao: formValue.descricao ?? '',
+          cnpj: formValue.cnpj?.trim() || null,
+          maxVagas,
+          ativo: true,
+          pagamento: formValue.pagamento ?? true,
+          cor: formValue.cor ?? '',
+          acolhidosAtivos: this.modo() === 'registro' ? Math.floor(maxVagas / 2) : 0,
+        };
+      }),
     ),
   );
 
@@ -134,7 +144,7 @@ export class ModalidadeCadastro implements OnInit {
 
     const idNumerico = Number(id);
 
-    if (Number.isNaN(idNumerico)) {
+    if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
       this.voltarParaLista();
       return;
     }
@@ -228,6 +238,10 @@ export class ModalidadeCadastro implements OnInit {
     if (control.errors['min']) {
       const { min } = control.errors['min'];
       return `${this.labels[controlName]} deve ser de no mínimo ${min}`;
+    }
+
+    if (control.errors['inteiro']) {
+      return `${this.labels[controlName]} deve ser um número inteiro`;
     }
 
     return `${this.labels[controlName]} é inválido`;
