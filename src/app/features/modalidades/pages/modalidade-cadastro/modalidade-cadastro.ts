@@ -67,9 +67,12 @@ export class ModalidadeCadastro implements OnInit {
   protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
 
   protected readonly modalidadeForm = this.fb.group({
-    descricao: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
+    descricao: [
+      '',
+      [Validators.required, Validators.pattern(/.*\S.*/), Validators.minLength(3), Validators.maxLength(200)],
+    ],
     cnpj: ['', [cnpjValidator]],
-    maxVagas: [null as number | null, [Validators.required, Validators.min(1)]],
+    maxVagas: [null as number | null, [Validators.required, Validators.min(0)]],
     pagamento: [true, [Validators.required]],
     cor: ['#3b82f6', [Validators.required]],
   });
@@ -163,7 +166,7 @@ export class ModalidadeCadastro implements OnInit {
     this.modalidadeForm.patchValue({
       descricao: modalidade.descricao,
       cnpj: this.formatarCnpj(modalidade.cnpj),
-      maxVagas: modalidade.maxVagas > 0 ? modalidade.maxVagas : null,
+      maxVagas: modalidade.maxVagas,
       pagamento: modalidade.pagamento,
       cor: modalidade.cor || '#3b82f6',
     });
@@ -202,6 +205,10 @@ export class ModalidadeCadastro implements OnInit {
 
     if (control.errors['required']) {
       return `${this.labels[controlName]} é obrigatório`;
+    }
+
+    if (control.errors['pattern']) {
+      return `${this.labels[controlName]} não pode conter apenas espaços`;
     }
 
     if (control.errors['minlength']) {
