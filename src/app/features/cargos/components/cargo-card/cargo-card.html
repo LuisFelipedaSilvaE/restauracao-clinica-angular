@@ -1,0 +1,39 @@
+<card
+  class="relative p-3! flex gap-2 justify-between items-center bg-surface-subtle/20"
+  [class]="
+    !cargo().ativo
+      ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0`
+      : ''
+  "
+  ,
+>
+  <div>
+    <p class="text-sm font-semibold">
+      {{ cargo().nome }}
+    </p>
+    <div class="flex gap-1">
+      <p-tag [value]="tagConfig().label" class="text-xs!" [severity]="tagConfig().severity" />
+      <p-tag [value]="totalColaboradores()" class="text-xs!" severity="info" />
+    </div>
+  </div>
+  <div class="flex gap-1">
+    @if (cargo().ativo) {
+      <p-button severity="secondary" [text]="true" pTooltip="Editar cargo" tooltipPosition="top">
+        <ng-template #icon>
+          <svg lucidePencil class="h-4 w-4"></svg>
+        </ng-template>
+      </p-button>
+    }
+    <p-button
+      [severity]="buttonConfig().severity"
+      [text]="true"
+      (onClick)="toggleCargo()"
+      [pTooltip]="buttonConfig().tooltipValue"
+      tooltipPosition="top"
+    >
+      <ng-template #icon>
+        <svg [lucideIcon]="buttonConfig().icon" class="h-4 w-4"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+</card>

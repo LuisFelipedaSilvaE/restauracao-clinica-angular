@@ -19,6 +19,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
 import { RouterLink } from '@angular/router';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
+import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -37,6 +38,7 @@ import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
     IconColor,
     RouterLink,
     ConfirmDialog,
+    CargosLista,
   ],
   templateUrl: './funcionarios-lista.html',
   styleUrl: './funcionarios-lista.css',

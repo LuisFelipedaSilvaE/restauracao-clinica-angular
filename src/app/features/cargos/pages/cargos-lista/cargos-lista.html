@@ -1,0 +1,36 @@
+<card class="flex flex-col gap-4">
+  <div class="flex gap-2 justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-fit p-2.5 rounded-md flex justify-center items-center" [iconColor]="'#be222d'">
+        <svg lucideBriefcase class="h-5 w-5"></svg>
+      </div>
+      <div>
+        <h6 class="text-lg font-semibold">Cargos</h6>
+        <p class="text-content-secondary text-xs">
+          Gerencie os cargos disponíveis para vincular aos colaboradores.
+        </p>
+      </div>
+    </div>
+    <p-button label="Novo cargo" severity="secondary" variant="outlined">
+      <ng-template #icon>
+        <svg lucidePlus class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2">
+    @for (cargo of cargos(); track cargo.id) {
+      <cargo-card [cargo]="cargo" (statusCargoChange)="toggleCargo($event)" />
+    }
+  </div>
+</card>
+
+<confirm-dialog
+  [(visible)]="dialogConfirmVisible"
+  [title]="confirmTitle()"
+  [message]="confirmMessage()"
+  [confirmLabel]="confirmLabel()"
+  [severity]="confirmSeverity()"
+  [loading]="loading().mutation"
+  (hidden)="this.acaoPendente.set(null)"
+  (onConfirm)="confirmarAlteracaoStatus()"
+/>

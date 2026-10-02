@@ -96,6 +96,6 @@
   [confirmLabel]="confirmLabel()"
   [severity]="confirmSeverity()"
   [loading]="loading().mutation"
-  (hidden)="limparAcaoPendente()"
+  (hidden)="this.acaoPendente.set(null)"
   (onConfirm)="confirmarAlteracaoStatus()"
 />

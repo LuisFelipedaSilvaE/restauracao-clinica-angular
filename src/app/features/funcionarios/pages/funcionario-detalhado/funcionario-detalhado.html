@@ -151,9 +151,9 @@
 
 <confirm-dialog
   [(visible)]="confirmarAlteracao"
-  [title]="toggleLabel() + ' funcionário'"
+  [title]="activeConfig().button.label + ' funcionário'"
   [message]="toggleMessage()"
-  [confirmLabel]="toggleLabel()"
+  [confirmLabel]="activeConfig().button.label"
   [severity]="toggleSeverity()"
   [loading]="loading().mutation"
   (onConfirm)="alterarStatus()"

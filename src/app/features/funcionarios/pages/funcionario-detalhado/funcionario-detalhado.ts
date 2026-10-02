@@ -13,7 +13,6 @@ import {
   LucideCalendarCheck,
   LucideDynamicIcon,
   LucidePower,
-  LucideIcon,
 } from '@lucide/angular';
 import { Funcionario } from '../../interfaces/funcionario';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
@@ -73,9 +72,7 @@ export class FuncionarioDetalhado implements OnInit {
       label: this.funcionario()?.ativo ? 'Ativo' : 'Inativo',
     };
   });
-  protected readonly toggleLabel = computed(() =>
-    this.funcionario()?.ativo ? 'Inativar' : 'Ativar',
-  );
+
   protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
     this.funcionario()?.ativo ? 'danger' : 'success',
   );

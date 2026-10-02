@@ -27,7 +27,7 @@ import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
     class:
       'group flex flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 transition-colors sm:flex-row sm:items-center relative',
     '[class]':
-      "!funcionario().ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
+      "!funcionario().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
     ButtonModule,
@@ -48,7 +48,6 @@ import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
   styleUrl: './funcionario-card.css',
 })
 export class FuncionarioCard {
-  private readonly funcionariosService = inject(FuncionariosService);
   private readonly router = inject(Router);
   readonly funcionario = input.required<FuncionarioCardContent>();
   readonly statusFuncionarioChange = output<ToggleFuncionarioDto>();
@@ -60,7 +59,7 @@ export class FuncionarioCard {
       },
       severity: this.funcionario()!.ativo ? 'success' : 'secondary',
       label: this.funcionario()!.ativo ? 'Ativo' : 'Inativo',
-      tooltipValue: this.funcionario()!.ativo ? 'Inativar Funcionário' : 'Ativar Funcionário',
+      tooltipValue: this.funcionario()!.ativo ? 'Inativar funcionário' : 'Ativar funcionário',
     };
   });
 

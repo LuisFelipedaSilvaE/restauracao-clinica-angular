@@ -85,10 +85,6 @@ export class ModalidadesLista implements OnInit {
   protected readonly loading = this.modalidadesService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
 
-  limparAcaoPendente(): void {
-    this.acaoPendente.set(null);
-  }
-
   protected readonly confirmTitle = computed(() => {
     return this.acaoPendente()?.ativo ? 'Ativar modalidade' : 'Desativar modalidade';
   });
@@ -118,7 +114,6 @@ export class ModalidadesLista implements OnInit {
 
     acao$.subscribe({
       next: () => this.dialogConfirmVisible.set(false),
-      error: () => {},
     });
   }
 
@@ -128,8 +123,6 @@ export class ModalidadesLista implements OnInit {
   }
 
   ngOnInit(): void {
-    this.modalidadesService.getAllModalidades().subscribe({
-      error: () => {},
-    });
+    this.modalidadesService.getAllModalidades().subscribe();
   }
 }

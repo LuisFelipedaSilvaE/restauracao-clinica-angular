@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Funcionario } from '../interfaces/funcionario';
-import { finalize, map, Observable, of, tap } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
 import { LoadingType } from '../../../shared/types/loading-type';
 
@@ -35,6 +35,33 @@ export class FuncionariosService {
     );
   }
 
+  updatefuncionario(id: number, funcionario: FuncionarioRequest): Observable<Funcionario> {
+    this.setLoading('mutation', true);
+
+    return this.http.put<Funcionario>(`${this.baseAPIUrl}/${id}`, funcionario).pipe(
+      tap((funcionarioAtualizado) => this.substituirFuncionarioNaLista(funcionarioAtualizado)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  getAllFuncionarios(forceRefresh = false): Observable<Funcionario[]> {
+    if (this.listaCarregada() && !forceRefresh) {
+      return of(this.internalFuncionarios());
+    }
+
+    this.setLoading('list', true);
+
+    return this.http.get<Funcionario[]>(this.baseAPIUrl).pipe(
+      tap((funcionarios) => {
+        this.internalFuncionarios.set(this.ordenarPorStatus(funcionarios));
+        this.listaCarregada.set(true);
+      }),
+      finalize(() => {
+        this.setLoading('list', false);
+      }),
+    );
+  }
+
   getFuncionarioById(id: number): Observable<Funcionario | undefined> {
     this.setLoading('detail', false);
 
@@ -43,6 +70,26 @@ export class FuncionariosService {
         this.setLoading('detail', false);
       }),
     );
+  }
+
+  activateFuncionario(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/reactivate`, null).pipe(
+      tap(() => this.atualizarStatusNaLista(id, true)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  deactivateFuncionario(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http
+      .patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { dataDemissao: new Date() })
+      .pipe(
+        tap(() => this.atualizarStatusNaLista(id, false)),
+        finalize(() => this.setLoading('mutation', false)),
+      );
   }
 
   private setLoading(type: LoadingType, value: boolean): void {
@@ -70,52 +117,5 @@ export class FuncionariosService {
 
   private ordenarPorStatus(funcionarios: Funcionario[]): Funcionario[] {
     return [...funcionarios].sort((a, b) => Number(b.ativo) - Number(a.ativo));
-  }
-
-  getAllFuncionarios(forceRefresh = false): Observable<Funcionario[]> {
-    if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalFuncionarios());
-    }
-
-    this.setLoading('list', true);
-
-    return this.http.get<Funcionario[]>(this.baseAPIUrl).pipe(
-      tap((funcionarios) => {
-        this.internalFuncionarios.set(this.ordenarPorStatus(funcionarios));
-        this.listaCarregada.set(true);
-      }),
-      finalize(() => {
-        this.setLoading('list', false);
-      }),
-    );
-  }
-
-  updatefuncionario(id: number, funcionario: FuncionarioRequest): Observable<Funcionario> {
-    this.setLoading('mutation', true);
-
-    return this.http.put<Funcionario>(`${this.baseAPIUrl}/${id}`, funcionario).pipe(
-      tap((funcionarioAtualizado) => this.substituirFuncionarioNaLista(funcionarioAtualizado)),
-      finalize(() => this.setLoading('mutation', false)),
-    );
-  }
-
-  deactivateFuncionario(id: number): Observable<void> {
-    this.setLoading('mutation', true);
-
-    return this.http
-      .patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { dataDemissao: new Date() })
-      .pipe(
-        tap(() => this.atualizarStatusNaLista(id, false)),
-        finalize(() => this.setLoading('mutation', false)),
-      );
-  }
-
-  activateFuncionario(id: number): Observable<void> {
-    this.setLoading('mutation', true);
-
-    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/reactivate`, null).pipe(
-      tap(() => this.atualizarStatusNaLista(id, true)),
-      finalize(() => this.setLoading('mutation', false)),
-    );
   }
 }

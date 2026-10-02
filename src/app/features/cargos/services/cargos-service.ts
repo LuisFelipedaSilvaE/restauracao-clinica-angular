@@ -2,7 +2,9 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Cargo } from '../interfaces/cargo';
-import { map, Observable, of, tap } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
+import { LoadingType } from '../../../shared/types/loading-type';
+import { CargoRequest } from '../interfaces/cargo-request';
 
 @Injectable({
   providedIn: 'root',
@@ -10,84 +12,102 @@ import { map, Observable, of, tap } from 'rxjs';
 export class CargosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/cargos`;
   private readonly http = inject(HttpClient);
-  private readonly internalCargos = signal<Cargo[]>([
-    {
-      id: 1,
-      nome: 'Administrador',
-      ativo: true,
-    },
-    {
-      id: 2,
-      nome: 'Coordenador',
-      ativo: false,
-    },
-    {
-      id: 3,
-      nome: 'Enfermeiro(a)',
-      ativo: true,
-    },
-    {
-      id: 4,
-      nome: 'Assistente Social',
-      ativo: true,
-    },
-    {
-      id: 5,
-      nome: 'Nutricionista',
-      ativo: true,
-    },
-    {
-      id: 6,
-      nome: 'Psicólogo(a)',
-      ativo: true,
-    },
-    {
-      id: 7,
-      nome: 'Monitor',
-      ativo: true,
-    },
-  ]);
+  private readonly internalCargos = signal<Cargo[]>([]);
   readonly cargos = this.internalCargos.asReadonly();
+  private readonly listaCarregada = signal(false);
+  private readonly internalLoading = signal<Record<LoadingType, boolean>>({
+    list: false,
+    detail: false,
+    mutation: false,
+  });
+  readonly loading = this.internalLoading.asReadonly();
 
-  getAllCargos(): void {
-    if (this.internalCargos().length > 0) return;
+  createCargo(cargo: CargoRequest): Observable<Cargo> {
+    this.setLoading('mutation', true);
 
-    this.http.get<Cargo[]>(this.baseAPIUrl).subscribe({
-      next: (res) => {
-        this.internalCargos.set(res);
-      },
-    });
+    return this.http.post<Cargo>(this.baseAPIUrl, cargo).pipe(
+      tap((newCargo) => {
+        this.internalCargos.update((cargos) => this.ordenarPorStatus([...cargos, newCargo]));
+      }),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  updateCargo(id: number, cargo: CargoRequest): Observable<Cargo> {
+    this.setLoading('mutation', true);
+
+    return this.http.put<Cargo>(`${this.baseAPIUrl}/${id}`, cargo).pipe(
+      tap((cargoAtualizado) => this.substituirCargoNaLista(cargoAtualizado)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  getAllCargos(forceRefresh = false): Observable<Cargo[]> {
+    if (this.listaCarregada() && !forceRefresh) {
+      return of(this.internalCargos());
+    }
+
+    this.setLoading('list', true);
+
+    return this.http.get<Cargo[]>(this.baseAPIUrl).pipe(
+      tap((cargos) => {
+        this.internalCargos.set(this.ordenarPorStatus(cargos));
+        this.listaCarregada.set(true);
+      }),
+      finalize(() => {
+        this.setLoading('list', false);
+      }),
+    );
   }
 
   getCargoById(id: number): Observable<Cargo | undefined> {
-    const cargoOriginal: Cargo | undefined = this.internalCargos().find((f) => f.id === id);
+    this.setLoading('detail', false);
 
-    return of(cargoOriginal);
-    // return this.http.get<Cargo>(`${this.baseAPIUrl}/${id}`);
-  }
-
-  updateCargoToggleAtivo(id: number, ativo: boolean): Observable<Cargo | undefined> {
-    const cargoOriginal: Cargo | undefined = this.internalCargos().find((f) => f.id === id);
-    return of({}).pipe(
-      map(() => {
-        return cargoOriginal ? { ...cargoOriginal, ativo } : undefined;
-      }),
-      tap(() => {
-        this.internalCargos.update((value) =>
-          value.map((f) => (f.id === id ? { ...f, ativo } : f)),
-        );
+    return this.http.get<Cargo>(`${this.baseAPIUrl}/${id}`).pipe(
+      finalize(() => {
+        this.setLoading('detail', false);
       }),
     );
+  }
 
-    //   return this.http.put<void>(`${this.baseAPIUrl}/${id}`, { id, ativo }).pipe(
-    //     map(() => {
-    //       return cargoOriginal ? { ...cargoOriginal, ativo } : undefined;
-    //     }),
-    //     tap(() =>
-    //       this.internalcargos.update((value) =>
-    //         value.map((f) => (f.id === id ? { ...f, ativo } : f)),
-    //       ),
-    //     ),
-    //   );
+  activateCargo(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(
+      tap(() => this.atualizarStatusNaLista(id, true)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  deactivateCargo(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}`, null).pipe(
+      tap(() => this.atualizarStatusNaLista(id, false)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  private setLoading(type: LoadingType, value: boolean): void {
+    this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
+  }
+
+  private substituirCargoNaLista(cargoAtualizado: Cargo) {
+    this.internalCargos.update((cargos) =>
+      this.ordenarPorStatus(
+        cargos.map((cargo) => (cargo.id === cargoAtualizado.id ? cargoAtualizado : cargo)),
+      ),
+    );
+  }
+
+  private atualizarStatusNaLista(id: number, ativo: boolean): void {
+    this.internalCargos.update((cargos) => {
+      const atualizada = cargos.map((cargo) => (cargo.id === id ? { ...cargo, ativo } : cargo));
+      return this.ordenarPorStatus(atualizada);
+    });
+  }
+
+  private ordenarPorStatus(cargos: Cargo[]): Cargo[] {
+    return [...cargos].sort((a, b) => Number(b.ativo) - Number(a.ativo));
   }
 }

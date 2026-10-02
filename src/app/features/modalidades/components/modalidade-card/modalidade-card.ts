@@ -35,7 +35,7 @@ interface ToggleModalidadeButton {
     class:
       'flex relative flex-col items-center gap-2 bg-surface-card border border-border-default rounded-lg p-4 min-w-sm overflow-hidden',
     '[class]':
-      "!modalidade()?.ativo ? `bg-muted! bg-surface-subtle! border-2 border-dashed! border-border-muted! bg-surface-subtle! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
+      "!modalidade()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
   },
   imports: [
     LucideDynamicIcon,
