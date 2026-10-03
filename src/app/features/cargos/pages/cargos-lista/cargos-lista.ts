@@ -1,16 +1,30 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Card } from '../../../../shared/components/card/card';
-import { LucideBriefcase, LucidePlus } from '@lucide/angular';
+import { LucideBriefcase, LucidePlus, LucideSearchX } from '@lucide/angular';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ButtonModule } from 'primeng/button';
 import { CargosService } from '../../services/cargos-service';
 import { CargoCard } from '../../components/cargo-card/cargo-card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
+import { CargoForm } from '../cargo-form/cargo-form';
+import { Cargo } from '../../interfaces/cargo';
+import { DataViewModule } from 'primeng/dataview';
 
 @Component({
   selector: 'cargos-lista',
-  imports: [ButtonModule, Card, CargoCard, LucideBriefcase, LucidePlus, IconColor, ConfirmDialog],
+  imports: [
+    ButtonModule,
+    Card,
+    CargoCard,
+    LucideBriefcase,
+    LucideSearchX,
+    LucidePlus,
+    IconColor,
+    ConfirmDialog,
+    CargoForm,
+    DataViewModule,
+  ],
   templateUrl: './cargos-lista.html',
   styleUrl: './cargos-lista.css',
 })
@@ -20,6 +34,22 @@ export class CargosLista implements OnInit {
   protected readonly loading = this.cargosService.loading;
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<ToggleCargoDto | null>(null);
+
+  protected readonly updateDialogVisible = signal<boolean>(false);
+  protected readonly cargoToUpdate = signal<Cargo | null>(null);
+  protected readonly dataviewPt = {
+    root: {
+      class: 'flex! flex-col gap-2',
+    },
+    content: {
+      class: 'bg-transparent!',
+    },
+    pcPaginator: {
+      root: {
+        class: 'border! border-border-default bg-surface-subtle/20!',
+      },
+    },
+  };
 
   protected readonly confirmTitle = computed(() => {
     return this.acaoPendente()?.ativo ? 'Ativar cargo' : 'Desativar cargo';
@@ -60,5 +90,15 @@ export class CargosLista implements OnInit {
   toggleCargo(dto: ToggleCargoDto): void {
     this.acaoPendente.set(dto);
     this.dialogConfirmVisible.set(true);
+  }
+
+  editCargo(cargo: Cargo): void {
+    this.updateDialogVisible.set(true);
+    this.cargoToUpdate.set(cargo);
+  }
+
+  registerCargo(): void {
+    this.updateDialogVisible.set(true);
+    this.cargoToUpdate.set(null);
   }
 }

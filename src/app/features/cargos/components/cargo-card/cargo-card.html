@@ -18,7 +18,13 @@
   </div>
   <div class="flex gap-1">
     @if (cargo().ativo) {
-      <p-button severity="secondary" [text]="true" pTooltip="Editar cargo" tooltipPosition="top">
+      <p-button
+        severity="secondary"
+        [text]="true"
+        (onClick)="onEditCargo.emit(cargo())"
+        pTooltip="Editar cargo"
+        tooltipPosition="top"
+      >
         <ng-template #icon>
           <svg lucidePencil class="h-4 w-4"></svg>
         </ng-template>

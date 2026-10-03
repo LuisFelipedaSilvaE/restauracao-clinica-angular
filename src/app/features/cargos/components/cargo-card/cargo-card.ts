@@ -17,6 +17,7 @@ import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
 export class CargoCard {
   protected readonly cargo = input.required<Cargo>();
   protected readonly statusCargoChange = output<ToggleCargoDto>();
+  protected readonly onEditCargo = output<Cargo>();
   private readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly totalColaboradores = computed(() => {

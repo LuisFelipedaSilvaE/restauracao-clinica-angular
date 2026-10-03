@@ -1,0 +1,57 @@
+<p-dialog
+  [modal]="true"
+  [visible]="visible()"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  (visibleChange)="visibleChange.emit($event)"
+  (onHide)="hidden.emit($event)"
+  styleClass="w-md!"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">{{ currentState().title }}</h2>
+  </ng-template>
+
+  <form id="cargoForm" [formGroup]="cargoForm" class="space-y-5" (ngSubmit)="salvarAlteracoes()">
+    <div class="space-y-1">
+      <label for="nome" class="flex items-center gap-1 text-xs font-medium text-foreground">
+        Nome do cargo<span class="text-red-600">*</span>
+      </label>
+      <input
+        pInputText
+        id="nome"
+        name="nome"
+        formControlName="nome"
+        placeholder="Ex.: Maria da Silva"
+        [invalid]="isInvalid('nome')"
+        fluid
+        autocomplete="off"
+      />
+      @if (getErrorMessage('nome'); as msg) {
+        <p-message severity="error" size="small" variant="simple" customErrorMessage>
+          {{ msg }}
+        </p-message>
+      }
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (click)="visibleChange.emit(false)"
+    />
+
+    <p-button
+      type="submit"
+      form="cargoForm"
+      [label]="currentState().btnLabel"
+      severity="priamry"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (click)="salvarAlteracoes()"
+    />
+  </ng-template>
+</p-dialog>
