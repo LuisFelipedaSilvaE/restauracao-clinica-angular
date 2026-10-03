@@ -47,7 +47,10 @@ export class FuncionariosLista implements OnInit {
   protected readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
-    const busca = (this.busca() || '').toLowerCase().replace(/[\s\D]/g, '');
+    const busca = (this.busca() || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\W_\u0300-\u036f]/g, '');
     const statusFiltro = this.statusSelecionado();
     const mesFiltro = this.mesSelecionado() === 'todos' ? null : Number(this.mesSelecionado());
     const cargoFiltro =
@@ -56,7 +59,11 @@ export class FuncionariosLista implements OnInit {
     const funcionariosFiltrados: Funcionario[] = this.funcionarios().filter((funcionario) => {
       const nome = funcionario.nome.toLowerCase().replace(/\s/g, '');
       const cpf = funcionario.cpf.replace(/\D/g, '') || '';
-      const email = funcionario.email.toLowerCase() || '';
+      const email =
+        funcionario.email
+          .normalize('NFD')
+          .toLowerCase()
+          .replace(/[\W_\u0300-\u036f]/g, '') || '';
       const mesAniversario = new Date(funcionario.dataNascimento) || null;
 
       const validBusca =
