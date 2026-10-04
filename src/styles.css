@@ -51,6 +51,10 @@
 
   --color-action-secondary: oklch(0.97 0 0);
   --color-action-secondary-hover: color-mix(in oklch, var(--color-action-secondary) 80%, black);
+  --color-action-secondary-text: var(--p-button-text-secondary-color);
+  --color-action-info: #0ea5e9;
+  --color-action-warning: #f97316;
+  --color-action-success: #10b981;
   --color-action-destructive: oklch(0.577 0.245 27.325);
   --color-action-destructive-hover: color-mix(in oklch, var(--color-action-destructive) 90%, black);
   --color-action-destructive-soft: color-mix(

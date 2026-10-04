@@ -1,0 +1,47 @@
+<div
+  class="flex min-w-0 items-center gap-3 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40"
+>
+  <span
+    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+    [profileColor]="'#be222d'"
+    >{{ acolhido().nome | siglaNome }}
+  </span>
+  <div class="min-w-0">
+    <p class="truncate font-semibold text-foreground">
+      {{ acolhido().nome }}
+    </p>
+    <p class="truncate text-xs text-content-secondary">
+      P-{{ acolhido().id | number: '2.0-0' }} &middot; CPF {{ acolhido().cpf }}
+    </p>
+  </div>
+</div>
+<div class="contents">
+  <p class="text-content-secondary text-center">
+    {{ acolhido().dataEntrada | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+  </p>
+  <p class="text-content-secondary text-center">
+    {{ acolhido().previsaoDeAlta | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+  </p>
+  <p class="text-content-secondary text-center">
+    {{ acolhido().tempoInternado }}
+  </p>
+  <p-tag [value]="acolhido().etapaTratamento" [severity]="acolhido().severity" />
+  <div class="justify-self-center">
+    <p-menu #menu [model]="acoes()" [popup]="true" appendTo="body">
+      <ng-template #item let-item>
+        <div class="flex items-center gap-2 px-3 py-2 cursor-pointer">
+          <svg [lucideIcon]="item.lucideIcon" [ngClass]="item.iconClass"></svg>
+          <span>{{ item.label }}</span>
+        </div>
+      </ng-template>
+    </p-menu>
+
+    <button
+      type="button"
+      class="inline-flex h-9 w-9 items-center justify-center rounded-md text-content-secondary hover:bg-surface-subtle"
+      (click)="menu.toggle($event)"
+    >
+      <svg lucideEllipsisVertical class="h-5 w-5"></svg>
+    </button>
+  </div>
+</div>

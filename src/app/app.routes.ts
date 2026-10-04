@@ -10,6 +10,7 @@ import { ErrorPage } from './core/pages/error-page/error-page';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
 import { FuncionarioCadastro } from './features/funcionarios/pages/funcionario-cadastro/funcionario-cadastro';
 import { FuncionarioAtualizacao } from './features/funcionarios/pages/funcionario-atualizacao/funcionario-atualizacao';
+import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 
 export const routes: Routes = [
   {
@@ -29,7 +30,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'modalidades',
+        redirectTo: 'acolhidos',
         pathMatch: 'full',
       },
       {
@@ -50,6 +51,11 @@ export const routes: Routes = [
       {
         path: 'modalidades/:id',
         component: ModalidadeDetalhada,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'acolhidos',
+        component: AcolhidosLista,
         canActivate: [roleGuard('ADMIN')],
       },
       {
