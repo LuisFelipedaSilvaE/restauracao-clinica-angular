@@ -1,20 +1,15 @@
+import { Usuario } from '../../../core/guards/models/usuario.model';
+import { Endereco } from '../../../shared/interfaces/endereco';
+
 export interface FuncionarioRequest {
   nome: string;
-  cpf?: string;
-  email?: string;
-  dataNascimento?: Date;
-  endereco?: string;
-  cep?: string;
-  cargoId?: number;
-  telefone?: string;
-  dataAdmissao?: Date;
+  cpf: string;
+  email: string;
+  dataNascimento: Date;
+  endereco: Endereco;
+  cep: string;
+  telefone: string;
+  cargoId: number;
+  dataAdmissao: Date;
+  user: Usuario;
 }
-// String nome
-// String cpf
-// String email
-// LocalDate dataNascimento
-// String endereco
-// String cep
-// Long cargoId
-// Long userId
-// LocalDate dataAdmissao

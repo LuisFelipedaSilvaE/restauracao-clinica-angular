@@ -1,12 +1,4 @@
-<button
-  routerLink="/modalidades"
-  class="group flex w-fit cursor-pointer items-center gap-2 text-sm font-medium text-content-secondary transition-colors hover:text-content-primary"
->
-  <svg lucideArrowLeft class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-  Voltar para modalidades
-</button>
-
-<form-header [data]="headerInfo()" />
+<form-header [data]="headerInfo()" btnLabel="Voltar para modalidades" btnUrl="/modalidades" />
 
 @if (carregando()) {
   <card class="flex flex-col gap-5 p-6!">

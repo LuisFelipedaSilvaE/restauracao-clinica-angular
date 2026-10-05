@@ -116,7 +116,7 @@ export class FuncionarioDetalhado implements OnInit {
       next: (res) => {
         this.funcionario.set(res);
         this.dataNascimentoNormalizada = this.normalizeDataNascimento(
-          this.funcionario()?.dataNascimento!,
+          new Date(this.funcionario()?.dataNascimento!),
         );
       },
     });

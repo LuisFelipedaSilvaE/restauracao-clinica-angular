@@ -1,4 +1,5 @@
 import { Usuario } from '../../../core/guards/models/usuario.model';
+import { Endereco } from '../../../shared/interfaces/endereco';
 import { Cargo } from '../../cargos/interfaces/cargo';
 
 export interface Funcionario {
@@ -6,12 +7,12 @@ export interface Funcionario {
   nome: string;
   cpf: string;
   email: string;
-  dataNascimento: Date;
-  endereco: string;
+  dataNascimento: string;
+  endereco: Endereco;
   cep: string;
+  telefone: string;
   ativo: boolean;
   cargo: Cargo;
   user: Usuario;
-  telefone?: string;
-  dataAdmissao: Date;
+  dataAdmissao: string;
 }

@@ -1,15 +1,6 @@
-<p-button
-  severity="secondary"
-  [text]="true"
-  routerLink="/funcionarios"
-  label="Voltar para funcionários"
-  class="w-fit"
->
-  <svg lucideArrowLeft class="h-4 w-4"></svg>
-</p-button>
-<form-header [data]="header" />
+<form-header [data]="headerInfo()" btnLabel="Voltar para funcionários" btnUrl="/funcionarios" />
 <card>
-  <form [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="cadastrarFuncionario()">
+  <form [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="onSubmit()">
     <fieldset class="space-y-4">
       <legend class="font-semibold">Dados pessoais</legend>
       <div class="space-y-1">
@@ -96,6 +87,7 @@
           name="dataAdmissao"
           formControlName="dataAdmissao"
           placeholder="dd/mm/aaaa"
+          [maxDate]="hoje"
           [showButtonBar]="true"
           [readonlyInput]="true"
           [invalid]="isInvalid('dataAdmissao')"
@@ -131,11 +123,6 @@
               {{ msg }}
             </p-message>
           }
-          @if (getErrorMessage('email', 'email'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
-          }
         </div>
         <div class="space-y-1">
           <label for="telefone" class="flex items-center gap-1 text-xs font-medium text-foreground">
@@ -163,8 +150,8 @@
     </fieldset>
     <fieldset class="space-y-4">
       <legend class="font-semibold">Endereço</legend>
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div class="space-y-1">
+      <div class="grid gap-4 sm:grid-cols-6">
+        <div class="space-y-1 sm:col-span-2">
           <label for="cep" class="flex items-center gap-1 text-xs font-medium text-foreground">
             CEP<span class="text-red-600">*</span>
           </label>
@@ -185,55 +172,8 @@
             </p-message>
           }
         </div>
-        <div class="sm:col-span-2">
-          <div class="space-y-1">
-            <label
-              for="logradouro"
-              class="flex items-center gap-1 text-xs font-medium text-foreground"
-            >
-              Logradouro<span class="text-red-600">*</span>
-            </label>
-            <input
-              pInputText
-              id="logradouro"
-              name="logradouro"
-              formControlName="logradouro"
-              placeholder="Rua, avenida..."
-              [invalid]="isInvalid('logradouro')"
-              fluid
-              autocomplete="off"
-            />
-            @if (getErrorMessage('logradouro'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
-            }
-          </div>
-        </div>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-4">
-        <div class="space-y-1">
-          <label for="numero" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            Número
-          </label>
-          <input
-            pInputText
-            id="numero"
-            name="numero"
-            formControlName="numero"
-            pKeyFilter="int"
-            placeholder="Nº"
-            fluid
-            autocomplete="off"
-          />
-          @if (getErrorMessage('numero'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
-          }
-        </div>
-        <div class="sm:col-span-3">
-          <div class="space-y-1">
+        <ng-container formGroupName="endereco">
+          <div class="space-y-1 sm:col-span-3">
             <label for="bairro" class="flex items-center gap-1 text-xs font-medium text-foreground">
               Bairro<span class="text-red-600">*</span>
             </label>
@@ -243,21 +183,85 @@
               name="bairro"
               formControlName="bairro"
               placeholder="Bairro"
-              [invalid]="isInvalid('bairro')"
+              [invalid]="isInvalid('endereco.bairro')"
+              [pKeyFilter]="blockslashandhyphen"
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('bairro'); as msg) {
+            @if (getErrorMessage('endereco.bairro'); as msg) {
               <p-message severity="error" size="small" variant="simple" customErrorMessage>
                 {{ msg }}
               </p-message>
             }
           </div>
-        </div>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div class="sm:col-span-2">
           <div class="space-y-1">
+            <label for="numero" class="flex items-center gap-1 text-xs font-medium text-foreground">
+              Número<span class="text-red-600">*</span>
+            </label>
+            <input
+              pInputText
+              id="numero"
+              name="numero"
+              formControlName="numero"
+              pKeyFilter="int"
+              placeholder="Nº"
+              fluid
+              autocomplete="off"
+            />
+            @if (getErrorMessage('endereco.numero'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+          <div class="space-y-1 sm:col-span-full">
+            <label
+              for="logradouro"
+              class="flex items-center gap-1 text-xs font-medium text-foreground"
+            >
+              Logradouro<span class="text-red-600">*</span>
+            </label>
+            <div class="grow space-y-1">
+              <input
+                pInputText
+                id="logradouro"
+                name="logradouro"
+                formControlName="logradouro"
+                placeholder="Rua, avenida..."
+                [invalid]="isInvalid('endereco.logradouro')"
+                fluid
+                autocomplete="off"
+              />
+              @if (getErrorMessage('endereco.logradouro'); as msg) {
+                <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                  {{ msg }}
+                </p-message>
+              }
+            </div>
+          </div>
+          <div class="space-y-1 sm:col-span-6">
+            <label
+              for="complemento"
+              class="flex items-center gap-1 text-xs font-medium text-foreground"
+            >
+              Complemento
+            </label>
+            <input
+              pInputText
+              id="complemento"
+              name="complemento"
+              formControlName="complemento"
+              placeholder="Casa, apartamento..."
+              fluid
+              autocomplete="off"
+            />
+            @if (getErrorMessage('endereco.complemento'); as msg) {
+              <p-message severity="error" size="small" variant="simple" customErrorMessage>
+                {{ msg }}
+              </p-message>
+            }
+          </div>
+          <div class="space-y-1 sm:col-span-3">
             <label for="cidade" class="flex items-center gap-1 text-xs font-medium text-foreground">
               Cidade<span class="text-red-600">*</span>
             </label>
@@ -267,19 +271,17 @@
               name="cidade"
               formControlName="cidade"
               placeholder="Cidade"
-              [invalid]="isInvalid('cidade')"
+              [invalid]="isInvalid('endereco.cidade')"
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('cidade'); as msg) {
+            @if (getErrorMessage('endereco.cidade'); as msg) {
               <p-message severity="error" size="small" variant="simple" customErrorMessage>
                 {{ msg }}
               </p-message>
             }
           </div>
-        </div>
-        <div class="relative">
-          <div class="space-y-1">
+          <div class="space-y-1 sm:col-span-3">
             <label for="estado" class="flex items-center gap-1 text-xs font-medium text-foreground">
               Estado<span class="text-red-600">*</span>
             </label>
@@ -290,17 +292,17 @@
                 [options]="estados"
                 formControlName="estado"
                 placeholder="Selecione um estado"
-                [invalid]="isInvalid('estado')"
+                [invalid]="isInvalid('endereco.estado')"
                 fluid
               />
-              @if (getErrorMessage('estado'); as msg) {
+              @if (getErrorMessage('endereco.estado'); as msg) {
                 <p-message severity="error" size="small" variant="simple" customErrorMessage>
                   {{ msg }}
                 </p-message>
               }
             </div>
           </div>
-        </div>
+        </ng-container>
       </div>
     </fieldset>
     <fieldset class="space-y-4">
@@ -308,7 +310,7 @@
         <legend class="font-semibold">Acesso ao sistema</legend>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2" formGroupName="usuario">
+      <div class="grid gap-4 sm:grid-cols-2" formGroupName="user">
         <div class="space-y-1 sm:col-span-2">
           <label for="cargo" class="flex items-center gap-1 text-xs font-medium text-foreground">
             Cargo<span class="text-red-600">*</span>
@@ -322,10 +324,10 @@
               optionLabel="nome"
               optionValue="id"
               placeholder="Selecione um cargo"
-              [invalid]="isInvalid('usuario.cargo')"
+              [invalid]="isInvalid('user.cargo')"
               fluid
             />
-            @if (getErrorMessage('usuario.cargo'); as msg) {
+            @if (getErrorMessage('user.cargo'); as msg) {
               <p-message severity="error" size="small" variant="simple" customErrorMessage>
                 {{ msg }}
               </p-message>
@@ -341,13 +343,13 @@
             id="username"
             name="username"
             formControlName="username"
-            placeholder="usuario.do.funcionario"
-            [invalid]="isInvalid('usuario.username')"
+            placeholder="user.do.funcionario"
+            [invalid]="isInvalid('user.username')"
             [pKeyFilter]="blockspace"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('usuario.username'); as msg) {
+          @if (getErrorMessage('user.username'); as msg) {
             <p-message severity="error" size="small" variant="simple" customErrorMessage>
               {{ msg }}
             </p-message>
@@ -370,11 +372,11 @@
               [pKeyFilter]="blockspace"
               autocomplete="off"
               placeholder="••••••••••"
-              [invalid]="isInvalid('usuario.password')"
+              [invalid]="isInvalid('user.password')"
               [pt]="passwordInputPt"
               fluid
             />
-            @if (getErrorMessage('usuario.password'); as msg) {
+            @if (getErrorMessage('user.password'); as msg) {
               <p-message severity="error" size="small" variant="simple" customErrorMessage>
                 {{ msg }}
               </p-message>
@@ -385,13 +387,8 @@
     </fieldset>
     <p-divider />
     <div class="flex justify-end gap-2">
-      <p-button
-        (onClick)="limparCadastro()"
-        severity="secondary"
-        variant="outlined"
-        label="Cancelar"
-      />
-      <p-button type="submit" severity="primary" label="Cadastrar colaborador" />
+      <p-button (onClick)="limparForm()" severity="secondary" variant="outlined" label="Cancelar" />
+      <p-button type="submit" severity="primary" [label]="actionBtnLabel()" />
     </div>
   </form>
 </card>

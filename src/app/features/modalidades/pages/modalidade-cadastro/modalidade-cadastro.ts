@@ -1,10 +1,10 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { LucideArrowLeft, LucideLayers } from '@lucide/angular';
+import { LucideLayers } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -26,8 +26,6 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 
-type ModoForm = 'registro' | 'atualizacao';
-
 @Component({
   selector: 'app-modalidade-cadastro',
   host: {
@@ -46,8 +44,6 @@ type ModoForm = 'registro' | 'atualizacao';
     Card,
     FormHeader,
     ModalidadeCard,
-    LucideArrowLeft,
-    RouterLink,
   ],
   templateUrl: './modalidade-cadastro.html',
   styleUrl: './modalidade-cadastro.css',
@@ -65,7 +61,7 @@ export class ModalidadeCadastro implements OnInit {
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
 
-  protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
+  protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
 
   protected readonly modalidadeForm = this.fb.group({
     descricao: [

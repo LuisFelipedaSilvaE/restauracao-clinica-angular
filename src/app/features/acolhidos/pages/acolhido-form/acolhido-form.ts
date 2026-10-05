@@ -2,8 +2,8 @@ import { Component, computed, inject, input, OnInit, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { LucideArrowLeft, LucideUserPlus } from '@lucide/angular';
-import { Router, RouterLink } from '@angular/router';
+import { LucideUserPlus } from '@lucide/angular';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputMaskModule } from 'primeng/inputmask';
@@ -44,8 +44,6 @@ const datasCoerentes: ValidatorFn = (form) => {
   },
   imports: [
     FormHeader,
-    LucideArrowLeft,
-    RouterLink,
     ReactiveFormsModule,
     Card,
     ButtonModule,

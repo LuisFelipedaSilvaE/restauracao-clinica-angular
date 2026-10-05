@@ -35,7 +35,7 @@ export class FuncionariosService {
     );
   }
 
-  updatefuncionario(id: number, funcionario: FuncionarioRequest): Observable<Funcionario> {
+  updateFuncionario(id: number, funcionario: FuncionarioRequest): Observable<Funcionario> {
     this.setLoading('mutation', true);
 
     return this.http.put<Funcionario>(`${this.baseAPIUrl}/${id}`, funcionario).pipe(

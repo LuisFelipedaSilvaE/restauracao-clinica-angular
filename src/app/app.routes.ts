@@ -8,8 +8,7 @@ import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-det
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
 import { ErrorPage } from './core/pages/error-page/error-page';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
-import { FuncionarioCadastro } from './features/funcionarios/pages/funcionario-cadastro/funcionario-cadastro';
-import { FuncionarioAtualizacao } from './features/funcionarios/pages/funcionario-atualizacao/funcionario-atualizacao';
+import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
 
@@ -76,12 +75,12 @@ export const routes: Routes = [
       },
       {
         path: 'funcionarios/novo-funcionario',
-        component: FuncionarioCadastro,
+        component: FuncionarioForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
         path: 'funcionarios/editar-funcionario/:id',
-        component: FuncionarioAtualizacao,
+        component: FuncionarioForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
