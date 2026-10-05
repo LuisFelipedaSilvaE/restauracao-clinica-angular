@@ -31,6 +31,12 @@ const modalidadeConveniada: Modalidade = {
   cor: '#16a34a',
 };
 
+export const MODALIDADES_ACOLHIDOS_MOCK: Modalidade[] = [
+  modalidadeSocial,
+  modalidadeParticular,
+  modalidadeConveniada,
+];
+
 export const ACOLHIDOS_MOCK: Acolhido[] = [
   {
     id: 1,

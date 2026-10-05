@@ -1,14 +1,17 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   LucideBellRing,
+  LucideFolderX,
   LucideHeartPulse,
+  LucidePlus,
   LucideTriangleAlert,
   LucideUserRoundPlus,
+  LucideUserRoundX,
   LucideUsersRound,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { ACOLHIDOS_MOCK } from '../../data/acolhidos-mock';
+import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { FilterAcolhidosCard } from '../../components/filter-acolhidos-card/filter-acolhidos-card';
 import { DataViewModule } from 'primeng/dataview';
@@ -18,6 +21,8 @@ import { Acolhido } from '../../interfaces/acolhido';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 import { FilterOption } from '../../interfaces/filter-option';
+import { RouterLink } from '@angular/router';
+import { IconColor } from '../../../../shared/directives/icon-color';
 
 @Component({
   selector: 'app-acolhidos-lista',
@@ -32,12 +37,17 @@ import { FilterOption } from '../../interfaces/filter-option';
     DataViewModule,
     AcolhidoCard,
     ConfirmDialog,
+    RouterLink,
+    LucideUserRoundX,
+    LucidePlus,
+    IconColor,
   ],
   templateUrl: './acolhidos-lista.html',
   styleUrl: './acolhidos-lista.css',
 })
 export class AcolhidosLista {
-  protected readonly acolhidos = signal(ACOLHIDOS_MOCK);
+  private readonly acolhidosService = inject(AcolhidosMockService);
+  protected readonly acolhidos = this.acolhidosService.acolhidos;
   protected readonly acaoPendente = signal<ToggleAcolhidoDto | null>(null);
   protected readonly infoAcolhidos = computed<InfoCardContent[]>(() => {
     const acolhidos = this.acolhidos();
@@ -234,11 +244,7 @@ export class AcolhidosLista {
 
     if (!dto) return;
 
-    this.acolhidos.update((acolhidos) =>
-      acolhidos.map((acolhido) =>
-        acolhido.id === dto.id ? { ...acolhido, status: dto.ativo } : acolhido,
-      ),
-    );
+    this.acolhidosService.alterarStatus(dto.id, dto.ativo);
     this.dialogConfirmVisible.set(false);
 
     // const acao$ = dto.ativo

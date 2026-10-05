@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   LucideDynamicIcon,
   LucideEllipsisVertical,
@@ -39,6 +40,7 @@ import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
   styleUrl: './acolhido-card.css',
 })
 export class AcolhidoCard {
+  private readonly router = inject(Router);
   readonly acolhido = input.required<AcolhidoCardContent>();
   readonly statusAcolhidoChange = output<ToggleAcolhidoDto>();
   protected readonly acoes = computed<AcaoMenu[]>(() => {
@@ -54,6 +56,7 @@ export class AcolhidoCard {
         label: 'Editar dados',
         lucideIcon: LucidePencil,
         iconClass: 'h-4 w-4 text-action-secondary-text',
+        command: () => this.router.navigate(['/acolhidos', this.acolhido().id, 'editar']),
       },
       {
         label: 'Registrar alta',

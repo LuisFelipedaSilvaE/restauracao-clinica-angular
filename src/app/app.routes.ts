@@ -11,6 +11,7 @@ import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-
 import { FuncionarioCadastro } from './features/funcionarios/pages/funcionario-cadastro/funcionario-cadastro';
 import { FuncionarioAtualizacao } from './features/funcionarios/pages/funcionario-atualizacao/funcionario-atualizacao';
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
+import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,16 @@ export const routes: Routes = [
       {
         path: 'acolhidos',
         component: AcolhidosLista,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'acolhidos/criar',
+        component: AcolhidoForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'acolhidos/:id/editar',
+        component: AcolhidoForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
