@@ -1,10 +1,10 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MessageService, SelectItem } from 'primeng/api';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { LucideArrowLeft, LucideUsersRound } from '@lucide/angular';
+import { LucideUsersRound } from '@lucide/angular';
 import { FuncionarioRequest } from '../../interfaces/funcionario-request';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
@@ -29,11 +29,10 @@ import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 @Component({
   selector: 'app-funcionario-form',
   host: {
-    class: 'flex flex-col gap-4',
+    class: 'flex flex-col gap-6',
   },
   imports: [
     FormHeader,
-    RouterLink,
     ButtonModule,
     InputTextModule,
     PasswordModule,
@@ -42,7 +41,6 @@ import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
     SelectModule,
     KeyFilterModule,
     ReactiveFormsModule,
-    LucideArrowLeft,
     FormHeader,
     Card,
     CustomErrorMessage,
