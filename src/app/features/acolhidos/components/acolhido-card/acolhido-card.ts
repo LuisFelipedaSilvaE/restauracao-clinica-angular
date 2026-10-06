@@ -54,6 +54,7 @@ export class AcolhidoCard {
       },
       {
         label: 'Editar dados',
+        visible: estaAtivo,
         lucideIcon: LucidePencil,
         iconClass: 'h-4 w-4 text-action-secondary-text',
         command: () => this.router.navigate(['/acolhidos', this.acolhido().id, 'editar']),
