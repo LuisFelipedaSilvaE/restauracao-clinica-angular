@@ -1,437 +1,479 @@
 <form-header [data]="headerInfo()" btnLabel="Voltar para acolhidos" btnUrl="/acolhidos" />
 
-<card>
-  <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5">
-    <p class="text-xs text-content-secondary">Campos com * são obrigatórios.</p>
-    <fieldset class="space-y-4">
-      <legend class="font-semibold">Dados pessoais</legend>
-
-      <div class="space-y-1 min-w-0">
-        <label for="nome" class="flex items-center gap-1 text-xs font-medium text-content-primary">
-          Nome completo<span class="text-status-error-text" aria-hidden="true">*</span>
-        </label>
-        <input
-          pInputText
-          id="nome"
-          name="nome"
-          formControlName="nome"
-          placeholder="Ex.: Maria da Silva"
-          [invalid]="isInvalid('nome')"
-          [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
-          fluid
-          autocomplete="name"
-        />
-
-        @if (getErrorMessage('nome'); as msg) {
-          <p-message
-            id="nome-erro"
-            severity="error"
-            size="small"
-            variant="simple"
-            customErrorMessage
-            >{{ msg }}</p-message
-          >
-        }
+@if (carregando()) {
+  <card aria-busy="true">
+    <span class="sr-only" role="status">Carregando dados do acolhido...</span>
+    <div class="space-y-5" aria-hidden="true">
+      <p-skeleton width="12rem" height="0.75rem" />
+      @for (secao of skeletonSecoes; track $index) {
+        <div class="space-y-4">
+          <p-skeleton width="12rem" height="1rem" />
+          <div class="grid gap-4 sm:grid-cols-2">
+            @for (larguraCompleta of secao.campos; track $index) {
+              <div class="flex min-w-0 flex-col gap-2" [class.sm:col-span-2]="larguraCompleta">
+                <p-skeleton class="h-4! w-40! rounded-md!" />
+                <p-skeleton class="h-10! w-full! rounded-lg!" />
+              </div>
+            }
+          </div>
+          @if (secao.textarea) {
+            <div class="flex flex-col gap-2">
+              <p-skeleton class="h-4! w-40! rounded-md!" />
+              <p-skeleton class="h-28! w-full! rounded-lg!" />
+            </div>
+          }
+        </div>
+        <p-divider />
+      }
+      <div class="flex flex-wrap justify-end gap-2">
+        <p-skeleton width="6rem" height="2.5rem" borderRadius="0.5rem" />
+        <p-skeleton width="10rem" height="2.5rem" borderRadius="0.5rem" />
       </div>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1 min-w-0">
-          <label for="cpf" class="flex items-center gap-1 text-xs font-medium text-content-primary">
-            CPF<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <input
-            pInputText
-            id="cpf"
-            name="cpf"
-            formControlName="cpf"
-            placeholder="000.000.000-00"
-            [invalid]="isInvalid('cpf')"
-            [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
-            fluid
-            pInputMask="999.999.999-99"
-            inputmode="numeric"
-            autocomplete="off"
-          />
-
-          @if (getErrorMessage('cpf'); as msg) {
-            <p-message
-              id="cpf-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="dataNascimento"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Data de nascimento<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-datepicker
-            inputId="dataNascimento"
-            name="dataNascimento"
-            formControlName="dataNascimento"
-            placeholder="dd/mm/aaaa"
-            dateFormat="dd/mm/yy"
-            [showButtonBar]="true"
-            [readonlyInput]="true"
-            [invalid]="isInvalid('dataNascimento')"
-            appendTo="body"
-            fluid
-            [maxDate]="hoje"
-          />
-
-          @if (getErrorMessage('dataNascimento'); as msg) {
-            <p-message
-              id="dataNascimento-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-      </div>
-    </fieldset>
-    <p-divider />
-    <fieldset class="space-y-4">
-      <legend class="font-semibold">Contato e localização</legend>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1 min-w-0">
-          <label
-            for="email"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            E-mail<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <input
-            pInputText
-            id="email"
-            name="email"
-            formControlName="email"
-            placeholder="nome@exemplo.com"
-            [invalid]="isInvalid('email')"
-            [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
-            fluid
-            type="email"
-            autocomplete="email"
-          />
-
-          @if (getErrorMessage('email'); as msg) {
-            <p-message
-              id="email-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="telefone"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Telefone<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <input
-            pInputText
-            id="telefone"
-            name="telefone"
-            formControlName="telefone"
-            placeholder="(00) 00000-0000"
-            [invalid]="isInvalid('telefone')"
-            [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
-            fluid
-            pInputMask="(99) 99999-9999"
-            inputmode="tel"
-            autocomplete="tel"
-          />
-          <p class="text-xs text-content-secondary">Informe o DDD e o número do celular.</p>
-          @if (getErrorMessage('telefone'); as msg) {
-            <p-message
-              id="telefone-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1 min-w-0">
-          <label for="cep" class="flex items-center gap-1 text-xs font-medium text-content-primary">
-            CEP<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <input
-            pInputText
-            id="cep"
-            name="cep"
-            formControlName="cep"
-            placeholder="00000-000"
-            [invalid]="isInvalid('cep')"
-            [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
-            fluid
-            pInputMask="99999-999"
-            inputmode="numeric"
-            autocomplete="postal-code"
-          />
-
-          @if (getErrorMessage('cep'); as msg) {
-            <p-message
-              id="cep-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-      </div>
-    </fieldset>
-    <p-divider />
-    <fieldset class="space-y-4">
-      <legend class="font-semibold">Dados do acolhimento</legend>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1 min-w-0">
-          <label
-            for="modalidadeId"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Modalidade<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-select
-            inputId="modalidadeId"
-            name="modalidadeId"
-            formControlName="modalidadeId"
-            [options]="modalidades"
-            placeholder="Selecione uma modalidade"
-            [invalid]="isInvalid('modalidadeId')"
-            appendTo="body"
-            fluid
-            optionLabel="descricao"
-            optionValue="id"
-          />
-
-          @if (getErrorMessage('modalidadeId'); as msg) {
-            <p-message
-              id="modalidadeId-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="id_triagem"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            ID da triagem
-          </label>
-          <p-inputnumber
-            inputId="id_triagem"
-            name="id_triagem"
-            formControlName="id_triagem"
-            [min]="1"
-            [maxFractionDigits]="0"
-            [useGrouping]="false"
-            [invalid]="isInvalid('id_triagem')"
-            placeholder="Ex.: 101"
-            fluid
-          />
-          <p class="text-xs text-content-secondary">
-            Opcional. Informe o identificador da triagem, se houver.
-          </p>
-          @if (getErrorMessage('id_triagem'); as msg) {
-            <p-message
-              id="id_triagem-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="dataEntrada"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Data de entrada<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-datepicker
-            inputId="dataEntrada"
-            name="dataEntrada"
-            formControlName="dataEntrada"
-            placeholder="dd/mm/aaaa"
-            dateFormat="dd/mm/yy"
-            [showButtonBar]="true"
-            [readonlyInput]="true"
-            [invalid]="isInvalid('dataEntrada')"
-            appendTo="body"
-            fluid
-          />
-
-          @if (getErrorMessage('dataEntrada'); as msg) {
-            <p-message
-              id="dataEntrada-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="status"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Status<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-select
-            inputId="status"
-            name="status"
-            formControlName="status"
-            [options]="statusOptions"
-            placeholder="Selecione o status"
-            [invalid]="isInvalid('status')"
-            appendTo="body"
-            fluid
-          />
-
-          @if (getErrorMessage('status'); as msg) {
-            <p-message
-              id="status-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-      </div>
-
-      <div class="space-y-1 min-w-0">
-        <label
-          for="etapaTratamento"
-          class="flex items-center gap-1 text-xs font-medium text-content-primary"
-        >
-          Etapa de tratamento<span class="text-status-error-text" aria-hidden="true">*</span>
-        </label>
-        <p-select
-          inputId="etapaTratamento"
-          name="etapaTratamento"
-          formControlName="etapaTratamento"
-          [options]="etapas"
-          placeholder="Selecione uma etapa"
-          [invalid]="isInvalid('etapaTratamento')"
-          appendTo="body"
-          fluid
-        />
-
-        @if (getErrorMessage('etapaTratamento'); as msg) {
-          <p-message
-            id="etapaTratamento-erro"
-            severity="error"
-            size="small"
-            variant="simple"
-            customErrorMessage
-            >{{ msg }}</p-message
-          >
-        }
-      </div>
-    </fieldset>
-    <p-divider />
-    <fieldset class="space-y-4">
-      <legend class="font-semibold">Pagamento e isenção</legend>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1 min-w-0">
-          <label
-            for="valorPagamento"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Valor do pagamento<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-inputnumber
-            inputId="valorPagamento"
-            name="valorPagamento"
-            formControlName="valorPagamento"
-            mode="currency"
-            currency="BRL"
-            locale="pt-BR"
-            [min]="0"
-            [minFractionDigits]="2"
-            [maxFractionDigits]="2"
-            [invalid]="isInvalid('valorPagamento')"
-            placeholder="R$ 0,00"
-            fluid
-          />
-          <p class="text-xs text-content-secondary">Informe zero quando não houver pagamento.</p>
-          @if (getErrorMessage('valorPagamento'); as msg) {
-            <p-message
-              id="valorPagamento-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
-      </div>
-      <div class="space-y-1">
-        <label for="oservacaoIsencao" class="text-xs font-medium text-content-primary"
-          >Observação sobre isenção</label
-        >
-        <textarea
-          pTextarea
-          id="oservacaoIsencao"
-          name="oservacaoIsencao"
-          formControlName="oservacaoIsencao"
-          rows="4"
-          class="w-full resize-y"
-          placeholder="Informe o motivo da isenção ou observações sobre o pagamento."
-        ></textarea>
-        <p class="text-xs text-content-secondary">Opcional.</p>
-      </div>
-    </fieldset>
-    <p-divider />
-    <div class="flex flex-wrap justify-end gap-2">
-      <p-button
-        type="button"
-        label="Cancelar"
-        severity="secondary"
-        variant="outlined"
-        [disabled]="salvando()"
-        (onClick)="voltarParaLista()"
-      />
-      <p-button
-        type="submit"
-        [label]="actionBtnLabel()"
-        severity="primary"
-        [loading]="salvando()"
-        [disabled]="salvando()"
-      />
     </div>
-  </form>
-</card>
+  </card>
+} @else {
+  <card>
+    <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      <p class="text-xs text-content-secondary">Campos com * são obrigatórios.</p>
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Dados pessoais</legend>
+
+        <div class="space-y-1 min-w-0">
+          <label
+            for="nome"
+            class="flex items-center gap-1 text-xs font-medium text-content-primary"
+          >
+            Nome completo<span class="text-status-error-text" aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="nome"
+            name="nome"
+            formControlName="nome"
+            placeholder="Ex.: Maria da Silva"
+            [invalid]="isInvalid('nome')"
+            [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
+            fluid
+            autocomplete="name"
+          />
+
+          @if (getErrorMessage('nome'); as msg) {
+            <p-message
+              id="nome-erro"
+              severity="error"
+              size="small"
+              variant="simple"
+              customErrorMessage
+              >{{ msg }}</p-message
+            >
+          }
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1 min-w-0">
+            <label
+              for="cpf"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              CPF<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="cpf"
+              name="cpf"
+              formControlName="cpf"
+              placeholder="000.000.000-00"
+              [invalid]="isInvalid('cpf')"
+              [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
+              fluid
+              pInputMask="999.999.999-99"
+              inputmode="numeric"
+              autocomplete="off"
+            />
+
+            @if (getErrorMessage('cpf'); as msg) {
+              <p-message
+                id="cpf-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <label
+              for="dataNascimento"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Data de nascimento<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <p-datepicker
+              inputId="dataNascimento"
+              name="dataNascimento"
+              formControlName="dataNascimento"
+              placeholder="dd/mm/aaaa"
+              dateFormat="dd/mm/yy"
+              [showButtonBar]="true"
+              [readonlyInput]="true"
+              [invalid]="isInvalid('dataNascimento')"
+              appendTo="body"
+              fluid
+              [maxDate]="hoje"
+            />
+
+            @if (getErrorMessage('dataNascimento'); as msg) {
+              <p-message
+                id="dataNascimento-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+        </div>
+      </fieldset>
+      <p-divider />
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Contato e localização</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1 min-w-0">
+            <label
+              for="email"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              E-mail<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="email"
+              name="email"
+              formControlName="email"
+              placeholder="nome@exemplo.com"
+              [invalid]="isInvalid('email')"
+              [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
+              fluid
+              type="email"
+              autocomplete="email"
+            />
+
+            @if (getErrorMessage('email'); as msg) {
+              <p-message
+                id="email-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <label
+              for="telefone"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Telefone<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="telefone"
+              name="telefone"
+              formControlName="telefone"
+              placeholder="(00) 00000-0000"
+              [invalid]="isInvalid('telefone')"
+              [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
+              fluid
+              pInputMask="(99) 99999-9999"
+              inputmode="tel"
+              autocomplete="tel"
+            />
+            <p class="text-xs text-content-secondary">Informe o DDD e o número do celular.</p>
+            @if (getErrorMessage('telefone'); as msg) {
+              <p-message
+                id="telefone-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1 min-w-0">
+            <label
+              for="cep"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              CEP<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="cep"
+              name="cep"
+              formControlName="cep"
+              placeholder="00000-000"
+              [invalid]="isInvalid('cep')"
+              [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
+              fluid
+              pInputMask="99999-999"
+              inputmode="numeric"
+              autocomplete="postal-code"
+            />
+
+            @if (getErrorMessage('cep'); as msg) {
+              <p-message
+                id="cep-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+        </div>
+      </fieldset>
+      <p-divider />
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Dados do acolhimento</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1 min-w-0">
+            <label
+              for="modalidadeId"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Modalidade<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <p-select
+              inputId="modalidadeId"
+              name="modalidadeId"
+              formControlName="modalidadeId"
+              [options]="modalidades"
+              placeholder="Selecione uma modalidade"
+              [invalid]="isInvalid('modalidadeId')"
+              appendTo="body"
+              fluid
+              optionLabel="descricao"
+              optionValue="id"
+            />
+
+            @if (getErrorMessage('modalidadeId'); as msg) {
+              <p-message
+                id="modalidadeId-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <label
+              for="id_triagem"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              ID da triagem
+            </label>
+            <p-inputnumber
+              inputId="id_triagem"
+              name="id_triagem"
+              formControlName="id_triagem"
+              [min]="1"
+              [maxFractionDigits]="0"
+              [useGrouping]="false"
+              [invalid]="isInvalid('id_triagem')"
+              placeholder="Ex.: 101"
+              fluid
+            />
+            <p class="text-xs text-content-secondary">
+              Opcional. Informe o identificador da triagem, se houver.
+            </p>
+            @if (getErrorMessage('id_triagem'); as msg) {
+              <p-message
+                id="id_triagem-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <label
+              for="dataEntrada"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Data de entrada<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <p-datepicker
+              inputId="dataEntrada"
+              name="dataEntrada"
+              formControlName="dataEntrada"
+              placeholder="dd/mm/aaaa"
+              dateFormat="dd/mm/yy"
+              [showButtonBar]="true"
+              [readonlyInput]="true"
+              [invalid]="isInvalid('dataEntrada')"
+              appendTo="body"
+              fluid
+            />
+
+            @if (getErrorMessage('dataEntrada'); as msg) {
+              <p-message
+                id="dataEntrada-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <label
+              for="status"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Status<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <p-select
+              inputId="status"
+              name="status"
+              formControlName="status"
+              [options]="statusOptions"
+              placeholder="Selecione o status"
+              [invalid]="isInvalid('status')"
+              appendTo="body"
+              fluid
+            />
+
+            @if (getErrorMessage('status'); as msg) {
+              <p-message
+                id="status-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+        </div>
+
+        <div class="space-y-1 min-w-0">
+          <label
+            for="etapaTratamento"
+            class="flex items-center gap-1 text-xs font-medium text-content-primary"
+          >
+            Etapa de tratamento<span class="text-status-error-text" aria-hidden="true">*</span>
+          </label>
+          <p-select
+            inputId="etapaTratamento"
+            name="etapaTratamento"
+            formControlName="etapaTratamento"
+            [options]="etapas"
+            placeholder="Selecione uma etapa"
+            [invalid]="isInvalid('etapaTratamento')"
+            appendTo="body"
+            fluid
+          />
+
+          @if (getErrorMessage('etapaTratamento'); as msg) {
+            <p-message
+              id="etapaTratamento-erro"
+              severity="error"
+              size="small"
+              variant="simple"
+              customErrorMessage
+              >{{ msg }}</p-message
+            >
+          }
+        </div>
+      </fieldset>
+      <p-divider />
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Pagamento e isenção</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1 min-w-0">
+            <label
+              for="valorPagamento"
+              class="flex items-center gap-1 text-xs font-medium text-content-primary"
+            >
+              Valor do pagamento<span class="text-status-error-text" aria-hidden="true">*</span>
+            </label>
+            <p-inputnumber
+              inputId="valorPagamento"
+              name="valorPagamento"
+              formControlName="valorPagamento"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [min]="0"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              [invalid]="isInvalid('valorPagamento')"
+              placeholder="R$ 0,00"
+              fluid
+            />
+            <p class="text-xs text-content-secondary">Informe zero quando não houver pagamento.</p>
+            @if (getErrorMessage('valorPagamento'); as msg) {
+              <p-message
+                id="valorPagamento-erro"
+                severity="error"
+                size="small"
+                variant="simple"
+                customErrorMessage
+                >{{ msg }}</p-message
+              >
+            }
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label for="oservacaoIsencao" class="text-xs font-medium text-content-primary"
+            >Observação sobre isenção</label
+          >
+          <textarea
+            pTextarea
+            id="oservacaoIsencao"
+            name="oservacaoIsencao"
+            formControlName="oservacaoIsencao"
+            rows="4"
+            class="w-full resize-y"
+            placeholder="Informe o motivo da isenção ou observações sobre o pagamento."
+          ></textarea>
+          <p class="text-xs text-content-secondary">Opcional.</p>
+        </div>
+      </fieldset>
+      <p-divider />
+      <div class="flex flex-wrap justify-end gap-2">
+        <p-button
+          type="button"
+          label="Cancelar"
+          severity="secondary"
+          variant="outlined"
+          [disabled]="salvando()"
+          (onClick)="voltarParaLista()"
+        />
+        <p-button
+          type="submit"
+          [label]="actionBtnLabel()"
+          severity="primary"
+          [loading]="salvando()"
+          [disabled]="salvando()"
+        />
+      </div>
+    </form>
+  </card>
+}

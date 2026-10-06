@@ -12,6 +12,7 @@ import {
   LucideUsersRound,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
@@ -33,6 +34,7 @@ import { IconColor } from '../../../../shared/directives/icon-color';
   },
   imports: [
     ButtonModule,
+    SkeletonModule,
     LucideUserRoundPlus,
     InfoCard,
     FilterAcolhidosCard,
@@ -52,6 +54,8 @@ import { IconColor } from '../../../../shared/directives/icon-color';
 export class AcolhidosLista {
   private readonly acolhidosService = inject(AcolhidosMockService);
   protected readonly acolhidos = this.acolhidosService.acolhidos;
+  protected readonly loading = signal(false);
+  protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly acaoPendente = signal<ToggleAcolhidoDto | null>(null);
   protected readonly infoAcolhidos = computed<InfoCardContent[]>(() => {
     const acolhidos = this.acolhidos();
@@ -250,14 +254,6 @@ export class AcolhidosLista {
 
     this.acolhidosService.alterarStatus(dto.id, dto.ativo);
     this.dialogConfirmVisible.set(false);
-
-    // const acao$ = dto.ativo
-    //   ? this.modalidadesService.activateModalidade(dto.id)
-    //   : this.modalidadesService.deactivateModalidade(dto.id);
-
-    // acao$.subscribe({
-    //   next: () => this.dialogConfirmVisible.set(false),
-    // });
   }
 
   toggleAcolhido(dto: ToggleAcolhidoDto): void {

@@ -13,6 +13,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
 import { MessageModule } from 'primeng/message';
+import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomErrorMessage } from '../../../../shared/directives/custom-error-message';
@@ -55,6 +56,7 @@ const datasCoerentes: ValidatorFn = (form) => {
     TextareaModule,
     DividerModule,
     MessageModule,
+    SkeletonModule,
     CustomErrorMessage,
   ],
   templateUrl: './acolhido-form.html',
@@ -68,6 +70,13 @@ export class AcolhidoForm implements OnInit {
   private readonly acolhidosService = inject(AcolhidosMockService);
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
+  protected readonly carregando = signal(false);
+  protected readonly skeletonSecoes = [
+    { campos: [true, false, false], textarea: false },
+    { campos: [false, false, false], textarea: false },
+    { campos: [false, false, false, false, true], textarea: false },
+    { campos: [false], textarea: true },
+  ];
   protected readonly hoje = new Date();
   protected readonly modalidades = this.acolhidosService.modalidades;
   protected readonly etapas = [
