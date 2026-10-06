@@ -22,7 +22,7 @@ import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
   selector: 'acolhido-card',
   host: {
     class:
-      'border-y border-l-4 border-l-sky-500 group relative grid grid-cols-[minmax(250px,2fr)_140px_140px_140px_150px_64px] items-center gap-4 rounded-xl border border-border-default bg-surface-card p-4 transition-colors',
+      'border-y border-l-4 border-l-sky-500 group relative grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_36px] 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 rounded-xl border border-border-default bg-surface-card p-3 2xl:p-4 transition-colors',
     '[class]':
       "acolhido().status == 'Inativo' ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
     '[style.border-left-color]': 'acolhido().modalidade.cor',

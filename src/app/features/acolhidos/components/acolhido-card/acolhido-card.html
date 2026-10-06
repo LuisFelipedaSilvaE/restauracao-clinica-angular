@@ -1,5 +1,5 @@
 <div
-  class="flex min-w-0 items-center gap-3 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40"
+  class="flex min-w-0 items-center gap-2 2xl:gap-3 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40"
 >
   <span
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
@@ -16,17 +16,23 @@
   </div>
 </div>
 <div class="contents">
-  <p class="text-content-secondary text-center">
+  <p class="hidden 2xl:block text-sm text-content-secondary text-center">
     {{ acolhido().dataEntrada | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
   </p>
-  <p class="text-content-secondary text-center">
+  <p class="hidden md:block text-sm text-content-secondary text-center">
     {{ acolhido().previsaoDeAlta | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
   </p>
-  <p class="text-content-secondary text-center">
+  <p class="hidden xl:block text-sm text-content-secondary text-center">
     {{ acolhido().tempoInternado }}
   </p>
-  <p-tag [value]="acolhido().etapaTratamento" [severity]="acolhido().severity" />
-  <div class="justify-self-center">
+  <p-tag
+    class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
+    [value]="acolhido().etapaTratamento"
+    [severity]="acolhido().severity"
+  />
+  <div
+    class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-auto sm:row-span-1 sm:justify-self-end"
+  >
     <p-menu #menu [model]="acoes()" [popup]="true" appendTo="body">
       <ng-template #item let-item>
         <div class="flex items-center gap-2 px-3 py-2 cursor-pointer">
