@@ -23,6 +23,7 @@ import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-con
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
+import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -48,6 +49,7 @@ import { BackButton } from '../../../../shared/components/back-button/back-butto
     SiglaNomePipe,
     ConfirmDialog,
     BackButton,
+    CpfPipe,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',

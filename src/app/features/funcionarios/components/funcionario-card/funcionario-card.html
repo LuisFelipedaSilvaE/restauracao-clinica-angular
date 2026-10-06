@@ -13,7 +13,7 @@
       </p>
       <p-tag [value]="funcionario().cargo?.nome" />
     </div>
-    <p class="truncate text-xs text-content-secondary">{{ funcionario().cpf }}</p>
+    <p class="truncate text-xs text-content-secondary">{{ funcionario().cpf | cpf }}</p>
   </div>
 </div>
 <div class="hidden min-w-0 flex-col gap-2 text-xs text-content-secondary xl:flex xl:w-56">

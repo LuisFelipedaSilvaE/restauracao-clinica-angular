@@ -26,9 +26,9 @@ export class FuncionariosService {
     this.setLoading('mutation', true);
 
     return this.http.post<Funcionario>(this.baseAPIUrl, funcionario).pipe(
-      tap((newfuncionario) => {
+      tap((newFuncionario) => {
         this.internalFuncionarios.update((funcionarios) =>
-          this.ordenarPorStatus([...funcionarios, newfuncionario]),
+          this.ordenarPorStatus([...funcionarios, newFuncionario]),
         );
       }),
       finalize(() => this.setLoading('mutation', false)),

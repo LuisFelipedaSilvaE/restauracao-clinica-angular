@@ -20,6 +20,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
 import { TooltipModule } from 'primeng/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
+import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 
 @Component({
   selector: 'funcionario-card',
@@ -43,6 +44,7 @@ import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
     ProfileColor,
     SiglaNomePipe,
     RouterLink,
+    CpfPipe,
   ],
   templateUrl: './funcionario-card.html',
   styleUrl: './funcionario-card.css',
