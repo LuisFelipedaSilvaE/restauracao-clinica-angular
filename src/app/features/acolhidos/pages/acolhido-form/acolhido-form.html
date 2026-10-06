@@ -5,7 +5,7 @@
     <span class="sr-only" role="status">Carregando dados do acolhido...</span>
     <div class="space-y-5" aria-hidden="true">
       <p-skeleton width="12rem" height="0.75rem" />
-      @for (secao of skeletonSecoes; track $index) {
+      @for (secao of skeletonSecoes(); track $index) {
         <div class="space-y-4">
           <p-skeleton width="12rem" height="1rem" />
           <div class="grid gap-4 sm:grid-cols-2">
@@ -34,7 +34,6 @@
 } @else {
   <card>
     <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5">
-      <p class="text-xs text-content-secondary">Campos com * são obrigatórios.</p>
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados pessoais</legend>
 
@@ -192,7 +191,6 @@
               inputmode="tel"
               autocomplete="tel"
             />
-            <p class="text-xs text-content-secondary">Informe o DDD e o número do celular.</p>
             @if (getErrorMessage('telefone'); as msg) {
               <p-message
                 id="telefone-erro"
@@ -278,39 +276,6 @@
 
           <div class="space-y-1 min-w-0">
             <label
-              for="id_triagem"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              ID da triagem
-            </label>
-            <p-inputnumber
-              inputId="id_triagem"
-              name="id_triagem"
-              formControlName="id_triagem"
-              [min]="1"
-              [maxFractionDigits]="0"
-              [useGrouping]="false"
-              [invalid]="isInvalid('id_triagem')"
-              placeholder="Ex.: 101"
-              fluid
-            />
-            <p class="text-xs text-content-secondary">
-              Opcional. Informe o identificador da triagem, se houver.
-            </p>
-            @if (getErrorMessage('id_triagem'); as msg) {
-              <p-message
-                id="id_triagem-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
-            }
-          </div>
-
-          <div class="space-y-1 min-w-0">
-            <label
               for="dataEntrada"
               class="flex items-center gap-1 text-xs font-medium text-content-primary"
             >
@@ -341,27 +306,61 @@
             }
           </div>
 
+          @if (modo() === 'atualizacao') {
+            <div class="space-y-1 min-w-0">
+              <label
+                for="status"
+                class="flex items-center gap-1 text-xs font-medium text-content-primary"
+              >
+                Status<span class="text-status-error-text" aria-hidden="true">*</span>
+              </label>
+              <p-select
+                inputId="status"
+                name="status"
+                formControlName="status"
+                [options]="statusOptions"
+                placeholder="Selecione o status"
+                [invalid]="isInvalid('status')"
+                appendTo="body"
+                fluid
+              />
+
+              @if (getErrorMessage('status'); as msg) {
+                <p-message
+                  id="status-erro"
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  customErrorMessage
+                  >{{ msg }}</p-message
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @if (modo() === 'atualizacao') {
           <div class="space-y-1 min-w-0">
             <label
-              for="status"
+              for="etapaTratamento"
               class="flex items-center gap-1 text-xs font-medium text-content-primary"
             >
-              Status<span class="text-status-error-text" aria-hidden="true">*</span>
+              Etapa de tratamento<span class="text-status-error-text" aria-hidden="true">*</span>
             </label>
             <p-select
-              inputId="status"
-              name="status"
-              formControlName="status"
-              [options]="statusOptions"
-              placeholder="Selecione o status"
-              [invalid]="isInvalid('status')"
+              inputId="etapaTratamento"
+              name="etapaTratamento"
+              formControlName="etapaTratamento"
+              [options]="etapas"
+              placeholder="Selecione uma etapa"
+              [invalid]="isInvalid('etapaTratamento')"
               appendTo="body"
               fluid
             />
 
-            @if (getErrorMessage('status'); as msg) {
+            @if (getErrorMessage('etapaTratamento'); as msg) {
               <p-message
-                id="status-erro"
+                id="etapaTratamento-erro"
                 severity="error"
                 size="small"
                 variant="simple"
@@ -370,37 +369,7 @@
               >
             }
           </div>
-        </div>
-
-        <div class="space-y-1 min-w-0">
-          <label
-            for="etapaTratamento"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Etapa de tratamento<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
-          <p-select
-            inputId="etapaTratamento"
-            name="etapaTratamento"
-            formControlName="etapaTratamento"
-            [options]="etapas"
-            placeholder="Selecione uma etapa"
-            [invalid]="isInvalid('etapaTratamento')"
-            appendTo="body"
-            fluid
-          />
-
-          @if (getErrorMessage('etapaTratamento'); as msg) {
-            <p-message
-              id="etapaTratamento-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
-          }
-        </div>
+        }
       </fieldset>
       <p-divider />
       <fieldset class="space-y-4">
@@ -427,7 +396,6 @@
               placeholder="R$ 0,00"
               fluid
             />
-            <p class="text-xs text-content-secondary">Informe zero quando não houver pagamento.</p>
             @if (getErrorMessage('valorPagamento'); as msg) {
               <p-message
                 id="valorPagamento-erro"
@@ -453,7 +421,6 @@
             class="w-full resize-y"
             placeholder="Informe o motivo da isenção ou observações sobre o pagamento."
           ></textarea>
-          <p class="text-xs text-content-secondary">Opcional.</p>
         </div>
       </fieldset>
       <p-divider />

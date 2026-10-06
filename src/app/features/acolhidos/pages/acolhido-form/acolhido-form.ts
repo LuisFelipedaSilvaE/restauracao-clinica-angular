@@ -17,7 +17,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomErrorMessage } from '../../../../shared/directives/custom-error-message';
-import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 import { Acolhido } from '../../interfaces/acolhido';
 
@@ -68,15 +67,19 @@ export class AcolhidoForm implements OnInit {
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly acolhidosService = inject(AcolhidosMockService);
+  private idTriagem?: number;
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(false);
-  protected readonly skeletonSecoes = [
+  protected readonly skeletonSecoes = computed(() => [
     { campos: [true, false, false], textarea: false },
     { campos: [false, false, false], textarea: false },
-    { campos: [false, false, false, false, true], textarea: false },
+    {
+      campos: this.modo() === 'atualizacao' ? [false, false, false, true] : [false, false],
+      textarea: false,
+    },
     { campos: [false], textarea: true },
-  ];
+  ]);
   protected readonly hoje = new Date();
   protected readonly modalidades = this.acolhidosService.modalidades;
   protected readonly etapas = [
@@ -107,7 +110,6 @@ export class AcolhidoForm implements OnInit {
       telefone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
       cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
       modalidadeId: [null as number | null, [Validators.required]],
-      id_triagem: [null as number | null, [Validators.min(1), integerValidator]],
       dataEntrada: [new Date() as Date | null, [Validators.required, dataValida]],
       etapaTratamento: ['Em tratamento', [Validators.required]],
       status: ['Ativo', [Validators.required]],
@@ -137,7 +139,6 @@ export class AcolhidoForm implements OnInit {
     telefone: 'Telefone',
     cep: 'CEP',
     modalidadeId: 'Modalidade',
-    id_triagem: 'ID da triagem',
     dataEntrada: 'Data de entrada',
     etapaTratamento: 'Etapa de tratamento',
     status: 'Status',
@@ -176,6 +177,7 @@ export class AcolhidoForm implements OnInit {
       return;
     }
 
+    this.idTriagem = acolhido.id_triagem;
     this.acolhidoForm.patchValue({
       nome: acolhido.nome,
       cpf: acolhido.cpf,
@@ -183,7 +185,6 @@ export class AcolhidoForm implements OnInit {
       telefone: acolhido.telefone,
       cep: acolhido.cep,
       modalidadeId: acolhido.modalidade.id,
-      id_triagem: acolhido.id_triagem ?? null,
       dataNascimento: new Date(acolhido.dataNascimento),
       dataEntrada: new Date(acolhido.dataEntrada),
       etapaTratamento: acolhido.etapaTratamento,
@@ -214,7 +215,6 @@ export class AcolhidoForm implements OnInit {
     }
     if (errors?.['nascimentoFuturo']) return 'A data de nascimento não pode estar no futuro.';
     if (errors?.['dataInvalida']) return 'Informe uma data válida.';
-    if (errors?.['inteiro']) return 'Informe um número inteiro para o ID da triagem.';
     if (errors?.['min']) return `${this.labels[campo]} deve ser no mínimo ${errors['min'].min}.`;
     if (errors?.['moedaInvalida']) return 'Informe um valor válido com até duas casas decimais.';
     if (campo === 'dataEntrada' && this.acolhidoForm.hasError('entradaAntesNascimento')) {
@@ -244,16 +244,21 @@ export class AcolhidoForm implements OnInit {
     if (this.acolhidoForm.invalid) return;
 
     const valor = this.acolhidoForm.getRawValue();
+    const registro = this.modo() === 'registro';
+    const etapaTratamento = registro ? 'Em tratamento' : valor.etapaTratamento;
+    const status = registro ? 'Ativo' : valor.status;
     const modalidade = this.modalidades.find((item) => item.id === valor.modalidadeId);
     if (
       !modalidade ||
-      !this.etapas.includes(valor.etapaTratamento ?? '') ||
-      !this.statusOptions.includes(valor.status ?? '')
+      !this.etapas.includes(etapaTratamento ?? '') ||
+      !this.statusOptions.includes(status ?? '')
     ) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Revise o formulário',
-        detail: 'Selecione uma modalidade, uma etapa e um status válidos.',
+        detail: registro
+          ? 'Selecione uma modalidade válida.'
+          : 'Selecione uma modalidade, uma etapa e um status válidos.',
         life: 4000,
       });
       return;
@@ -261,7 +266,7 @@ export class AcolhidoForm implements OnInit {
 
     const dados: Omit<Acolhido, 'id'> = {
       modalidade,
-      id_triagem: valor.id_triagem ?? undefined,
+      ...(registro || this.idTriagem === undefined ? {} : { id_triagem: this.idTriagem }),
       nome: valor.nome!.trim(),
       cpf: valor.cpf!,
       cep: valor.cep!,
@@ -271,8 +276,8 @@ export class AcolhidoForm implements OnInit {
       dataEntrada: new Date(valor.dataEntrada!),
       valorPagamento: valor.valorPagamento!,
       oservacaoIsencao: valor.oservacaoIsencao?.trim() || undefined,
-      etapaTratamento: valor.etapaTratamento!,
-      status: valor.status!,
+      etapaTratamento: etapaTratamento!,
+      status: status!,
     };
     this.salvando.set(true);
     const id = this.id();
