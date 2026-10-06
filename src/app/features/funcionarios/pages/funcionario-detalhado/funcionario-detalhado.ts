@@ -25,6 +25,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -52,12 +53,22 @@ import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
     BackButton,
     CpfPipe,
     TelefonePipe,
+    EnderecoPipe,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',
 })
 export class FuncionarioDetalhado implements OnInit {
-  protected funcionario = signal<Funcionario | undefined>(undefined);
+  protected readonly funcionario = signal<Funcionario | undefined>(undefined);
+  protected readonly cepFormatado = computed(() => {
+    const cep: string | undefined = this.funcionario()?.cep;
+
+    if (!cep) {
+      return '';
+    }
+
+    return `${cep.slice(0, 5)}-${cep.slice(5)}`;
+  });
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

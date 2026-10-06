@@ -130,7 +130,7 @@
     <div>
       <p class="uppercase text-content-secondary text-sm">endereço completo</p>
       <p class="font-heading text-md font-medium">
-        {{ `${funcionario()?.endereco} · ${funcionario()?.cep}` }}
+        {{ `${(funcionario()?.endereco | endereco)} · ${cepFormatado()}` }}
       </p>
     </div>
   </div>
