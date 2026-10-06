@@ -11,11 +11,12 @@ import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-
 import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
+import { Login } from './features/auth/pages/login/login';
 
 export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+    component: Login,
   },
   {
     path: 'acesso-negado',
