@@ -25,7 +25,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 import { FilterOption } from '../../interfaces/filter-option';
 import { RouterLink } from '@angular/router';
-import { IconColor } from '../../../../shared/directives/icon-color';
+import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 
 @Component({
   selector: 'app-acolhidos-lista',
@@ -42,16 +42,16 @@ import { IconColor } from '../../../../shared/directives/icon-color';
     AcolhidoCard,
     ConfirmDialog,
     RouterLink,
-    LucideUserRoundX,
     LucidePlus,
-    IconColor,
-    LucideSearchX,
+    EmptyList,
     LucideFunnelX,
   ],
   templateUrl: './acolhidos-lista.html',
   styleUrl: './acolhidos-lista.css',
 })
 export class AcolhidosLista {
+  protected readonly emptySearchIcon = LucideSearchX;
+  protected readonly emptyAcolhidosIcon = LucideUserRoundX;
   private readonly acolhidosService = inject(AcolhidosMockService);
   protected readonly acolhidos = this.acolhidosService.acolhidos;
   protected readonly loading = signal(false);

@@ -15,7 +15,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioCard } from '../../components/funcionario-card/funcionario-card';
 import { FilterFuncionariosCard } from '../../components/filter-funcionarios-card/filter-funcionarios-card';
-import { IconColor } from '../../../../shared/directives/icon-color';
+import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { RouterLink } from '@angular/router';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -36,8 +36,7 @@ import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
     FuncionarioCard,
     FilterFuncionariosCard,
     LucideFunnelX,
-    LucideSearchX,
-    IconColor,
+    EmptyList,
     RouterLink,
     ConfirmDialog,
     CargosLista,
@@ -46,6 +45,7 @@ import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
   styleUrl: './funcionarios-lista.css',
 })
 export class FuncionariosLista implements OnInit {
+  protected readonly emptySearchIcon = LucideSearchX;
   protected readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {

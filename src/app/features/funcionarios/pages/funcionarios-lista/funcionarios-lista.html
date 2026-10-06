@@ -83,22 +83,11 @@
         </div>
       </ng-template>
       <ng-template #emptymessage>
-        <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
-          <span
-            class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
-            [iconColor]="'#4a5565'"
-          >
-            <svg lucideSearchX class="h-7.5 w-7.5"></svg>
-          </span>
-          <div>
-            <h3 class="font-heading text-base font-semibold text-content-primary">
-              Nenhum funcionário encontrado
-            </h3>
-            <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
-              Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca
-              ou limpar os filtros.
-            </p>
-          </div>
+        <empty-list
+          [icon]="emptySearchIcon"
+          title="Nenhum funcionário encontrado"
+          description="Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca ou limpar os filtros."
+        >
           <p-button
             severity="secondary"
             [text]="true"
@@ -107,7 +96,7 @@
           >
             <svg lucideFunnelX class="h-5 w-5"></svg>
           </p-button>
-        </div>
+        </empty-list>
       </ng-template>
     </p-dataview>
   }

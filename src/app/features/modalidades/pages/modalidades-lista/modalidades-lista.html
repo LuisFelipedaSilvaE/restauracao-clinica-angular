@@ -62,29 +62,17 @@
     @for (item of modalidades(); track $index) {
       <modalidade-card (statusModalidadeChange)="toggleModalidade($event)" [modalidade]="item" />
     } @empty {
-      <div
-        class="col-span-full flex flex-col items-center justify-center gap-4 px-4 py-10 text-center"
+      <empty-list
+        [icon]="emptyModalidadesIcon"
+        title="Nenhuma modalidade encontrada"
+        description="Não há modalidades de acolhimento cadastradas no momento."
       >
-        <span
-          class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
-          [iconColor]="'#4a5565'"
-        >
-          <svg lucideFolderX class="h-7.5 w-7.5"></svg>
-        </span>
-        <div>
-          <h3 class="font-heading text-base font-semibold text-content-primary">
-            Nenhuma modalidade encontrada
-          </h3>
-          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
-            Não há modalidades de acolhimento cadastradas no momento.
-          </p>
-        </div>
         <p-button routerLink="criar" label="Cadastrar primeira modalidade">
           <ng-template #icon>
             <svg lucidePlus class="h-5 w-5"></svg>
           </ng-template>
         </p-button>
-      </div>
+      </empty-list>
     }
   }
 </div>

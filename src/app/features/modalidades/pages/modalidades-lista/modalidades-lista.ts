@@ -15,7 +15,7 @@ import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content'
 import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
 import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
 import { ModalidadesService } from '../../services/modalidades-service';
-import { IconColor } from '../../../../shared/directives/icon-color';
+import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
 
@@ -27,10 +27,9 @@ import { SkeletonModule } from 'primeng/skeleton';
   imports: [
     ButtonModule,
     LucidePlus,
-    LucideFolderX,
     InfoCard,
     ModalidadeCard,
-    IconColor,
+    EmptyList,
     ConfirmDialog,
     SkeletonModule,
     RouterLink,
@@ -39,6 +38,7 @@ import { SkeletonModule } from 'primeng/skeleton';
   styleUrl: './modalidades-lista.css',
 })
 export class ModalidadesLista implements OnInit {
+  protected readonly emptyModalidadesIcon = LucideFolderX;
   private readonly modalidadesService = inject(ModalidadesService);
 
   protected readonly modalidades = computed<ModalidadeCardContent[]>(() => {
