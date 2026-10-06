@@ -27,12 +27,7 @@
   </div>
   <div class="flex gap-2">
     @if (funcionario()?.ativo) {
-      <p-button
-        severity="secondary"
-        variant="outlined"
-        label="Editar"
-        [routerLink]="['/funcionarios', 'editar-funcionario', funcionario()?.id]"
-      >
+      <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['editar']">
         <svg lucidePencil class="h-4 w-4"></svg>
       </p-button>
     }

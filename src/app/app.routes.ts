@@ -74,12 +74,12 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'funcionarios/novo-funcionario',
+        path: 'funcionarios/criar',
         component: FuncionarioForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'funcionarios/editar-funcionario/:id',
+        path: 'funcionarios/:id/editar',
         component: FuncionarioForm,
         canActivate: [roleGuard('ADMIN')],
       },
