@@ -3,7 +3,7 @@ import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 import { Layout } from './layout/layout';
 import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
-import { ModalidadeCadastro } from './features/modalidades/pages/modalidade-cadastro/modalidade-cadastro';
+import { ModalidadeForm } from './features/modalidades/pages/modalidade-form/modalidade-form';
 import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-detalhada/modalidade-detalhada';
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
 import { ErrorPage } from './core/pages/error-page/error-page';
@@ -40,12 +40,12 @@ export const routes: Routes = [
       },
       {
         path: 'modalidades/criar',
-        component: ModalidadeCadastro,
+        component: ModalidadeForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
         path: 'modalidades/:id/editar',
-        component: ModalidadeCadastro,
+        component: ModalidadeForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {

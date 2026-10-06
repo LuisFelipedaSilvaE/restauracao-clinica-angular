@@ -27,7 +27,7 @@ import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 
 @Component({
-  selector: 'app-modalidade-cadastro',
+  selector: 'app-modalidade-form',
   host: {
     class: 'flex flex-col gap-6',
   },
@@ -45,10 +45,10 @@ import { integerValidator } from '../../../../shared/validators/integer-validato
     FormHeader,
     ModalidadeCard,
   ],
-  templateUrl: './modalidade-cadastro.html',
-  styleUrl: './modalidade-cadastro.css',
+  templateUrl: './modalidade-form.html',
+  styleUrl: './modalidade-form.css',
 })
-export class ModalidadeCadastro implements OnInit {
+export class ModalidadeForm implements OnInit {
   readonly id = input<string>();
 
   protected readonly fb = inject(FormBuilder);

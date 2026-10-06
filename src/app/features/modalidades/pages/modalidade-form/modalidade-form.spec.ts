@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalidadeCadastro } from './modalidade-cadastro';
+import { ModalidadeForm } from './modalidade-form';
 
-describe('ModalidadeCadastro', () => {
-  let component: ModalidadeCadastro;
-  let fixture: ComponentFixture<ModalidadeCadastro>;
+describe('ModalidadeForm', () => {
+  let component: ModalidadeForm;
+  let fixture: ComponentFixture<ModalidadeForm>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModalidadeCadastro],
+      imports: [ModalidadeForm],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModalidadeCadastro);
+    fixture = TestBed.createComponent(ModalidadeForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
