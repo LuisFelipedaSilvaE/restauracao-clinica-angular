@@ -33,51 +33,88 @@
     [(mesSelecionado)]="mesSelecionado"
   />
 
-  <p-dataview
-    [value]="funcionariosCardsFiltrados()"
-    [paginator]="true"
-    [rows]="10"
-    layout="list"
-    [pt]="dataviewPt"
-  >
-    <ng-template #list let-items>
-      <div class="flex flex-col gap-2">
-        @for (funcionario of items; track $index; let first = $first) {
-          <funcionario-card
-            [funcionario]="funcionario"
-            (statusFuncionarioChange)="toggleFuncionario($event)"
-          />
-        }
-      </div>
-    </ng-template>
-    <ng-template #emptymessage>
-      <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
-        <span
-          class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
-          [iconColor]="'#4a5565'"
+  @if (loading().list) {
+    <div class="flex min-w-0 flex-col gap-2" aria-busy="true">
+      <span class="sr-only" role="status">Carregando funcionários...</span>
+      @for (_ of skeletonCards; track $index) {
+        <div
+          aria-hidden="true"
+          class="flex min-w-0 flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 sm:flex-row sm:items-center"
         >
-          <svg lucideSearchX class="h-7.5 w-7.5"></svg>
-        </span>
-        <div>
-          <h3 class="font-heading text-base font-semibold text-content-primary">
-            Nenhum funcionário encontrado
-          </h3>
-          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
-            Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca
-            ou limpar os filtros.
-          </p>
+          <div class="flex min-w-0 flex-1 items-center gap-3">
+            <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
+            <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <p-skeleton width="8rem" height="1rem" />
+                <p-skeleton width="5rem" height="1.5rem" borderRadius="0.375rem" />
+              </div>
+              <p-skeleton width="7rem" height="0.75rem" />
+            </div>
+          </div>
+          <div class="hidden min-w-0 flex-col gap-2 xl:flex xl:w-56">
+            <p-skeleton width="90%" height="1rem" />
+            <p-skeleton width="70%" height="1rem" />
+          </div>
+          <div class="hidden min-w-0 flex-col gap-2 md:flex md:w-32">
+            <p-skeleton width="7rem" height="1rem" />
+            <p-skeleton width="4rem" height="0.75rem" />
+          </div>
+          <p-skeleton width="4rem" height="1.5rem" borderRadius="0.375rem" />
+          <div class="flex shrink-0 items-center gap-1">
+            @for (_ of [1, 2, 3]; track $index) {
+              <p-skeleton size="2.5rem" borderRadius="0.375rem" />
+            }
+          </div>
         </div>
-        <p-button
-          severity="secondary"
-          [text]="true"
-          (onClick)="clearFilters()"
-          label="Limpar filtros"
-        >
-          <svg lucideFunnelX class="h-5 w-5"></svg>
-        </p-button>
-      </div>
-    </ng-template>
-  </p-dataview>
+      }
+    </div>
+  } @else {
+    <p-dataview
+      [value]="funcionariosCardsFiltrados()"
+      [paginator]="true"
+      [rows]="10"
+      layout="list"
+      [pt]="dataviewPt"
+    >
+      <ng-template #list let-items>
+        <div class="flex flex-col gap-2">
+          @for (funcionario of items; track $index; let first = $first) {
+            <funcionario-card
+              [funcionario]="funcionario"
+              (statusFuncionarioChange)="toggleFuncionario($event)"
+            />
+          }
+        </div>
+      </ng-template>
+      <ng-template #emptymessage>
+        <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
+          <span
+            class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideSearchX class="h-7.5 w-7.5"></svg>
+          </span>
+          <div>
+            <h3 class="font-heading text-base font-semibold text-content-primary">
+              Nenhum funcionário encontrado
+            </h3>
+            <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
+              Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca
+              ou limpar os filtros.
+            </p>
+          </div>
+          <p-button
+            severity="secondary"
+            [text]="true"
+            (onClick)="clearFilters()"
+            label="Limpar filtros"
+          >
+            <svg lucideFunnelX class="h-5 w-5"></svg>
+          </p-button>
+        </div>
+      </ng-template>
+    </p-dataview>
+  }
 </div>
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"

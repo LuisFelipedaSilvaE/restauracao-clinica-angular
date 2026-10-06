@@ -22,48 +22,75 @@
       </ng-template>
     </p-button>
   </div>
-  <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
-    <ng-template #grid let-items>
+  @if (loading().list) {
+    <div aria-busy="true">
+      <span class="sr-only" role="status">Carregando cargos...</span>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2 items-center">
-        @for (cargo of items; track cargo.id) {
-          <cargo-card
-            [cargo]="cargo"
-            (statusCargoChange)="toggleCargo($event)"
-            (onEditCargo)="editCargo($event)"
-          />
+        @for (_ of skeletonCards; track $index) {
+          <div
+            aria-hidden="true"
+            class="flex items-center justify-between gap-2 rounded-xl border border-border-default bg-surface-subtle/20 p-3"
+          >
+            <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <p-skeleton width="75%" height="1rem" />
+              <div class="flex gap-1">
+                <p-skeleton width="3rem" height="1.5rem" borderRadius="0.375rem" />
+                <p-skeleton width="6rem" height="1.5rem" borderRadius="0.375rem" />
+              </div>
+            </div>
+            <div class="flex shrink-0 gap-1">
+              @for (_ of [1, 2]; track $index) {
+                <p-skeleton size="2.5rem" borderRadius="0.375rem" />
+              }
+            </div>
+          </div>
         }
       </div>
-    </ng-template>
-    <ng-template #emptymessage>
-      <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
-        <span
-          class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
-          [iconColor]="'#4a5565'"
-        >
-          <svg lucideSearchX class="h-7.5 w-7.5"></svg>
-        </span>
-        <div>
-          <h3 class="font-heading text-base font-semibold text-content-primary">
-            Nenhum cargo encontrado
-          </h3>
-          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
-            Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo.
-          </p>
+    </div>
+  } @else {
+    <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
+      <ng-template #grid let-items>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2 items-center">
+          @for (cargo of items; track cargo.id) {
+            <cargo-card
+              [cargo]="cargo"
+              (statusCargoChange)="toggleCargo($event)"
+              (onEditCargo)="editCargo($event)"
+            />
+          }
         </div>
-        <p-button
-          label="Criar novo cargo"
-          severity="secondary"
-          variant="outlined"
-          [text]="true"
-          (onClick)="registerCargo()"
-        >
-          <ng-template #icon>
-            <svg lucidePlus class="h-5 w-5"></svg>
-          </ng-template>
-        </p-button>
-      </div>
-    </ng-template>
-  </p-dataview>
+      </ng-template>
+      <ng-template #emptymessage>
+        <div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
+          <span
+            class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideSearchX class="h-7.5 w-7.5"></svg>
+          </span>
+          <div>
+            <h3 class="font-heading text-base font-semibold text-content-primary">
+              Nenhum cargo encontrado
+            </h3>
+            <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-content-secondary">
+              Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo.
+            </p>
+          </div>
+          <p-button
+            label="Criar novo cargo"
+            severity="secondary"
+            variant="outlined"
+            [text]="true"
+            (onClick)="registerCargo()"
+          >
+            <ng-template #icon>
+              <svg lucidePlus class="h-5 w-5"></svg>
+            </ng-template>
+          </p-button>
+        </div>
+      </ng-template>
+    </p-dataview>
+  }
 </card>
 
 <confirm-dialog

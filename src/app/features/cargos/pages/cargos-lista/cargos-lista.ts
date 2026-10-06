@@ -10,6 +10,7 @@ import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
 import { CargoForm } from '../cargo-form/cargo-form';
 import { Cargo } from '../../interfaces/cargo';
 import { DataViewModule } from 'primeng/dataview';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'cargos-lista',
@@ -24,6 +25,7 @@ import { DataViewModule } from 'primeng/dataview';
     ConfirmDialog,
     CargoForm,
     DataViewModule,
+    SkeletonModule,
   ],
   templateUrl: './cargos-lista.html',
   styleUrl: './cargos-lista.css',
@@ -32,6 +34,7 @@ export class CargosLista implements OnInit {
   private readonly cargosService = inject(CargosService);
   protected readonly cargos = this.cargosService.cargos;
   protected readonly loading = this.cargosService.loading;
+  protected readonly skeletonCards = Array.from({ length: 6 });
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<ToggleCargoDto | null>(null);
 

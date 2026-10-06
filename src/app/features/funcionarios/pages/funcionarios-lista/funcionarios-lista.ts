@@ -11,6 +11,7 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
+import { SkeletonModule } from 'primeng/skeleton';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioCard } from '../../components/funcionario-card/funcionario-card';
 import { FilterFuncionariosCard } from '../../components/filter-funcionarios-card/filter-funcionarios-card';
@@ -31,6 +32,7 @@ import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
     ButtonModule,
     LucideUserRoundPlus,
     DataViewModule,
+    SkeletonModule,
     FuncionarioCard,
     FilterFuncionariosCard,
     LucideFunnelX,
@@ -129,6 +131,7 @@ export class FuncionariosLista implements OnInit {
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<ToggleFuncionarioDto | null>(null);
   protected readonly loading = this.funcionariosService.loading;
+  protected readonly skeletonCards = Array.from({ length: 10 });
 
   ngOnInit(): void {
     this.funcionariosService.getAllFuncionarios().subscribe();
