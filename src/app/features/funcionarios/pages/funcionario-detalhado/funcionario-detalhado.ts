@@ -2,7 +2,6 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import {
-  LucideArrowLeft,
   LucidePencil,
   LucidePowerOff,
   LucideUserRound,
@@ -23,6 +22,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
 import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { BackButton } from '../../../../shared/components/back-button/back-button';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -33,7 +33,6 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
   imports: [
     ButtonModule,
     TagModule,
-    LucideArrowLeft,
     LucidePencil,
     ProfileColor,
     IconColor,
@@ -48,6 +47,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
     RouterLink,
     SiglaNomePipe,
     ConfirmDialog,
+    BackButton,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',

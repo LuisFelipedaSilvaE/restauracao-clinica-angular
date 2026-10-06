@@ -1,10 +1,4 @@
-<button
-  [routerLink]="[btnUrl()]"
-  class="group flex w-fit cursor-pointer items-center gap-2 text-sm font-medium text-content-secondary transition-colors hover:text-content-primary"
->
-  <svg lucideArrowLeft class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"></svg>
-  {{ btnLabel() }}
-</button>
+<back-button [label]="btnLabel()" [url]="btnUrl()" />
 
 <div class="flex items-center gap-2">
   <div class="w-fit p-3.5 rounded-md flex justify-center items-center" [iconColor]="data().color">
