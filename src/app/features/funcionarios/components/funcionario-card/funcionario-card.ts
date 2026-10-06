@@ -21,6 +21,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 
 @Component({
   selector: 'funcionario-card',
@@ -45,6 +46,7 @@ import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
     SiglaNomePipe,
     RouterLink,
     CpfPipe,
+    TelefonePipe,
   ],
   templateUrl: './funcionario-card.html',
   styleUrl: './funcionario-card.css',

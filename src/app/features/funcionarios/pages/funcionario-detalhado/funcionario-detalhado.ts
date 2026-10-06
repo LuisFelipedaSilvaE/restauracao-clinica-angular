@@ -24,6 +24,7 @@ import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -50,6 +51,7 @@ import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
     ConfirmDialog,
     BackButton,
     CpfPipe,
+    TelefonePipe,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',
