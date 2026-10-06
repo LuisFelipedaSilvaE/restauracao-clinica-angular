@@ -29,7 +29,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class FilterFuncionariosCard {
   readonly cargos = [
-    { name: 'todos', code: 'todos' },
+    { name: 'Todos', code: 'todos' },
     { name: 'Administrador', code: 'Administrador' },
     { name: 'Coordenador', code: 'Coordenador' },
     { name: 'Enfermeiro(a)', code: 'Enfermeiro(a)' },
@@ -39,12 +39,12 @@ export class FilterFuncionariosCard {
     { name: 'Monitor', code: 'Monitor' },
   ];
   readonly status = [
-    { name: 'todos', code: 'todos' },
+    { name: 'Todos', code: 'todos' },
     { name: 'Ativo', code: 'ativo' },
     { name: 'Inativo', code: 'inativo' },
   ];
   readonly mesesDeNascimento = [
-    { name: 'todos', code: 'todos' },
+    { name: 'Todos', code: 'todos' },
     { name: 'Janeiro', code: '0' },
     { name: 'Fevereiro', code: '1' },
     { name: 'Março', code: '2' },
