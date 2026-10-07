@@ -126,7 +126,7 @@ export class AcolhidoForm implements OnInit {
               : { moedaInvalida: true },
         ],
       ],
-      oservacaoIsencao: [''],
+      observacaoIsencao: [''],
     },
     { validators: datasCoerentes },
   );
@@ -190,7 +190,7 @@ export class AcolhidoForm implements OnInit {
       etapaTratamento: acolhido.etapaTratamento,
       status: acolhido.status,
       valorPagamento: acolhido.valorPagamento,
-      oservacaoIsencao: acolhido.oservacaoIsencao ?? '',
+      observacaoIsencao: acolhido.observacaoIsencao ?? '',
     });
   }
 
@@ -275,7 +275,7 @@ export class AcolhidoForm implements OnInit {
       dataNascimento: new Date(valor.dataNascimento!),
       dataEntrada: new Date(valor.dataEntrada!),
       valorPagamento: valor.valorPagamento!,
-      oservacaoIsencao: valor.oservacaoIsencao?.trim() || undefined,
+      observacaoIsencao: valor.observacaoIsencao?.trim() || undefined,
       etapaTratamento: etapaTratamento!,
       status: status!,
     };

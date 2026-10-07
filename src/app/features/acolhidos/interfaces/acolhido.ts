@@ -12,7 +12,7 @@ export interface Acolhido {
   dataNascimento: Date;
   dataEntrada: Date;
   valorPagamento: number;
-  oservacaoIsencao?: string;
+  observacaoIsencao?: string;
   etapaTratamento: string;
   status: string;
 }
