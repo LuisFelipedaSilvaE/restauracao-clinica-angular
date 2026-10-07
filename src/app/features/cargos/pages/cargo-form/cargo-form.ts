@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { FormError } from '../../../../shared/components/form-error/form-error';
+import { FormField } from '../../../../shared/components/form-field/form-field';
 import { CargosService } from '../../services/cargos-service';
 import { MessageService } from 'primeng/api';
 import { Cargo } from '../../interfaces/cargo';
@@ -11,13 +11,7 @@ import { CargoRequest } from '../../interfaces/cargo-request';
 
 @Component({
   selector: 'cargo-form',
-  imports: [
-    DialogModule,
-    ButtonModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    FormError,
-  ],
+  imports: [DialogModule, ButtonModule, InputTextModule, ReactiveFormsModule, FormField],
   templateUrl: './cargo-form.html',
   styleUrl: './cargo-form.css',
 })

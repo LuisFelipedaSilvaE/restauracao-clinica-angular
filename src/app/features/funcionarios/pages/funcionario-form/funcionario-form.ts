@@ -16,7 +16,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { Card } from '../../../../shared/components/card/card';
-import { FormError } from '../../../../shared/components/form-error/form-error';
+import { FormField } from '../../../../shared/components/form-field/form-field';
 import { DividerModule } from 'primeng/divider';
 import { CargosService } from '../../../cargos/services/cargos-service';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -42,7 +42,7 @@ import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
     ReactiveFormsModule,
     FormHeader,
     Card,
-    FormError,
+    FormField,
     DividerModule,
     SelectButtonModule,
   ],

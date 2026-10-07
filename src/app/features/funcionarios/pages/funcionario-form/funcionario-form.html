@@ -3,10 +3,12 @@
   <form [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="onSubmit()">
     <fieldset class="space-y-4">
       <legend class="font-semibold">Dados pessoais</legend>
-      <div class="space-y-1">
-        <label for="nome" class="flex items-center gap-1 text-xs font-medium text-foreground">
-          Nome completo<span class="text-red-600">*</span>
-        </label>
+      <form-field
+        label="Nome completo"
+        inputId="nome"
+        required
+        [errorMessage]="getErrorMessage('nome')"
+      >
         <input
           pInputText
           id="nome"
@@ -14,18 +16,13 @@
           formControlName="nome"
           placeholder="Ex.: Maria da Silva"
           [invalid]="isInvalid('nome')"
+          [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
           fluid
           autocomplete="off"
         />
-        @if (getErrorMessage('nome'); as msg) {
-          <form-error [message]="msg" errorId="nome-erro" />
-        }
-      </div>
+      </form-field>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1">
-          <label for="cpf" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            CPF<span class="text-red-600">*</span>
-          </label>
+        <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
           <input
             pInputText
             id="cpf"
@@ -34,20 +31,17 @@
             placeholder="000.000.000-00"
             pInputMask="999.999.999-99"
             [invalid]="isInvalid('cpf')"
+            [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('cpf'); as msg) {
-            <form-error [message]="msg" errorId="cpf-erro" />
-          }
-        </div>
-        <div class="space-y-1">
-          <label
-            for="dataNascimento"
-            class="flex items-center gap-1 text-xs font-medium text-foreground"
-          >
-            Data de nascimento<span class="text-red-600">*</span>
-          </label>
+        </form-field>
+        <form-field
+          label="Data de nascimento"
+          inputId="dataNascimento"
+          required
+          [errorMessage]="getErrorMessage('dataNascimento')"
+        >
           <p-datepicker
             inputId="dataNascimento"
             name="dataNascimento"
@@ -61,22 +55,18 @@
             dateFormat="dd/mm/yy"
             fluid
           />
-          @if (getErrorMessage('dataNascimento'); as msg) {
-            <form-error [message]="msg" errorId="dataNascimento-erro" />
-          }
-        </div>
+        </form-field>
       </div>
     </fieldset>
     <p-divider />
     <fieldset class="space-y-4">
       <legend class="font-semibold">Vínculo</legend>
-      <div class="space-y-1">
-        <label
-          for="dataAdmissao"
-          class="flex items-center gap-1 text-xs font-medium text-foreground"
-        >
-          Data de admissão<span class="text-red-600">*</span>
-        </label>
+      <form-field
+        label="Data de admissão"
+        inputId="dataAdmissao"
+        required
+        [errorMessage]="getErrorMessage('dataAdmissao')"
+      >
         <p-datepicker
           inputId="dataAdmissao"
           name="dataAdmissao"
@@ -89,19 +79,18 @@
           dateFormat="dd/mm/yy"
           fluid
         />
-        @if (getErrorMessage('dataAdmissao'); as msg) {
-          <form-error [message]="msg" errorId="dataAdmissao-erro" />
-        }
-      </div>
+      </form-field>
     </fieldset>
     <p-divider />
     <fieldset class="space-y-4">
       <legend class="font-semibold">Contato</legend>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="space-y-1">
-          <label for="email" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            E-mail<span class="text-red-600">*</span>
-          </label>
+        <form-field
+          label="E-mail"
+          inputId="email"
+          required
+          [errorMessage]="getErrorMessage('email')"
+        >
           <input
             pInputText
             id="email"
@@ -109,17 +98,17 @@
             formControlName="email"
             placeholder="nome@clinica.org"
             [invalid]="isInvalid('email')"
+            [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('email'); as msg) {
-            <form-error [message]="msg" errorId="email-erro" />
-          }
-        </div>
-        <div class="space-y-1">
-          <label for="telefone" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            Telefone<span class="text-red-600">*</span>
-          </label>
+        </form-field>
+        <form-field
+          label="Telefone"
+          inputId="telefone"
+          required
+          [errorMessage]="getErrorMessage('telefone')"
+        >
           <input
             pInputText
             id="telefone"
@@ -128,24 +117,25 @@
             pInputMask="(99) 99999-9999"
             placeholder="(00) 00000-0000"
             [invalid]="isInvalid('telefone')"
+            [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
             [autoClear]="false"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('telefone'); as msg) {
-            <form-error [message]="msg" errorId="telefone-erro" />
-          }
-        </div>
+        </form-field>
       </div>
     </fieldset>
     <p-divider />
     <fieldset class="space-y-4">
       <legend class="font-semibold">Endereço</legend>
       <div class="grid gap-4 sm:grid-cols-6">
-        <div class="space-y-1 sm:col-span-2">
-          <label for="cep" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            CEP<span class="text-red-600">*</span>
-          </label>
+        <form-field
+          class="sm:col-span-2"
+          label="CEP"
+          inputId="cep"
+          required
+          [errorMessage]="getErrorMessage('cep')"
+        >
           <input
             pInputText
             id="cep"
@@ -154,18 +144,19 @@
             pInputMask="99999-999"
             placeholder="00000-000"
             [invalid]="isInvalid('cep')"
+            [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('cep'); as msg) {
-            <form-error [message]="msg" errorId="cep-erro" />
-          }
-        </div>
+        </form-field>
         <ng-container formGroupName="endereco">
-          <div class="space-y-1 sm:col-span-3">
-            <label for="bairro" class="flex items-center gap-1 text-xs font-medium text-foreground">
-              Bairro<span class="text-red-600">*</span>
-            </label>
+          <form-field
+            class="sm:col-span-3"
+            label="Bairro"
+            inputId="bairro"
+            required
+            [errorMessage]="getErrorMessage('endereco.bairro')"
+          >
             <input
               pInputText
               id="bairro"
@@ -173,18 +164,18 @@
               formControlName="bairro"
               placeholder="Bairro"
               [invalid]="isInvalid('endereco.bairro')"
+              [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
               [pKeyFilter]="blockslashandhyphen"
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('endereco.bairro'); as msg) {
-              <form-error [message]="msg" errorId="bairro-erro" />
-            }
-          </div>
-          <div class="space-y-1">
-            <label for="numero" class="flex items-center gap-1 text-xs font-medium text-foreground">
-              Número<span class="text-red-600">*</span>
-            </label>
+          </form-field>
+          <form-field
+            label="Número"
+            inputId="numero"
+            required
+            [errorMessage]="getErrorMessage('endereco.numero')"
+          >
             <input
               pInputText
               id="numero"
@@ -192,60 +183,58 @@
               formControlName="numero"
               pKeyFilter="int"
               placeholder="Nº"
+              [invalid]="isInvalid('endereco.numero')"
+              [attr.aria-describedby]="isInvalid('endereco.numero') ? 'numero-erro' : null"
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('endereco.numero'); as msg) {
-              <form-error [message]="msg" errorId="numero-erro" />
-            }
-          </div>
-          <div class="space-y-1 sm:col-span-full">
-            <label
-              for="logradouro"
-              class="flex items-center gap-1 text-xs font-medium text-foreground"
-            >
-              Logradouro<span class="text-red-600">*</span>
-            </label>
-            <div class="grow space-y-1">
-              <input
-                pInputText
-                id="logradouro"
-                name="logradouro"
-                formControlName="logradouro"
-                placeholder="Rua, avenida..."
-                [invalid]="isInvalid('endereco.logradouro')"
-                fluid
-                autocomplete="off"
-              />
-              @if (getErrorMessage('endereco.logradouro'); as msg) {
-                <form-error [message]="msg" errorId="logradouro-erro" />
-              }
-            </div>
-          </div>
-          <div class="space-y-1 sm:col-span-6">
-            <label
-              for="complemento"
-              class="flex items-center gap-1 text-xs font-medium text-foreground"
-            >
-              Complemento
-            </label>
+          </form-field>
+          <form-field
+            class="sm:col-span-full"
+            label="Logradouro"
+            inputId="logradouro"
+            required
+            [errorMessage]="getErrorMessage('endereco.logradouro')"
+          >
+            <input
+              pInputText
+              id="logradouro"
+              name="logradouro"
+              formControlName="logradouro"
+              placeholder="Rua, avenida..."
+              [invalid]="isInvalid('endereco.logradouro')"
+              [attr.aria-describedby]="isInvalid('endereco.logradouro') ? 'logradouro-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+          <form-field
+            class="sm:col-span-6"
+            label="Complemento"
+            inputId="complemento"
+            [errorMessage]="getErrorMessage('endereco.complemento')"
+          >
             <input
               pInputText
               id="complemento"
               name="complemento"
               formControlName="complemento"
               placeholder="Casa, apartamento..."
+              [invalid]="isInvalid('endereco.complemento')"
+              [attr.aria-describedby]="
+                isInvalid('endereco.complemento') ? 'complemento-erro' : null
+              "
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('endereco.complemento'); as msg) {
-              <form-error [message]="msg" errorId="complemento-erro" />
-            }
-          </div>
-          <div class="space-y-1 sm:col-span-3">
-            <label for="cidade" class="flex items-center gap-1 text-xs font-medium text-foreground">
-              Cidade<span class="text-red-600">*</span>
-            </label>
+          </form-field>
+          <form-field
+            class="sm:col-span-3"
+            label="Cidade"
+            inputId="cidade"
+            required
+            [errorMessage]="getErrorMessage('endereco.cidade')"
+          >
             <input
               pInputText
               id="cidade"
@@ -253,32 +242,28 @@
               formControlName="cidade"
               placeholder="Cidade"
               [invalid]="isInvalid('endereco.cidade')"
+              [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
               fluid
               autocomplete="off"
             />
-            @if (getErrorMessage('endereco.cidade'); as msg) {
-              <form-error [message]="msg" errorId="cidade-erro" />
-            }
-          </div>
-          <div class="space-y-1 sm:col-span-3">
-            <label for="estado" class="flex items-center gap-1 text-xs font-medium text-foreground">
-              Estado<span class="text-red-600">*</span>
-            </label>
-            <div class="relative">
-              <p-select
-                id="estado"
-                name="estado"
-                [options]="estados"
-                formControlName="estado"
-                placeholder="Selecione um estado"
-                [invalid]="isInvalid('endereco.estado')"
-                fluid
-              />
-              @if (getErrorMessage('endereco.estado'); as msg) {
-                <form-error [message]="msg" errorId="estado-erro" />
-              }
-            </div>
-          </div>
+          </form-field>
+          <form-field
+            class="sm:col-span-3"
+            label="Estado"
+            inputId="estado"
+            required
+            [errorMessage]="getErrorMessage('endereco.estado')"
+          >
+            <p-select
+              inputId="estado"
+              name="estado"
+              [options]="estados"
+              formControlName="estado"
+              placeholder="Selecione um estado"
+              [invalid]="isInvalid('endereco.estado')"
+              fluid
+            />
+          </form-field>
         </ng-container>
       </div>
     </fieldset>
@@ -289,31 +274,31 @@
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2" formGroupName="user">
-        <div class="space-y-1 sm:col-span-2">
-          <label for="cargo" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            Cargo<span class="text-red-600">*</span>
-          </label>
-          <div class="relative">
-            <p-select
-              id="cargo"
-              name="cargo"
-              [options]="cargos()"
-              formControlName="cargo"
-              optionLabel="nome"
-              optionValue="id"
-              placeholder="Selecione um cargo"
-              [invalid]="isInvalid('user.cargo')"
-              fluid
-            />
-            @if (getErrorMessage('user.cargo'); as msg) {
-              <form-error [message]="msg" errorId="cargo-erro" />
-            }
-          </div>
-        </div>
-        <div class="space-y-1">
-          <label for="username" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            Usuário<span class="text-red-600">*</span>
-          </label>
+        <form-field
+          class="sm:col-span-2"
+          label="Cargo"
+          inputId="cargo"
+          required
+          [errorMessage]="getErrorMessage('user.cargo')"
+        >
+          <p-select
+            inputId="cargo"
+            name="cargo"
+            [options]="cargos()"
+            formControlName="cargo"
+            optionLabel="nome"
+            optionValue="id"
+            placeholder="Selecione um cargo"
+            [invalid]="isInvalid('user.cargo')"
+            fluid
+          />
+        </form-field>
+        <form-field
+          label="Usuário"
+          inputId="username"
+          required
+          [errorMessage]="getErrorMessage('user.username')"
+        >
           <input
             pInputText
             id="username"
@@ -321,40 +306,35 @@
             formControlName="username"
             placeholder="user.do.funcionario"
             [invalid]="isInvalid('user.username')"
+            [attr.aria-describedby]="isInvalid('user.username') ? 'username-erro' : null"
             [pKeyFilter]="blockspace"
             fluid
             autocomplete="off"
           />
-          @if (getErrorMessage('user.username'); as msg) {
-            <form-error [message]="msg" errorId="username-erro" />
-          }
-        </div>
-        <div class="space-y-1">
-          <label for="password" class="flex items-center gap-1 text-xs font-medium text-foreground">
-            Senha<span class="text-red-600">*</span>
-          </label>
-          <div class="relative">
-            <p-password
-              #passwordInput
-              id="password"
-              name="password"
-              formControlName="password"
-              [class.tracking-widest]="!passwordInput.unmasked"
-              [invalid]="isInvalid('senha')"
-              [toggleMask]="true"
-              [feedback]="false"
-              [pKeyFilter]="blockspace"
-              autocomplete="off"
-              placeholder="••••••••••"
-              [invalid]="isInvalid('user.password')"
-              [pt]="passwordInputPt"
-              fluid
-            />
-            @if (getErrorMessage('user.password'); as msg) {
-              <form-error [message]="msg" errorId="password-erro" />
-            }
-          </div>
-        </div>
+        </form-field>
+        <form-field
+          label="Senha"
+          inputId="password"
+          required
+          [errorMessage]="getErrorMessage('user.password')"
+        >
+          <p-password
+            #passwordInput
+            inputId="password"
+            name="password"
+            formControlName="password"
+            [class.tracking-widest]="!passwordInput.unmasked"
+            [toggleMask]="true"
+            [feedback]="false"
+            [pKeyFilter]="blockspace"
+            autocomplete="off"
+            placeholder="••••••••••"
+            [invalid]="isInvalid('user.password')"
+            [attr.aria-describedby]="isInvalid('user.password') ? 'password-erro' : null"
+            [pt]="passwordInputPt"
+            fluid
+          />
+        </form-field>
       </div>
     </fieldset>
     <p-divider />

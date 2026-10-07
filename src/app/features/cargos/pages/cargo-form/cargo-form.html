@@ -13,10 +13,12 @@
   </ng-template>
 
   <form id="cargoForm" [formGroup]="cargoForm" class="space-y-5" (ngSubmit)="salvarAlteracoes()">
-    <div class="space-y-1">
-      <label for="nome" class="flex items-center gap-1 text-xs font-medium text-foreground">
-        Nome do cargo<span class="text-red-600">*</span>
-      </label>
+    <form-field
+      label="Nome do cargo"
+      inputId="nome"
+      required
+      [errorMessage]="getErrorMessage('nome')"
+    >
       <input
         pInputText
         id="nome"
@@ -24,13 +26,11 @@
         formControlName="nome"
         placeholder="Ex.: Maria da Silva"
         [invalid]="isInvalid('nome')"
+        [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
         fluid
         autocomplete="off"
       />
-      @if (getErrorMessage('nome'); as msg) {
-        <form-error [message]="msg" errorId="nome-erro" />
-      }
-    </div>
+    </form-field>
   </form>
 
   <ng-template #footer>

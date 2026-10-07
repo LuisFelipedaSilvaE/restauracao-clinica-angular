@@ -24,7 +24,7 @@ import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content'
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
-import { FormError } from '../../../../shared/components/form-error/form-error';
+import { FormField } from '../../../../shared/components/form-field/form-field';
 
 @Component({
   selector: 'app-modalidade-form',
@@ -43,7 +43,7 @@ import { FormError } from '../../../../shared/components/form-error/form-error';
     Card,
     FormHeader,
     ModalidadeCard,
-    FormError,
+    FormField,
   ],
   templateUrl: './modalidade-form.html',
   styleUrl: './modalidade-form.css',
@@ -85,7 +85,6 @@ export class ModalidadeForm implements OnInit {
     pagamento: 'Pagamento obrigatório',
     cor: 'Cor de identificação',
   };
-
 
   protected readonly pagamentoOptions = [
     { label: 'Sim', value: true },

@@ -28,7 +28,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth-service';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
 import { Logo } from '../../../../shared/components/logo/logo';
-import { FormError } from '../../../../shared/components/form-error/form-error';
+import { FormField } from '../../../../shared/components/form-field/form-field';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +41,7 @@ import { FormError } from '../../../../shared/components/form-error/form-error';
     InputIconModule,
     ButtonModule,
     FormsModule,
-    FormError,
+    FormField,
     ToastModule,
     LucideDynamicIcon,
     LucideHeartHandshake,

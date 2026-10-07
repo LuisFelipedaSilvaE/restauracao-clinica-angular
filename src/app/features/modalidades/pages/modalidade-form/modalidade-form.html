@@ -13,10 +13,12 @@
   <form [formGroup]="modalidadeForm" (ngSubmit)="onSubmit()">
     <card class="flex flex-col gap-6 p-6!">
       <div class="flex flex-col gap-5">
-        <div class="flex flex-col gap-1.5">
-          <label for="descricao" class="text-sm font-semibold text-content-primary">
-            Nome da modalidade <span class="text-status-error-text">*</span>
-          </label>
+        <form-field
+          label="Nome da modalidade"
+          inputId="descricao"
+          required
+          [errorMessage]="getErrorMessage('descricao')"
+        >
           <input
             pInputText
             fluid
@@ -24,16 +26,13 @@
             id="descricao"
             name="descricao"
             [invalid]="isInvalid('descricao')"
+            [attr.aria-describedby]="isInvalid('descricao') ? 'descricao-erro' : null"
             placeholder="Ex.: Particular, Convênio, Bolsa social..."
             autocomplete="off"
           />
-          @if (getErrorMessage('descricao'); as msg) {
-            <form-error [message]="msg" errorId="descricao-erro" />
-          }
-        </div>
+        </form-field>
 
-        <div class="flex flex-col gap-1.5">
-          <label for="cnpj" class="text-sm font-semibold text-content-primary">CNPJ</label>
+        <form-field label="CNPJ" inputId="cnpj" [errorMessage]="getErrorMessage('cnpj')">
           <input
             pInputText
             fluid
@@ -43,21 +42,18 @@
             name="cnpj"
             class="uppercase"
             [invalid]="isInvalid('cnpj')"
+            [attr.aria-describedby]="isInvalid('cnpj') ? 'cnpj-erro' : null"
             placeholder="AA.AAA.AAA/AAAA-00"
             autocomplete="off"
           />
-          <p class="text-xs text-content-secondary">
-            Opcional. Usado na emissão de documentos e comprovantes.
-          </p>
-          @if (getErrorMessage('cnpj'); as msg) {
-            <form-error [message]="msg" errorId="cnpj-erro" />
-          }
-        </div>
+        </form-field>
 
-        <div class="flex flex-col gap-1.5">
-          <label for="maxVagas" class="text-sm font-semibold text-content-primary">
-            Quantidade de vagas <span class="text-status-error-text">*</span>
-          </label>
+        <form-field
+          label="Quantidade de vagas"
+          inputId="maxVagas"
+          required
+          [errorMessage]="getErrorMessage('maxVagas')"
+        >
           <p-inputnumber
             formControlName="maxVagas"
             inputId="maxVagas"
@@ -67,19 +63,18 @@
             styleClass="w-full"
             placeholder="Ex.: 40"
             [invalid]="isInvalid('maxVagas')"
+            [ariaDescribedBy]="isInvalid('maxVagas') ? 'maxVagas-erro' : undefined"
             autocomplete="off"
             locale="pt-BR"
           />
-          <p class="text-xs text-content-secondary">Capacidade total oferecida.</p>
-          @if (getErrorMessage('maxVagas'); as msg) {
-            <form-error [message]="msg" errorId="maxVagas-erro" />
-          }
-        </div>
+        </form-field>
 
-        <div class="flex flex-col gap-1.5">
-          <span id="pagamento-label" class="text-sm font-semibold text-content-primary">
-            Pagamento obrigatório <span class="text-status-error-text">*</span>
-          </span>
+        <form-field
+          label="Pagamento obrigatório"
+          inputId="pagamento"
+          required
+          [errorMessage]="getErrorMessage('pagamento')"
+        >
           <p-selectbutton
             [options]="pagamentoOptions"
             formControlName="pagamento"
@@ -89,23 +84,16 @@
             [fluid]="true"
             ariaLabelledBy="pagamento-label"
           />
-          <p class="text-xs text-content-secondary">
-            Define se o acolhido precisa pagar para participar desta modalidade.
-          </p>
-          @if (getErrorMessage('pagamento'); as msg) {
-            <form-error [message]="msg" errorId="pagamento-erro" />
-          }
-        </div>
+        </form-field>
 
-        <div class="flex flex-col gap-2">
-          <label for="cor" class="text-sm font-semibold text-content-primary">
-            Cor de identificação <span class="text-status-error-text">*</span>
-          </label>
+        <form-field
+          label="Cor de identificação"
+          inputId="cor"
+          required
+          [errorMessage]="getErrorMessage('cor')"
+        >
           <p-colorpicker formControlName="cor" inputId="cor" appendTo="body" />
-          @if (getErrorMessage('cor'); as msg) {
-            <form-error [message]="msg" errorId="cor-erro" />
-          }
-        </div>
+        </form-field>
         <div class="flex flex-col gap-2">
           <p class="text-xs font-semibold text-content-secondary">Pré-visualização</p>
           @if (modalidadeForm.valid) {

@@ -33,9 +33,13 @@
         </p>
       </div>
       <form class="space-y-5" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="flex flex-col gap-0.5">
-          <label for="usuario" class="text-sm font-medium text-content-primary">Usuário</label>
-          <p-iconfield class="mb-2">
+        <form-field
+          label="Usuário"
+          inputId="usuario"
+          required
+          [errorMessage]="getErrorMessage('usuario')"
+        >
+          <p-iconfield>
             <p-inputicon>
               <svg lucideUser class="w-5 h-5 -mt-0.5"></svg>
             </p-inputicon>
@@ -45,17 +49,19 @@
               [invalid]="isInvalid('usuario')"
               autocomplete="off"
               placeholder="seu.usuario"
-              inputId="usuario"
+              id="usuario"
+              [attr.aria-describedby]="isInvalid('usuario') ? 'usuario-erro' : null"
               fluid
             />
           </p-iconfield>
-          @if (getErrorMessage('usuario'); as msg) {
-            <form-error [message]="msg" errorId="usuario-erro" />
-          }
-        </div>
-        <div class="flex flex-col gap-0.5">
-          <label for="senha" class="text-sm font-medium text-content-primary">Senha</label>
-          <p-iconfield class="mb-2">
+        </form-field>
+        <form-field
+          label="Senha"
+          inputId="senha"
+          required
+          [errorMessage]="getErrorMessage('senha')"
+        >
+          <p-iconfield>
             <p-inputicon>
               <svg lucideLock class="w-4 h-4"></svg>
             </p-inputicon>
@@ -69,14 +75,12 @@
               autocomplete="off"
               placeholder="••••••••••"
               inputId="senha"
+              [attr.aria-describedby]="isInvalid('senha') ? 'senha-erro' : null"
               fluid
               [pt]="passwordInputPt"
             />
           </p-iconfield>
-          @if (getErrorMessage('senha'); as msg) {
-            <form-error [message]="msg" errorId="senha-erro" />
-          }
-        </div>
+        </form-field>
         <p-button
           type="submit"
           [pt]="{ root: { class: 'w-full!' } }"

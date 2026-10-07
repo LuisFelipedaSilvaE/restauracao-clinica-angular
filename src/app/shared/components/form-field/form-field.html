@@ -1,0 +1,19 @@
+<div class="flex min-w-0 flex-col gap-1">
+  <label
+    [for]="inputId()"
+    [id]="inputId() + '-label'"
+    class="flex items-center gap-1 text-xs font-medium text-content-primary"
+  >
+    {{ label() }}
+    @if (required()) {
+      <span class="text-status-error-text" aria-hidden="true">*</span>
+      <span class="sr-only">(obrigatório)</span>
+    }
+  </label>
+
+  <ng-content />
+
+  @if (errorMessage(); as message) {
+    <form-error [message]="message" [errorId]="resolvedErrorId()" />
+  }
+</div>

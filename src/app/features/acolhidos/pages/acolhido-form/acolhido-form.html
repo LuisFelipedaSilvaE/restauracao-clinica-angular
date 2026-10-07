@@ -37,13 +37,12 @@
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados pessoais</legend>
 
-        <div class="space-y-1 min-w-0">
-          <label
-            for="nome"
-            class="flex items-center gap-1 text-xs font-medium text-content-primary"
-          >
-            Nome completo<span class="text-status-error-text" aria-hidden="true">*</span>
-          </label>
+        <form-field
+          label="Nome completo"
+          inputId="nome"
+          required
+          [errorMessage]="getErrorMessage('nome')"
+        >
           <input
             pInputText
             id="nome"
@@ -55,19 +54,9 @@
             fluid
             autocomplete="name"
           />
-
-          @if (getErrorMessage('nome'); as msg) {
-            <form-error [message]="msg" errorId="nome-erro" />
-          }
-        </div>
+        </form-field>
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-1 min-w-0">
-            <label
-              for="cpf"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              CPF<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
             <input
               pInputText
               id="cpf"
@@ -81,19 +70,14 @@
               inputmode="numeric"
               autocomplete="off"
             />
+          </form-field>
 
-            @if (getErrorMessage('cpf'); as msg) {
-              <form-error [message]="msg" errorId="cpf-erro" />
-            }
-          </div>
-
-          <div class="space-y-1 min-w-0">
-            <label
-              for="dataNascimento"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Data de nascimento<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Data de nascimento"
+            inputId="dataNascimento"
+            required
+            [errorMessage]="getErrorMessage('dataNascimento')"
+          >
             <p-datepicker
               inputId="dataNascimento"
               name="dataNascimento"
@@ -107,24 +91,19 @@
               fluid
               [maxDate]="hoje"
             />
-
-            @if (getErrorMessage('dataNascimento'); as msg) {
-              <form-error [message]="msg" errorId="dataNascimento-erro" />
-            }
-          </div>
+          </form-field>
         </div>
       </fieldset>
       <p-divider />
       <fieldset class="space-y-4">
         <legend class="font-semibold">Contato e localização</legend>
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-1 min-w-0">
-            <label
-              for="email"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              E-mail<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="E-mail"
+            inputId="email"
+            required
+            [errorMessage]="getErrorMessage('email')"
+          >
             <input
               pInputText
               id="email"
@@ -137,19 +116,14 @@
               type="email"
               autocomplete="email"
             />
+          </form-field>
 
-            @if (getErrorMessage('email'); as msg) {
-              <form-error [message]="msg" errorId="email-erro" />
-            }
-          </div>
-
-          <div class="space-y-1 min-w-0">
-            <label
-              for="telefone"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Telefone<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Telefone"
+            inputId="telefone"
+            required
+            [errorMessage]="getErrorMessage('telefone')"
+          >
             <input
               pInputText
               id="telefone"
@@ -163,19 +137,10 @@
               inputmode="tel"
               autocomplete="tel"
             />
-            @if (getErrorMessage('telefone'); as msg) {
-              <form-error [message]="msg" errorId="telefone-erro" />
-            }
-          </div>
+          </form-field>
         </div>
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-1 min-w-0">
-            <label
-              for="cep"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              CEP<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field label="CEP" inputId="cep" required [errorMessage]="getErrorMessage('cep')">
             <input
               pInputText
               id="cep"
@@ -189,24 +154,19 @@
               inputmode="numeric"
               autocomplete="postal-code"
             />
-
-            @if (getErrorMessage('cep'); as msg) {
-              <form-error [message]="msg" errorId="cep-erro" />
-            }
-          </div>
+          </form-field>
         </div>
       </fieldset>
       <p-divider />
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados do acolhimento</legend>
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-1 min-w-0">
-            <label
-              for="modalidadeId"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Modalidade<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Modalidade"
+            inputId="modalidadeId"
+            required
+            [errorMessage]="getErrorMessage('modalidadeId')"
+          >
             <p-select
               inputId="modalidadeId"
               name="modalidadeId"
@@ -219,19 +179,14 @@
               optionLabel="descricao"
               optionValue="id"
             />
+          </form-field>
 
-            @if (getErrorMessage('modalidadeId'); as msg) {
-              <form-error [message]="msg" errorId="modalidadeId-erro" />
-            }
-          </div>
-
-          <div class="space-y-1 min-w-0">
-            <label
-              for="dataEntrada"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Data de entrada<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Data de entrada"
+            inputId="dataEntrada"
+            required
+            [errorMessage]="getErrorMessage('dataEntrada')"
+          >
             <p-datepicker
               inputId="dataEntrada"
               name="dataEntrada"
@@ -244,20 +199,15 @@
               appendTo="body"
               fluid
             />
-
-            @if (getErrorMessage('dataEntrada'); as msg) {
-              <form-error [message]="msg" errorId="dataEntrada-erro" />
-            }
-          </div>
+          </form-field>
 
           @if (modo() === 'atualizacao') {
-            <div class="space-y-1 min-w-0">
-              <label
-                for="status"
-                class="flex items-center gap-1 text-xs font-medium text-content-primary"
-              >
-                Status<span class="text-status-error-text" aria-hidden="true">*</span>
-              </label>
+            <form-field
+              label="Status"
+              inputId="status"
+              required
+              [errorMessage]="getErrorMessage('status')"
+            >
               <p-select
                 inputId="status"
                 name="status"
@@ -268,22 +218,17 @@
                 appendTo="body"
                 fluid
               />
-
-              @if (getErrorMessage('status'); as msg) {
-                <form-error [message]="msg" errorId="status-erro" />
-              }
-            </div>
+            </form-field>
           }
         </div>
 
         @if (modo() === 'atualizacao') {
-          <div class="space-y-1 min-w-0">
-            <label
-              for="etapaTratamento"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Etapa de tratamento<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Etapa de tratamento"
+            inputId="etapaTratamento"
+            required
+            [errorMessage]="getErrorMessage('etapaTratamento')"
+          >
             <p-select
               inputId="etapaTratamento"
               name="etapaTratamento"
@@ -294,24 +239,19 @@
               appendTo="body"
               fluid
             />
-
-            @if (getErrorMessage('etapaTratamento'); as msg) {
-              <form-error [message]="msg" errorId="etapaTratamento-erro" />
-            }
-          </div>
+          </form-field>
         }
       </fieldset>
       <p-divider />
       <fieldset class="space-y-4">
         <legend class="font-semibold">Pagamento e isenção</legend>
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="space-y-1 min-w-0">
-            <label
-              for="valorPagamento"
-              class="flex items-center gap-1 text-xs font-medium text-content-primary"
-            >
-              Valor do pagamento<span class="text-status-error-text" aria-hidden="true">*</span>
-            </label>
+          <form-field
+            label="Valor do pagamento"
+            inputId="valorPagamento"
+            required
+            [errorMessage]="getErrorMessage('valorPagamento')"
+          >
             <p-inputnumber
               inputId="valorPagamento"
               name="valorPagamento"
@@ -323,18 +263,13 @@
               [minFractionDigits]="2"
               [maxFractionDigits]="2"
               [invalid]="isInvalid('valorPagamento')"
+              [ariaDescribedBy]="isInvalid('valorPagamento') ? 'valorPagamento-erro' : undefined"
               placeholder="R$ 0,00"
               fluid
             />
-            @if (getErrorMessage('valorPagamento'); as msg) {
-              <form-error [message]="msg" errorId="valorPagamento-erro" />
-            }
-          </div>
+          </form-field>
         </div>
-        <div class="space-y-1">
-          <label for="observacaoIsencao" class="text-xs font-medium text-content-primary"
-            >Observação sobre isenção</label
-          >
+        <form-field label="Observação sobre isenção" inputId="observacaoIsencao">
           <textarea
             pTextarea
             id="observacaoIsencao"
@@ -344,7 +279,7 @@
             class="w-full resize-y"
             placeholder="Informe o motivo da isenção ou observações sobre o pagamento."
           ></textarea>
-        </div>
+        </form-field>
       </fieldset>
       <p-divider />
       <div class="flex flex-wrap justify-end gap-2">
