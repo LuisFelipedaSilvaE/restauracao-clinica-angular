@@ -98,35 +98,6 @@ export class AcolhidosLista {
     ];
   });
 
-  private obterSeverity(etapaTratamento: string): AcolhidoCardContent['severity'] {
-    const severidades: Record<string, AcolhidoCardContent['severity']> = {
-      'Em tratamento': 'success',
-      'Próximo da alta': 'warn',
-      'Alta vencida': 'danger',
-      'Alta concedida': 'info',
-      Desligado: 'secondary',
-    };
-
-    return severidades[etapaTratamento] ?? 'secondary';
-  }
-
-  private calcularPrevisaoDeAlta(dataEntrada: Date): Date {
-    const previsaoDeAlta = new Date(dataEntrada);
-    previsaoDeAlta.setMonth(previsaoDeAlta.getMonth() + 3);
-
-    return previsaoDeAlta;
-  }
-
-  private calcularTempoInternado(dataEntrada: Date): string {
-    const diasTotais = Math.max(0, Math.floor((Date.now() - dataEntrada.getTime()) / 86_400_000));
-    const meses = Math.floor(diasTotais / 30);
-    const dias = diasTotais % 30;
-
-    if (meses === 0) return `${dias}d`;
-
-    return `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
-  }
-
   protected readonly dataviewPt = {
     root: {
       class: 'flex! min-w-0 flex-col gap-2',
@@ -185,9 +156,9 @@ export class AcolhidosLista {
     return acolhidosFiltrados.map((acolhido) => {
       return {
         ...acolhido,
-        severity: this.obterSeverity(acolhido.etapaTratamento),
-        previsaoDeAlta: this.calcularPrevisaoDeAlta(acolhido.dataEntrada),
-        tempoInternado: this.calcularTempoInternado(acolhido.dataEntrada),
+        severity: this.acolhidosService.obterSeverity(acolhido.etapaTratamento),
+        previsaoDeAlta: this.acolhidosService.calcularPrevisaoDeAlta(acolhido.dataEntrada),
+        tempoInternado: this.acolhidosService.calcularTempoInternado(acolhido.dataEntrada),
       };
     });
   });
