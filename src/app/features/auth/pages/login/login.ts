@@ -7,7 +7,6 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PasswordModule } from 'primeng/password';
@@ -29,6 +28,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth-service';
 import { Usuario } from '../../../../core/guards/models/usuario.model';
 import { Logo } from '../../../../shared/components/logo/logo';
+import { FormError } from '../../../../shared/components/form-error/form-error';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +41,7 @@ import { Logo } from '../../../../shared/components/logo/logo';
     InputIconModule,
     ButtonModule,
     FormsModule,
-    MessageModule,
+    FormError,
     ToastModule,
     LucideDynamicIcon,
     LucideHeartHandshake,
@@ -65,11 +65,6 @@ export class Login implements OnInit {
   protected readonly loginButtonIcon = computed(() =>
     this.requestActive() ? LucideLoaderCircle : LucideLogIn,
   );
-  protected readonly messagePt = {
-    contentWrapper: {
-      class: 'pl-2 rounded-sm border-l-4 border-status-error-border-strong',
-    },
-  };
   protected readonly passwordInputPt = {
     pcInputText: { root: { class: 'placeholder:tracking-widest' } },
   };

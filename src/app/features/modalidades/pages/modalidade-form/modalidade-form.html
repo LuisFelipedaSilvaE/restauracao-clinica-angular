@@ -28,9 +28,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('descricao'); as msg) {
-            <p-message severity="error" size="small" variant="simple" [pt]="messagePt" class="mt-1">
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="descricao-erro" />
           }
         </div>
 
@@ -52,9 +50,7 @@
             Opcional. Usado na emissão de documentos e comprovantes.
           </p>
           @if (getErrorMessage('cnpj'); as msg) {
-            <p-message severity="error" size="small" variant="simple" [pt]="messagePt" class="mt-1">
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="cnpj-erro" />
           }
         </div>
 
@@ -76,9 +72,7 @@
           />
           <p class="text-xs text-content-secondary">Capacidade total oferecida.</p>
           @if (getErrorMessage('maxVagas'); as msg) {
-            <p-message severity="error" size="small" variant="simple" [pt]="messagePt" class="mt-1">
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="maxVagas-erro" />
           }
         </div>
 
@@ -99,9 +93,7 @@
             Define se o acolhido precisa pagar para participar desta modalidade.
           </p>
           @if (getErrorMessage('pagamento'); as msg) {
-            <p-message severity="error" size="small" variant="simple" [pt]="messagePt" class="mt-1">
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="pagamento-erro" />
           }
         </div>
 
@@ -111,9 +103,7 @@
           </label>
           <p-colorpicker formControlName="cor" inputId="cor" appendTo="body" />
           @if (getErrorMessage('cor'); as msg) {
-            <p-message severity="error" size="small" variant="simple" [pt]="messagePt">
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="cor-erro" />
           }
         </div>
         <div class="flex flex-col gap-2">

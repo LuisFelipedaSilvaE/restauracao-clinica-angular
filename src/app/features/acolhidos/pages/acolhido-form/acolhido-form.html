@@ -57,14 +57,7 @@
           />
 
           @if (getErrorMessage('nome'); as msg) {
-            <p-message
-              id="nome-erro"
-              severity="error"
-              size="small"
-              variant="simple"
-              customErrorMessage
-              >{{ msg }}</p-message
-            >
+            <form-error [message]="msg" errorId="nome-erro" />
           }
         </div>
         <div class="grid gap-4 sm:grid-cols-2">
@@ -90,14 +83,7 @@
             />
 
             @if (getErrorMessage('cpf'); as msg) {
-              <p-message
-                id="cpf-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="cpf-erro" />
             }
           </div>
 
@@ -123,14 +109,7 @@
             />
 
             @if (getErrorMessage('dataNascimento'); as msg) {
-              <p-message
-                id="dataNascimento-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="dataNascimento-erro" />
             }
           </div>
         </div>
@@ -160,14 +139,7 @@
             />
 
             @if (getErrorMessage('email'); as msg) {
-              <p-message
-                id="email-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="email-erro" />
             }
           </div>
 
@@ -192,14 +164,7 @@
               autocomplete="tel"
             />
             @if (getErrorMessage('telefone'); as msg) {
-              <p-message
-                id="telefone-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="telefone-erro" />
             }
           </div>
         </div>
@@ -226,14 +191,7 @@
             />
 
             @if (getErrorMessage('cep'); as msg) {
-              <p-message
-                id="cep-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="cep-erro" />
             }
           </div>
         </div>
@@ -263,14 +221,7 @@
             />
 
             @if (getErrorMessage('modalidadeId'); as msg) {
-              <p-message
-                id="modalidadeId-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="modalidadeId-erro" />
             }
           </div>
 
@@ -295,14 +246,7 @@
             />
 
             @if (getErrorMessage('dataEntrada'); as msg) {
-              <p-message
-                id="dataEntrada-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="dataEntrada-erro" />
             }
           </div>
 
@@ -326,14 +270,7 @@
               />
 
               @if (getErrorMessage('status'); as msg) {
-                <p-message
-                  id="status-erro"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  customErrorMessage
-                  >{{ msg }}</p-message
-                >
+                <form-error [message]="msg" errorId="status-erro" />
               }
             </div>
           }
@@ -359,14 +296,7 @@
             />
 
             @if (getErrorMessage('etapaTratamento'); as msg) {
-              <p-message
-                id="etapaTratamento-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="etapaTratamento-erro" />
             }
           </div>
         }
@@ -397,14 +327,7 @@
               fluid
             />
             @if (getErrorMessage('valorPagamento'); as msg) {
-              <p-message
-                id="valorPagamento-erro"
-                severity="error"
-                size="small"
-                variant="simple"
-                customErrorMessage
-                >{{ msg }}</p-message
-              >
+              <form-error [message]="msg" errorId="valorPagamento-erro" />
             }
           </div>
         </div>

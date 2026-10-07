@@ -11,7 +11,6 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 
@@ -25,6 +24,7 @@ import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content'
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
+import { FormError } from '../../../../shared/components/form-error/form-error';
 
 @Component({
   selector: 'app-modalidade-form',
@@ -38,12 +38,12 @@ import { integerValidator } from '../../../../shared/validators/integer-validato
     InputNumberModule,
     ColorPickerModule,
     SelectButtonModule,
-    MessageModule,
     SkeletonModule,
     ReactiveFormsModule,
     Card,
     FormHeader,
     ModalidadeCard,
+    FormError,
   ],
   templateUrl: './modalidade-form.html',
   styleUrl: './modalidade-form.css',
@@ -86,11 +86,6 @@ export class ModalidadeForm implements OnInit {
     cor: 'Cor de identificação',
   };
 
-  protected readonly messagePt = {
-    contentWrapper: {
-      class: 'pl-2 rounded-sm border-l-4 border-status-error-border-strong',
-    },
-  };
 
   protected readonly pagamentoOptions = [
     { label: 'Sim', value: true },

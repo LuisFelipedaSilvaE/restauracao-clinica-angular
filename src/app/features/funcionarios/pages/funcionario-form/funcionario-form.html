@@ -18,9 +18,7 @@
           autocomplete="off"
         />
         @if (getErrorMessage('nome'); as msg) {
-          <p-message severity="error" size="small" variant="simple" customErrorMessage>
-            {{ msg }}
-          </p-message>
+          <form-error [message]="msg" errorId="nome-erro" />
         }
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
@@ -40,9 +38,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('cpf'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="cpf-erro" />
           }
         </div>
         <div class="space-y-1">
@@ -66,9 +62,7 @@
             fluid
           />
           @if (getErrorMessage('dataNascimento'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="dataNascimento-erro" />
           }
         </div>
       </div>
@@ -96,9 +90,7 @@
           fluid
         />
         @if (getErrorMessage('dataAdmissao'); as msg) {
-          <p-message severity="error" size="small" variant="simple" customErrorMessage>
-            {{ msg }}
-          </p-message>
+          <form-error [message]="msg" errorId="dataAdmissao-erro" />
         }
       </div>
     </fieldset>
@@ -121,9 +113,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('email'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="email-erro" />
           }
         </div>
         <div class="space-y-1">
@@ -143,9 +133,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('telefone'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="telefone-erro" />
           }
         </div>
       </div>
@@ -170,9 +158,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('cep'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="cep-erro" />
           }
         </div>
         <ng-container formGroupName="endereco">
@@ -192,9 +178,7 @@
               autocomplete="off"
             />
             @if (getErrorMessage('endereco.bairro'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="bairro-erro" />
             }
           </div>
           <div class="space-y-1">
@@ -212,9 +196,7 @@
               autocomplete="off"
             />
             @if (getErrorMessage('endereco.numero'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="numero-erro" />
             }
           </div>
           <div class="space-y-1 sm:col-span-full">
@@ -236,9 +218,7 @@
                 autocomplete="off"
               />
               @if (getErrorMessage('endereco.logradouro'); as msg) {
-                <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                  {{ msg }}
-                </p-message>
+                <form-error [message]="msg" errorId="logradouro-erro" />
               }
             </div>
           </div>
@@ -259,9 +239,7 @@
               autocomplete="off"
             />
             @if (getErrorMessage('endereco.complemento'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="complemento-erro" />
             }
           </div>
           <div class="space-y-1 sm:col-span-3">
@@ -279,9 +257,7 @@
               autocomplete="off"
             />
             @if (getErrorMessage('endereco.cidade'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="cidade-erro" />
             }
           </div>
           <div class="space-y-1 sm:col-span-3">
@@ -299,9 +275,7 @@
                 fluid
               />
               @if (getErrorMessage('endereco.estado'); as msg) {
-                <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                  {{ msg }}
-                </p-message>
+                <form-error [message]="msg" errorId="estado-erro" />
               }
             </div>
           </div>
@@ -332,9 +306,7 @@
               fluid
             />
             @if (getErrorMessage('user.cargo'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="cargo-erro" />
             }
           </div>
         </div>
@@ -354,9 +326,7 @@
             autocomplete="off"
           />
           @if (getErrorMessage('user.username'); as msg) {
-            <p-message severity="error" size="small" variant="simple" customErrorMessage>
-              {{ msg }}
-            </p-message>
+            <form-error [message]="msg" errorId="username-erro" />
           }
         </div>
         <div class="space-y-1">
@@ -381,9 +351,7 @@
               fluid
             />
             @if (getErrorMessage('user.password'); as msg) {
-              <p-message severity="error" size="small" variant="simple" customErrorMessage>
-                {{ msg }}
-              </p-message>
+              <form-error [message]="msg" errorId="password-erro" />
             }
           </div>
         </div>

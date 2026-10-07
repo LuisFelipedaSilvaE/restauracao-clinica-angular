@@ -3,8 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
-import { CustomErrorMessage } from '../../../../shared/directives/custom-error-message';
+import { FormError } from '../../../../shared/components/form-error/form-error';
 import { CargosService } from '../../services/cargos-service';
 import { MessageService } from 'primeng/api';
 import { Cargo } from '../../interfaces/cargo';
@@ -16,9 +15,8 @@ import { CargoRequest } from '../../interfaces/cargo-request';
     DialogModule,
     ButtonModule,
     InputTextModule,
-    MessageModule,
     ReactiveFormsModule,
-    CustomErrorMessage,
+    FormError,
   ],
   templateUrl: './cargo-form.html',
   styleUrl: './cargo-form.css',

@@ -12,11 +12,10 @@ import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
-import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { Card } from '../../../../shared/components/card/card';
-import { CustomErrorMessage } from '../../../../shared/directives/custom-error-message';
+import { FormError } from '../../../../shared/components/form-error/form-error';
 import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 import { Acolhido } from '../../interfaces/acolhido';
 
@@ -54,9 +53,8 @@ const datasCoerentes: ValidatorFn = (form) => {
     InputNumberModule,
     TextareaModule,
     DividerModule,
-    MessageModule,
     SkeletonModule,
-    CustomErrorMessage,
+    FormError,
   ],
   templateUrl: './acolhido-form.html',
   styleUrl: './acolhido-form.css',

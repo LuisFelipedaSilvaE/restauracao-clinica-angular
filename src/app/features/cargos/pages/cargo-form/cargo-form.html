@@ -28,9 +28,7 @@
         autocomplete="off"
       />
       @if (getErrorMessage('nome'); as msg) {
-        <p-message severity="error" size="small" variant="simple" customErrorMessage>
-          {{ msg }}
-        </p-message>
+        <form-error [message]="msg" errorId="nome-erro" />
       }
     </div>
   </form>
