@@ -1,0 +1,105 @@
+<section class="grid min-w-0 gap-4 xl:grid-cols-2" aria-label="Dados gerais do acolhido">
+  <prontuario-section-card
+    title="Dados pessoais"
+    description="Identificação e informações básicas"
+    [icon]="dadosPessoaisIcon"
+  >
+    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <prontuario-info-field label="Nome completo">
+        {{ acolhido().nome }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Data de nascimento">
+        {{ acolhido().dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        ({{ acolhido().idade }} anos)
+      </prontuario-info-field>
+
+      <prontuario-info-field label="CPF">
+        {{ acolhido().cpf | cpf }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Triagem">
+        {{ acolhido().id_triagem ? 'T-' + acolhido().id_triagem : 'Não vinculada' }}
+      </prontuario-info-field>
+    </div>
+  </prontuario-section-card>
+
+  <prontuario-section-card
+    title="Contato"
+    description="Formas de contato disponíveis"
+    [icon]="contatoIcon"
+  >
+    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <prontuario-info-field label="CEP">
+        {{ acolhido().cep }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Telefone">
+        {{ acolhido().telefone | telefone }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="E-mail">
+        {{ acolhido().email }}
+      </prontuario-info-field>
+    </div>
+  </prontuario-section-card>
+
+  <prontuario-section-card
+    title="Internação"
+    description="Dados do processo de acolhimento atual"
+    [icon]="internacaoIcon"
+  >
+    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <prontuario-info-field label="Data de entrada">
+        {{ acolhido().dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Previsão de alta">
+        {{ acolhido().previsaoDeAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Tempo internado">
+        {{ acolhido().tempoInternado }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Modalidade">
+        {{ acolhido().modalidade.descricao }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Etapa do tratamento">
+        <p-tag [value]="acolhido().etapaTratamento" [severity]="acolhido().severity" />
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Status">
+        <p-tag
+          [value]="acolhido().status"
+          [severity]="acolhido().status === 'Ativo' ? 'success' : 'secondary'"
+        />
+      </prontuario-info-field>
+    </div>
+  </prontuario-section-card>
+
+  <prontuario-section-card
+    title="Pagamento e isenção"
+    description="Informações financeiras do acolhimento"
+    [icon]="pagamentoIcon"
+  >
+    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <prontuario-info-field label="Valor do pagamento">
+        {{ acolhido().valorPagamento | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Condição">
+        {{ acolhido().valorPagamento > 0 ? 'Pagamento ativo' : 'Isento' }}
+      </prontuario-info-field>
+
+      @if (acolhido().observacaoIsencao) {
+        <div class="sm:col-span-2">
+          <prontuario-info-field label="Observação sobre a isenção">
+            {{ acolhido().observacaoIsencao }}
+          </prontuario-info-field>
+        </div>
+      }
+    </div>
+  </prontuario-section-card>
+</section>

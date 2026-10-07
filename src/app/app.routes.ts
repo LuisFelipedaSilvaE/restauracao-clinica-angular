@@ -12,6 +12,8 @@ import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
 import { Login } from './features/auth/pages/login/login';
+import { Prontuario } from './features/prontuario/prontuario';
+import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
 
 export const routes: Routes = [
   {
@@ -68,6 +70,22 @@ export const routes: Routes = [
         path: 'acolhidos/:id/editar',
         component: AcolhidoForm,
         canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'acolhidos/:id/prontuario',
+        component: Prontuario,
+        canActivate: [roleGuard('ADMIN')],
+        children: [
+          {
+            path: '',
+            redirectTo: 'dados-gerais',
+            pathMatch: 'full',
+          },
+          {
+            path: 'dados-gerais',
+            component: DadosGerais,
+          },
+        ],
       },
       {
         path: 'funcionarios',

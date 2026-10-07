@@ -1,0 +1,161 @@
+<back-button label="Voltar para lista de acolhidos" url="/acolhidos" />
+
+<card class="border-l-4 p-4! sm:p-5!" [style.border-left-color]="data().modalidade.cor">
+  <div class="flex min-w-0 flex-col gap-5">
+    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex min-w-0 items-center gap-3">
+        <span
+          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl"
+          [profileColor]="'#be222d'"
+        >
+          {{ data().nome | siglaNome }}
+        </span>
+
+        <div class="min-w-0">
+          <div class="mb-1 flex min-w-0 flex-wrap items-center gap-2">
+            <span class="text-xs font-medium text-content-secondary">
+              P-{{ data().id | number: '2.0-0' }}
+            </span>
+            <p-tag [value]="data().etapaTratamento" [severity]="data().severity" />
+          </div>
+          <h1 class="truncate text-xl font-semibold text-content-primary sm:text-2xl">
+            {{ data().nome }}
+          </h1>
+          <p class="mt-1 text-sm text-content-secondary">{{ data().idade }} anos</p>
+        </div>
+      </div>
+
+      <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
+        @if (estaAtivo()) {
+          <p-button
+            label="Editar dados"
+            severity="secondary"
+            variant="outlined"
+            [pt]="actionButtonPt"
+            [routerLink]="['/acolhidos', data().id, 'editar']"
+          >
+            <ng-template #icon>
+              <svg lucidePencil class="h-4 w-4"></svg>
+            </ng-template>
+          </p-button>
+        }
+
+        <p-button
+          label="Gerar documento"
+          severity="secondary"
+          variant="outlined"
+          [pt]="actionButtonPt"
+        >
+          <ng-template #icon>
+            <svg lucideFileText class="h-4 w-4"></svg>
+          </ng-template>
+        </p-button>
+        <p-button
+          [label]="toggleConfig().label"
+          [severity]="toggleConfig().severity"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="statusChange.emit()"
+        >
+          <ng-template #icon>
+            <svg [lucideIcon]="toggleConfig().icon" class="h-4 w-4"></svg>
+          </ng-template>
+        </p-button>
+        @if (estaAtivo()) {
+          <p-button label="Registrar alta" severity="primary" [pt]="actionButtonPt">
+            <ng-template #icon>
+              <svg lucideLogOut class="h-4 w-4"></svg>
+            </ng-template>
+          </p-button>
+        }
+      </div>
+    </div>
+
+    <div class="border-t border-border-default pt-4">
+      <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="data().modalidade.cor"
+          >
+            <svg lucideLayers class="h-4 w-4"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+              Modalidade
+            </dt>
+            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+              {{ data().modalidade.descricao }}
+            </dd>
+          </div>
+        </div>
+
+        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideCalendarDays class="h-4 w-4"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+              Data de entrada
+            </dt>
+            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+              {{ data().dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+            </dd>
+          </div>
+        </div>
+
+        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideClock3 class="h-4 w-4"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+              Tempo internado
+            </dt>
+            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+              {{ data().tempoInternado }}
+            </dd>
+          </div>
+        </div>
+
+        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideCalendarCheck class="h-4 w-4"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+              Previsão de alta
+            </dt>
+            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+              {{ data().previsaoDeAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+            </dd>
+          </div>
+        </div>
+
+        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideIdCard class="h-4 w-4"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">CPF</dt>
+            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+              {{ data().cpf | cpf }}
+            </dd>
+          </div>
+        </div>
+      </dl>
+    </div>
+  </div>
+</card>

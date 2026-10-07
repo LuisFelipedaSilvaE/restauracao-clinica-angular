@@ -1,0 +1,27 @@
+@if (headerData(); as data) {
+  <prontuario-header [data]="data" (statusChange)="confirmarAlteracao.set(true)" />
+
+  <p-tabs value="dados-gerais" scrollable>
+    <p-tablist>
+      @for (aba of abas; track aba.route) {
+        <p-tab [value]="aba.route" [routerLink]="aba.route">
+          <div class="flex items-center gap-2 whitespace-nowrap">
+            <svg [lucideIcon]="aba.icon" class="h-4 w-4"></svg>
+            <span>{{ aba.label }}</span>
+          </div>
+        </p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+
+  <router-outlet [routerOutletData]="data" />
+}
+
+<confirm-dialog
+  [(visible)]="confirmarAlteracao"
+  [title]="toggleLabel() + ' acolhido'"
+  [message]="toggleMessage()"
+  [confirmLabel]="toggleLabel()"
+  [severity]="toggleSeverity()"
+  (onConfirm)="alterarStatus()"
+/>
