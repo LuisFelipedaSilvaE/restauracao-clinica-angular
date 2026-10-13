@@ -1,14 +1,13 @@
 import {
-  LucideBriefcase,
   LucideBedSingle,
+  LucideBriefcase,
   LucideChartColumn,
-  LucideClipboardCheck,
   LucideFileText,
   LucideIcon,
   LucideLayers,
   LucideLayoutDashboard,
   LucideStethoscope,
-  LucideUsersRound,
+  LucideUsersRound
 } from '@lucide/angular';
 
 export interface NavigationRoute {
@@ -25,6 +24,5 @@ export const NAVIGATION_ROUTES: NavigationRoute[] = [
   { label: 'Funcionários', route: 'funcionarios', icon: LucideBriefcase },
   { label: 'Relatórios', route: 'relatorios', icon: LucideChartColumn },
   { label: 'Declarações', route: 'declaracoes', icon: LucideFileText },
-  { label: 'Laudos', route: 'laudos', icon: LucideClipboardCheck },
   { label: 'Triagens', route: 'triagens', icon: LucideStethoscope },
 ];
