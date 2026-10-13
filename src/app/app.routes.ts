@@ -1,19 +1,22 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
-import { Layout } from './layout/layout';
-import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
-import { ModalidadeForm } from './features/modalidades/pages/modalidade-form/modalidade-form';
-import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-detalhada/modalidade-detalhada';
-import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
 import { ErrorPage } from './core/pages/error-page/error-page';
+import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
+import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
+import { Login } from './features/auth/pages/login/login';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
 import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
-import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
-import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
-import { Login } from './features/auth/pages/login/login';
+import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
+import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-detalhada/modalidade-detalhada';
+import { ModalidadeForm } from './features/modalidades/pages/modalidade-form/modalidade-form';
+import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
 import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
+import { TriagemDetalhada } from './features/triagens/pages/triagem-detalhada/triagem-detalhada';
+import { TriagemForm } from './features/triagens/pages/triagem-form/triagem-form';
+import { TriagensLista } from './features/triagens/pages/triagens-lista/triagens-lista';
+import { Layout } from './layout/layout';
 
 export const routes: Routes = [
   {
@@ -105,6 +108,26 @@ export const routes: Routes = [
       {
         path: 'funcionarios/:id',
         component: FuncionarioDetalhado,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'triagens/criar',
+        component: TriagemForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'triagens',
+        component: TriagensLista,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'triagens/:id',
+        component: TriagemDetalhada,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'triagens/:id/editar',
+        component: TriagemForm,
         canActivate: [roleGuard('ADMIN')],
       },
     ],
