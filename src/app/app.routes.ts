@@ -8,6 +8,9 @@ import { Login } from './features/auth/pages/login/login';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
 import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
+import { InternacaoDetalhada } from './features/internacoes/pages/internacao-detalhada/internacao-detalhada';
+import { InternacaoForm } from './features/internacoes/pages/internacao-form/internacao-form';
+import { InternacoesLista } from './features/internacoes/pages/internacoes-lista/internacoes-lista';
 import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-detalhada/modalidade-detalhada';
 import { ModalidadeForm } from './features/modalidades/pages/modalidade-form/modalidade-form';
 import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
@@ -57,6 +60,26 @@ export const routes: Routes = [
       {
         path: 'modalidades/:id',
         component: ModalidadeDetalhada,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'internacoes',
+        component: InternacoesLista,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'internacoes/criar',
+        component: InternacaoForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'internacoes/:id/editar',
+        component: InternacaoForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'internacoes/:id',
+        component: InternacaoDetalhada,
         canActivate: [roleGuard('ADMIN')],
       },
       {
