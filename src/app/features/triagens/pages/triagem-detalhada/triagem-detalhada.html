@@ -1,0 +1,125 @@
+<back-button label="Voltar para triagens" url="/triagens" />
+
+@if (carregando()) {
+  <card class="flex flex-col gap-6 p-6!">
+    <span class="sr-only" role="status">Carregando dados da triagem...</span>
+    <div class="flex items-center justify-between gap-4" aria-hidden="true">
+      <div class="flex items-center gap-2">
+        <p-skeleton class="h-15! w-15! shrink-0! rounded-full!" />
+        <div class="flex flex-col gap-2">
+          <div class="flex gap-2">
+            <p-skeleton class="h-6! w-36! rounded-md!" />
+            <p-skeleton class="h-4! w-12! rounded-full!" />
+          </div>
+          <p-skeleton class="h-5! w-16! rounded-full!" />
+        </div>
+      </div>
+      <p-skeleton class="h-10! w-28! rounded-md!" />
+    </div>
+  </card>
+
+  <card class="flex flex-col gap-5 p-6!">
+    <p-skeleton class="h-5! w-48! rounded-md!" />
+    <div class="grid gap-4 sm:grid-cols-2 mt-4">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="flex items-center gap-2">
+          <p-skeleton class="h-8! w-8! shrink-0! rounded-md!" />
+          <div class="flex flex-1 flex-col gap-2">
+            <p-skeleton class="h-3! w-20! rounded-md!" />
+            <p-skeleton class="h-4! w-full! rounded-md!" />
+          </div>
+        </div>
+      }
+    </div>
+    <p-divider />
+    <div class="flex flex-col gap-2">
+      <p-skeleton class="h-3! w-24! rounded-md!" />
+      <p-skeleton class="h-4! w-3/4! rounded-md!" />
+    </div>
+  </card>
+} @else if (triagem(); as triagem) {
+  <card class="flex justify-between gap-2 items-center">
+    <div class="flex gap-2">
+      <span
+        class="flex h-15 w-15 shrink-0 items-center justify-center rounded-full text-xl font-semibold"
+        [profileColor]="'#be222d'"
+        >{{ triagem.nomePossivelAcolhido | siglaNome }}
+      </span>
+      <div class="flex flex-col gap-1">
+        <h3 class="font-semibold text-xl">{{ triagem.nomePossivelAcolhido }}</h3>
+        <div class="flex gap-2">
+          <p-tag [value]="triagem.modalidade.descricao" [customTag]="triagem.modalidade.cor" />
+          <p-tag [severity]="statusTagSeverity()" [value]="triagem.status" />
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['']">
+        <svg lucidePencil class="h-4 w-4"></svg>
+      </p-button>
+      <p-button label="Remover" severity="danger" variant="outlined">
+        <ng-template #icon>
+          <svg lucideTrash2 class="h-5 w-5"></svg>
+        </ng-template>
+      </p-button>
+    </div>
+  </card>
+  <card>
+    <p class="font-semibold">Detalhes do agendamento</p>
+    <div class="grid gap-4 sm:grid-cols-2 mt-4">
+      <div class="flex gap-2 items-center">
+        <div
+          class="flex justify-center items-center shrink-0 h-8 w-8 rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideCalendar class="h-4 w-4"></svg>
+        </div>
+        <div>
+          <p class="uppercase text-content-secondary text-sm">Data e Horário</p>
+          <p class="font-heading text-md font-medium">
+            {{
+              triagem.dataAgendada
+                ? (triagem.dataAgendada | date: 'dd/MM/yyyy - Hh:mm')
+                : 'Sem data definida'
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <div
+          class="flex justify-center items-center shrink-0 h-8 w-8 rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucidePhone class="h-4 w-4"></svg>
+        </div>
+        <div>
+          <p class="uppercase text-content-secondary text-sm">Telefone</p>
+          <p class="font-heading text-md font-medium">
+            {{ triagem.telefone }}
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <div
+          class="flex justify-center items-center shrink-0 h-8 w-8 rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideHandshake class="h-4 w-4"></svg>
+        </div>
+        <div>
+          <p class="uppercase text-content-secondary text-sm">Modalidade</p>
+          <p class="font-heading text-md font-medium">
+            {{ triagem.modalidade.descricao }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <p-divider />
+    <div>
+      <p class="uppercase text-content-secondary text-sm">Observações</p>
+      <p class="font-heading text-md font-medium">
+        {{ triagem.observacaoEntrevista }}
+      </p>
+    </div>
+  </card>
+}
