@@ -15,7 +15,7 @@ import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { AcolhidoCardContent } from '../../interfaces/acolhido-card-content';
 import { MenuModule } from 'primeng/menu';
-import { AcaoMenu } from '../../interfaces/acao-menu';
+import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 
 @Component({
