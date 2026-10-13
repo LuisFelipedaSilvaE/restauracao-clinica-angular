@@ -1,0 +1,277 @@
+<form-header [data]="headerInfo()" btnLabel="Voltar para internações" btnUrl="/internacoes" />
+
+@if (carregando()) {
+  <card aria-busy="true">
+    <span class="sr-only" role="status">Carregando dados da internação...</span>
+    <div class="space-y-5" aria-hidden="true">
+      @for (_ of [1, 2]; track $index) {
+        <div class="space-y-4">
+          <p-skeleton width="12rem" height="1rem" />
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="flex flex-col gap-2 sm:col-span-2">
+              <p-skeleton class="h-4! w-40! rounded-md!" />
+              <p-skeleton class="h-10! w-full! rounded-lg!" />
+            </div>
+            @for (_ of [1, 2]; track $index) {
+              <div class="flex flex-col gap-2">
+                <p-skeleton class="h-4! w-40! rounded-md!" />
+                <p-skeleton class="h-10! w-full! rounded-lg!" />
+              </div>
+            }
+          </div>
+        </div>
+        <p-divider />
+      }
+      <div class="flex justify-end gap-2">
+        <p-skeleton width="6rem" height="2.5rem" borderRadius="0.5rem" />
+        <p-skeleton width="10rem" height="2.5rem" borderRadius="0.5rem" />
+      </div>
+    </div>
+  </card>
+} @else {
+  <card>
+    <form [formGroup]="internacaoForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Origem e vínculo</legend>
+
+        <form-field
+          label="Triagem"
+          inputId="triagemId"
+          required
+          [errorMessage]="getErrorMessage('triagemId')"
+        >
+          <p-select
+            inputId="triagemId"
+            name="triagemId"
+            formControlName="triagemId"
+            [options]="triagensDisponiveis()"
+            optionLabel="nomePossivelAcolhido"
+            optionValue="id"
+            [filter]="true"
+            filterBy="nomePossivelAcolhido,telefone"
+            filterPlaceholder="Buscar por nome ou telefone"
+            placeholder="Selecione uma triagem concluída"
+            emptyMessage="Nenhuma triagem concluída disponível"
+            [invalid]="isInvalid('triagemId')"
+            appendTo="body"
+            fluid
+            (onChange)="onTriagemChange($event.value)"
+          >
+            <ng-template #selectedItem let-triagem>
+              <span>{{ triagem.nomePossivelAcolhido }} · Triagem T-{{ triagem.id }}</span>
+            </ng-template>
+            <ng-template #item let-triagem>
+              <div class="flex min-w-0 flex-col">
+                <span class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</span>
+                <span class="truncate text-xs text-content-secondary">
+                  T-{{ triagem.id }} · {{ triagem.telefone }} ·
+                  {{ triagem.dataAgendada | date: 'dd/MM/yyyy' : '' : 'pt-BR' }}
+                </span>
+              </div>
+            </ng-template>
+          </p-select>
+        </form-field>
+
+        @if (triagemSelecionada(); as triagem) {
+          <div
+            class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+          >
+            <div class="min-w-0">
+              <p class="text-xs text-content-secondary">Candidato</p>
+              <p class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</p>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs text-content-secondary">Telefone</p>
+              <p class="truncate font-medium">{{ triagem.telefone }}</p>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs text-content-secondary">Modalidade</p>
+              <p class="truncate font-medium">{{ triagem.modalidade.descricao }}</p>
+            </div>
+          </div>
+        }
+
+        <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <form-field
+            label="Acolhido"
+            inputId="idAcolhido"
+            required
+            [errorMessage]="getErrorMessage('idAcolhido')"
+          >
+            <p-select
+              inputId="idAcolhido"
+              name="idAcolhido"
+              formControlName="idAcolhido"
+              [options]="acolhidos()"
+              optionLabel="nome"
+              optionValue="id"
+              [filter]="true"
+              filterBy="nome,cpf,telefone"
+              filterPlaceholder="Buscar por nome, CPF ou telefone"
+              placeholder="Selecione um acolhido"
+              emptyMessage="Nenhum acolhido encontrado"
+              [invalid]="isInvalid('idAcolhido')"
+              appendTo="body"
+              fluid
+              (onChange)="onAcolhidoChange($event.value)"
+            >
+              <ng-template #selectedItem let-acolhido>
+                <span>{{ acolhido.nome }} · CPF {{ acolhido.cpf }}</span>
+              </ng-template>
+              <ng-template #item let-acolhido>
+                <div class="flex min-w-0 flex-col">
+                  <span class="truncate font-medium">{{ acolhido.nome }}</span>
+                  <span class="truncate text-xs text-content-secondary">
+                    CPF {{ acolhido.cpf }} · {{ acolhido.telefone }}
+                  </span>
+                </div>
+              </ng-template>
+            </p-select>
+          </form-field>
+
+          <p-button
+            type="button"
+            label="Cadastrar acolhido"
+            severity="secondary"
+            variant="outlined"
+            class="w-full sm:w-auto"
+            (onClick)="cadastrarNovoAcolhido()"
+          >
+            <ng-template #icon>
+              <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
+            </ng-template>
+          </p-button>
+        </div>
+
+        @if (dadosDivergentes()) {
+          <p-message severity="warn" size="small">
+            O nome e o telefone da triagem são diferentes dos dados do acolhido selecionado.
+            Confirme o vínculo antes de registrar a internação.
+          </p-message>
+        }
+      </fieldset>
+
+      <p-divider />
+
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Dados da internação</legend>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <form-field
+            label="Modalidade definida pela triagem"
+            inputId="idModalidade"
+            required
+            [errorMessage]="getErrorMessage('idModalidade')"
+          >
+            <input
+              pInputText
+              id="idModalidade"
+              [value]="triagemSelecionada()?.modalidade?.descricao ?? ''"
+              placeholder="Selecione primeiro uma triagem"
+              [invalid]="isInvalid('idModalidade')"
+              readonly
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Etapa de tratamento"
+            inputId="etapaTratamento"
+            required
+            [errorMessage]="getErrorMessage('etapaTratamento')"
+          >
+            <p-select
+              inputId="etapaTratamento"
+              name="etapaTratamento"
+              formControlName="etapaTratamento"
+              [options]="etapasTratamento"
+              placeholder="Selecione uma etapa"
+              [invalid]="isInvalid('etapaTratamento')"
+              appendTo="body"
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Data de admissão"
+            inputId="dataAdmissao"
+            required
+            [errorMessage]="getErrorMessage('dataAdmissao')"
+          >
+            <p-datepicker
+              inputId="dataAdmissao"
+              name="dataAdmissao"
+              formControlName="dataAdmissao"
+              placeholder="dd/mm/aaaa"
+              dateFormat="dd/mm/yy"
+              [showButtonBar]="true"
+              [readonlyInput]="true"
+              [maxDate]="hoje"
+              [invalid]="isInvalid('dataAdmissao')"
+              appendTo="body"
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Previsão de alta"
+            inputId="dataPrevisaoAlta"
+            required
+            [errorMessage]="getErrorMessage('dataPrevisaoAlta')"
+          >
+            <p-datepicker
+              inputId="dataPrevisaoAlta"
+              name="dataPrevisaoAlta"
+              formControlName="dataPrevisaoAlta"
+              placeholder="dd/mm/aaaa"
+              dateFormat="dd/mm/yy"
+              [showButtonBar]="true"
+              [readonlyInput]="true"
+              [minDate]="internacaoForm.controls.dataAdmissao.value ?? hoje"
+              [invalid]="isInvalid('dataPrevisaoAlta')"
+              appendTo="body"
+              fluid
+            />
+          </form-field>
+        </div>
+
+        <form-field
+          label="Observação sobre isenção"
+          inputId="observacaoIsencao"
+          [errorMessage]="getErrorMessage('observacaoIsencao')"
+        >
+          <textarea
+            pTextarea
+            id="observacaoIsencao"
+            name="observacaoIsencao"
+            formControlName="observacaoIsencao"
+            rows="4"
+            maxlength="500"
+            class="w-full resize-y"
+            placeholder="Informe o motivo da isenção, quando aplicável."
+          ></textarea>
+        </form-field>
+      </fieldset>
+
+      <p-divider />
+
+      <div class="flex flex-wrap justify-end gap-2">
+        <p-button
+          type="button"
+          label="Cancelar"
+          severity="secondary"
+          variant="outlined"
+          [disabled]="salvando()"
+          (onClick)="voltarParaLista()"
+        />
+        <p-button
+          type="submit"
+          [label]="actionBtnLabel()"
+          severity="primary"
+          [loading]="salvando()"
+          [disabled]="salvando()"
+        />
+      </div>
+    </form>
+  </card>
+}

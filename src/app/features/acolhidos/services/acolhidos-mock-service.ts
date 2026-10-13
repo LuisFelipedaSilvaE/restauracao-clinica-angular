@@ -49,9 +49,11 @@ export class AcolhidosMockService {
     return Math.max(0, idade);
   }
 
-  criar(dados: Omit<Acolhido, 'id'>): void {
+  criar(dados: Omit<Acolhido, 'id'>): Acolhido {
     const id = Math.max(0, ...this.registros().map((acolhido) => acolhido.id)) + 1;
-    this.registros.update((lista) => [...lista, { ...dados, id }]);
+    const novoAcolhido = { ...dados, id };
+    this.registros.update((lista) => [...lista, novoAcolhido]);
+    return novoAcolhido;
   }
 
   buscar(id: number): Acolhido | undefined {

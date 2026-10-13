@@ -18,6 +18,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 import { Acolhido } from '../../interfaces/acolhido';
+import { TriagensService } from '../../../triagens/services/triagens-service';
 
 type ModoForm = 'registro' | 'atualizacao';
 
@@ -61,10 +62,13 @@ const datasCoerentes: ValidatorFn = (form) => {
 })
 export class AcolhidoForm implements OnInit {
   readonly id = input<string>();
+  readonly triagemId = input<string>();
+  readonly returnUrl = input<string>();
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly acolhidosService = inject(AcolhidosMockService);
+  private readonly triagensService = inject(TriagensService);
   private idTriagem?: number;
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
@@ -143,6 +147,12 @@ export class AcolhidoForm implements OnInit {
     valorPagamento: 'Valor do pagamento',
   };
   protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
+  protected readonly voltarUrl = computed(() =>
+    this.returnUrl()?.startsWith('/internacoes') ? this.returnUrl()! : '/acolhidos',
+  );
+  protected readonly voltarLabel = computed(() =>
+    this.voltarUrl() === '/acolhidos' ? 'Voltar para acolhidos' : 'Voltar para internação',
+  );
 
   protected readonly headerInfo = computed<InfoCardContent>(() => {
     const registro = this.modo() === 'registro';
@@ -163,7 +173,10 @@ export class AcolhidoForm implements OnInit {
 
   ngOnInit(): void {
     const id = this.id();
-    if (id === undefined) return;
+    if (id === undefined) {
+      this.preencherDadosDaTriagem();
+      return;
+    }
     const idNumerico = Number(id);
     const acolhido =
       Number.isSafeInteger(idNumerico) && idNumerico > 0
@@ -222,7 +235,7 @@ export class AcolhidoForm implements OnInit {
   }
 
   protected voltarParaLista(): void {
-    this.router.navigate(['/acolhidos']);
+    this.router.navigateByUrl(this.voltarUrl());
   }
 
   private registroNaoEncontrado(): void {
@@ -279,6 +292,7 @@ export class AcolhidoForm implements OnInit {
     };
     this.salvando.set(true);
     const id = this.id();
+    let novoAcolhidoId: number | undefined;
     if (id !== undefined) {
       if (!this.acolhidosService.atualizar(Number(id), dados)) {
         this.salvando.set(false);
@@ -286,7 +300,7 @@ export class AcolhidoForm implements OnInit {
         return;
       }
     } else {
-      this.acolhidosService.criar(dados);
+      novoAcolhidoId = this.acolhidosService.criar(dados).id;
     }
     this.messageService.add({
       severity: 'success',
@@ -294,6 +308,32 @@ export class AcolhidoForm implements OnInit {
       detail: 'Os dados foram salvos com sucesso.',
       life: 3000,
     });
+    if (novoAcolhidoId !== undefined && this.voltarUrl() !== '/acolhidos') {
+      this.router.navigate([this.voltarUrl()], {
+        queryParams: {
+          acolhidoId: novoAcolhidoId,
+          triagemId: this.triagemId(),
+        },
+      });
+      return;
+    }
+
     this.voltarParaLista();
+  }
+
+  private preencherDadosDaTriagem(): void {
+    const idTriagem = Number(this.triagemId());
+    if (!Number.isSafeInteger(idTriagem) || idTriagem <= 0) return;
+
+    this.triagensService.getTriagemById(idTriagem).subscribe((triagem) => {
+      if (!triagem) return;
+
+      this.idTriagem = triagem.id;
+      this.acolhidoForm.patchValue({
+        nome: triagem.nomePossivelAcolhido,
+        telefone: triagem.telefone,
+        modalidadeId: triagem.modalidade.id,
+      });
+    });
   }
 }
