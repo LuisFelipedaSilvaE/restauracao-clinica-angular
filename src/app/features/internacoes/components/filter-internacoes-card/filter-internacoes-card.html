@@ -1,0 +1,83 @@
+<div
+  class="flex flex-wrap items-center gap-2 rounded-xl border border-border-default bg-surface-card p-4"
+>
+  <p-iconfield class="min-w-70 basis-full grow-2 md:basis-[50%]">
+    <p-inputicon>
+      <svg lucideSearch class="h-4 w-4"></svg>
+    </p-inputicon>
+    <input
+      pInputText
+      [ngModel]="busca()"
+      (ngModelChange)="this.buscaChange.emit($event)"
+      placeholder="Buscar por nome, CPF ou e-mail..."
+      aria-label="Buscar internação por nome, CPF ou e-mail do acolhido"
+      class="w-full placeholder:text-sm"
+    />
+  </p-iconfield>
+
+  <p-iconfield class="min-w-70 basis-70 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideLayers class="h-4.5 w-4.5"></svg>
+    </p-inputicon>
+    <p-select
+      inputId="filtro-modalidade"
+      [options]="modalidades()"
+      [ngModel]="modalidadeSelecionada()"
+      (ngModelChange)="this.modalidadeSelecionadaChange.emit($event)"
+      optionLabel="name"
+      optionValue="code"
+      placeholder="Selecione uma modalidade"
+      ariaLabel="Filtrar por modalidade"
+      class="w-full pl-7.5"
+    >
+      <ng-template #selectedItem let-selectedOption>
+        <p class="text-sm">
+          Modalidade: <span>{{ selectedOption.name }}</span>
+        </p>
+      </ng-template>
+    </p-select>
+  </p-iconfield>
+
+  <p-iconfield class="min-w-60 basis-60 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideStethoscope class="h-5 w-5"></svg>
+    </p-inputicon>
+    <p-select
+      inputId="filtro-etapa-tratamento"
+      [options]="etapasTratamento()"
+      [ngModel]="etapaTratamentoSelecionada()"
+      (ngModelChange)="this.etapaTratamentoSelecionadaChange.emit($event)"
+      optionLabel="name"
+      optionValue="code"
+      placeholder="Selecione uma etapa"
+      ariaLabel="Filtrar por etapa de tratamento"
+      class="w-full pl-7.5"
+    >
+      <ng-template #selectedItem let-selectedOption>
+        <p class="text-sm">
+          Etapa: <span>{{ selectedOption.name }}</span>
+        </p>
+      </ng-template>
+    </p-select>
+  </p-iconfield>
+
+  <p-iconfield class="min-w-60 basis-60 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideCalendarRange class="h-5 w-5"></svg>
+    </p-inputicon>
+    <p-datepicker
+      inputId="filtro-periodo-entrada"
+      [ngModel]="periodoEntradaSelecionado()"
+      (ngModelChange)="this.periodoEntradaSelecionadoChange.emit($event)"
+      selectionMode="range"
+      placeholder="Período de entrada"
+      ariaLabel="Filtrar por período de entrada"
+      dateFormat="dd/mm/yy"
+      [showButtonBar]="true"
+      [readonlyInput]="true"
+      appendTo="body"
+      inputStyleClass="w-full pl-10 text-sm"
+      class="w-full"
+    />
+  </p-iconfield>
+</div>

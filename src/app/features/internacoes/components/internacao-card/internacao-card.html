@@ -1,0 +1,53 @@
+<div class="flex min-w-0 items-center gap-2 text-left 2xl:gap-3">
+  <span
+    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+    [iconColor]="internacao().modalidade.cor"
+  >
+    <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+  </span>
+
+  <div class="min-w-0">
+    <p class="truncate font-semibold text-foreground">
+      {{ internacao().acolhido.nome }}
+    </p>
+    <p class="truncate text-xs text-content-secondary">
+      I-{{ internacao().id | number: '3.0-0' }} &middot; CPF {{ internacao().acolhido.cpf }}
+    </p>
+  </div>
+</div>
+
+<p class="hidden text-center text-sm text-content-secondary md:block">
+  {{ internacao().dataAdmissao | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+</p>
+
+<p class="hidden text-center text-sm text-content-secondary md:block">
+  {{ internacao().dataPrevisaoAlta | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+</p>
+
+<p-tag
+  class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
+  [value]="internacao().etapaTratamento"
+  [severity]="internacao().severity"
+/>
+
+<div
+  class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-span-1 sm:justify-self-end"
+>
+  <p-menu #menu [model]="acoes()" [popup]="true" appendTo="body">
+    <ng-template #item let-item>
+      <div class="flex cursor-pointer items-center gap-2 px-3 py-2">
+        <svg [lucideIcon]="item.lucideIcon" [ngClass]="item.iconClass"></svg>
+        <span>{{ item.label }}</span>
+      </div>
+    </ng-template>
+  </p-menu>
+
+  <button
+    type="button"
+    class="inline-flex h-9 w-9 items-center justify-center rounded-md text-content-secondary hover:bg-surface-subtle"
+    aria-label="Abrir ações da internação"
+    (click)="menu.toggle($event)"
+  >
+    <svg lucideEllipsisVertical class="h-5 w-5" aria-hidden="true"></svg>
+  </button>
+</div>
