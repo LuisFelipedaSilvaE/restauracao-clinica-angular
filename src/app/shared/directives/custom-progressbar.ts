@@ -1,4 +1,4 @@
-import { computed, Directive, input } from '@angular/core';
+import { Directive, input } from '@angular/core';
 import { createThemeColors } from '../utils/create-theme-colors';
 
 @Directive({
