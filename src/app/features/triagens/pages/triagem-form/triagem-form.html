@@ -1,0 +1,133 @@
+<form-header
+  [data]="headerContent()"
+  btnLabel="Voltar para triagens"
+  btnUrl="/triagens"
+></form-header>
+
+@if (carregando()) {
+  <card class="flex flex-col gap-5 p-6!">
+    <span class="sr-only" role="status">Carregando dados da triagem...</span>
+    @for (campo of skeletonCampos; track $index) {
+      <div class="flex flex-col gap-2" aria-hidden="true">
+        <p-skeleton class="h-4! w-40! rounded-md!" />
+        <p-skeleton class="h-10! w-full! rounded-lg!" />
+      </div>
+    }
+  </card>
+} @else {
+  <card>
+    <form class="space-y-5" [formGroup]="triagemForm" (ngSubmit)="onSubmit()">
+      <form-field
+        label="Nome do candidato"
+        inputId="nomePossivelAcolhido"
+        required
+        [errorMessage]="getErrorMessage('nomePossivelAcolhido')"
+      >
+        <input
+          pInputText
+          id="nomePossivelAcolhido"
+          formControlName="nomePossivelAcolhido"
+          placeholder="Ex.: João da Silva"
+          [invalid]="isInvalid('nomePossivelAcolhido')"
+          fluid
+          autocomplete="off"
+        />
+      </form-field>
+      <form-field
+        label="Telefone"
+        inputId="telefone"
+        required
+        [errorMessage]="getErrorMessage('telefone')"
+      >
+        <input
+          pInputText
+          id="telefone"
+          formControlName="telefone"
+          placeholder="(00) 00000-0000"
+          pInputMask="(99) 99999-9999"
+          [invalid]="isInvalid('telefone')"
+          fluid
+          autocomplete="off"
+        />
+      </form-field>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <form-field
+          label="Data"
+          inputId="dataAgendada"
+          required
+          [errorMessage]="getErrorMessage('dataAgendada')"
+        >
+          <p-datepicker
+            inputId="dataAgendada"
+            name="dataAgendada"
+            formControlName="dataAgendada"
+            placeholder="dd/mm/aaaa"
+            [showButtonBar]="true"
+            [readonlyInput]="true"
+            [invalid]="isInvalid('dataAgendada')"
+            dateFormat="dd/mm/yy"
+            fluid
+          />
+        </form-field>
+        <form-field
+          label="Horário"
+          inputId="horaAgendada"
+          required
+          [errorMessage]="getErrorMessage('horaAgendada')"
+        >
+          <p-datepicker
+            inputId="horaAgendada"
+            name="horaAgendada"
+            formControlName="horaAgendada"
+            placeholder="hh:mm"
+            [timeOnly]="true"
+            [invalid]="isInvalid('horaAgendada')"
+            dateFormat="dd/mm/yy"
+            pInputMask="99:99"
+            fluid
+          />
+        </form-field>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <form-field
+          label="Modalidade"
+          inputId="modalidade"
+          required
+          [errorMessage]="getErrorMessage('modalidade')"
+        >
+          <p-select
+            [options]="modalidades()"
+            optionLabel="descricao"
+            optionValue="id"
+            inputId="modalidade"
+            formControlName="modalidade"
+            [invalid]="isInvalid('modalidade')"
+            placeholder="Selecione"
+            fluid
+          />
+        </form-field>
+      </div>
+
+      <form-field
+        label="Observações"
+        inputId="observacaoEntrevista"
+        [errorMessage]="getErrorMessage('observacaoEntrevista')"
+      >
+        <textarea
+          pInputTextarea
+          id="observacaoEntrevista"
+          class="resize-none"
+          rows="4"
+          placeholder="Histórico breve, queixa principal, comorbidades..."
+          fluid
+          autocomplete="off"
+        ></textarea>
+      </form-field>
+      <div class="flex justify-end gap-2">
+        <p-button variant="outlined" severity="secondary" label="Cancelar" />
+        <p-button type="submit" label="Agendar triagem" />
+      </div>
+    </form>
+  </card>
+}
