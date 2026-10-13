@@ -1,0 +1,41 @@
+<div class="flex flex-col md:justify-between md:flex-row gap-2">
+  <div>
+    <h4 class="text-2xl font-semibold mb-1">Triagens</h4>
+    <p class="text-sm text-content-secondary">
+      Consulte, filtre e gerencie os agendamentos e acolhimentos iniciais dos candidatos.
+    </p>
+  </div>
+  <p-button label="Nova triagem" routerLink="/triagens/criar">
+    <ng-template #icon>
+      <svg lucideCalendarPlus class="h-5 w-5"></svg>
+    </ng-template>
+  </p-button>
+</div>
+
+<filter-triagens-card
+  [(busca)]="busca"
+  [(modalidadeSelecionada)]="modalidadeSelecionada"
+  [(rangeDataSelecionado)]="rangeDataSelecionado"
+/>
+
+<div class="flex flex-col gap-1">
+  <card class="border-0 p-0! overflow-hidden">
+    <p-tabs [value]="statusSelecionado()" (valueChange)="statusSelecionado.set($event)" scrollable>
+      <p-tablist>
+        @for (tab of tabs(); track $index) {
+          <p-tab [value]="tab.status" class="flex items-center gap-2! text-inherit">
+            <svg [lucideIcon]="tab.icon" class="h-5 w-5"></svg>
+            <span>{{ tab.label }}</span>
+            <p-badge severity="secondary" [value]="tab.total" />
+          </p-tab>
+        }
+      </p-tablist>
+    </p-tabs>
+  </card>
+
+  <triagem-grid
+    [triagens]="triagensFiltradas()"
+    [loading]="loading().list"
+    (limparFiltros)="clearFilters()"
+  />
+</div>
