@@ -24,6 +24,10 @@
   {{ internacao().dataPrevisaoAlta | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
 </p>
 
+<p class="hidden text-center text-sm text-content-secondary md:block">
+  {{ internacao().tempoInternado }}
+</p>
+
 <p-tag
   class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
   [value]="internacao().etapaTratamento"

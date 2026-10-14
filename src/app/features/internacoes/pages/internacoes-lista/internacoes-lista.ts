@@ -106,7 +106,7 @@ export class InternacoesLista {
 
   protected readonly modalidades = computed(() => [
     { name: 'Todas modalidades', code: 'todos' },
-    ...this.acolhidosService.modalidades.map((modalidade) => ({
+    ...this.internacoesService.modalidades.map((modalidade) => ({
       name: modalidade.descricao,
       code: modalidade.descricao,
     })),
@@ -135,7 +135,7 @@ export class InternacoesLista {
       this.acolhidosService.acolhidos().map((acolhido) => [acolhido.id, acolhido]),
     );
     const modalidadesPorId = new Map(
-      this.acolhidosService.modalidades.map((modalidade) => [modalidade.id, modalidade]),
+      this.internacoesService.modalidades.map((modalidade) => [modalidade.id, modalidade]),
     );
 
     return this.internacoes().flatMap((internacao) => {
@@ -172,6 +172,7 @@ export class InternacoesLista {
           ...internacao,
           acolhido,
           modalidade,
+          tempoInternado: this.internacoesService.calcularTempoInternado(internacao.dataAdmissao),
           encerrada: ['Alta concedida', 'Desligado'].includes(internacao.etapaTratamento),
           severity: this.internacoesService.obterSeverity(internacao.etapaTratamento),
         },
