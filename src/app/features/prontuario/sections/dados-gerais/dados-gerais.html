@@ -18,8 +18,11 @@
         {{ acolhido().cpf | cpf }}
       </prontuario-info-field>
 
-      <prontuario-info-field label="Triagem">
-        {{ acolhido().id_triagem ? 'T-' + acolhido().id_triagem : 'Não vinculada' }}
+      <prontuario-info-field label="Situação">
+        <p-tag
+          [value]="acolhido().ativo ? 'Ativo' : 'Inativo'"
+          [severity]="acolhido().ativo ? 'success' : 'secondary'"
+        />
       </prontuario-info-field>
     </div>
   </prontuario-section-card>
@@ -30,10 +33,6 @@
     [icon]="contatoIcon"
   >
     <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="CEP">
-        {{ acolhido().cep }}
-      </prontuario-info-field>
-
       <prontuario-info-field label="Telefone">
         {{ acolhido().telefone | telefone }}
       </prontuario-info-field>
@@ -41,65 +40,76 @@
       <prontuario-info-field label="E-mail">
         {{ acolhido().email }}
       </prontuario-info-field>
-    </div>
-  </prontuario-section-card>
 
-  <prontuario-section-card
-    title="Internação"
-    description="Dados do processo de acolhimento atual"
-    [icon]="internacaoIcon"
-  >
-    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="Data de entrada">
-        {{ acolhido().dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Previsão de alta">
-        {{ acolhido().previsaoDeAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Tempo internado">
-        {{ acolhido().tempoInternado }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Modalidade">
-        {{ acolhido().modalidade.descricao }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Etapa do tratamento">
-        <p-tag [value]="acolhido().etapaTratamento" [severity]="acolhido().severity" />
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Status">
-        <p-tag
-          [value]="acolhido().status"
-          [severity]="acolhido().status === 'Ativo' ? 'success' : 'secondary'"
-        />
+      <prontuario-info-field label="CEP">
+        {{ acolhido().cep }}
       </prontuario-info-field>
     </div>
   </prontuario-section-card>
 
   <prontuario-section-card
-    title="Pagamento e isenção"
-    description="Informações financeiras do acolhimento"
-    [icon]="pagamentoIcon"
+    title="Endereço"
+    description="Localização informada no cadastro"
+    [icon]="enderecoIcon"
   >
     <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="Valor do pagamento">
-        {{ acolhido().valorPagamento | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+      <prontuario-info-field label="Logradouro">
+        {{ acolhido().endereco.logradouro }}, {{ acolhido().endereco.numero }}
       </prontuario-info-field>
 
-      <prontuario-info-field label="Condição">
-        {{ acolhido().valorPagamento > 0 ? 'Pagamento ativo' : 'Isento' }}
+      <prontuario-info-field label="Complemento">
+        {{ acolhido().endereco.complemento || 'Não informado' }}
       </prontuario-info-field>
 
-      @if (acolhido().observacaoIsencao) {
-        <div class="sm:col-span-2">
-          <prontuario-info-field label="Observação sobre a isenção">
-            {{ acolhido().observacaoIsencao }}
-          </prontuario-info-field>
-        </div>
-      }
+      <prontuario-info-field label="Bairro">
+        {{ acolhido().endereco.bairro }}
+      </prontuario-info-field>
+
+      <prontuario-info-field label="Cidade/UF">
+        {{ acolhido().endereco.cidade }}/{{ acolhido().endereco.estado }}
+      </prontuario-info-field>
     </div>
   </prontuario-section-card>
+
+  @if (acolhido().internacaoAtual; as internacao) {
+    <prontuario-section-card
+      title="Internação"
+      description="Dados do processo de acolhimento atual"
+      [icon]="internacaoIcon"
+    >
+      <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+        <prontuario-info-field label="Data de entrada">
+          {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Previsão de alta">
+          {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Tempo internado">
+          {{ internacao.tempoInternado }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Modalidade">
+          {{ internacao.modalidade.descricao }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Etapa do tratamento">
+          <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Triagem">
+          {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
+        </prontuario-info-field>
+
+        @if (internacao.observacaoIsencao) {
+          <div class="sm:col-span-2">
+            <prontuario-info-field label="Observação sobre a isenção">
+              {{ internacao.observacaoIsencao }}
+            </prontuario-info-field>
+          </div>
+        }
+      </div>
+    </prontuario-section-card>
+  }
 </section>

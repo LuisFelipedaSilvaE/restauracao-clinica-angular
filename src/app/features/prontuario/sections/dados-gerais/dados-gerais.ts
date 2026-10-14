@@ -1,12 +1,7 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, inject, Signal } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
-import {
-  LucideCalendarHeart,
-  LucideCircleDollarSign,
-  LucidePhone,
-  LucideUserRound,
-} from '@lucide/angular';
+import { LucideCalendarHeart, LucideMapPin, LucidePhone, LucideUserRound } from '@lucide/angular';
 import { TagModule } from 'primeng/tag';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
@@ -19,15 +14,7 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
   host: {
     class: 'block min-w-0',
   },
-  imports: [
-    CurrencyPipe,
-    DatePipe,
-    TagModule,
-    CpfPipe,
-    TelefonePipe,
-    ProntuarioInfoField,
-    ProntuarioSectionCard,
-  ],
+  imports: [DatePipe, TagModule, CpfPipe, TelefonePipe, ProntuarioInfoField, ProntuarioSectionCard],
   templateUrl: './dados-gerais.html',
   styleUrl: './dados-gerais.css',
 })
@@ -37,5 +24,5 @@ export class DadosGerais {
   protected readonly dadosPessoaisIcon = LucideUserRound;
   protected readonly contatoIcon = LucidePhone;
   protected readonly internacaoIcon = LucideCalendarHeart;
-  protected readonly pagamentoIcon = LucideCircleDollarSign;
+  protected readonly enderecoIcon = LucideMapPin;
 }

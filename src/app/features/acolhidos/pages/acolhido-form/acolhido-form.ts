@@ -1,24 +1,26 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
-import { FormHeader } from '../../../../shared/components/form-header/form-header';
-import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { LucideUserPlus } from '@lucide/angular';
 import { Router } from '@angular/router';
+import { LucideUserPlus } from '@lucide/angular';
+import { MessageService, SelectItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputMaskModule } from 'primeng/inputmask';
 import { DatePickerModule } from 'primeng/datepicker';
-import { SelectModule } from 'primeng/select';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { MessageService } from 'primeng/api';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
-import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
-import { Acolhido } from '../../interfaces/acolhido';
+import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
+import { formatCpf } from '../../../../shared/utils/cpf-formatter';
+import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
+import { cpfValidator } from '../../../../shared/validators/cpf-validator';
+import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
 import { TriagensService } from '../../../triagens/services/triagens-service';
+import { Acolhido } from '../../interfaces/acolhido';
+import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
 
 type ModoForm = 'registro' | 'atualizacao';
 
@@ -27,14 +29,6 @@ const dataValida: ValidatorFn = (control) => {
   return control.value instanceof Date && Number.isFinite(control.value.getTime())
     ? null
     : { dataInvalida: true };
-};
-
-const datasCoerentes: ValidatorFn = (form) => {
-  const nascimento = form.get('dataNascimento')?.value;
-  const entrada = form.get('dataEntrada')?.value;
-  return nascimento instanceof Date && entrada instanceof Date && nascimento > entrada
-    ? { entradaAntesNascimento: true }
-    : null;
 };
 
 @Component({
@@ -51,8 +45,6 @@ const datasCoerentes: ValidatorFn = (form) => {
     InputMaskModule,
     DatePickerModule,
     SelectModule,
-    InputNumberModule,
-    TextareaModule,
     DividerModule,
     SkeletonModule,
     FormField,
@@ -69,69 +61,72 @@ export class AcolhidoForm implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly acolhidosService = inject(AcolhidosMockService);
   private readonly triagensService = inject(TriagensService);
-  private idTriagem?: number;
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(false);
-  protected readonly skeletonSecoes = computed(() => [
-    { campos: [true, false, false], textarea: false },
-    { campos: [false, false, false], textarea: false },
-    {
-      campos: this.modo() === 'atualizacao' ? [false, false, false, true] : [false, false],
-      textarea: false,
-    },
-    { campos: [false], textarea: true },
-  ]);
-  protected readonly hoje = new Date();
-  protected readonly modalidades = this.acolhidosService.modalidades;
-  protected readonly etapas = [
-    'Em tratamento',
-    'Próximo da alta',
-    'Alta vencida',
-    'Alta concedida',
-    'Desligado',
+  protected readonly skeletonSecoes = [
+    Array.from({ length: 3 }),
+    Array.from({ length: 3 }),
+    Array.from({ length: 6 }),
   ];
-  protected readonly statusOptions = ['Ativo', 'Inativo'];
+  protected readonly hoje = new Date();
 
-  protected readonly acolhidoForm = this.fb.group(
-    {
-      nome: ['', [Validators.required, Validators.pattern(/\S/)]],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)]],
-      dataNascimento: [
-        null as Date | null,
-        [
-          Validators.required,
-          dataValida,
-          (control) =>
-            control.value instanceof Date && control.value > this.hoje
-              ? { nascimentoFuturo: true }
-              : null,
-        ],
-      ],
-      email: ['', [Validators.required, Validators.email]],
-      telefone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
-      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
-      modalidadeId: [null as number | null, [Validators.required]],
-      dataEntrada: [new Date() as Date | null, [Validators.required, dataValida]],
-      etapaTratamento: ['Em tratamento', [Validators.required]],
-      status: ['Ativo', [Validators.required]],
-      valorPagamento: [
-        0 as number | null,
-        [
-          Validators.required,
-          Validators.min(0),
-          (control) =>
-            control.value === null ||
-            (Number.isFinite(control.value) &&
-              Math.abs(control.value * 100 - Math.round(control.value * 100)) < 0.000001)
-              ? null
-              : { moedaInvalida: true },
-        ],
-      ],
-      observacaoIsencao: [''],
-    },
-    { validators: datasCoerentes },
-  );
+  protected readonly acolhidoForm = this.fb.group({
+    nome: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/\S/)]),
+    cpf: this.fb.nonNullable.control('', [Validators.required, cpfValidator]),
+    dataNascimento: this.fb.control<Date | null>(null, [
+      Validators.required,
+      dataValida,
+      (control) =>
+        control.value instanceof Date && control.value > this.hoje
+          ? { nascimentoFuturo: true }
+          : null,
+    ]),
+    email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
+    telefone: this.fb.nonNullable.control('', [Validators.required, telefoneValidator]),
+    cep: this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.pattern(/^\d{5}-\d{3}$/),
+    ]),
+    endereco: this.fb.nonNullable.group({
+      logradouro: ['', [Validators.required, Validators.pattern(/\S/)]],
+      numero: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      bairro: ['', [Validators.required, Validators.pattern(/\S/)]],
+      cidade: ['', [Validators.required, Validators.pattern(/\S/)]],
+      estado: this.fb.control<string | null>(null, [Validators.required]),
+      complemento: [''],
+    }),
+  });
+
+  protected readonly estados: SelectItem[] = [
+    { value: 'AC', label: 'Acre' },
+    { value: 'AL', label: 'Alagoas' },
+    { value: 'AP', label: 'Amapá' },
+    { value: 'AM', label: 'Amazonas' },
+    { value: 'BA', label: 'Bahia' },
+    { value: 'CE', label: 'Ceará' },
+    { value: 'DF', label: 'Distrito Federal' },
+    { value: 'ES', label: 'Espírito Santo' },
+    { value: 'GO', label: 'Goiás' },
+    { value: 'MA', label: 'Maranhão' },
+    { value: 'MT', label: 'Mato Grosso' },
+    { value: 'MS', label: 'Mato Grosso do Sul' },
+    { value: 'MG', label: 'Minas Gerais' },
+    { value: 'PA', label: 'Pará' },
+    { value: 'PB', label: 'Paraíba' },
+    { value: 'PR', label: 'Paraná' },
+    { value: 'PE', label: 'Pernambuco' },
+    { value: 'PI', label: 'Piauí' },
+    { value: 'RJ', label: 'Rio de Janeiro' },
+    { value: 'RN', label: 'Rio Grande do Norte' },
+    { value: 'RS', label: 'Rio Grande do Sul' },
+    { value: 'RO', label: 'Rondônia' },
+    { value: 'RR', label: 'Roraima' },
+    { value: 'SC', label: 'Santa Catarina' },
+    { value: 'SP', label: 'São Paulo' },
+    { value: 'SE', label: 'Sergipe' },
+    { value: 'TO', label: 'Tocantins' },
+  ];
 
   private readonly labels: Record<string, string> = {
     nome: 'Nome completo',
@@ -140,12 +135,14 @@ export class AcolhidoForm implements OnInit {
     email: 'E-mail',
     telefone: 'Telefone',
     cep: 'CEP',
-    modalidadeId: 'Modalidade',
-    dataEntrada: 'Data de entrada',
-    etapaTratamento: 'Etapa de tratamento',
-    status: 'Status',
-    valorPagamento: 'Valor do pagamento',
+    'endereco.logradouro': 'Logradouro',
+    'endereco.numero': 'Número',
+    'endereco.bairro': 'Bairro',
+    'endereco.cidade': 'Cidade',
+    'endereco.estado': 'Estado',
+    'endereco.complemento': 'Complemento',
   };
+
   protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
   protected readonly voltarUrl = computed(() =>
     this.returnUrl()?.startsWith('/internacoes') ? this.returnUrl()! : '/acolhidos',
@@ -153,20 +150,15 @@ export class AcolhidoForm implements OnInit {
   protected readonly voltarLabel = computed(() =>
     this.voltarUrl() === '/acolhidos' ? 'Voltar para acolhidos' : 'Voltar para internação',
   );
-
-  protected readonly headerInfo = computed<InfoCardContent>(() => {
-    const registro = this.modo() === 'registro';
-
-    return {
-      value: registro ? 'Novo acolhido' : 'Editar acolhido',
-      label: registro
-        ? 'Cadastre um novo acolhido e defina seus dados de internação.'
-        : 'Atualize os dados de internação e informações de contato do acolhido.',
-      icon: LucideUserPlus,
-      color: '#be222d',
-    };
-  });
-
+  protected readonly headerInfo = computed<InfoCardContent>(() => ({
+    value: this.modo() === 'registro' ? 'Novo acolhido' : 'Editar acolhido',
+    label:
+      this.modo() === 'registro'
+        ? 'Cadastre os dados pessoais, de contato e endereço do acolhido.'
+        : 'Atualize os dados pessoais, de contato e endereço do acolhido.',
+    icon: LucideUserPlus,
+    color: '#be222d',
+  }));
   protected readonly actionBtnLabel = computed(() =>
     this.modo() === 'registro' ? 'Cadastrar acolhido' : 'Salvar alterações',
   );
@@ -177,10 +169,11 @@ export class AcolhidoForm implements OnInit {
       this.preencherDadosDaTriagem();
       return;
     }
+
     const idNumerico = Number(id);
     const acolhido =
       Number.isSafeInteger(idNumerico) && idNumerico > 0
-        ? this.acolhidosService.acolhidos().find((item) => item.id === idNumerico)
+        ? this.acolhidosService.buscar(idNumerico)
         : undefined;
 
     if (!acolhido) {
@@ -188,64 +181,49 @@ export class AcolhidoForm implements OnInit {
       return;
     }
 
-    this.idTriagem = acolhido.id_triagem;
     this.acolhidoForm.patchValue({
       nome: acolhido.nome,
-      cpf: acolhido.cpf,
+      cpf: formatCpf(acolhido.cpf),
       email: acolhido.email,
-      telefone: acolhido.telefone,
-      cep: acolhido.cep,
-      modalidadeId: acolhido.modalidade.id,
+      telefone: formatTelefone(acolhido.telefone),
+      cep: this.formatCep(acolhido.cep),
       dataNascimento: new Date(acolhido.dataNascimento),
-      dataEntrada: new Date(acolhido.dataEntrada),
-      etapaTratamento: acolhido.etapaTratamento,
-      status: acolhido.status,
-      valorPagamento: acolhido.valorPagamento,
-      observacaoIsencao: acolhido.observacaoIsencao ?? '',
+      endereco: {
+        logradouro: acolhido.endereco.logradouro,
+        numero: String(acolhido.endereco.numero),
+        bairro: acolhido.endereco.bairro,
+        cidade: acolhido.endereco.cidade,
+        estado: acolhido.endereco.estado,
+        complemento: acolhido.endereco.complemento,
+      },
     });
   }
 
   protected isInvalid(campo: string): boolean {
     const control = this.acolhidoForm.get(campo);
-    return (
-      !!control &&
-      (control.touched || this.formSubmitted()) &&
-      (control.invalid ||
-        (campo === 'dataEntrada' && this.acolhidoForm.hasError('entradaAntesNascimento')))
-    );
+    return !!control && control.invalid && (control.touched || this.formSubmitted());
   }
 
   protected getErrorMessage(campo: string): string | null {
     if (!this.isInvalid(campo)) return null;
     const errors = this.acolhidoForm.get(campo)?.errors;
+
     if (errors?.['required']) return `Preencha o campo ${this.labels[campo]}.`;
     if (errors?.['email']) return 'Informe um e-mail válido.';
-    if (errors?.['pattern']) {
-      if (campo === 'nome') return 'O nome não pode conter apenas espaços.';
-      return `Preencha ${this.labels[campo]} por completo, no formato indicado.`;
-    }
+    if (errors?.['cpfInvalido']) return 'Informe um CPF válido.';
+    if (errors?.['telefoneInvalido']) return 'Informe um telefone válido com DDD.';
     if (errors?.['nascimentoFuturo']) return 'A data de nascimento não pode estar no futuro.';
     if (errors?.['dataInvalida']) return 'Informe uma data válida.';
-    if (errors?.['min']) return `${this.labels[campo]} deve ser no mínimo ${errors['min'].min}.`;
-    if (errors?.['moedaInvalida']) return 'Informe um valor válido com até duas casas decimais.';
-    if (campo === 'dataEntrada' && this.acolhidoForm.hasError('entradaAntesNascimento')) {
-      return 'A data de entrada não pode ser anterior ao nascimento.';
+    if (errors?.['pattern']) {
+      if (campo === 'endereco.numero') return 'Informe somente números.';
+      if (campo === 'cep') return 'Preencha o CEP por completo, no formato indicado.';
+      return `${this.labels[campo]} não pode conter apenas espaços.`;
     }
     return `Verifique o campo ${this.labels[campo]}.`;
   }
 
   protected voltarParaLista(): void {
     this.router.navigateByUrl(this.voltarUrl());
-  }
-
-  private registroNaoEncontrado(): void {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Acolhido não encontrado',
-      detail: 'O registro solicitado não existe ou foi removido.',
-      life: 4000,
-    });
-    this.voltarParaLista();
   }
 
   protected onSubmit(): void {
@@ -255,43 +233,27 @@ export class AcolhidoForm implements OnInit {
     if (this.acolhidoForm.invalid) return;
 
     const valor = this.acolhidoForm.getRawValue();
-    const registro = this.modo() === 'registro';
-    const etapaTratamento = registro ? 'Em tratamento' : valor.etapaTratamento;
-    const status = registro ? 'Ativo' : valor.status;
-    const modalidade = this.modalidades.find((item) => item.id === valor.modalidadeId);
-    if (
-      !modalidade ||
-      !this.etapas.includes(etapaTratamento ?? '') ||
-      !this.statusOptions.includes(status ?? '')
-    ) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Revise o formulário',
-        detail: registro
-          ? 'Selecione uma modalidade válida.'
-          : 'Selecione uma modalidade, uma etapa e um status válidos.',
-        life: 4000,
-      });
-      return;
-    }
-
-    const dados: Omit<Acolhido, 'id'> = {
-      modalidade,
-      ...(registro || this.idTriagem === undefined ? {} : { id_triagem: this.idTriagem }),
-      nome: valor.nome!.trim(),
-      cpf: valor.cpf!,
-      cep: valor.cep!,
-      telefone: valor.telefone!,
-      email: valor.email!.trim(),
-      dataNascimento: new Date(valor.dataNascimento!),
-      dataEntrada: new Date(valor.dataEntrada!),
-      valorPagamento: valor.valorPagamento!,
-      observacaoIsencao: valor.observacaoIsencao?.trim() || undefined,
-      etapaTratamento: etapaTratamento!,
-      status: status!,
-    };
-    this.salvando.set(true);
     const id = this.id();
+    const registroAtual = id === undefined ? undefined : this.acolhidosService.buscar(Number(id));
+    const dados: Omit<Acolhido, 'id'> = {
+      nome: valor.nome.trim(),
+      email: valor.email.trim(),
+      cpf: valor.cpf,
+      cep: valor.cep,
+      endereco: {
+        logradouro: valor.endereco.logradouro.trim(),
+        numero: Number(valor.endereco.numero),
+        bairro: valor.endereco.bairro.trim(),
+        cidade: valor.endereco.cidade.trim(),
+        estado: valor.endereco.estado!,
+        complemento: valor.endereco.complemento.trim(),
+      },
+      telefone: valor.telefone,
+      dataNascimento: new Date(valor.dataNascimento!),
+      ativo: registroAtual?.ativo ?? true,
+    };
+
+    this.salvando.set(true);
     let novoAcolhidoId: number | undefined;
     if (id !== undefined) {
       if (!this.acolhidosService.atualizar(Number(id), dados)) {
@@ -302,12 +264,14 @@ export class AcolhidoForm implements OnInit {
     } else {
       novoAcolhidoId = this.acolhidosService.criar(dados).id;
     }
+
     this.messageService.add({
       severity: 'success',
       summary: id !== undefined ? 'Acolhido atualizado!' : 'Acolhido cadastrado!',
       detail: 'Os dados foram salvos com sucesso.',
       life: 3000,
     });
+
     if (novoAcolhidoId !== undefined && this.voltarUrl() !== '/acolhidos') {
       this.router.navigate([this.voltarUrl()], {
         queryParams: {
@@ -327,13 +291,25 @@ export class AcolhidoForm implements OnInit {
 
     this.triagensService.getTriagemById(idTriagem).subscribe((triagem) => {
       if (!triagem) return;
-
-      this.idTriagem = triagem.id;
       this.acolhidoForm.patchValue({
         nome: triagem.nomePossivelAcolhido,
         telefone: triagem.telefone,
-        modalidadeId: triagem.modalidade.id,
       });
     });
+  }
+
+  private registroNaoEncontrado(): void {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Acolhido não encontrado',
+      detail: 'O registro solicitado não existe ou foi removido.',
+      life: 4000,
+    });
+    this.voltarParaLista();
+  }
+
+  private formatCep(cep: string): string {
+    const numeros = cep.replace(/\D/g, '');
+    return numeros.length === 8 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : cep;
   }
 }

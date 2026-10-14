@@ -126,8 +126,8 @@ export class InternacaoForm implements OnInit {
         Validators.required,
         dataValida,
       ]),
-      etapaTratamento: ['Em tratamento', [Validators.required]],
-      observacaoIsencao: ['', [Validators.maxLength(500)]],
+      etapaTratamento: this.fb.nonNullable.control('Em tratamento', [Validators.required]),
+      observacaoIsencao: this.fb.nonNullable.control('', [Validators.maxLength(500)]),
     },
     { validators: datasInternacaoCoerentes },
   );
@@ -161,6 +161,10 @@ export class InternacaoForm implements OnInit {
   protected readonly triagemSelecionada = computed(() =>
     this.triagens().find((triagem) => triagem.id === this.triagemSelecionadaId()),
   );
+  protected readonly acolhidosDisponiveis = computed(() => {
+    const acolhidoAtualId = this.registroAtual()?.idAcolhido;
+    return this.acolhidos().filter((acolhido) => acolhido.ativo || acolhido.id === acolhidoAtualId);
+  });
   protected readonly acolhidoSelecionado = computed(() =>
     this.acolhidos().find((acolhido) => acolhido.id === this.acolhidoSelecionadoId()),
   );
@@ -210,7 +214,7 @@ export class InternacaoForm implements OnInit {
 
     const nomeTriagem = this.normalizarTexto(triagem.nomePossivelAcolhido);
     const telefoneTriagem = triagem.telefone.replace(/\D/g, '');
-    const sugestao = this.acolhidos().find(
+    const sugestao = this.acolhidosDisponiveis().find(
       (acolhido) =>
         this.normalizarTexto(acolhido.nome) === nomeTriagem ||
         acolhido.telefone.replace(/\D/g, '') === telefoneTriagem,
@@ -279,6 +283,7 @@ export class InternacaoForm implements OnInit {
     const triagem = this.triagens().find((item) => item.id === valor.triagemId);
     const acolhido = this.acolhidos().find((item) => item.id === valor.idAcolhido);
     const idAtual = this.id() ? Number(this.id()) : undefined;
+    const etapaTratamento = this.modo() === 'registro' ? 'Em tratamento' : valor.etapaTratamento;
 
     if (!triagem || triagem.status !== 'CONCLUIDA') {
       this.avisoFormulario('Selecione uma triagem concluída e disponível.');
@@ -292,16 +297,20 @@ export class InternacaoForm implements OnInit {
       this.avisoFormulario('Selecione um acolhido válido.');
       return;
     }
+    if (!acolhido.ativo && this.registroAtual()?.idAcolhido !== acolhido.id) {
+      this.avisoFormulario('Selecione um acolhido ativo para registrar a internação.');
+      return;
+    }
     if (valor.idModalidade !== triagem.modalidade.id) {
       this.avisoFormulario('A modalidade deve ser a mesma definida na triagem.');
       return;
     }
-    if (!this.etapasTratamento.includes(valor.etapaTratamento ?? '')) {
+    if (!this.etapasTratamento.includes(etapaTratamento)) {
       this.avisoFormulario('Selecione uma etapa de tratamento válida.');
       return;
     }
 
-    const etapaEncerrada = ['Alta concedida', 'Desligado'].includes(valor.etapaTratamento!);
+    const etapaEncerrada = ['Alta concedida', 'Desligado'].includes(etapaTratamento);
     if (!etapaEncerrada && this.internacoesService.possuiInternacaoAtiva(acolhido.id, idAtual)) {
       this.avisoFormulario('O acolhido selecionado já possui uma internação ativa.');
       return;
@@ -314,7 +323,7 @@ export class InternacaoForm implements OnInit {
       dataAdmissao: new Date(valor.dataAdmissao!),
       dataPrevisaoAlta: new Date(valor.dataPrevisaoAlta!),
       observacaoIsencao: valor.observacaoIsencao?.trim() || undefined,
-      etapaTratamento: valor.etapaTratamento!,
+      etapaTratamento,
     };
 
     this.salvando.set(true);

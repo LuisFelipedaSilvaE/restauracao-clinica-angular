@@ -102,7 +102,7 @@
               inputId="idAcolhido"
               name="idAcolhido"
               formControlName="idAcolhido"
-              [options]="acolhidos()"
+              [options]="acolhidosDisponiveis()"
               optionLabel="nome"
               optionValue="id"
               [filter]="true"
@@ -174,23 +174,25 @@
             />
           </form-field>
 
-          <form-field
-            label="Etapa de tratamento"
-            inputId="etapaTratamento"
-            required
-            [errorMessage]="getErrorMessage('etapaTratamento')"
-          >
-            <p-select
+          @if (modo() === 'atualizacao') {
+            <form-field
+              label="Etapa de tratamento"
               inputId="etapaTratamento"
-              name="etapaTratamento"
-              formControlName="etapaTratamento"
-              [options]="etapasTratamento"
-              placeholder="Selecione uma etapa"
-              [invalid]="isInvalid('etapaTratamento')"
-              appendTo="body"
-              fluid
-            />
-          </form-field>
+              required
+              [errorMessage]="getErrorMessage('etapaTratamento')"
+            >
+              <p-select
+                inputId="etapaTratamento"
+                name="etapaTratamento"
+                formControlName="etapaTratamento"
+                [options]="etapasTratamento"
+                placeholder="Selecione uma etapa"
+                [invalid]="isInvalid('etapaTratamento')"
+                appendTo="body"
+                fluid
+              />
+            </form-field>
+          }
 
           <form-field
             label="Data de admissão"

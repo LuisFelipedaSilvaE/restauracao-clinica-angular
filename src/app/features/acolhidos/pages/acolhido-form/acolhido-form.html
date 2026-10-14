@@ -4,24 +4,17 @@
   <card aria-busy="true">
     <span class="sr-only" role="status">Carregando dados do acolhido...</span>
     <div class="space-y-5" aria-hidden="true">
-      <p-skeleton width="12rem" height="0.75rem" />
-      @for (secao of skeletonSecoes(); track $index) {
+      @for (campos of skeletonSecoes; track $index) {
         <div class="space-y-4">
           <p-skeleton width="12rem" height="1rem" />
           <div class="grid gap-4 sm:grid-cols-2">
-            @for (larguraCompleta of secao.campos; track $index) {
-              <div class="flex min-w-0 flex-col gap-2" [class.sm:col-span-2]="larguraCompleta">
+            @for (_ of campos; track $index) {
+              <div class="flex min-w-0 flex-col gap-2">
                 <p-skeleton class="h-4! w-40! rounded-md!" />
                 <p-skeleton class="h-10! w-full! rounded-lg!" />
               </div>
             }
           </div>
-          @if (secao.textarea) {
-            <div class="flex flex-col gap-2">
-              <p-skeleton class="h-4! w-40! rounded-md!" />
-              <p-skeleton class="h-28! w-full! rounded-lg!" />
-            </div>
-          }
         </div>
         <p-divider />
       }
@@ -55,6 +48,7 @@
             autocomplete="name"
           />
         </form-field>
+
         <div class="grid gap-4 sm:grid-cols-2">
           <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
             <input
@@ -94,9 +88,11 @@
           </form-field>
         </div>
       </fieldset>
+
       <p-divider />
+
       <fieldset class="space-y-4">
-        <legend class="font-semibold">Contato e localização</legend>
+        <legend class="font-semibold">Contato</legend>
         <div class="grid gap-4 sm:grid-cols-2">
           <form-field
             label="E-mail"
@@ -139,8 +135,20 @@
             />
           </form-field>
         </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <form-field label="CEP" inputId="cep" required [errorMessage]="getErrorMessage('cep')">
+      </fieldset>
+
+      <p-divider />
+
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Endereço</legend>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12">
+          <form-field
+            class="sm:col-span-4"
+            label="CEP"
+            inputId="cep"
+            required
+            [errorMessage]="getErrorMessage('cep')"
+          >
             <input
               pInputText
               id="cep"
@@ -155,133 +163,133 @@
               autocomplete="postal-code"
             />
           </form-field>
-        </div>
-      </fieldset>
-      <p-divider />
-      <fieldset class="space-y-4">
-        <legend class="font-semibold">Dados do acolhimento</legend>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <form-field
-            label="Modalidade"
-            inputId="modalidadeId"
-            required
-            [errorMessage]="getErrorMessage('modalidadeId')"
-          >
-            <p-select
-              inputId="modalidadeId"
-              name="modalidadeId"
-              formControlName="modalidadeId"
-              [options]="modalidades"
-              placeholder="Selecione uma modalidade"
-              [invalid]="isInvalid('modalidadeId')"
-              appendTo="body"
-              fluid
-              optionLabel="descricao"
-              optionValue="id"
-            />
-          </form-field>
 
-          <form-field
-            label="Data de entrada"
-            inputId="dataEntrada"
-            required
-            [errorMessage]="getErrorMessage('dataEntrada')"
-          >
-            <p-datepicker
-              inputId="dataEntrada"
-              name="dataEntrada"
-              formControlName="dataEntrada"
-              placeholder="dd/mm/aaaa"
-              dateFormat="dd/mm/yy"
-              [showButtonBar]="true"
-              [readonlyInput]="true"
-              [invalid]="isInvalid('dataEntrada')"
-              appendTo="body"
-              fluid
-            />
-          </form-field>
-
-          @if (modo() === 'atualizacao') {
+          <ng-container formGroupName="endereco">
             <form-field
-              label="Status"
-              inputId="status"
+              class="sm:col-span-2"
+              label="Número"
+              inputId="numero"
               required
-              [errorMessage]="getErrorMessage('status')"
+              [errorMessage]="getErrorMessage('endereco.numero')"
+            >
+              <input
+                pInputText
+                id="numero"
+                name="numero"
+                formControlName="numero"
+                placeholder="Nº"
+                [invalid]="isInvalid('endereco.numero')"
+                [attr.aria-describedby]="isInvalid('endereco.numero') ? 'numero-erro' : null"
+                fluid
+                inputmode="numeric"
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Logradouro"
+              inputId="logradouro"
+              required
+              [errorMessage]="getErrorMessage('endereco.logradouro')"
+            >
+              <input
+                pInputText
+                id="logradouro"
+                name="logradouro"
+                formControlName="logradouro"
+                placeholder="Rua, avenida..."
+                [invalid]="isInvalid('endereco.logradouro')"
+                [attr.aria-describedby]="
+                  isInvalid('endereco.logradouro') ? 'logradouro-erro' : null
+                "
+                fluid
+                autocomplete="street-address"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Complemento"
+              inputId="complemento"
+              [errorMessage]="getErrorMessage('endereco.complemento')"
+            >
+              <input
+                pInputText
+                id="complemento"
+                name="complemento"
+                formControlName="complemento"
+                placeholder="Casa, apartamento..."
+                [invalid]="isInvalid('endereco.complemento')"
+                fluid
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Bairro"
+              inputId="bairro"
+              required
+              [errorMessage]="getErrorMessage('endereco.bairro')"
+            >
+              <input
+                pInputText
+                id="bairro"
+                name="bairro"
+                formControlName="bairro"
+                placeholder="Bairro"
+                [invalid]="isInvalid('endereco.bairro')"
+                [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
+                fluid
+                autocomplete="address-level3"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Cidade"
+              inputId="cidade"
+              required
+              [errorMessage]="getErrorMessage('endereco.cidade')"
+            >
+              <input
+                pInputText
+                id="cidade"
+                name="cidade"
+                formControlName="cidade"
+                placeholder="Cidade"
+                [invalid]="isInvalid('endereco.cidade')"
+                [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
+                fluid
+                autocomplete="address-level2"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Estado"
+              inputId="estado"
+              required
+              [errorMessage]="getErrorMessage('endereco.estado')"
             >
               <p-select
-                inputId="status"
-                name="status"
-                formControlName="status"
-                [options]="statusOptions"
-                placeholder="Selecione o status"
-                [invalid]="isInvalid('status')"
+                inputId="estado"
+                name="estado"
+                [options]="estados"
+                formControlName="estado"
+                placeholder="Selecione um estado"
+                [invalid]="isInvalid('endereco.estado')"
                 appendTo="body"
                 fluid
               />
             </form-field>
-          }
+          </ng-container>
         </div>
+      </fieldset>
 
-        @if (modo() === 'atualizacao') {
-          <form-field
-            label="Etapa de tratamento"
-            inputId="etapaTratamento"
-            required
-            [errorMessage]="getErrorMessage('etapaTratamento')"
-          >
-            <p-select
-              inputId="etapaTratamento"
-              name="etapaTratamento"
-              formControlName="etapaTratamento"
-              [options]="etapas"
-              placeholder="Selecione uma etapa"
-              [invalid]="isInvalid('etapaTratamento')"
-              appendTo="body"
-              fluid
-            />
-          </form-field>
-        }
-      </fieldset>
       <p-divider />
-      <fieldset class="space-y-4">
-        <legend class="font-semibold">Pagamento e isenção</legend>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <form-field
-            label="Valor do pagamento"
-            inputId="valorPagamento"
-            required
-            [errorMessage]="getErrorMessage('valorPagamento')"
-          >
-            <p-inputnumber
-              inputId="valorPagamento"
-              name="valorPagamento"
-              formControlName="valorPagamento"
-              mode="currency"
-              currency="BRL"
-              locale="pt-BR"
-              [min]="0"
-              [minFractionDigits]="2"
-              [maxFractionDigits]="2"
-              [invalid]="isInvalid('valorPagamento')"
-              [ariaDescribedBy]="isInvalid('valorPagamento') ? 'valorPagamento-erro' : undefined"
-              placeholder="R$ 0,00"
-              fluid
-            />
-          </form-field>
-        </div>
-        <form-field label="Observação sobre isenção" inputId="observacaoIsencao">
-          <textarea
-            pTextarea
-            id="observacaoIsencao"
-            name="observacaoIsencao"
-            formControlName="observacaoIsencao"
-            rows="4"
-            class="w-full resize-y"
-            placeholder="Informe o motivo da isenção ou observações sobre o pagamento."
-          ></textarea>
-        </form-field>
-      </fieldset>
-      <p-divider />
+
       <div class="flex flex-wrap justify-end gap-2">
         <p-button
           type="button"

@@ -1,5 +1,11 @@
-import { AcolhidoCardContent } from '../../acolhidos/interfaces/acolhido-card-content';
+import { Acolhido } from '../../acolhidos/interfaces/acolhido';
+import { InternacaoCardContent } from '../../internacoes/interfaces/internacao-card-content';
 
-export interface ProntuarioHeaderContent extends AcolhidoCardContent {
+export interface ProntuarioInternacaoAtual extends InternacaoCardContent {
+  tempoInternado: string;
+}
+
+export interface ProntuarioHeaderContent extends Acolhido {
   idade: number;
+  internacaoAtual?: ProntuarioInternacaoAtual;
 }

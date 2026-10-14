@@ -3,7 +3,7 @@
     <div>
       <h4 class="text-2xl font-semibold mb-1">Acolhidos</h4>
       <p class="text-sm text-content-secondary">
-        Consulte, filtre e gerencie todos os internos atualmente acolhidos pela comunidade.
+        Consulte, filtre e gerencie as pessoas cadastradas na comunidade.
       </p>
     </div>
     <p-button routerLink="criar" label="Novo acolhido" class="text-nowrap">
@@ -23,11 +23,9 @@
   @if (loading() || acolhidos().length > 0) {
     <filter-acolhidos-card
       [modalidades]="modalidades()"
-      [etapasTratamento]="etapasTratamento()"
       [(busca)]="busca"
       [(modalidadeSelecionada)]="modalidadeSelecionada"
       [(statusSelecionado)]="statusSelecionado"
-      [(etapasTratamentoSelecionado)]="etapaTratamentoSelecionado"
     />
 
     <div class="w-full min-w-0 max-w-full overflow-hidden">
@@ -44,12 +42,11 @@
           <div class="min-w-0 pb-2">
             <div class="flex min-w-0 flex-col gap-3">
               <div
-                class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_36px] 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 hidden sm:grid border-x border-l-4 border-transparent px-3 2xl:px-4 text-xs font-semibold uppercase tracking-wide text-content-secondary"
+                class="hidden min-w-0 grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] items-center gap-2 border-x border-l-4 border-transparent px-3 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:px-4"
               >
                 <span>Nome</span>
-                <span class="hidden 2xl:block text-center">Data de entrada</span>
-                <span class="hidden md:block text-center">Previsão de alta</span>
-                <span class="hidden xl:block text-center">Tempo internado</span>
+                <span class="hidden text-center md:block">Contato</span>
+                <span class="hidden text-center xl:block">Cidade/UF</span>
                 <span class="text-center">Status</span>
                 <span class="justify-self-end text-center">Ações</span>
               </div>
@@ -60,7 +57,7 @@
                   @for (_ of skeletonCards; track $index) {
                     <div
                       aria-hidden="true"
-                      class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_36px] 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 rounded-xl border border-l-4 border-border-default bg-surface-card p-3 2xl:p-4"
+                      class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-l-4 border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:p-4"
                     >
                       <div class="flex min-w-0 items-center gap-3">
                         <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
@@ -72,17 +69,12 @@
                       <p-skeleton
                         width="6.5rem"
                         height="1rem"
-                        class="hidden 2xl:block justify-self-center"
+                        class="hidden justify-self-center md:block"
                       />
                       <p-skeleton
                         width="6.5rem"
                         height="1rem"
-                        class="hidden md:block justify-self-center"
-                      />
-                      <p-skeleton
-                        width="6.5rem"
-                        height="1rem"
-                        class="hidden xl:block justify-self-center"
+                        class="hidden justify-self-center xl:block"
                       />
                       <p-skeleton
                         width="8rem"

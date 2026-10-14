@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { INTERNACOES_MOCK } from '../data/internacoes-mock';
+import { INTERNACOES_MOCK, MODALIDADES_INTERNACOES_MOCK } from '../data/internacoes-mock';
 import { InternacaoCardContent } from '../interfaces/internacao-card-content';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
 import { Internacao } from '../interfaces/internacao';
@@ -11,6 +11,7 @@ export class InternacoesMockService {
   private readonly registros = signal<Internacao[]>(structuredClone(INTERNACOES_MOCK));
   private readonly rascunhoForm = signal<InternacaoFormDraft | null>(null);
   readonly internacoes = this.registros.asReadonly();
+  readonly modalidades = structuredClone(MODALIDADES_INTERNACOES_MOCK);
 
   criar(dados: Omit<Internacao, 'id'>): Internacao {
     const id = Math.max(0, ...this.registros().map((internacao) => internacao.id)) + 1;
@@ -71,5 +72,23 @@ export class InternacoesMockService {
     };
 
     return severidades[etapa] ?? 'secondary';
+  }
+
+  buscarAtualPorAcolhido(idAcolhido: number): Internacao | undefined {
+    const etapasEncerradas = new Set(['Alta concedida', 'Desligado']);
+    return this.internacoes().find(
+      (internacao) =>
+        internacao.idAcolhido === idAcolhido && !etapasEncerradas.has(internacao.etapaTratamento),
+    );
+  }
+
+  calcularTempoInternado(dataAdmissao: Date): string {
+    const diasTotais = Math.max(
+      0,
+      Math.floor((Date.now() - new Date(dataAdmissao).getTime()) / 86_400_000),
+    );
+    const meses = Math.floor(diasTotais / 30);
+    const dias = diasTotais % 30;
+    return meses === 0 ? `${dias}d` : `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
   }
 }

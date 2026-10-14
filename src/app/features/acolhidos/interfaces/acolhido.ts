@@ -1,18 +1,13 @@
-import { Modalidade } from '../../modalidades/interfaces/modalidade';
+import { Endereco } from '../../../shared/interfaces/endereco';
 
 export interface Acolhido {
   id: number;
-  modalidade: Modalidade;
-  id_triagem?: number;
   nome: string;
+  email: string;
   cpf: string;
   cep: string;
+  endereco: Endereco;
   telefone: string;
-  email: string;
   dataNascimento: Date;
-  dataEntrada: Date;
-  valorPagamento: number;
-  observacaoIsencao?: string;
-  etapaTratamento: string;
-  status: string;
+  ativo: boolean;
 }

@@ -3,6 +3,7 @@ import { ProntuarioHeader } from './components/prontuario-header/prontuario-head
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Acolhido } from '../acolhidos/interfaces/acolhido';
 import { AcolhidosMockService } from '../acolhidos/services/acolhidos-mock-service';
+import { InternacoesMockService } from '../internacoes/services/internacoes-mock-service';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { ProntuarioHeaderContent } from './interfaces/prontuario-header-content';
 import { TabsModule } from 'primeng/tabs';
@@ -38,6 +39,7 @@ export class Prontuario implements OnInit {
   private readonly router = inject(Router);
   protected readonly acolhido = signal<Acolhido | null>(null);
   private readonly acolhidoMockService = inject(AcolhidosMockService);
+  private readonly internacoesMockService = inject(InternacoesMockService);
   protected readonly confirmarAlteracao = signal(false);
 
   protected readonly abas = [
@@ -82,27 +84,41 @@ export class Prontuario implements OnInit {
     const acolhido = this.acolhido();
     if (!acolhido) return null;
 
+    const internacao = this.internacoesMockService.buscarAtualPorAcolhido(acolhido.id);
+    const modalidade = internacao
+      ? this.internacoesMockService.modalidades.find((item) => item.id === internacao.idModalidade)
+      : undefined;
+    const internacaoAtual =
+      internacao && modalidade
+        ? {
+            ...internacao,
+            acolhido,
+            modalidade,
+            encerrada: false,
+            severity: this.internacoesMockService.obterSeverity(internacao.etapaTratamento),
+            tempoInternado: this.internacoesMockService.calcularTempoInternado(
+              internacao.dataAdmissao,
+            ),
+          }
+        : undefined;
+
     return {
       ...acolhido,
       idade: this.acolhidoMockService.calcularIdade(acolhido.dataNascimento),
-      previsaoDeAlta: this.acolhidoMockService.calcularPrevisaoDeAlta(acolhido.dataEntrada),
-      tempoInternado: this.acolhidoMockService.calcularTempoInternado(acolhido.dataEntrada),
-      severity: this.acolhidoMockService.obterSeverity(acolhido.etapaTratamento),
+      internacaoAtual,
     };
   });
 
-  protected readonly toggleLabel = computed(() =>
-    this.acolhido()?.status === 'Ativo' ? 'Inativar' : 'Ativar',
-  );
+  protected readonly toggleLabel = computed(() => (this.acolhido()?.ativo ? 'Inativar' : 'Ativar'));
 
   protected readonly toggleMessage = computed(() =>
-    this.acolhido()?.status === 'Ativo'
+    this.acolhido()?.ativo
       ? 'Deseja inativar este acolhido? Ele deixará de ficar disponível.'
       : 'Deseja ativar este acolhido? Ele voltará a ficar disponível.',
   );
 
   protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
-    this.acolhido()?.status === 'Ativo' ? 'danger' : 'success',
+    this.acolhido()?.ativo ? 'danger' : 'success',
   );
 
   ngOnInit(): void {
@@ -131,9 +147,9 @@ export class Prontuario implements OnInit {
     const acolhido = this.acolhido();
     if (!acolhido) return;
 
-    const novoStatus = acolhido.status === 'Ativo' ? 'Inativo' : 'Ativo';
+    const novoStatus = !acolhido.ativo;
     this.acolhidoMockService.alterarStatus(acolhido.id, novoStatus);
-    this.acolhido.update((atual) => (atual ? { ...atual, status: novoStatus } : null));
+    this.acolhido.update((atual) => (atual ? { ...atual, ativo: novoStatus } : null));
     this.confirmarAlteracao.set(false);
   }
 }

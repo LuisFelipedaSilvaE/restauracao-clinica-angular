@@ -1,7 +1,9 @@
 import { Acolhido } from './acolhido';
+import { Internacao } from '../../internacoes/interfaces/internacao';
+import { Modalidade } from '../../modalidades/interfaces/modalidade';
 
 export interface AcolhidoCardContent extends Acolhido {
-  severity: 'secondary' | 'warn' | 'success' | 'info' | 'danger' | 'contrast';
-  previsaoDeAlta: Date;
-  tempoInternado: string;
+  internacaoAtual?: Pick<Internacao, 'id' | 'etapaTratamento'> & {
+    modalidade: Modalidade;
+  };
 }

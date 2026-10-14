@@ -1,27 +1,27 @@
 <div
-  class="flex flex-wrap gap-2 rounded-xl border border-border-default bg-surface-card p-4 items-center"
+  class="flex flex-wrap items-center gap-2 rounded-xl border border-border-default bg-surface-card p-4"
 >
-  <p-iconfield class="min-w-70 basis-full grow-2 md:basis-[50%]">
+  <p-iconfield class="min-w-70 basis-full grow md:basis-[65%]">
     <p-inputicon>
-      <svg lucideSearch class="w-4 h-4"></svg>
+      <svg lucideSearch class="h-4 w-4"></svg>
     </p-inputicon>
     <input
       pInputText
       [ngModel]="busca()"
-      (ngModelChange)="this.buscaChange.emit($event)"
-      placeholder="Buscar por nome, CPF ou e-mail..."
+      (ngModelChange)="buscaChange.emit($event)"
+      placeholder="Buscar por nome, CPF, e-mail, telefone ou cidade..."
       class="w-full placeholder:text-sm"
     />
   </p-iconfield>
 
   <p-iconfield class="min-w-70 basis-70 grow">
-    <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
       <svg lucideLayers class="h-4.5 w-4.5"></svg>
     </p-inputicon>
     <p-select
       [options]="modalidades()"
       [ngModel]="modalidadeSelecionada()"
-      (ngModelChange)="this.modalidadeSelecionadaChange.emit($event)"
+      (ngModelChange)="modalidadeSelecionadaChange.emit($event)"
       optionLabel="name"
       optionValue="code"
       placeholder="Selecione uma modalidade"
@@ -34,14 +34,15 @@
       </ng-template>
     </p-select>
   </p-iconfield>
+
   <p-iconfield class="min-w-45 basis-45 grow">
-    <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
       <svg lucideSlidersHorizontal class="h-5 w-5"></svg>
     </p-inputicon>
     <p-select
       [options]="status"
       [ngModel]="statusSelecionado()"
-      (ngModelChange)="this.statusSelecionadoChange.emit($event)"
+      (ngModelChange)="statusSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
       placeholder="Selecione o status"
@@ -50,26 +51,6 @@
       <ng-template #selectedItem let-selectedOption>
         <p class="text-sm">
           Status: <span>{{ selectedOption.name }}</span>
-        </p>
-      </ng-template>
-    </p-select>
-  </p-iconfield>
-  <p-iconfield class="min-w-45 basis-45 grow">
-    <p-inputicon class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center mt-0!">
-      <svg lucideStethoscope class="h-5 w-5"></svg>
-    </p-inputicon>
-    <p-select
-      [options]="etapasTratamento()"
-      [ngModel]="etapasTratamentoSelecionado()"
-      (ngModelChange)="this.etapasTratamentoSelecionadoChange.emit($event)"
-      optionLabel="name"
-      optionValue="code"
-      placeholder="Selecione uma etapa"
-      class="w-full pl-7.5"
-    >
-      <ng-template #selectedItem let-selectedOption>
-        <p class="text-sm">
-          Etapa: <span>{{ selectedOption.name }}</span>
         </p>
       </ng-template>
     </p-select>

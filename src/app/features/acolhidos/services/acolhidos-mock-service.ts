@@ -1,40 +1,11 @@
 import { Injectable, signal } from '@angular/core';
-import { ACOLHIDOS_MOCK, MODALIDADES_ACOLHIDOS_MOCK } from '../data/acolhidos-mock';
+import { ACOLHIDOS_MOCK } from '../data/acolhidos-mock';
 import { Acolhido } from '../interfaces/acolhido';
-import { AcolhidoCardContent } from '../interfaces/acolhido-card-content';
 
 @Injectable({ providedIn: 'root' })
 export class AcolhidosMockService {
   private readonly registros = signal<Acolhido[]>(structuredClone(ACOLHIDOS_MOCK));
   readonly acolhidos = this.registros.asReadonly();
-
-  readonly modalidades = structuredClone(MODALIDADES_ACOLHIDOS_MOCK);
-  obterSeverity(etapa: string): AcolhidoCardContent['severity'] {
-    const severidades: Record<string, AcolhidoCardContent['severity']> = {
-      'Em tratamento': 'success',
-      'Próximo da alta': 'warn',
-      'Alta vencida': 'danger',
-      'Alta concedida': 'info',
-      Desligado: 'secondary',
-    };
-    return severidades[etapa] ?? 'secondary';
-  }
-
-  calcularPrevisaoDeAlta(dataEntrada: Date): Date {
-    const previsao = new Date(dataEntrada);
-    previsao.setMonth(previsao.getMonth() + 3);
-    return previsao;
-  }
-
-  calcularTempoInternado(dataEntrada: Date): string {
-    const diasTotais = Math.max(
-      0,
-      Math.floor((Date.now() - new Date(dataEntrada).getTime()) / 86_400_000),
-    );
-    const meses = Math.floor(diasTotais / 30);
-    const dias = diasTotais % 30;
-    return meses === 0 ? `${dias}d` : `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
-  }
 
   calcularIdade(dataNascimento: Date): number {
     const nascimento = new Date(dataNascimento);
@@ -68,9 +39,9 @@ export class AcolhidosMockService {
     return true;
   }
 
-  alterarStatus(id: number, status: string): void {
+  alterarStatus(id: number, ativo: boolean): void {
     this.registros.update((lista) =>
-      lista.map((acolhido) => (acolhido.id === id ? { ...acolhido, status } : acolhido)),
+      lista.map((acolhido) => (acolhido.id === id ? { ...acolhido, ativo } : acolhido)),
     );
   }
 }

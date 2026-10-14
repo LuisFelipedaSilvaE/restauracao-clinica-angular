@@ -1,18 +1,128 @@
-import { ACOLHIDOS_MOCK } from '../../acolhidos/data/acolhidos-mock';
+import { Modalidade } from '../../modalidades/interfaces/modalidade';
 import { Internacao } from '../interfaces/internacao';
 
-export const INTERNACOES_MOCK: Internacao[] = ACOLHIDOS_MOCK.map((acolhido) => {
-  const dataPrevisaoAlta = new Date(acolhido.dataEntrada);
-  dataPrevisaoAlta.setMonth(dataPrevisaoAlta.getMonth() + 3);
+export const MODALIDADES_INTERNACOES_MOCK: Modalidade[] = [
+  {
+    id: 1,
+    descricao: 'Atendimento Social',
+    cnpj: null,
+    maxVagas: 40,
+    ativo: true,
+    pagamento: false,
+    cor: '#2E86C1',
+  },
+  {
+    id: 2,
+    descricao: 'Clínica Parceira',
+    cnpj: '11222333000181',
+    maxVagas: 20,
+    ativo: true,
+    pagamento: true,
+    cor: '#28B463',
+  },
+  {
+    id: 4,
+    descricao: 'Lista de Espera',
+    cnpj: null,
+    maxVagas: 0,
+    ativo: true,
+    pagamento: false,
+    cor: '#F39C12',
+  },
+];
 
-  return {
-    id: acolhido.id,
-    idAcolhido: acolhido.id,
-    idModalidade: acolhido.modalidade.id,
+export const INTERNACOES_MOCK: Internacao[] = [
+  {
+    id: 1,
+    idAcolhido: 1,
+    idModalidade: 1,
     idTriagem: null,
-    dataAdmissao: new Date(acolhido.dataEntrada),
-    dataPrevisaoAlta,
-    observacaoIsencao: acolhido.observacaoIsencao,
-    etapaTratamento: acolhido.etapaTratamento,
-  };
-});
+    dataAdmissao: new Date(2026, 6, 12),
+    dataPrevisaoAlta: new Date(2026, 9, 12),
+    observacaoIsencao: 'Isenção concedida por vulnerabilidade social.',
+    etapaTratamento: 'Em tratamento',
+  },
+  {
+    id: 2,
+    idAcolhido: 2,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 4, 12),
+    dataPrevisaoAlta: new Date(2026, 7, 12),
+    etapaTratamento: 'Em tratamento',
+  },
+  {
+    id: 3,
+    idAcolhido: 3,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 1, 12),
+    dataPrevisaoAlta: new Date(2026, 4, 12),
+    etapaTratamento: 'Próximo da alta',
+  },
+  {
+    id: 4,
+    idAcolhido: 4,
+    idModalidade: 1,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 7, 12),
+    dataPrevisaoAlta: new Date(2026, 10, 12),
+    observacaoIsencao: 'Sem renda no momento da admissão.',
+    etapaTratamento: 'Em tratamento',
+  },
+  {
+    id: 5,
+    idAcolhido: 5,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 5, 12),
+    dataPrevisaoAlta: new Date(2026, 8, 12),
+    etapaTratamento: 'Alta vencida',
+  },
+  {
+    id: 6,
+    idAcolhido: 8,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2025, 10, 12),
+    dataPrevisaoAlta: new Date(2026, 1, 12),
+    etapaTratamento: 'Alta concedida',
+  },
+  {
+    id: 7,
+    idAcolhido: 9,
+    idModalidade: 1,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 3, 12),
+    dataPrevisaoAlta: new Date(2026, 6, 12),
+    observacaoIsencao: 'Isenção aprovada durante a internação.',
+    etapaTratamento: 'Próximo da alta',
+  },
+  {
+    id: 8,
+    idAcolhido: 12,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2025, 8, 12),
+    dataPrevisaoAlta: new Date(2025, 11, 12),
+    etapaTratamento: 'Desligado',
+  },
+  {
+    id: 9,
+    idAcolhido: 15,
+    idModalidade: 1,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 3, 12),
+    dataPrevisaoAlta: new Date(2026, 6, 12),
+    etapaTratamento: 'Em tratamento',
+  },
+  {
+    id: 10,
+    idAcolhido: 18,
+    idModalidade: 2,
+    idTriagem: null,
+    dataAdmissao: new Date(2026, 2, 12),
+    dataPrevisaoAlta: new Date(2026, 5, 12),
+    etapaTratamento: 'Alta vencida',
+  },
+];

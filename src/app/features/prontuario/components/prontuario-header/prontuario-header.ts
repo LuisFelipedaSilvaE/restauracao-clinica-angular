@@ -10,7 +10,9 @@ import {
   LucideIdCard,
   LucideLayers,
   LucideLogOut,
+  LucideMail,
   LucidePencil,
+  LucidePhone,
   LucidePower,
   LucidePowerOff,
 } from '@lucide/angular';
@@ -48,7 +50,9 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     LucideIdCard,
     LucideLayers,
     LucideLogOut,
+    LucideMail,
     LucidePencil,
+    LucidePhone,
   ],
   templateUrl: './prontuario-header.html',
   styleUrl: './prontuario-header.css',
@@ -63,7 +67,7 @@ export class ProntuarioHeader {
     },
   };
 
-  protected readonly estaAtivo = computed(() => this.data().status === 'Ativo');
+  protected readonly estaAtivo = computed(() => this.data().ativo);
 
   protected readonly toggleConfig = computed(() =>
     this.estaAtivo()

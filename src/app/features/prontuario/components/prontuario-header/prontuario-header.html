@@ -1,6 +1,9 @@
 <back-button label="Voltar para lista de acolhidos" url="/acolhidos" />
 
-<card class="border-l-4 p-4! sm:p-5!" [style.border-left-color]="data().modalidade.cor">
+<card
+  class="border-l-4 p-4! sm:p-5!"
+  [style.border-left-color]="data().internacaoAtual?.modalidade?.cor ?? '#be222d'"
+>
   <div class="flex min-w-0 flex-col gap-5">
     <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div class="flex min-w-0 items-center gap-3">
@@ -16,7 +19,13 @@
             <span class="text-xs font-medium text-content-secondary">
               P-{{ data().id | number: '2.0-0' }}
             </span>
-            <p-tag [value]="data().etapaTratamento" [severity]="data().severity" />
+            <p-tag
+              [value]="data().ativo ? 'Ativo' : 'Inativo'"
+              [severity]="data().ativo ? 'success' : 'secondary'"
+            />
+            @if (data().internacaoAtual; as internacao) {
+              <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+            }
           </div>
           <h1 class="truncate text-xl font-semibold text-content-primary sm:text-2xl">
             {{ data().nome }}
@@ -34,9 +43,7 @@
             [pt]="actionButtonPt"
             [routerLink]="['/acolhidos', data().id, 'editar']"
           >
-            <ng-template #icon>
-              <svg lucidePencil class="h-4 w-4"></svg>
-            </ng-template>
+            <ng-template #icon><svg lucidePencil class="h-4 w-4"></svg></ng-template>
           </p-button>
         }
 
@@ -46,10 +53,9 @@
           variant="outlined"
           [pt]="actionButtonPt"
         >
-          <ng-template #icon>
-            <svg lucideFileText class="h-4 w-4"></svg>
-          </ng-template>
+          <ng-template #icon><svg lucideFileText class="h-4 w-4"></svg></ng-template>
         </p-button>
+
         <p-button
           [label]="toggleConfig().label"
           [severity]="toggleConfig().severity"
@@ -61,11 +67,10 @@
             <svg [lucideIcon]="toggleConfig().icon" class="h-4 w-4"></svg>
           </ng-template>
         </p-button>
-        @if (estaAtivo()) {
+
+        @if (estaAtivo() && data().internacaoAtual) {
           <p-button label="Registrar alta" severity="primary" [pt]="actionButtonPt">
-            <ng-template #icon>
-              <svg lucideLogOut class="h-4 w-4"></svg>
-            </ng-template>
+            <ng-template #icon><svg lucideLogOut class="h-4 w-4"></svg></ng-template>
           </p-button>
         }
       </div>
@@ -73,73 +78,75 @@
 
     <div class="border-t border-border-default pt-4">
       <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
-        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-            [iconColor]="data().modalidade.cor"
-          >
-            <svg lucideLayers class="h-4 w-4"></svg>
-          </span>
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-              Modalidade
-            </dt>
-            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-              {{ data().modalidade.descricao }}
-            </dd>
+        @if (data().internacaoAtual; as internacao) {
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="internacao.modalidade.cor"
+            >
+              <svg lucideLayers class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                Modalidade
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ internacao.modalidade.descricao }}
+              </dd>
+            </div>
           </div>
-        </div>
 
-        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-            [iconColor]="'#4a5565'"
-          >
-            <svg lucideCalendarDays class="h-4 w-4"></svg>
-          </span>
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-              Data de entrada
-            </dt>
-            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-              {{ data().dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-            </dd>
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucideCalendarDays class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                Data de entrada
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+              </dd>
+            </div>
           </div>
-        </div>
 
-        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-            [iconColor]="'#4a5565'"
-          >
-            <svg lucideClock3 class="h-4 w-4"></svg>
-          </span>
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-              Tempo internado
-            </dt>
-            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-              {{ data().tempoInternado }}
-            </dd>
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucideClock3 class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                Tempo internado
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ internacao.tempoInternado }}
+              </dd>
+            </div>
           </div>
-        </div>
 
-        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-            [iconColor]="'#4a5565'"
-          >
-            <svg lucideCalendarCheck class="h-4 w-4"></svg>
-          </span>
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-              Previsão de alta
-            </dt>
-            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-              {{ data().previsaoDeAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-            </dd>
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucideCalendarCheck class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                Previsão de alta
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+              </dd>
+            </div>
           </div>
-        </div>
+        }
 
         <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
           <span
@@ -155,6 +162,42 @@
             </dd>
           </div>
         </div>
+
+        @if (!data().internacaoAtual) {
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucidePhone class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                Telefone
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ data().telefone }}
+              </dd>
+            </div>
+          </div>
+
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucideMail class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                E-mail
+              </dt>
+              <dd class="mt-1 break-all text-sm font-semibold leading-5 text-content-primary">
+                {{ data().email }}
+              </dd>
+            </div>
+          </div>
+        }
       </dl>
     </div>
   </div>
