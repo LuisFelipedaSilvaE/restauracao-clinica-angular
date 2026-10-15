@@ -1,5 +1,5 @@
 export interface TriagemRequest {
-  modalidadeId: number;
+  convenioId: number;
   nomePossivelAcolhido: string;
   telefone: string;
   dataAgendada: string;

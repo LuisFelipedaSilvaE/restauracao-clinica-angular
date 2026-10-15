@@ -18,7 +18,7 @@ export interface NavigationRoute {
 
 export const NAVIGATION_ROUTES: NavigationRoute[] = [
   { label: 'Dashboard', route: 'dashboard', icon: LucideLayoutDashboard },
-  { label: 'Modalidades', route: 'modalidades', icon: LucideLayers },
+  { label: 'Convênios', route: 'convenios', icon: LucideLayers },
   { label: 'Internações', route: 'internacoes', icon: LucideBedSingle },
   { label: 'Acolhidos', route: 'acolhidos', icon: LucideUsersRound },
   { label: 'Funcionários', route: 'funcionarios', icon: LucideBriefcase },

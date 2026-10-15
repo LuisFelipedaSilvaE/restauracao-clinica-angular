@@ -11,9 +11,9 @@ import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-li
 import { InternacaoDetalhada } from './features/internacoes/pages/internacao-detalhada/internacao-detalhada';
 import { InternacaoForm } from './features/internacoes/pages/internacao-form/internacao-form';
 import { InternacoesLista } from './features/internacoes/pages/internacoes-lista/internacoes-lista';
-import { ModalidadeDetalhada } from './features/modalidades/pages/modalidade-detalhada/modalidade-detalhada';
-import { ModalidadeForm } from './features/modalidades/pages/modalidade-form/modalidade-form';
-import { ModalidadesLista } from './features/modalidades/pages/modalidades-lista/modalidades-lista';
+import { ConvenioDetalhado } from './features/convenios/pages/convenio-detalhado/convenio-detalhado';
+import { ConvenioForm } from './features/convenios/pages/convenio-form/convenio-form';
+import { ConveniosLista } from './features/convenios/pages/convenios-lista/convenios-lista';
 import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
 import { TriagemDetalhada } from './features/triagens/pages/triagem-detalhada/triagem-detalhada';
@@ -43,23 +43,23 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'modalidades',
-        component: ModalidadesLista,
+        path: 'convenios',
+        component: ConveniosLista,
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'modalidades/criar',
-        component: ModalidadeForm,
+        path: 'convenios/criar',
+        component: ConvenioForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'modalidades/:id/editar',
-        component: ModalidadeForm,
+        path: 'convenios/:id/editar',
+        component: ConvenioForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'modalidades/:id',
-        component: ModalidadeDetalhada,
+        path: 'convenios/:id',
+        component: ConvenioDetalhado,
         canActivate: [roleGuard('ADMIN')],
       },
       {

@@ -12,30 +12,30 @@ import {
   LucideEye,
 } from '@lucide/angular';
 import { IconColor } from '../../../../shared/directives/icon-color';
-import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
+import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
 import { BadgeModule } from 'primeng/badge';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
+import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
 import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
 import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { TooltipModule } from 'primeng/tooltip';
 
-interface ToggleModalidadeButton {
+interface ToggleConvenioButton {
   tooltipValue: string;
   severity: ButtonSeverity;
   icon: LucideIcon;
 }
 
 @Component({
-  selector: 'modalidade-card',
+  selector: 'convenio-card',
   host: {
     class:
       'flex relative flex-col items-center gap-2 bg-surface-card border border-border-default rounded-lg p-4 min-w-sm overflow-hidden',
     '[class]':
-      "!modalidade()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
+      "!convenio()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
   },
   imports: [
     LucideDynamicIcon,
@@ -52,22 +52,22 @@ interface ToggleModalidadeButton {
     RouterLink,
     LucideEye,
   ],
-  templateUrl: './modalidade-card.html',
-  styleUrl: './modalidade-card.css',
+  templateUrl: './convenio-card.html',
+  styleUrl: './convenio-card.css',
 })
-export class ModalidadeCard {
-  readonly modalidade = input.required<ModalidadeCardContent>();
+export class ConvenioCard {
+  readonly convenio = input.required<ConvenioCardContent>();
   readonly showActions = input(true);
-  readonly statusModalidadeChange = output<ToggleModalidadeDto>();
+  readonly statusConvenioChange = output<ToggleConvenioDto>();
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
-      value: this.modalidade().acolhidosAtivos,
+      value: this.convenio().acolhidosAtivos,
       label: 'Acolhidos ativos',
       icon: LucideUsersRound,
       color: '#4a5565',
     };
     const card2 = {
-      value: this.modalidade().maxVagas - this.modalidade().acolhidosAtivos,
+      value: this.convenio().maxVagas - this.convenio().acolhidosAtivos,
       label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
       color: '#00a63e',
@@ -75,28 +75,28 @@ export class ModalidadeCard {
     return [card1, card2];
   });
   readonly computedOcupacao = computed<number>(() => {
-    if (this.modalidade().acolhidosAtivos <= 0) return 0;
-    if (this.modalidade().acolhidosAtivos == this.modalidade().maxVagas) return 100;
+    if (this.convenio().acolhidosAtivos <= 0) return 0;
+    if (this.convenio().acolhidosAtivos == this.convenio().maxVagas) return 100;
 
-    const porcentagem = (this.modalidade().acolhidosAtivos / this.modalidade().maxVagas) * 100;
+    const porcentagem = (this.convenio().acolhidosAtivos / this.convenio().maxVagas) * 100;
     return Math.ceil(porcentagem);
   });
-  readonly computedModalidadeAtivaBtn = computed<ToggleModalidadeButton>(() => {
-    const ativo = this.modalidade().ativo;
+  readonly computedConvenioAtivoBtn = computed<ToggleConvenioButton>(() => {
+    const ativo = this.convenio().ativo;
 
     return {
-      tooltipValue: ativo ? 'Desativar modalidade' : 'Ativar modalidade',
+      tooltipValue: ativo ? 'Desativar convênio' : 'Ativar convênio',
       severity: ativo ? 'warn' : 'success',
       icon: ativo ? LucidePowerOff : LucidePower,
     };
   });
 
-  toggleModalidade(): void {
-    const dto: ToggleModalidadeDto = {
-      id: this.modalidade().id,
-      ativo: !this.modalidade().ativo,
+  toggleConvenio(): void {
+    const dto: ToggleConvenioDto = {
+      id: this.convenio().id,
+      ativo: !this.convenio().ativo,
     };
 
-    this.statusModalidadeChange.emit(dto);
+    this.statusConvenioChange.emit(dto);
   }
 }

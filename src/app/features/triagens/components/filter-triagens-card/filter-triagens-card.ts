@@ -6,7 +6,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { Card } from '../../../../shared/components/card/card';
-import { ModalidadesService } from '../../../modalidades/services/modalidades-service';
+import { ConveniosService } from '../../../convenios/services/convenios-service';
 
 @Component({
   selector: 'filter-triagens-card',
@@ -25,15 +25,15 @@ import { ModalidadesService } from '../../../modalidades/services/modalidades-se
   styleUrl: './filter-triagens-card.css',
 })
 export class FilterTriagensCard implements OnInit {
-  private readonly modalidadesService = inject(ModalidadesService);
+  private readonly conveniosService = inject(ConveniosService);
 
-  protected readonly modalidades = computed(() => {
+  protected readonly convenios = computed(() => {
     const todos = { name: 'Todos', code: 'todos' };
-    const modalidades = this.modalidadesService
-      .modalidades()
-      .map((modalidade) => ({ name: modalidade.descricao, code: String(modalidade.id) }));
+    const convenios = this.conveniosService
+      .convenios()
+      .map((convenio) => ({ name: convenio.descricao, code: String(convenio.id) }));
 
-    return [todos, ...modalidades];
+    return [todos, ...convenios];
   });
 
   protected readonly datas = [
@@ -44,13 +44,13 @@ export class FilterTriagensCard implements OnInit {
   ];
 
   readonly busca = input<string>();
-  readonly modalidadeSelecionada = input<string>();
+  readonly convenioSelecionado = input<string>();
   readonly rangeDataSelecionado = input<string>();
   protected readonly buscaChange = output<string>();
-  protected readonly modalidadeSelecionadaChange = output<string>();
+  protected readonly convenioSelecionadoChange = output<string>();
   protected readonly rangeDataSelecionadoChange = output<string>();
 
   ngOnInit(): void {
-    this.modalidadesService.getAllModalidades().subscribe();
+    this.conveniosService.getAllConvenios().subscribe();
   }
 }

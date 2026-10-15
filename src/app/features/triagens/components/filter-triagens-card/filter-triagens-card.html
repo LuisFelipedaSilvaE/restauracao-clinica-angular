@@ -7,7 +7,7 @@
       pInputText
       [ngModel]="busca()"
       (ngModelChange)="this.buscaChange.emit($event)"
-      placeholder="Buscar por nome, telefone ou modalidade..."
+      placeholder="Buscar por nome, telefone ou convênio..."
       class="w-full placeholder:text-sm"
     />
   </p-iconfield>
@@ -17,17 +17,17 @@
       <svg lucideLayers class="h-5 w-5"></svg>
     </p-inputicon>
     <p-select
-      [options]="modalidades()"
-      [ngModel]="modalidadeSelecionada()"
-      (ngModelChange)="this.modalidadeSelecionadaChange.emit($event)"
+      [options]="convenios()"
+      [ngModel]="convenioSelecionado()"
+      (ngModelChange)="this.convenioSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
-      placeholder="Selecione a modalidade"
+      placeholder="Selecione o convênio"
       class="w-full pl-7.5"
     >
       <ng-template #selectedItem let-selectedOption>
         <p class="text-content-primary text-sm truncate">
-          Modalidade: <span>{{ selectedOption.name }}</span>
+          Convênio: <span>{{ selectedOption.name }}</span>
         </p>
       </ng-template>
     </p-select>
@@ -43,7 +43,7 @@
       (ngModelChange)="this.rangeDataSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
-      placeholder="Selecione a modalidade"
+      placeholder="Selecione o convênio"
       class="w-full pl-7.5"
     >
       <ng-template #selectedItem let-selectedOption>

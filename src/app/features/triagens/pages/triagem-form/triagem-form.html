@@ -91,18 +91,18 @@
       </div>
       <div class="grid sm:grid-cols-2 gap-4">
         <form-field
-          label="Modalidade"
-          inputId="modalidade"
+          label="Convênio"
+          inputId="convenio"
           required
-          [errorMessage]="getErrorMessage('modalidade')"
+          [errorMessage]="getErrorMessage('convenio')"
         >
           <p-select
-            [options]="modalidades()"
+            [options]="convenios()"
             optionLabel="descricao"
             optionValue="id"
-            inputId="modalidade"
-            formControlName="modalidade"
-            [invalid]="isInvalid('modalidade')"
+            inputId="convenio"
+            formControlName="convenio"
+            [invalid]="isInvalid('convenio')"
             placeholder="Selecione"
             fluid
           />

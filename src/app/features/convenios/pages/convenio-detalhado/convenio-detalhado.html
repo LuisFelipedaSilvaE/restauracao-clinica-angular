@@ -1,4 +1,4 @@
-<back-button label="Voltar para modalidades" url="/modalidades" />
+<back-button label="Voltar para convênios" url="/convenios" />
 
 @if (carregando()) {
   <card class="flex flex-col gap-6 p-6!">
@@ -31,20 +31,20 @@
       }
     </div>
   </card>
-} @else if (modalidade(); as modalidade) {
+} @else if (convenio(); as convenio) {
   <card class="flex flex-col gap-5 p-5! md:p-6!">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center justify-center gap-2">
         <span
           class="flex h-15 w-15 shrink-0 items-center justify-center rounded-xl"
-          [iconColor]="modalidade.cor"
+          [iconColor]="convenio.cor"
         >
           <svg lucideLayers class="h-6 w-6"></svg>
         </span>
         <div class="flex flex-col gap-1 min-w-0">
           <div class="flex gap-2">
-            <h1 class="truncate text-xl font-semibold">{{ modalidade.descricao }}</h1>
-            <p-badge [value]="`${modalidade.maxVagas} vagas`" [customBadge]="modalidade.cor" />
+            <h1 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h1>
+            <p-badge [value]="`${convenio.maxVagas} vagas`" [customBadge]="convenio.cor" />
           </div>
           <div class="flex flex-wrap items-end gap-2">
             <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
@@ -53,12 +53,12 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        @if (modalidade.ativo) {
+        @if (convenio.ativo) {
           <p-button
             label="Editar"
             severity="secondary"
             variant="outlined"
-            [routerLink]="['/modalidades', modalidade.id, 'editar']"
+            [routerLink]="['/convenios', convenio.id, 'editar']"
           >
             <ng-template #icon>
               <svg lucidePencil class="h-4 w-4"></svg>
@@ -67,13 +67,13 @@
         }
         <p-button
           [label]="toggleLabel()"
-          [severity]="modalidade.ativo ? 'warn' : 'success'"
+          [severity]="convenio.ativo ? 'warn' : 'success'"
           [outlined]="true"
           [disabled]="loading().mutation"
           (onClick)="this.confirmarAlteracao.set(true)"
         >
           <ng-template #icon>
-            @if (modalidade.ativo) {
+            @if (convenio.ativo) {
               <svg lucidePowerOff class="h-4 w-4"></svg>
             } @else {
               <svg lucidePower class="h-4 w-4"></svg>
@@ -85,7 +85,7 @@
   </card>
 
   <card class="flex flex-col gap-5 p-5! md:p-6!">
-    <h2 class="text-sm font-semibold">Resumo da modalidade</h2>
+    <h2 class="text-sm font-semibold">Resumo do convênio</h2>
     <dl class="grid gap-5 sm:grid-cols-2">
       <div class="flex items-start gap-2.5">
         <span
@@ -97,7 +97,7 @@
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
             Descrição
           </dt>
-          <dd class="text-sm font-medium">{{ modalidade.descricao }}</dd>
+          <dd class="text-sm font-medium">{{ convenio.descricao }}</dd>
         </div>
       </div>
 
@@ -109,7 +109,7 @@
         </span>
         <div class="min-w-0 space-y-0.5">
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">CNPJ</dt>
-          <dd class="text-sm font-medium">{{ formatarCnpj(modalidade.cnpj) }}</dd>
+          <dd class="text-sm font-medium">{{ formatarCnpj(convenio.cnpj) }}</dd>
         </div>
       </div>
 
@@ -123,7 +123,7 @@
           <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
             Capacidade total
           </dt>
-          <dd class="text-sm font-medium">{{ modalidade.maxVagas }} vagas</dd>
+          <dd class="text-sm font-medium">{{ convenio.maxVagas }} vagas</dd>
         </div>
       </div>
 
@@ -180,8 +180,8 @@
             Cor de identificação
           </dt>
           <dd class="flex items-center gap-2 text-sm font-medium">
-            <span class="h-2.5 w-2.5 rounded-full" [style.backgroundColor]="modalidade.cor"></span>
-            {{ modalidade.cor }}
+            <span class="h-2.5 w-2.5 rounded-full" [style.backgroundColor]="convenio.cor"></span>
+            {{ convenio.cor }}
           </dd>
         </div>
       </div>
@@ -190,7 +190,7 @@
         <span
           class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
         >
-          @if (modalidade.ativo) {
+          @if (convenio.ativo) {
             <svg lucidePower class="h-4 w-4"></svg>
           } @else {
             <svg lucidePowerOff class="h-4 w-4"></svg>
@@ -207,7 +207,7 @@
 
 <confirm-dialog
   [(visible)]="confirmarAlteracao"
-  [title]="toggleLabel() + ' modalidade'"
+  [title]="toggleLabel() + ' convênio'"
   [message]="toggleMessage()"
   [confirmLabel]="toggleLabel()"
   [severity]="toggleSeverity()"

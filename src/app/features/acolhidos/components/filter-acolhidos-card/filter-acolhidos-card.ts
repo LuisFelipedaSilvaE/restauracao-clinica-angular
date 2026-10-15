@@ -23,16 +23,16 @@ import { FilterOption } from '../../interfaces/filter-option';
   styleUrl: './filter-acolhidos-card.css',
 })
 export class FilterAcolhidosCard {
-  readonly modalidades = input.required<FilterOption[]>();
+  readonly convenios = input.required<FilterOption[]>();
   readonly status = [
     { name: 'Todos', code: 'todos' },
     { name: 'Ativo', code: 'ativo' },
     { name: 'Inativo', code: 'inativo' },
   ];
   readonly busca = input<string>();
-  readonly modalidadeSelecionada = input<string>();
+  readonly convenioSelecionado = input<string>();
   readonly statusSelecionado = input<string>();
   protected readonly buscaChange = output<string>();
-  protected readonly modalidadeSelecionadaChange = output<string>();
+  protected readonly convenioSelecionadoChange = output<string>();
   protected readonly statusSelecionadoChange = output<string>();
 }

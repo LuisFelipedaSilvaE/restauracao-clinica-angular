@@ -24,10 +24,10 @@
 <div class="flex min-w-0 flex-col gap-8">
   @if (loading() || internacoes().length > 0) {
     <app-filter-internacoes-card
-      [modalidades]="modalidades()"
+      [convenios]="convenios()"
       [etapasTratamento]="etapasTratamento"
       [(busca)]="busca"
-      [(modalidadeSelecionada)]="modalidadeSelecionada"
+      [(convenioSelecionado)]="convenioSelecionado"
       [(etapaTratamentoSelecionada)]="etapaTratamentoSelecionada"
       [(periodoEntradaSelecionado)]="periodoEntradaSelecionado"
     />

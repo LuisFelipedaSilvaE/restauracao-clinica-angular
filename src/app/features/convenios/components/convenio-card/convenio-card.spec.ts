@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalidadeForm } from './modalidade-form';
+import { ConvenioCard } from './convenio-card';
 
-describe('ModalidadeForm', () => {
-  let component: ModalidadeForm;
-  let fixture: ComponentFixture<ModalidadeForm>;
+describe('ConvenioCard', () => {
+  let component: ConvenioCard;
+  let fixture: ComponentFixture<ConvenioCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModalidadeForm],
+      imports: [ConvenioCard],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModalidadeForm);
+    fixture = TestBed.createComponent(ConvenioCard);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

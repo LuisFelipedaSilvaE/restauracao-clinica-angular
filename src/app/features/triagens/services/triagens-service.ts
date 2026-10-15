@@ -15,7 +15,7 @@ export class TriagensService {
   private readonly internalTriagens = signal<Triagem[]>([
     {
       id: 1,
-      modalidade: {
+      convenio: {
         id: 1,
         descricao: 'Atendimento Social',
         cnpj: null,
@@ -32,7 +32,7 @@ export class TriagensService {
     },
     {
       id: 2,
-      modalidade: {
+      convenio: {
         id: 2,
         descricao: 'Clínica Parceira',
         cnpj: '11222333000181',
@@ -49,7 +49,7 @@ export class TriagensService {
     },
     {
       id: 3,
-      modalidade: {
+      convenio: {
         id: 4,
         descricao: 'Lista de Espera',
         cnpj: null,
@@ -66,7 +66,7 @@ export class TriagensService {
     },
     {
       id: 4,
-      modalidade: {
+      convenio: {
         id: 2,
         descricao: 'Clínica Parceira',
         cnpj: '11222333000181',
@@ -83,7 +83,7 @@ export class TriagensService {
     },
     {
       id: 5,
-      modalidade: {
+      convenio: {
         id: 4,
         descricao: 'Lista de Espera',
         cnpj: null,

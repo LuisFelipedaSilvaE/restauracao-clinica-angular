@@ -56,33 +56,33 @@ export class AcolhidosLista {
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly acaoPendente = signal<ToggleAcolhidoDto | null>(null);
   protected readonly busca = signal('');
-  protected readonly modalidadeSelecionada = signal('todos');
+  protected readonly convenioSelecionado = signal('todos');
   protected readonly statusSelecionado = signal('todos');
   protected readonly dialogConfirmVisible = signal(false);
 
-  protected readonly modalidades = computed<FilterOption[]>(() => [
-    { name: 'Todas modalidades', code: 'todos' },
-    ...this.internacoesService.modalidades.map((modalidade) => ({
-      name: modalidade.descricao,
-      code: modalidade.descricao,
+  protected readonly convenios = computed<FilterOption[]>(() => [
+    { name: 'Todos os convênios', code: 'todos' },
+    ...this.internacoesService.convenios.map((convenio) => ({
+      name: convenio.descricao,
+      code: convenio.descricao,
     })),
   ]);
 
   private readonly acolhidosCards = computed<AcolhidoCardContent[]>(() =>
     this.acolhidos().map((acolhido) => {
       const internacao = this.internacoesService.buscarAtualPorAcolhido(acolhido.id);
-      const modalidade = internacao
-        ? this.internacoesService.modalidades.find((item) => item.id === internacao.idModalidade)
+      const convenio = internacao
+        ? this.internacoesService.convenios.find((item) => item.id === internacao.idConvenio)
         : undefined;
 
       return {
         ...acolhido,
         internacaoAtual:
-          internacao && modalidade
+          internacao && convenio
             ? {
                 id: internacao.id,
                 etapaTratamento: internacao.etapaTratamento,
-                modalidade,
+                convenio,
               }
             : undefined,
       };
@@ -133,7 +133,7 @@ export class AcolhidosLista {
     const busca = this.normalizarTexto(this.busca());
     const buscaNumerica = this.busca().replace(/\D/g, '');
     const status = this.statusSelecionado();
-    const modalidade = this.modalidadeSelecionada();
+    const convenio = this.convenioSelecionado();
 
     return this.acolhidosCards().filter((acolhido) => {
       const correspondeBusca =
@@ -146,10 +146,10 @@ export class AcolhidosLista {
             acolhido.telefone.replace(/\D/g, '').includes(buscaNumerica)));
       const correspondeStatus =
         status === 'todos' || (status === 'ativo' ? acolhido.ativo : !acolhido.ativo);
-      const correspondeModalidade =
-        modalidade === 'todos' || acolhido.internacaoAtual?.modalidade.descricao === modalidade;
+      const correspondeConvenio =
+        convenio === 'todos' || acolhido.internacaoAtual?.convenio.descricao === convenio;
 
-      return correspondeBusca && correspondeStatus && correspondeModalidade;
+      return correspondeBusca && correspondeStatus && correspondeConvenio;
     });
   });
 
@@ -170,7 +170,7 @@ export class AcolhidosLista {
 
   protected clearFilters(): void {
     this.busca.set('');
-    this.modalidadeSelecionada.set('todos');
+    this.convenioSelecionado.set('todos');
     this.statusSelecionado.set('todos');
   }
 

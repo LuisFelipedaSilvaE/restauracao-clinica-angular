@@ -1,7 +1,7 @@
 export interface Internacao {
   id: number;
   idAcolhido: number;
-  idModalidade: number;
+  idConvenio: number;
   idTriagem: number | null;
   dataAdmissao: Date;
   dataPrevisaoAlta: Date;

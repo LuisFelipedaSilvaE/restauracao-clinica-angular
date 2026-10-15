@@ -48,7 +48,7 @@
       <div class="flex flex-col gap-1">
         <h3 class="font-semibold text-xl">{{ triagem.nomePossivelAcolhido }}</h3>
         <div class="flex gap-2">
-          <p-tag [value]="triagem.modalidade.descricao" [customTag]="triagem.modalidade.cor" />
+          <p-tag [value]="triagem.convenio.descricao" [customTag]="triagem.convenio.cor" />
           <p-tag [severity]="statusTagSeverity()" [value]="triagem.status" />
         </div>
       </div>
@@ -107,9 +107,9 @@
           <svg lucideHandshake class="h-4 w-4"></svg>
         </div>
         <div>
-          <p class="uppercase text-content-secondary text-sm">Modalidade</p>
+          <p class="uppercase text-content-secondary text-sm">Convênio</p>
           <p class="font-heading text-md font-medium">
-            {{ triagem.modalidade.descricao }}
+            {{ triagem.convenio.descricao }}
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { Modalidade } from '../../modalidades/interfaces/modalidade';
+import { Convenio } from '../../convenios/interfaces/convenio';
 import { Internacao } from '../interfaces/internacao';
 
-export const MODALIDADES_INTERNACOES_MOCK: Modalidade[] = [
+export const CONVENIOS_INTERNACOES_MOCK: Convenio[] = [
   {
     id: 1,
     descricao: 'Atendimento Social',
@@ -35,7 +35,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 1,
     idAcolhido: 1,
-    idModalidade: 1,
+    idConvenio: 1,
     idTriagem: null,
     dataAdmissao: new Date(2026, 6, 12),
     dataPrevisaoAlta: new Date(2026, 9, 12),
@@ -45,7 +45,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 2,
     idAcolhido: 2,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2026, 4, 12),
     dataPrevisaoAlta: new Date(2026, 7, 12),
@@ -54,7 +54,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 3,
     idAcolhido: 3,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2026, 1, 12),
     dataPrevisaoAlta: new Date(2026, 4, 12),
@@ -63,7 +63,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 4,
     idAcolhido: 4,
-    idModalidade: 1,
+    idConvenio: 1,
     idTriagem: null,
     dataAdmissao: new Date(2026, 7, 12),
     dataPrevisaoAlta: new Date(2026, 10, 12),
@@ -73,7 +73,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 5,
     idAcolhido: 5,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2026, 5, 12),
     dataPrevisaoAlta: new Date(2026, 8, 12),
@@ -82,7 +82,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 6,
     idAcolhido: 8,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2025, 10, 12),
     dataPrevisaoAlta: new Date(2026, 1, 12),
@@ -91,7 +91,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 7,
     idAcolhido: 9,
-    idModalidade: 1,
+    idConvenio: 1,
     idTriagem: null,
     dataAdmissao: new Date(2026, 3, 12),
     dataPrevisaoAlta: new Date(2026, 6, 12),
@@ -101,7 +101,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 8,
     idAcolhido: 12,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2025, 8, 12),
     dataPrevisaoAlta: new Date(2025, 11, 12),
@@ -110,7 +110,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 9,
     idAcolhido: 15,
-    idModalidade: 1,
+    idConvenio: 1,
     idTriagem: null,
     dataAdmissao: new Date(2026, 3, 12),
     dataPrevisaoAlta: new Date(2026, 6, 12),
@@ -119,7 +119,7 @@ export const INTERNACOES_MOCK: Internacao[] = [
   {
     id: 10,
     idAcolhido: 18,
-    idModalidade: 2,
+    idConvenio: 2,
     idTriagem: null,
     dataAdmissao: new Date(2026, 2, 12),
     dataPrevisaoAlta: new Date(2026, 5, 12),

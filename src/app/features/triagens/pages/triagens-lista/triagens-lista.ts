@@ -65,7 +65,7 @@ export class TriagensLista implements OnInit {
     ];
   });
   protected readonly busca = signal('');
-  protected readonly modalidadeSelecionada = signal('todos');
+  protected readonly convenioSelecionado = signal('todos');
   protected readonly rangeDataSelecionado = signal('todos');
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
     const busca = (this.busca() || '')
@@ -73,7 +73,7 @@ export class TriagensLista implements OnInit {
       .normalize('NFD')
       .replace(/[\W_\u0300-\u036f]/g, '');
 
-    const modalidadeFiltro = this.modalidadeSelecionada();
+    const convenioFiltro = this.convenioSelecionado();
     const rangeDataFiltro = this.rangeDataSelecionado();
     const statusFiltro = this.statusSelecionado();
 
@@ -86,8 +86,8 @@ export class TriagensLista implements OnInit {
 
       const telefone = triagem.telefone.replace(/\D/g, '') || '';
 
-      const modalidadeDesc =
-        triagem.modalidade.descricao
+      const convenioDesc =
+        triagem.convenio.descricao
           .normalize('NFD')
           .toLowerCase()
           .replace(/[\W_\u0300-\u036f]/g, '') || '';
@@ -96,10 +96,10 @@ export class TriagensLista implements OnInit {
         !busca ||
         nome.includes(busca) ||
         telefone.includes(busca) ||
-        modalidadeDesc.includes(busca);
+        convenioDesc.includes(busca);
 
-      const validModalidade =
-        modalidadeFiltro === 'todos' || triagem.modalidade.id === Number(modalidadeFiltro);
+      const convenioValido =
+        convenioFiltro === 'todos' || triagem.convenio.id === Number(convenioFiltro);
 
       let validRangeData = true;
       if (rangeDataFiltro !== 'todos' && triagem.dataAgendada) {
@@ -117,7 +117,7 @@ export class TriagensLista implements OnInit {
 
       const validStatus = triagem.status === statusFiltro;
 
-      return validBusca && validStatus && validModalidade && validRangeData;
+      return validBusca && validStatus && convenioValido && validRangeData;
     });
 
     return triagensFiltradas;
@@ -128,7 +128,7 @@ export class TriagensLista implements OnInit {
 
   clearFilters(): void {
     this.busca.set('');
-    this.modalidadeSelecionada.set('todos');
+    this.convenioSelecionado.set('todos');
     this.rangeDataSelecionado.set('todos');
   }
 }

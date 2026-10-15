@@ -109,7 +109,7 @@ export class InternacaoForm implements OnInit {
     {
       triagemId: this.fb.control<number | null>(null, [Validators.required]),
       idAcolhido: this.fb.control<number | null>(null, [Validators.required]),
-      idModalidade: this.fb.control<number | null>(null, [Validators.required]),
+      idConvenio: this.fb.control<number | null>(null, [Validators.required]),
       dataAdmissao: this.fb.control<Date | null>(new Date(), [
         Validators.required,
         dataValida,
@@ -183,7 +183,7 @@ export class InternacaoForm implements OnInit {
   private readonly labels: Record<string, string> = {
     triagemId: 'Triagem',
     idAcolhido: 'Acolhido',
-    idModalidade: 'Modalidade',
+    idConvenio: 'Convênio',
     dataAdmissao: 'Data de admissão',
     dataPrevisaoAlta: 'Previsão de alta',
     etapaTratamento: 'Etapa de tratamento',
@@ -208,7 +208,7 @@ export class InternacaoForm implements OnInit {
   protected onTriagemChange(idTriagem: number | null): void {
     this.triagemSelecionadaId.set(idTriagem);
     const triagem = this.triagens().find((item) => item.id === idTriagem);
-    this.internacaoForm.patchValue({ idModalidade: triagem?.modalidade.id ?? null });
+    this.internacaoForm.patchValue({ idConvenio: triagem?.convenio.id ?? null });
 
     if (!triagem || this.acolhidoSelecionadoId() !== null) return;
 
@@ -301,8 +301,8 @@ export class InternacaoForm implements OnInit {
       this.avisoFormulario('Selecione um acolhido ativo para registrar a internação.');
       return;
     }
-    if (valor.idModalidade !== triagem.modalidade.id) {
-      this.avisoFormulario('A modalidade deve ser a mesma definida na triagem.');
+    if (valor.idConvenio !== triagem.convenio.id) {
+      this.avisoFormulario('O convênio deve ser o mesmo definido na triagem.');
       return;
     }
     if (!this.etapasTratamento.includes(etapaTratamento)) {
@@ -318,7 +318,7 @@ export class InternacaoForm implements OnInit {
 
     const dados: Omit<Internacao, 'id'> = {
       idAcolhido: acolhido.id,
-      idModalidade: triagem.modalidade.id,
+      idConvenio: triagem.convenio.id,
       idTriagem: triagem.id,
       dataAdmissao: new Date(valor.dataAdmissao!),
       dataPrevisaoAlta: new Date(valor.dataPrevisaoAlta!),
@@ -369,7 +369,7 @@ export class InternacaoForm implements OnInit {
       this.internacaoForm.patchValue({
         triagemId: internacao.idTriagem,
         idAcolhido: internacao.idAcolhido,
-        idModalidade: internacao.idModalidade,
+        idConvenio: internacao.idConvenio,
         dataAdmissao: new Date(internacao.dataAdmissao),
         dataPrevisaoAlta: new Date(internacao.dataPrevisaoAlta),
         etapaTratamento: internacao.etapaTratamento,

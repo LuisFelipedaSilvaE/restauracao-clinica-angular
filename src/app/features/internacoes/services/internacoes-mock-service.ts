@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { INTERNACOES_MOCK, MODALIDADES_INTERNACOES_MOCK } from '../data/internacoes-mock';
+import { INTERNACOES_MOCK, CONVENIOS_INTERNACOES_MOCK } from '../data/internacoes-mock';
 import { InternacaoCardContent } from '../interfaces/internacao-card-content';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
 import { Internacao } from '../interfaces/internacao';
@@ -11,7 +11,7 @@ export class InternacoesMockService {
   private readonly registros = signal<Internacao[]>(structuredClone(INTERNACOES_MOCK));
   private readonly rascunhoForm = signal<InternacaoFormDraft | null>(null);
   readonly internacoes = this.registros.asReadonly();
-  readonly modalidades = structuredClone(MODALIDADES_INTERNACOES_MOCK);
+  readonly convenios = structuredClone(CONVENIOS_INTERNACOES_MOCK);
 
   criar(dados: Omit<Internacao, 'id'>): Internacao {
     const id = Math.max(0, ...this.registros().map((internacao) => internacao.id)) + 1;

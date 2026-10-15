@@ -1,4 +1,4 @@
-export interface Modalidade {
+export interface Convenio {
   id: number;
   descricao: string;
   cnpj: string | null;

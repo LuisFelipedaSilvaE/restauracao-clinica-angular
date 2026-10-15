@@ -11,16 +11,16 @@ import {
 import { ButtonModule } from 'primeng/button';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
-import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
-import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
-import { ToggleModalidadeDto } from '../../interfaces/toggle-modalidade-dto';
-import { ModalidadesService } from '../../services/modalidades-service';
+import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
+import { ConvenioCard } from '../../components/convenio-card/convenio-card';
+import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
+import { ConveniosService } from '../../services/convenios-service';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
-  selector: 'app-modalidades-lista',
+  selector: 'app-convenios-lista',
   host: {
     class: 'flex gap-8 flex-col',
   },
@@ -28,34 +28,34 @@ import { SkeletonModule } from 'primeng/skeleton';
     ButtonModule,
     LucidePlus,
     InfoCard,
-    ModalidadeCard,
+    ConvenioCard,
     EmptyList,
     ConfirmDialog,
     SkeletonModule,
     RouterLink,
   ],
-  templateUrl: './modalidades-lista.html',
-  styleUrl: './modalidades-lista.css',
+  templateUrl: './convenios-lista.html',
+  styleUrl: './convenios-lista.css',
 })
-export class ModalidadesLista implements OnInit {
-  protected readonly emptyModalidadesIcon = LucideFolderX;
-  private readonly modalidadesService = inject(ModalidadesService);
+export class ConveniosLista implements OnInit {
+  protected readonly emptyConveniosIcon = LucideFolderX;
+  private readonly conveniosService = inject(ConveniosService);
 
-  protected readonly modalidades = computed<ModalidadeCardContent[]>(() => {
-    return this.modalidadesService.modalidades().map((modalidade) => {
-      return { ...modalidade, acolhidosAtivos: Math.min(10, modalidade.maxVagas) };
+  protected readonly convenios = computed<ConvenioCardContent[]>(() => {
+    return this.conveniosService.convenios().map((convenio) => {
+      return { ...convenio, acolhidosAtivos: Math.min(10, convenio.maxVagas) };
     });
   });
 
-  protected readonly infoModalidades = computed<InfoCardContent[]>(() => {
-    const lista = this.modalidades();
+  protected readonly infoConvenios = computed<InfoCardContent[]>(() => {
+    const lista = this.convenios();
     const vagasTotais = lista.reduce((acc, m) => (m.ativo ? acc + m.maxVagas : acc), 0);
     const vagasOcupadas = lista.reduce((acc, m) => (m.ativo ? acc + m.acolhidosAtivos : acc), 0);
 
     return [
       {
         value: lista.length,
-        label: 'Modalidades',
+        label: 'Convênios',
         icon: LucideLayoutGrid,
         color: '#e7000b',
       },
@@ -81,18 +81,18 @@ export class ModalidadesLista implements OnInit {
   });
 
   protected readonly dialogConfirmVisible = signal<boolean>(false);
-  protected readonly acaoPendente = signal<ToggleModalidadeDto | null>(null);
-  protected readonly loading = this.modalidadesService.loading;
+  protected readonly acaoPendente = signal<ToggleConvenioDto | null>(null);
+  protected readonly loading = this.conveniosService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
 
   protected readonly confirmTitle = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar modalidade' : 'Desativar modalidade';
+    return this.acaoPendente()?.ativo ? 'Ativar convênio' : 'Desativar convênio';
   });
 
   protected readonly confirmMessage = computed(() => {
     return this.acaoPendente()?.ativo
-      ? 'Deseja ativar esta modalidade? Ela voltará a ficar disponível.'
-      : 'Deseja desativar esta modalidade? Ela deixará de ficar disponível.';
+      ? 'Deseja ativar este convênio? Ele voltará a ficar disponível.'
+      : 'Deseja desativar este convênio? Ele deixará de ficar disponível.';
   });
 
   protected readonly confirmLabel = computed(() => {
@@ -109,20 +109,20 @@ export class ModalidadesLista implements OnInit {
     if (!dto) return;
 
     const acao$ = dto.ativo
-      ? this.modalidadesService.activateModalidade(dto.id)
-      : this.modalidadesService.deactivateModalidade(dto.id);
+      ? this.conveniosService.activateConvenio(dto.id)
+      : this.conveniosService.deactivateConvenio(dto.id);
 
     acao$.subscribe({
       next: () => this.dialogConfirmVisible.set(false),
     });
   }
 
-  toggleModalidade(dto: ToggleModalidadeDto): void {
+  toggleConvenio(dto: ToggleConvenioDto): void {
     this.acaoPendente.set(dto);
     this.dialogConfirmVisible.set(true);
   }
 
   ngOnInit(): void {
-    this.modalidadesService.getAllModalidades().subscribe();
+    this.conveniosService.getAllConvenios().subscribe();
   }
 }

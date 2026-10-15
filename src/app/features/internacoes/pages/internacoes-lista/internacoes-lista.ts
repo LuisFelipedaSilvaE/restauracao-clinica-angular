@@ -100,15 +100,15 @@ export class InternacoesLista {
   });
 
   protected readonly busca = signal('');
-  protected readonly modalidadeSelecionada = signal('todos');
+  protected readonly convenioSelecionado = signal('todos');
   protected readonly etapaTratamentoSelecionada = signal('todos');
   protected readonly periodoEntradaSelecionado = signal<Date[] | null>(null);
 
-  protected readonly modalidades = computed(() => [
-    { name: 'Todas modalidades', code: 'todos' },
-    ...this.internacoesService.modalidades.map((modalidade) => ({
-      name: modalidade.descricao,
-      code: modalidade.descricao,
+  protected readonly convenios = computed(() => [
+    { name: 'Todos os convênios', code: 'todos' },
+    ...this.internacoesService.convenios.map((convenio) => ({
+      name: convenio.descricao,
+      code: convenio.descricao,
     })),
   ]);
 
@@ -123,8 +123,8 @@ export class InternacoesLista {
 
   protected readonly internacoesCardsFiltradas = computed<InternacaoCardContent[]>(() => {
     const busca = this.normalizarTexto(this.busca());
-    const modalidadeFiltro =
-      this.modalidadeSelecionada() === 'todos' ? null : this.modalidadeSelecionada().toLowerCase();
+    const convenioFiltro =
+      this.convenioSelecionado() === 'todos' ? null : this.convenioSelecionado().toLowerCase();
     const etapaFiltro =
       this.etapaTratamentoSelecionada() === 'todos'
         ? null
@@ -134,23 +134,23 @@ export class InternacoesLista {
     const acolhidosPorId = new Map(
       this.acolhidosService.acolhidos().map((acolhido) => [acolhido.id, acolhido]),
     );
-    const modalidadesPorId = new Map(
-      this.internacoesService.modalidades.map((modalidade) => [modalidade.id, modalidade]),
+    const conveniosPorId = new Map(
+      this.internacoesService.convenios.map((convenio) => [convenio.id, convenio]),
     );
 
     return this.internacoes().flatMap((internacao) => {
       const acolhido = acolhidosPorId.get(internacao.idAcolhido);
-      const modalidade = modalidadesPorId.get(internacao.idModalidade);
+      const convenio = conveniosPorId.get(internacao.idConvenio);
 
-      if (!acolhido || !modalidade) return [];
+      if (!acolhido || !convenio) return [];
 
       const correspondeBusca =
         !busca ||
         this.normalizarTexto(acolhido.nome).includes(busca) ||
         acolhido.cpf.replace(/\D/g, '').includes(busca) ||
         this.normalizarTexto(acolhido.email).includes(busca);
-      const correspondeModalidade =
-        modalidadeFiltro === null || modalidade.descricao.toLowerCase() === modalidadeFiltro;
+      const correspondeConvenio =
+        convenioFiltro === null || convenio.descricao.toLowerCase() === convenioFiltro;
       const correspondeEtapa =
         etapaFiltro === null || internacao.etapaTratamento.toLowerCase() === etapaFiltro;
       const correspondePeriodoEntrada =
@@ -160,7 +160,7 @@ export class InternacoesLista {
 
       if (
         !correspondeBusca ||
-        !correspondeModalidade ||
+        !correspondeConvenio ||
         !correspondeEtapa ||
         !correspondePeriodoEntrada
       ) {
@@ -171,7 +171,7 @@ export class InternacoesLista {
         {
           ...internacao,
           acolhido,
-          modalidade,
+          convenio,
           tempoInternado: this.internacoesService.calcularTempoInternado(internacao.dataAdmissao),
           encerrada: ['Alta concedida', 'Desligado'].includes(internacao.etapaTratamento),
           severity: this.internacoesService.obterSeverity(internacao.etapaTratamento),
@@ -182,7 +182,7 @@ export class InternacoesLista {
 
   protected clearFilters(): void {
     this.busca.set('');
-    this.modalidadeSelecionada.set('todos');
+    this.convenioSelecionado.set('todos');
     this.etapaTratamentoSelecionada.set('todos');
     this.periodoEntradaSelecionado.set(null);
   }

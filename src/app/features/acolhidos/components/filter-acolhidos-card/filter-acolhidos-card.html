@@ -19,17 +19,17 @@
       <svg lucideLayers class="h-4.5 w-4.5"></svg>
     </p-inputicon>
     <p-select
-      [options]="modalidades()"
-      [ngModel]="modalidadeSelecionada()"
-      (ngModelChange)="modalidadeSelecionadaChange.emit($event)"
+      [options]="convenios()"
+      [ngModel]="convenioSelecionado()"
+      (ngModelChange)="convenioSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
-      placeholder="Selecione uma modalidade"
+      placeholder="Selecione um convênio"
       class="w-full pl-7.5"
     >
       <ng-template #selectedItem let-selectedOption>
         <p class="text-sm">
-          Modalidade: <span>{{ selectedOption.name }}</span>
+          Convênio: <span>{{ selectedOption.name }}</span>
         </p>
       </ng-template>
     </p-select>

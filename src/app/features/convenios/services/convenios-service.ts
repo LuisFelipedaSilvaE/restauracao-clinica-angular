@@ -1,20 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { Modalidade } from '../interfaces/modalidade';
-import { ModalidadeRequest } from '../interfaces/modalidade-request';
+import { Convenio } from '../interfaces/convenio';
+import { ConvenioRequest } from '../interfaces/convenio-request';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { LoadingType } from '../../../shared/types/loading-type';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ModalidadesService {
-  private readonly baseAPIUrl = `${environment.apiUrl}/modalidades`;
+export class ConveniosService {
+  private readonly baseAPIUrl = `${environment.apiUrl}/convenios`;
   private readonly http = inject(HttpClient);
 
-  private readonly internalModalidades = signal<Modalidade[]>([]);
-  readonly modalidades = this.internalModalidades.asReadonly();
+  private readonly internalConvenios = signal<Convenio[]>([]);
+  readonly convenios = this.internalConvenios.asReadonly();
 
   private readonly listaCarregada = signal(false);
 
@@ -29,39 +29,39 @@ export class ModalidadesService {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
   }
 
-  private substituirModalidadeNaLista(modalidadeAtualizada: Modalidade) {
-    this.internalModalidades.update((modalidades) =>
+  private substituirConvenioNaLista(convenioAtualizado: Convenio) {
+    this.internalConvenios.update((convenios) =>
       this.ordenarPorStatus(
-        modalidades.map((modalidade) =>
-          modalidade.id === modalidadeAtualizada.id ? modalidadeAtualizada : modalidade,
+        convenios.map((convenio) =>
+          convenio.id === convenioAtualizado.id ? convenioAtualizado : convenio,
         ),
       ),
     );
   }
 
   private atualizarStatusNaLista(id: number, ativo: boolean): void {
-    this.internalModalidades.update((modalidades) => {
-      const atualizada = modalidades.map((modalidade) =>
-        modalidade.id === id ? { ...modalidade, ativo } : modalidade,
+    this.internalConvenios.update((convenios) => {
+      const atualizada = convenios.map((convenio) =>
+        convenio.id === id ? { ...convenio, ativo } : convenio,
       );
       return this.ordenarPorStatus(atualizada);
     });
   }
 
-  private ordenarPorStatus(modalidades: Modalidade[]): Modalidade[] {
-    return [...modalidades].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+  private ordenarPorStatus(convenios: Convenio[]): Convenio[] {
+    return [...convenios].sort((a, b) => Number(b.ativo) - Number(a.ativo));
   }
 
-  getAllModalidades(forceRefresh = false): Observable<Modalidade[]> {
+  getAllConvenios(forceRefresh = false): Observable<Convenio[]> {
     if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalModalidades());
+      return of(this.internalConvenios());
     }
 
     this.setLoading('list', true);
 
-    return this.http.get<Modalidade[]>(this.baseAPIUrl).pipe(
-      tap((modalidades) => {
-        this.internalModalidades.set(this.ordenarPorStatus(modalidades));
+    return this.http.get<Convenio[]>(this.baseAPIUrl).pipe(
+      tap((convenios) => {
+        this.internalConvenios.set(this.ordenarPorStatus(convenios));
         this.listaCarregada.set(true);
       }),
       finalize(() => {
@@ -70,29 +70,29 @@ export class ModalidadesService {
     );
   }
 
-  createModalidade(modalidade: ModalidadeRequest): Observable<Modalidade> {
+  createConvenio(convenio: ConvenioRequest): Observable<Convenio> {
     this.setLoading('mutation', true);
 
-    return this.http.post<Modalidade>(this.baseAPIUrl, modalidade).pipe(
-      tap((newModalidade) => {
-        this.internalModalidades.update((modalidades) =>
-          this.ordenarPorStatus([...modalidades, newModalidade]),
+    return this.http.post<Convenio>(this.baseAPIUrl, convenio).pipe(
+      tap((novoConvenio) => {
+        this.internalConvenios.update((convenios) =>
+          this.ordenarPorStatus([...convenios, novoConvenio]),
         );
       }),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
 
-  updateModalidade(id: number, modalidade: ModalidadeRequest): Observable<Modalidade> {
+  updateConvenio(id: number, convenio: ConvenioRequest): Observable<Convenio> {
     this.setLoading('mutation', true);
 
-    return this.http.put<Modalidade>(`${this.baseAPIUrl}/${id}`, modalidade).pipe(
-      tap((modalidadeAtualizada) => this.substituirModalidadeNaLista(modalidadeAtualizada)),
+    return this.http.put<Convenio>(`${this.baseAPIUrl}/${id}`, convenio).pipe(
+      tap((convenioAtualizado) => this.substituirConvenioNaLista(convenioAtualizado)),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
 
-  deactivateModalidade(id: number): Observable<void> {
+  deactivateConvenio(id: number): Observable<void> {
     this.setLoading('mutation', true);
 
     return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
@@ -101,7 +101,7 @@ export class ModalidadesService {
     );
   }
 
-  activateModalidade(id: number): Observable<void> {
+  activateConvenio(id: number): Observable<void> {
     this.setLoading('mutation', true);
 
     return this.http.put<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(

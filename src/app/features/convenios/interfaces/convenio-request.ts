@@ -1,4 +1,4 @@
-export interface ModalidadeRequest {
+export interface ConvenioRequest {
   descricao: string;
   cnpj: string | null;
   maxVagas: number;

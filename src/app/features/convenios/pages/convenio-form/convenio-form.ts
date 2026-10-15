@@ -16,18 +16,18 @@ import { MessageService } from 'primeng/api';
 
 import { Card } from '../../../../shared/components/card/card';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
-import { ModalidadeCard } from '../../components/modalidade-card/modalidade-card';
-import { ModalidadesService } from '../../services/modalidades-service';
-import { Modalidade } from '../../interfaces/modalidade';
-import { ModalidadeRequest } from '../../interfaces/modalidade-request';
-import { ModalidadeCardContent } from '../../interfaces/modalidade-card-content';
+import { ConvenioCard } from '../../components/convenio-card/convenio-card';
+import { ConveniosService } from '../../services/convenios-service';
+import { Convenio } from '../../interfaces/convenio';
+import { ConvenioRequest } from '../../interfaces/convenio-request';
+import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 
 @Component({
-  selector: 'app-modalidade-form',
+  selector: 'app-convenio-form',
   host: {
     class: 'flex flex-col gap-6',
   },
@@ -42,28 +42,28 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
     ReactiveFormsModule,
     Card,
     FormHeader,
-    ModalidadeCard,
+    ConvenioCard,
     FormField,
   ],
-  templateUrl: './modalidade-form.html',
-  styleUrl: './modalidade-form.css',
+  templateUrl: './convenio-form.html',
+  styleUrl: './convenio-form.css',
 })
-export class ModalidadeForm implements OnInit {
+export class ConvenioForm implements OnInit {
   readonly id = input<string>();
 
   protected readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
-  private readonly modalidadesService = inject(ModalidadesService);
+  private readonly conveniosService = inject(ConveniosService);
 
-  protected readonly loading = this.modalidadesService.loading;
+  protected readonly loading = this.conveniosService.loading;
   protected readonly carregando = signal(false);
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
 
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
 
-  protected readonly modalidadeForm = this.fb.group({
+  protected readonly convenioForm = this.fb.group({
     descricao: [
       '',
       [
@@ -80,7 +80,7 @@ export class ModalidadeForm implements OnInit {
   });
 
   private readonly labels: Record<string, string> = {
-    descricao: 'Nome da modalidade',
+    descricao: 'Nome do convênio',
     maxVagas: 'Quantidade de vagas',
     pagamento: 'Pagamento obrigatório',
     cor: 'Cor de identificação',
@@ -95,22 +95,22 @@ export class ModalidadeForm implements OnInit {
     const registro = this.modo() === 'registro';
 
     return {
-      value: registro ? 'Nova modalidade' : 'Editar modalidade',
+      value: registro ? 'Novo convênio' : 'Editar convênio',
       label: registro
-        ? 'Cadastre uma modalidade de acolhimento e defina sua capacidade.'
-        : 'Atualize os dados e a capacidade de vagas desta modalidade.',
+        ? 'Cadastre um convênio de acolhimento e defina sua capacidade.'
+        : 'Atualize os dados e a capacidade de vagas deste convênio.',
       icon: LucideLayers,
       color: '#be222d',
     };
   });
 
   protected readonly actionBtnLabel = computed(() =>
-    this.modo() === 'registro' ? 'Criar modalidade' : 'Salvar alterações',
+    this.modo() === 'registro' ? 'Criar convênio' : 'Salvar alterações',
   );
 
-  protected readonly modalidadePreview = toSignal<ModalidadeCardContent>(
-    this.modalidadeForm.valueChanges.pipe(
-      startWith(this.modalidadeForm.value),
+  protected readonly convenioPreview = toSignal<ConvenioCardContent>(
+    this.convenioForm.valueChanges.pipe(
+      startWith(this.convenioForm.value),
       map((formValue) => {
         const maxVagas = Number(formValue.maxVagas ?? 0);
 
@@ -141,19 +141,19 @@ export class ModalidadeForm implements OnInit {
 
     this.carregando.set(true);
 
-    this.modalidadesService
-      .getAllModalidades()
-      .pipe(map((lista) => lista.find((modalidade) => modalidade.id === idNumerico)))
+    this.conveniosService
+      .getAllConvenios()
+      .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico)))
       .subscribe({
-        next: (modalidade) => {
+        next: (convenio) => {
           this.carregando.set(false);
 
-          if (!modalidade) {
-            this.modalidadeNaoEncontrada();
+          if (!convenio) {
+            this.convenioNaoEncontrado();
             return;
           }
 
-          this.preencherFormulario(modalidade);
+          this.preencherFormulario(convenio);
         },
         error: () => {
           this.carregando.set(false);
@@ -162,13 +162,13 @@ export class ModalidadeForm implements OnInit {
       });
   }
 
-  private preencherFormulario(modalidade: Modalidade): void {
-    this.modalidadeForm.patchValue({
-      descricao: modalidade.descricao,
-      cnpj: this.formatarCnpj(modalidade.cnpj),
-      maxVagas: modalidade.maxVagas,
-      pagamento: modalidade.pagamento,
-      cor: modalidade.cor || '#3b82f6',
+  private preencherFormulario(convenio: Convenio): void {
+    this.convenioForm.patchValue({
+      descricao: convenio.descricao,
+      cnpj: this.formatarCnpj(convenio.cnpj),
+      maxVagas: convenio.maxVagas,
+      pagamento: convenio.pagamento,
+      cor: convenio.cor || '#3b82f6',
     });
   }
 
@@ -182,10 +182,10 @@ export class ModalidadeForm implements OnInit {
     return `${valor.slice(0, 2)}.${valor.slice(2, 5)}.${valor.slice(5, 8)}/${valor.slice(8, 12)}-${valor.slice(12)}`;
   }
 
-  private modalidadeNaoEncontrada(): void {
+  private convenioNaoEncontrado(): void {
     this.messageService.add({
       severity: 'warn',
-      summary: 'Modalidade não encontrada',
+      summary: 'Convênio não encontrado',
       detail: 'O registro solicitado não existe ou foi removido.',
       life: 4000,
     });
@@ -194,12 +194,12 @@ export class ModalidadeForm implements OnInit {
   }
 
   protected isInvalid(controlName: string): boolean {
-    const control = this.modalidadeForm.get(controlName);
+    const control = this.convenioForm.get(controlName);
     return !!control?.invalid && (control.touched || this.formSubmitted());
   }
 
   protected getErrorMessage(controlName: string): string | null {
-    const control = this.modalidadeForm.get(controlName);
+    const control = this.convenioForm.get(controlName);
 
     if (!this.isInvalid(controlName) || !control?.errors) return null;
 
@@ -238,36 +238,36 @@ export class ModalidadeForm implements OnInit {
   }
 
   protected voltarParaLista(): void {
-    this.router.navigate(['/modalidades']);
+    this.router.navigate(['/convenios']);
   }
 
   protected onSubmit(): void {
     this.formSubmitted.set(true);
 
-    if (this.modalidadeForm.invalid) return;
+    if (this.convenioForm.invalid) return;
 
-    const cnpj = this.modalidadeForm.controls.cnpj.value?.trim().toUpperCase();
-    const data: ModalidadeRequest = {
-      descricao: this.modalidadeForm.controls.descricao.value ?? '',
+    const cnpj = this.convenioForm.controls.cnpj.value?.trim().toUpperCase();
+    const data: ConvenioRequest = {
+      descricao: this.convenioForm.controls.descricao.value ?? '',
       cnpj: cnpj || null,
-      maxVagas: Number(this.modalidadeForm.controls.maxVagas.value),
-      pagamento: this.modalidadeForm.controls.pagamento.value ?? true,
-      cor: this.modalidadeForm.controls.cor.value ?? '',
+      maxVagas: Number(this.convenioForm.controls.maxVagas.value),
+      pagamento: this.convenioForm.controls.pagamento.value ?? true,
+      cor: this.convenioForm.controls.cor.value ?? '',
     };
 
     const id = this.id();
     const request$ = id
-      ? this.modalidadesService.updateModalidade(Number(id), data)
-      : this.modalidadesService.createModalidade(data);
+      ? this.conveniosService.updateConvenio(Number(id), data)
+      : this.conveniosService.createConvenio(data);
 
     request$.subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
-          summary: id ? 'Modalidade atualizada!' : 'Modalidade criada!',
+          summary: id ? 'Convênio atualizado!' : 'Convênio criado!',
           detail: id
             ? 'As alterações foram salvas com sucesso.'
-            : 'A modalidade foi cadastrada com sucesso.',
+            : 'O convênio foi cadastrado com sucesso.',
           life: 3000,
         });
 

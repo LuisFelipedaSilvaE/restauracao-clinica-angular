@@ -15,7 +15,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
-import { ModalidadesService } from '../../../modalidades/services/modalidades-service';
+import { ConveniosService } from '../../../convenios/services/convenios-service';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagemRequest } from '../../interfaces/triagem-request';
 import { TriagensService } from '../../services/triagens-service';
@@ -44,18 +44,18 @@ import { TriagensService } from '../../services/triagens-service';
 })
 export class TriagemForm implements OnInit {
   protected readonly id = input<string>();
-  private readonly modalidadesService = inject(ModalidadesService);
+  private readonly conveniosService = inject(ConveniosService);
   private readonly triagensService = inject(TriagensService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
-  protected readonly modalidades = this.modalidadesService.modalidades;
+  protected readonly convenios = this.conveniosService.convenios;
   protected readonly carregando = signal(false);
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
   protected readonly hoje = new Date();
   private readonly fb = inject(FormBuilder);
   protected readonly triagemForm = this.fb.nonNullable.group({
-    modalidade: this.fb.control<number | null>(null, [Validators.required]),
+    convenio: this.fb.control<number | null>(null, [Validators.required]),
     nomePossivelAcolhido: ['', [Validators.required]],
     telefone: ['', [Validators.required, telefoneValidator]],
     dataAgendada: this.fb.control<Date | null>(null, [Validators.required]),
@@ -75,7 +75,7 @@ export class TriagemForm implements OnInit {
     };
   });
   private readonly labels: Record<string, string> = {
-    modalidade: 'Modalidade',
+    convenio: 'Convênio',
     nomePossivelAcolhido: 'Nome do candidato',
     telefone: 'Telefone',
     dataAgendada: 'Data',
@@ -84,7 +84,7 @@ export class TriagemForm implements OnInit {
   };
 
   ngOnInit(): void {
-    this.modalidadesService.getAllModalidades().subscribe();
+    this.conveniosService.getAllConvenios().subscribe();
 
     if (this.id()) {
       this.getTriagem();
@@ -182,7 +182,7 @@ export class TriagemForm implements OnInit {
   }
 
   fromFormToRequest(form: FormGroup): TriagemRequest {
-    const { modalidade, dataAgendada, horaAgendada, ...formData } = form.getRawValue();
+    const { convenio, dataAgendada, horaAgendada, ...formData } = form.getRawValue();
     const dataFinal = new Date(dataAgendada);
     const horario = new Date(horaAgendada);
     const normalizedHours = `${String(horario.getHours()).padStart(2, '0')}:${String(horario.getMinutes()).padStart(2, '0')}:00.000`;
@@ -192,14 +192,14 @@ export class TriagemForm implements OnInit {
 
     return {
       ...formData,
-      modalidadeId: modalidade!,
+      convenioId: convenio!,
       dataAgendada: dataFinal.toISOString().split('T')[0].concat(`T${normalizedHours}`),
     };
   }
 
   private preencherFormulario(triagem: Triagem): void {
     this.triagemForm.patchValue({
-      modalidade: triagem.modalidade.id,
+      convenio: triagem.convenio.id,
       nomePossivelAcolhido: triagem.nomePossivelAcolhido,
       telefone: triagem.telefone,
       dataAgendada: new Date(triagem.dataAgendada),

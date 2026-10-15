@@ -35,16 +35,16 @@ interface FilterOption {
   styleUrl: './filter-internacoes-card.css',
 })
 export class FilterInternacoesCard {
-  readonly modalidades = input.required<FilterOption[]>();
+  readonly convenios = input.required<FilterOption[]>();
   readonly etapasTratamento = input.required<FilterOption[]>();
 
   readonly busca = input<string>();
-  readonly modalidadeSelecionada = input<string>();
+  readonly convenioSelecionado = input<string>();
   readonly etapaTratamentoSelecionada = input<string>();
   readonly periodoEntradaSelecionado = input<Date[] | null>();
 
   protected readonly buscaChange = output<string>();
-  protected readonly modalidadeSelecionadaChange = output<string>();
+  protected readonly convenioSelecionadoChange = output<string>();
   protected readonly etapaTratamentoSelecionadaChange = output<string>();
   protected readonly periodoEntradaSelecionadoChange = output<Date[] | null>();
 }

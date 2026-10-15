@@ -85,15 +85,15 @@ export class Prontuario implements OnInit {
     if (!acolhido) return null;
 
     const internacao = this.internacoesMockService.buscarAtualPorAcolhido(acolhido.id);
-    const modalidade = internacao
-      ? this.internacoesMockService.modalidades.find((item) => item.id === internacao.idModalidade)
+    const convenio = internacao
+      ? this.internacoesMockService.convenios.find((item) => item.id === internacao.idConvenio)
       : undefined;
     const internacaoAtual =
-      internacao && modalidade
+      internacao && convenio
         ? {
             ...internacao,
             acolhido,
-            modalidade,
+            convenio,
             encerrada: false,
             severity: this.internacoesMockService.obterSeverity(internacao.etapaTratamento),
             tempoInternado: this.internacoesMockService.calcularTempoInternado(

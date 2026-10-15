@@ -28,7 +28,7 @@ import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
     '[class]':
       "!acolhido().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
     '[style.border-left-color]':
-      "acolhido().internacaoAtual?.modalidade?.cor ?? (acolhido().ativo ? '#10b981' : '#94a3b8')",
+      "acolhido().internacaoAtual?.convenio?.cor ?? (acolhido().ativo ? '#10b981' : '#94a3b8')",
   },
   imports: [
     TagModule,

@@ -22,9 +22,9 @@
 <div class="flex flex-col gap-8">
   @if (loading() || acolhidos().length > 0) {
     <filter-acolhidos-card
-      [modalidades]="modalidades()"
+      [convenios]="convenios()"
       [(busca)]="busca"
-      [(modalidadeSelecionada)]="modalidadeSelecionada"
+      [(convenioSelecionado)]="convenioSelecionado"
       [(statusSelecionado)]="statusSelecionado"
     />
 

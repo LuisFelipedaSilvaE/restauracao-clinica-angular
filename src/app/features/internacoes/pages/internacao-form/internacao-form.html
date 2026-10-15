@@ -85,8 +85,8 @@
               <p class="truncate font-medium">{{ triagem.telefone }}</p>
             </div>
             <div class="min-w-0">
-              <p class="text-xs text-content-secondary">Modalidade</p>
-              <p class="truncate font-medium">{{ triagem.modalidade.descricao }}</p>
+              <p class="text-xs text-content-secondary">Convênio</p>
+              <p class="truncate font-medium">{{ triagem.convenio.descricao }}</p>
             </div>
           </div>
         }
@@ -158,17 +158,17 @@
 
         <div class="grid gap-4 sm:grid-cols-2">
           <form-field
-            label="Modalidade definida pela triagem"
-            inputId="idModalidade"
+            label="Convênio definido pela triagem"
+            inputId="idConvenio"
             required
-            [errorMessage]="getErrorMessage('idModalidade')"
+            [errorMessage]="getErrorMessage('idConvenio')"
           >
             <input
               pInputText
-              id="idModalidade"
-              [value]="triagemSelecionada()?.modalidade?.descricao ?? ''"
+              id="idConvenio"
+              [value]="triagemSelecionada()?.convenio?.descricao ?? ''"
               placeholder="Selecione primeiro uma triagem"
-              [invalid]="isInvalid('idModalidade')"
+              [invalid]="isInvalid('idConvenio')"
               readonly
               fluid
             />

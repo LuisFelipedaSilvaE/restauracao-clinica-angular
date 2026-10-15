@@ -19,8 +19,8 @@ import { MessageService } from 'primeng/api';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { IconColor } from '../../../../shared/directives/icon-color';
-import { Modalidade } from '../../interfaces/modalidade';
-import { ModalidadesService } from '../../services/modalidades-service';
+import { Convenio } from '../../interfaces/convenio';
+import { ConveniosService } from '../../services/convenios-service';
 import { BadgeModule } from 'primeng/badge';
 import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { TagModule } from 'primeng/tag';
@@ -29,7 +29,7 @@ import { BackButton } from '../../../../shared/components/back-button/back-butto
 const ACOLHIDOS_ATIVOS_MOCK = 10;
 
 @Component({
-  selector: 'app-modalidade-detalhada',
+  selector: 'app-convenio-detalhado',
   host: {
     class: 'mx-auto flex w-full flex-col gap-6',
   },
@@ -54,45 +54,45 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
     CustomBadge,
     BackButton,
   ],
-  templateUrl: './modalidade-detalhada.html',
-  styleUrl: './modalidade-detalhada.css',
+  templateUrl: './convenio-detalhado.html',
+  styleUrl: './convenio-detalhado.css',
 })
-export class ModalidadeDetalhada implements OnInit {
+export class ConvenioDetalhado implements OnInit {
   readonly id = input<string>();
 
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
-  private readonly modalidadesService = inject(ModalidadesService);
+  private readonly conveniosService = inject(ConveniosService);
 
-  protected readonly modalidade = signal<Modalidade | null>(null);
+  protected readonly convenio = signal<Convenio | null>(null);
   protected readonly carregando = signal(false);
   protected readonly confirmarAlteracao = signal(false);
-  protected readonly loading = this.modalidadesService.loading;
+  protected readonly loading = this.conveniosService.loading;
 
-  protected readonly statusLabel = computed(() => (this.modalidade()?.ativo ? 'Ativa' : 'Inativa'));
+  protected readonly statusLabel = computed(() => (this.convenio()?.ativo ? 'Ativo' : 'Inativo'));
   protected readonly pagamentoLabel = computed(() =>
-    this.modalidade()?.pagamento ? 'Obrigatório' : 'Não obrigatório',
+    this.convenio()?.pagamento ? 'Obrigatório' : 'Não obrigatório',
   );
   protected readonly toggleLabel = computed(() =>
-    this.modalidade()?.ativo ? 'Inativar' : 'Ativar',
+    this.convenio()?.ativo ? 'Inativar' : 'Ativar',
   );
   protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
-    this.modalidade()?.ativo ? 'danger' : 'success',
+    this.convenio()?.ativo ? 'danger' : 'success',
   );
   protected readonly tagSeverity = computed<'secondary' | 'success'>(() =>
-    this.modalidade()?.ativo ? 'success' : 'secondary',
+    this.convenio()?.ativo ? 'success' : 'secondary',
   );
   protected readonly toggleMessage = computed(() =>
-    this.modalidade()?.ativo
-      ? 'Deseja inativar esta modalidade? Ela deixará de ficar disponível.'
-      : 'Deseja ativar esta modalidade? Ela voltará a ficar disponível.',
+    this.convenio()?.ativo
+      ? 'Deseja inativar este convênio? Ele deixará de ficar disponível.'
+      : 'Deseja ativar este convênio? Ele voltará a ficar disponível.',
   );
   protected readonly acolhidosAtivos = computed(() => {
-    const maxVagas = this.modalidade()?.maxVagas ?? 0;
+    const maxVagas = this.convenio()?.maxVagas ?? 0;
     return Math.min(ACOLHIDOS_ATIVOS_MOCK, maxVagas);
   });
   protected readonly vagasDisponiveis = computed(() =>
-    Math.max(0, (this.modalidade()?.maxVagas ?? 0) - this.acolhidosAtivos()),
+    Math.max(0, (this.convenio()?.maxVagas ?? 0) - this.acolhidosAtivos()),
   );
 
   ngOnInit(): void {
@@ -105,17 +105,17 @@ export class ModalidadeDetalhada implements OnInit {
 
     this.carregando.set(true);
 
-    this.modalidadesService
-      .getAllModalidades()
-      .pipe(map((lista) => lista.find((modalidade) => modalidade.id === idNumerico)))
+    this.conveniosService
+      .getAllConvenios()
+      .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico)))
       .subscribe({
-        next: (modalidade) => {
+        next: (convenio) => {
           this.carregando.set(false);
 
-          if (!modalidade) {
+          if (!convenio) {
             this.messageService.add({
               severity: 'warn',
-              summary: 'Modalidade não encontrada',
+              summary: 'Convênio não encontrado',
               detail: 'O registro solicitado não existe ou foi removido.',
               life: 4000,
             });
@@ -124,7 +124,7 @@ export class ModalidadeDetalhada implements OnInit {
             return;
           }
 
-          this.modalidade.set(modalidade);
+          this.convenio.set(convenio);
         },
         error: () => {
           this.carregando.set(false);
@@ -134,21 +134,21 @@ export class ModalidadeDetalhada implements OnInit {
   }
 
   protected voltarParaLista(): void {
-    this.router.navigate(['/modalidades']);
+    this.router.navigate(['/convenios']);
   }
 
   protected alterarStatus(): void {
-    const modalidade = this.modalidade();
-    if (!modalidade) return;
+    const convenio = this.convenio();
+    if (!convenio) return;
 
-    const proximoStatus = !modalidade.ativo;
+    const proximoStatus = !convenio.ativo;
     const acao$ = proximoStatus
-      ? this.modalidadesService.activateModalidade(modalidade.id)
-      : this.modalidadesService.deactivateModalidade(modalidade.id);
+      ? this.conveniosService.activateConvenio(convenio.id)
+      : this.conveniosService.deactivateConvenio(convenio.id);
 
     acao$.subscribe({
       next: () => {
-        this.modalidade.update((atual) => (atual ? { ...atual, ativo: proximoStatus } : null));
+        this.convenio.update((atual) => (atual ? { ...atual, ativo: proximoStatus } : null));
         this.confirmarAlteracao.set(false);
       },
     });

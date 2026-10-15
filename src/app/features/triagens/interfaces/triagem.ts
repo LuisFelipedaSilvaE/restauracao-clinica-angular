@@ -1,8 +1,8 @@
-import { Modalidade } from '../../modalidades/interfaces/modalidade';
+import { Convenio } from '../../convenios/interfaces/convenio';
 
 export interface Triagem {
   id: number;
-  modalidade: Modalidade;
+  convenio: Convenio;
   nomePossivelAcolhido: string;
   telefone: string;
   dataAgendada: string;
