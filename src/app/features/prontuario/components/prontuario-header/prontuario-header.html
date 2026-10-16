@@ -73,6 +73,16 @@
             <ng-template #icon><svg lucideLogOut class="h-4 w-4"></svg></ng-template>
           </p-button>
         }
+
+        <p-button
+          label="Excluir"
+          severity="danger"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="deleteRequest.emit()"
+        >
+          <ng-template #icon><svg lucideTrash2 class="h-4 w-4"></svg></ng-template>
+        </p-button>
       </div>
     </div>
 

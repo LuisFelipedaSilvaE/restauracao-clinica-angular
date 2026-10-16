@@ -15,6 +15,7 @@ import {
   LucidePhone,
   LucidePower,
   LucidePowerOff,
+  LucideTrash2,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -53,6 +54,7 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     LucideMail,
     LucidePencil,
     LucidePhone,
+    LucideTrash2,
   ],
   templateUrl: './prontuario-header.html',
   styleUrl: './prontuario-header.css',
@@ -60,6 +62,7 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
 export class ProntuarioHeader {
   readonly data = input.required<ProntuarioHeaderContent>();
   readonly statusChange = output<void>();
+  readonly deleteRequest = output<void>();
 
   protected readonly actionButtonPt = {
     root: {

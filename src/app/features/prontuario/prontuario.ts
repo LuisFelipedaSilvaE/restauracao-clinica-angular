@@ -2,11 +2,11 @@ import { Component, computed, inject, input, OnInit, signal } from '@angular/cor
 import { ProntuarioHeader } from './components/prontuario-header/prontuario-header';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Acolhido } from '../acolhidos/interfaces/acolhido';
-import { AcolhidosMockService } from '../acolhidos/services/acolhidos-mock-service';
-import { InternacoesMockService } from '../internacoes/services/internacoes-mock-service';
+import { AcolhidosService } from '../acolhidos/services/acolhidos-service';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { ProntuarioHeaderContent } from './interfaces/prontuario-header-content';
 import { TabsModule } from 'primeng/tabs';
+import { MessageService } from 'primeng/api';
 import {
   LucideApple,
   LucideBrain,
@@ -38,9 +38,11 @@ export class Prontuario implements OnInit {
   readonly id = input<string>();
   private readonly router = inject(Router);
   protected readonly acolhido = signal<Acolhido | null>(null);
-  private readonly acolhidoMockService = inject(AcolhidosMockService);
-  private readonly internacoesMockService = inject(InternacoesMockService);
+  private readonly acolhidosService = inject(AcolhidosService);
+  private readonly messageService = inject(MessageService);
   protected readonly confirmarAlteracao = signal(false);
+  protected readonly confirmarExclusao = signal(false);
+  protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
 
   protected readonly abas = [
     {
@@ -84,28 +86,9 @@ export class Prontuario implements OnInit {
     const acolhido = this.acolhido();
     if (!acolhido) return null;
 
-    const internacao = this.internacoesMockService.buscarAtualPorAcolhido(acolhido.id);
-    const convenio = internacao
-      ? this.internacoesMockService.convenios.find((item) => item.id === internacao.idConvenio)
-      : undefined;
-    const internacaoAtual =
-      internacao && convenio
-        ? {
-            ...internacao,
-            acolhido,
-            convenio,
-            encerrada: false,
-            severity: this.internacoesMockService.obterSeverity(internacao.etapaTratamento),
-            tempoInternado: this.internacoesMockService.calcularTempoInternado(
-              internacao.dataAdmissao,
-            ),
-          }
-        : undefined;
-
     return {
       ...acolhido,
-      idade: this.acolhidoMockService.calcularIdade(acolhido.dataNascimento),
-      internacaoAtual,
+      idade: this.acolhidosService.calcularIdade(acolhido.dataNascimento),
     };
   });
 
@@ -129,14 +112,10 @@ export class Prontuario implements OnInit {
       return;
     }
 
-    const acolhido = this.acolhidoMockService.buscar(idNumerico);
-
-    if (!acolhido) {
-      this.voltarParaLista();
-      return;
-    }
-
-    this.acolhido.set(acolhido);
+    this.acolhidosService.getAcolhidoById(idNumerico).subscribe({
+      next: (acolhido) => this.acolhido.set(acolhido),
+      error: () => this.voltarParaLista(),
+    });
   }
 
   protected voltarParaLista(): void {
@@ -148,8 +127,33 @@ export class Prontuario implements OnInit {
     if (!acolhido) return;
 
     const novoStatus = !acolhido.ativo;
-    this.acolhidoMockService.alterarStatus(acolhido.id, novoStatus);
-    this.acolhido.update((atual) => (atual ? { ...atual, ativo: novoStatus } : null));
-    this.confirmarAlteracao.set(false);
+    const acao$ = novoStatus
+      ? this.acolhidosService.activateAcolhido(acolhido.id)
+      : this.acolhidosService.deactivateAcolhido(acolhido.id);
+
+    acao$.subscribe({
+      next: () => {
+        this.acolhido.update((atual) => (atual ? { ...atual, ativo: novoStatus } : null));
+        this.confirmarAlteracao.set(false);
+      },
+    });
+  }
+
+  protected excluirAcolhido(): void {
+    const acolhido = this.acolhido();
+    if (!acolhido) return;
+
+    this.acolhidosService.deleteAcolhido(acolhido.id).subscribe({
+      next: () => {
+        this.confirmarExclusao.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Acolhido excluído!',
+          detail: 'O acolhido foi excluído com sucesso.',
+          life: 3000,
+        });
+        this.voltarParaLista();
+      },
+    });
   }
 }

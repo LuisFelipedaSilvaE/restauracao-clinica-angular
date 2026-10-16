@@ -1,5 +1,9 @@
 @if (headerData(); as data) {
-  <prontuario-header [data]="data" (statusChange)="confirmarAlteracao.set(true)" />
+  <prontuario-header
+    [data]="data"
+    (statusChange)="confirmarAlteracao.set(true)"
+    (deleteRequest)="confirmarExclusao.set(true)"
+  />
 
   <p-tabs value="dados-gerais" scrollable>
     <p-tablist>
@@ -23,5 +27,20 @@
   [message]="toggleMessage()"
   [confirmLabel]="toggleLabel()"
   [severity]="toggleSeverity()"
+  [loading]="mutationLoading()"
   (onConfirm)="alterarStatus()"
+/>
+
+<confirm-dialog
+  [(visible)]="confirmarExclusao"
+  title="Excluir acolhido"
+  [message]="
+    'Deseja excluir ' +
+    (acolhido()?.nome ?? 'este acolhido') +
+    '? Esta ação não poderá ser desfeita.'
+  "
+  confirmLabel="Excluir"
+  severity="danger"
+  [loading]="mutationLoading()"
+  (onConfirm)="excluirAcolhido()"
 />
