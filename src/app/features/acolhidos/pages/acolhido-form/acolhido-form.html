@@ -26,7 +26,7 @@
   </card>
 } @else {
   <card>
-    <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5">
+    <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5" autocomplete="off">
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados pessoais</legend>
 
@@ -42,10 +42,12 @@
             name="nome"
             formControlName="nome"
             placeholder="Ex.: Maria da Silva"
+            minlength="3"
+            maxlength="250"
             [invalid]="isInvalid('nome')"
             [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
             fluid
-            autocomplete="name"
+            autocomplete="off"
           />
         </form-field>
 
@@ -79,11 +81,11 @@
               placeholder="dd/mm/aaaa"
               dateFormat="dd/mm/yy"
               [showButtonBar]="true"
-              [readonlyInput]="true"
               [invalid]="isInvalid('dataNascimento')"
               appendTo="body"
               fluid
-              [maxDate]="hoje"
+              [minDate]="dataMinimaNascimento"
+              [maxDate]="dataMaximaNascimento"
             />
           </form-field>
         </div>
@@ -110,7 +112,8 @@
               [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
               fluid
               type="email"
-              autocomplete="email"
+              maxlength="254"
+              autocomplete="off"
             />
           </form-field>
 
@@ -131,7 +134,7 @@
               fluid
               pInputMask="(99) 99999-9999"
               inputmode="tel"
-              autocomplete="tel"
+              autocomplete="off"
             />
           </form-field>
         </div>
@@ -160,7 +163,7 @@
               fluid
               pInputMask="99999-999"
               inputmode="numeric"
-              autocomplete="postal-code"
+              autocomplete="off"
             />
           </form-field>
 
@@ -172,16 +175,21 @@
               required
               [errorMessage]="getErrorMessage('endereco.numero')"
             >
-              <input
-                pInputText
-                id="numero"
+              <p-inputnumber
+                inputId="numero"
                 name="numero"
                 formControlName="numero"
                 placeholder="Nº"
+                [min]="1"
+                [max]="2147483647"
+                [maxFractionDigits]="0"
+                [useGrouping]="false"
                 [invalid]="isInvalid('endereco.numero')"
-                [attr.aria-describedby]="isInvalid('endereco.numero') ? 'numero-erro' : null"
-                fluid
-                inputmode="numeric"
+                [ariaDescribedBy]="isInvalid('endereco.numero') ? 'numero-erro' : undefined"
+                class="block w-full min-w-0"
+                styleClass="w-full min-w-0"
+                inputStyleClass="w-full min-w-0"
+                locale="pt-BR"
                 autocomplete="off"
               />
             </form-field>
@@ -199,12 +207,14 @@
                 name="logradouro"
                 formControlName="logradouro"
                 placeholder="Rua, avenida..."
+                minlength="3"
+                maxlength="250"
                 [invalid]="isInvalid('endereco.logradouro')"
                 [attr.aria-describedby]="
                   isInvalid('endereco.logradouro') ? 'logradouro-erro' : null
                 "
                 fluid
-                autocomplete="street-address"
+                autocomplete="off"
               />
             </form-field>
 
@@ -220,7 +230,12 @@
                 name="complemento"
                 formControlName="complemento"
                 placeholder="Casa, apartamento..."
+                minlength="3"
+                maxlength="250"
                 [invalid]="isInvalid('endereco.complemento')"
+                [attr.aria-describedby]="
+                  isInvalid('endereco.complemento') ? 'complemento-erro' : null
+                "
                 fluid
                 autocomplete="off"
               />
@@ -239,10 +254,12 @@
                 name="bairro"
                 formControlName="bairro"
                 placeholder="Bairro"
+                minlength="3"
+                maxlength="250"
                 [invalid]="isInvalid('endereco.bairro')"
                 [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
                 fluid
-                autocomplete="address-level3"
+                autocomplete="off"
               />
             </form-field>
 
@@ -259,10 +276,12 @@
                 name="cidade"
                 formControlName="cidade"
                 placeholder="Cidade"
+                minlength="3"
+                maxlength="250"
                 [invalid]="isInvalid('endereco.cidade')"
                 [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
                 fluid
-                autocomplete="address-level2"
+                autocomplete="off"
               />
             </form-field>
 

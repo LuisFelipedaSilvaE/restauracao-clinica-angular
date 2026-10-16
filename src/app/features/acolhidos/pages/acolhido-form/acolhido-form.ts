@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideUserPlus } from '@lucide/angular';
 import { MessageService, SelectItem } from 'primeng/api';
@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DividerModule } from 'primeng/divider';
 import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -17,20 +18,27 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
+import {
+  calcularDataLimiteIdade,
+  dataMaximaValidator,
+  dataMinimaValidator,
+  dataValidaValidator,
+  idadeMinimaValidator,
+} from '../../../../shared/validators/data-validator';
+import { emailValidator, normalizeEmail } from '../../../../shared/validators/email-validator';
+import {
+  comprimentoEnderecoValidator,
+  NUMERO_MAXIMO_ENDERECO,
+} from '../../../../shared/validators/endereco-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
+import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { TriagensService } from '../../../triagens/services/triagens-service';
 import { Acolhido } from '../../interfaces/acolhido';
 import { AcolhidoRequest } from '../../interfaces/acolhido-request';
 import { AcolhidosService } from '../../services/acolhidos-service';
 
 type ModoForm = 'registro' | 'atualizacao';
-
-const dataValida: ValidatorFn = (control) => {
-  if (control.value === null) return null;
-  return control.value instanceof Date && Number.isFinite(control.value.getTime())
-    ? null
-    : { dataInvalida: true };
-};
 
 @Component({
   selector: 'app-acolhido-form',
@@ -44,6 +52,7 @@ const dataValida: ValidatorFn = (control) => {
     ButtonModule,
     InputTextModule,
     InputMaskModule,
+    InputNumberModule,
     DatePickerModule,
     SelectModule,
     DividerModule,
@@ -71,31 +80,37 @@ export class AcolhidoForm implements OnInit {
     Array.from({ length: 6 }),
   ];
   protected readonly hoje = new Date();
+  protected readonly dataMinimaNascimento = new Date(1900, 0, 1);
+  protected readonly dataMaximaNascimento = calcularDataLimiteIdade(18, this.hoje);
 
   protected readonly acolhidoForm = this.fb.group({
-    nome: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/\S/)]),
+    nome: this.fb.nonNullable.control('', [Validators.required, comprimentoTextoValidator(3, 250)]),
     cpf: this.fb.nonNullable.control('', [Validators.required, cpfValidator]),
     dataNascimento: this.fb.control<Date | null>(null, [
       Validators.required,
-      dataValida,
-      (control) =>
-        control.value instanceof Date && control.value > this.hoje
-          ? { nascimentoFuturo: true }
-          : null,
+      dataValidaValidator,
+      dataMinimaValidator(this.dataMinimaNascimento),
+      dataMaximaValidator(this.hoje),
+      idadeMinimaValidator(18, this.hoje),
     ]),
-    email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
+    email: this.fb.nonNullable.control('', [Validators.required, emailValidator]),
     telefone: this.fb.nonNullable.control('', [Validators.required, telefoneValidator]),
     cep: this.fb.nonNullable.control('', [
       Validators.required,
       Validators.pattern(/^\d{5}-\d{3}$/),
     ]),
     endereco: this.fb.nonNullable.group({
-      logradouro: ['', [Validators.required, Validators.pattern(/\S/)]],
-      numero: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
-      bairro: ['', [Validators.required, Validators.pattern(/\S/)]],
-      cidade: ['', [Validators.required, Validators.pattern(/\S/)]],
+      logradouro: ['', [Validators.required, comprimentoEnderecoValidator()]],
+      numero: this.fb.control<number | null>(null, [
+        Validators.required,
+        integerValidator,
+        Validators.min(1),
+        Validators.max(NUMERO_MAXIMO_ENDERECO),
+      ]),
+      bairro: ['', [Validators.required, comprimentoEnderecoValidator()]],
+      cidade: ['', [Validators.required, comprimentoEnderecoValidator()]],
       estado: this.fb.control<string | null>(null, [Validators.required]),
-      complemento: [''],
+      complemento: ['', [comprimentoEnderecoValidator(true)]],
     }),
   });
 
@@ -200,7 +215,7 @@ export class AcolhidoForm implements OnInit {
       dataNascimento: this.converterDataDaApi(acolhido.dataNascimento),
       endereco: {
         logradouro: acolhido.endereco.logradouro,
-        numero: String(acolhido.endereco.numero),
+        numero: acolhido.endereco.numero,
         bairro: acolhido.endereco.bairro,
         cidade: acolhido.endereco.cidade,
         estado: acolhido.endereco.estado,
@@ -222,10 +237,28 @@ export class AcolhidoForm implements OnInit {
     if (errors?.['email']) return 'Informe um e-mail válido.';
     if (errors?.['cpfInvalido']) return 'Informe um CPF válido.';
     if (errors?.['telefoneInvalido']) return 'Informe um telefone válido com DDD.';
-    if (errors?.['nascimentoFuturo']) return 'A data de nascimento não pode estar no futuro.';
+    if (errors?.['dataPosteriorMaxima']) return 'A data de nascimento não pode estar no futuro.';
+    if (errors?.['dataAnteriorMinima']) {
+      return 'A data de nascimento não pode ser anterior a 01/01/1900.';
+    }
+    if (errors?.['idadeMinima']) return 'O acolhido deve ter pelo menos 18 anos.';
     if (errors?.['dataInvalida']) return 'Informe uma data válida.';
+    if (errors?.['minlength']) {
+      return `${this.labels[campo]} deve ter no mínimo ${errors['minlength'].requiredLength} caracteres.`;
+    }
+    if (errors?.['maxlength']) {
+      return `${this.labels[campo]} deve ter no máximo ${errors['maxlength'].requiredLength} caracteres.`;
+    }
+    if (errors?.['min'] && campo === 'endereco.numero') {
+      return 'O número residencial deve ser maior que zero.';
+    }
+    if (errors?.['max'] && campo === 'endereco.numero') {
+      return `O número residencial deve ser menor ou igual a ${NUMERO_MAXIMO_ENDERECO}.`;
+    }
+    if (errors?.['inteiro'] && campo === 'endereco.numero') {
+      return 'Informe um número residencial inteiro.';
+    }
     if (errors?.['pattern']) {
-      if (campo === 'endereco.numero') return 'Informe somente números.';
       if (campo === 'cep') return 'Preencha o CEP por completo, no formato indicado.';
       return `${this.labels[campo]} não pode conter apenas espaços.`;
     }
@@ -246,12 +279,12 @@ export class AcolhidoForm implements OnInit {
     const id = this.id();
     const dados: AcolhidoRequest = {
       nome: valor.nome.trim(),
-      email: valor.email.trim(),
+      email: normalizeEmail(valor.email),
       cpf: valor.cpf,
       cep: valor.cep,
       endereco: {
         logradouro: valor.endereco.logradouro.trim(),
-        numero: Number(valor.endereco.numero),
+        numero: valor.endereco.numero!,
         bairro: valor.endereco.bairro.trim(),
         cidade: valor.endereco.cidade.trim(),
         estado: valor.endereco.estado!,
