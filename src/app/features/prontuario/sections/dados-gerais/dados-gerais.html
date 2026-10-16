@@ -10,7 +10,7 @@
       </prontuario-info-field>
 
       <prontuario-info-field label="Data de nascimento">
-        {{ acolhido().dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        {{ acolhido().dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
         ({{ acolhido().idade }} anos)
       </prontuario-info-field>
 
@@ -42,7 +42,7 @@
       </prontuario-info-field>
 
       <prontuario-info-field label="CEP">
-        {{ acolhido().cep }}
+        {{ acolhido().cep | cep }}
       </prontuario-info-field>
     </div>
   </prontuario-section-card>
