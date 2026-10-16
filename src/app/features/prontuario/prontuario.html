@@ -1,25 +1,24 @@
-@if (headerData(); as data) {
-  <prontuario-header
-    [data]="data"
-    (statusChange)="confirmarAlteracao.set(true)"
-    (deleteRequest)="confirmarExclusao.set(true)"
-  />
+<prontuario-header
+  [data]="headerData()"
+  [loading]="detailLoading()"
+  (statusChange)="confirmarAlteracao.set(true)"
+  (deleteRequest)="confirmarExclusao.set(true)"
+/>
 
-  <p-tabs value="dados-gerais" scrollable>
-    <p-tablist>
-      @for (aba of abas; track aba.route) {
-        <p-tab [value]="aba.route" [routerLink]="aba.route">
-          <div class="flex items-center gap-2 whitespace-nowrap">
-            <svg [lucideIcon]="aba.icon" class="h-4 w-4"></svg>
-            <span>{{ aba.label }}</span>
-          </div>
-        </p-tab>
-      }
-    </p-tablist>
-  </p-tabs>
+<p-tabs value="dados-gerais" scrollable>
+  <p-tablist>
+    @for (aba of abas; track aba.route) {
+      <p-tab [value]="aba.route" [routerLink]="aba.route">
+        <div class="flex items-center gap-2 whitespace-nowrap">
+          <svg [lucideIcon]="aba.icon" class="h-4 w-4"></svg>
+          <span>{{ aba.label }}</span>
+        </div>
+      </p-tab>
+    }
+  </p-tablist>
+</p-tabs>
 
-  <router-outlet [routerOutletData]="data" />
-}
+<router-outlet [routerOutletData]="outletData()" />
 
 <confirm-dialog
   [(visible)]="confirmarAlteracao"

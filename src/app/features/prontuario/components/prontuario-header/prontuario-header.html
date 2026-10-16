@@ -1,214 +1,258 @@
 <back-button label="Voltar para lista de acolhidos" url="/acolhidos" />
 
-<card
-  class="border-l-4 p-4! sm:p-5!"
-  [style.border-left-color]="data().internacaoAtual?.convenio?.cor ?? '#be222d'"
->
-  <div class="flex min-w-0 flex-col gap-5">
-    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div class="flex min-w-0 items-center gap-3">
-        <span
-          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl"
-          [profileColor]="'#be222d'"
-        >
-          {{ data().nome | siglaNome }}
-        </span>
+@if (loading()) {
+  <card class="border-l-4 border-l-border-muted p-4! sm:p-5!" aria-busy="true">
+    <span class="sr-only" role="status">Carregando prontuário...</span>
 
-        <div class="min-w-0">
-          <div class="mb-1 flex min-w-0 flex-wrap items-center gap-2">
-            <span class="text-xs font-medium text-content-secondary">
-              P-{{ data().id | number: '2.0-0' }}
-            </span>
-            <p-tag
-              [value]="data().ativo ? 'Ativo' : 'Inativo'"
-              [severity]="data().ativo ? 'success' : 'secondary'"
-            />
-            @if (data().internacaoAtual; as internacao) {
-              <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
-            }
+    <div class="flex min-w-0 flex-col gap-5" aria-hidden="true">
+      <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="flex min-w-0 items-center gap-3">
+          <p-skeleton shape="circle" size="4rem" class="shrink-0" />
+          <div class="flex min-w-0 flex-1 flex-col gap-2">
+            <div class="flex gap-2">
+              <p-skeleton width="2.5rem" height="1.25rem" borderRadius="0.5rem" />
+              <p-skeleton width="4rem" height="1.25rem" borderRadius="0.5rem" />
+            </div>
+            <p-skeleton width="min(18rem, 65vw)" height="1.5rem" />
+            <p-skeleton width="4.5rem" height="0.875rem" />
           </div>
-          <h1 class="truncate text-xl font-semibold text-content-primary sm:text-2xl">
-            {{ data().nome }}
-          </h1>
-          <p class="mt-1 text-sm text-content-secondary">{{ data().idade }} anos</p>
+        </div>
+
+        <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
+          @for (width of ['7rem', '9rem', '6rem', '5.5rem']; track $index) {
+            <p-skeleton [width]="width" height="2.5rem" borderRadius="0.375rem" />
+          }
         </div>
       </div>
 
-      <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
-        @if (estaAtivo()) {
+      <div class="border-t border-border-default pt-4">
+        <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (_ of [1, 2, 3]; track $index) {
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <p-skeleton width="2rem" height="2rem" borderRadius="0.375rem" />
+              <div class="flex min-w-0 flex-col gap-2">
+                <p-skeleton width="4.5rem" height="0.75rem" />
+                <p-skeleton width="7rem" height="0.875rem" />
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </card>
+} @else if (data(); as data) {
+  <card
+    class="border-l-4 p-4! sm:p-5!"
+    [style.border-left-color]="data.internacaoAtual?.convenio?.cor ?? '#be222d'"
+  >
+    <div class="flex min-w-0 flex-col gap-5">
+      <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="flex min-w-0 items-center gap-3">
+          <span
+            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold sm:h-16 sm:w-16 sm:text-xl"
+            [profileColor]="'#be222d'"
+          >
+            {{ data.nome | siglaNome }}
+          </span>
+
+          <div class="min-w-0">
+            <div class="mb-1 flex min-w-0 flex-wrap items-center gap-2">
+              <span class="text-xs font-medium text-content-secondary">
+                P-{{ data.id | number: '2.0-0' }}
+              </span>
+              <p-tag
+                [value]="data.ativo ? 'Ativo' : 'Inativo'"
+                [severity]="data.ativo ? 'success' : 'secondary'"
+              />
+              @if (data.internacaoAtual; as internacao) {
+                <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+              }
+            </div>
+            <h1 class="truncate text-xl font-semibold text-content-primary sm:text-2xl">
+              {{ data.nome }}
+            </h1>
+            <p class="mt-1 text-sm text-content-secondary">{{ data.idade }} anos</p>
+          </div>
+        </div>
+
+        <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
+          @if (estaAtivo()) {
+            <p-button
+              label="Editar dados"
+              severity="secondary"
+              variant="outlined"
+              [pt]="actionButtonPt"
+              [routerLink]="['/acolhidos', data.id, 'editar']"
+            >
+              <ng-template #icon><svg lucidePencil class="h-4 w-4"></svg></ng-template>
+            </p-button>
+          }
+
           <p-button
-            label="Editar dados"
+            label="Gerar documento"
             severity="secondary"
             variant="outlined"
             [pt]="actionButtonPt"
-            [routerLink]="['/acolhidos', data().id, 'editar']"
           >
-            <ng-template #icon><svg lucidePencil class="h-4 w-4"></svg></ng-template>
+            <ng-template #icon><svg lucideFileText class="h-4 w-4"></svg></ng-template>
           </p-button>
-        }
 
-        <p-button
-          label="Gerar documento"
-          severity="secondary"
-          variant="outlined"
-          [pt]="actionButtonPt"
-        >
-          <ng-template #icon><svg lucideFileText class="h-4 w-4"></svg></ng-template>
-        </p-button>
-
-        <p-button
-          [label]="toggleConfig().label"
-          [severity]="toggleConfig().severity"
-          variant="outlined"
-          [pt]="actionButtonPt"
-          (onClick)="statusChange.emit()"
-        >
-          <ng-template #icon>
-            <svg [lucideIcon]="toggleConfig().icon" class="h-4 w-4"></svg>
-          </ng-template>
-        </p-button>
-
-        @if (estaAtivo() && data().internacaoAtual) {
-          <p-button label="Registrar alta" severity="primary" [pt]="actionButtonPt">
-            <ng-template #icon><svg lucideLogOut class="h-4 w-4"></svg></ng-template>
+          <p-button
+            [label]="toggleConfig().label"
+            [severity]="toggleConfig().severity"
+            variant="outlined"
+            [pt]="actionButtonPt"
+            (onClick)="statusChange.emit()"
+          >
+            <ng-template #icon>
+              <svg [lucideIcon]="toggleConfig().icon" class="h-4 w-4"></svg>
+            </ng-template>
           </p-button>
-        }
 
-        <p-button
-          label="Excluir"
-          severity="danger"
-          variant="outlined"
-          [pt]="actionButtonPt"
-          (onClick)="deleteRequest.emit()"
-        >
-          <ng-template #icon><svg lucideTrash2 class="h-4 w-4"></svg></ng-template>
-        </p-button>
+          @if (estaAtivo() && data.internacaoAtual) {
+            <p-button label="Registrar alta" severity="primary" [pt]="actionButtonPt">
+              <ng-template #icon><svg lucideLogOut class="h-4 w-4"></svg></ng-template>
+            </p-button>
+          }
+
+          <p-button
+            label="Excluir"
+            severity="danger"
+            variant="outlined"
+            [pt]="actionButtonPt"
+            (onClick)="deleteRequest.emit()"
+          >
+            <ng-template #icon><svg lucideTrash2 class="h-4 w-4"></svg></ng-template>
+          </p-button>
+        </div>
+      </div>
+
+      <div class="border-t border-border-default pt-4">
+        <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+          @if (data.internacaoAtual; as internacao) {
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="internacao.convenio.cor"
+              >
+                <svg lucideLayers class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  Convênio
+                </dt>
+                <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                  {{ internacao.convenio.descricao }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideCalendarDays class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  Data de entrada
+                </dt>
+                <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                  {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideClock3 class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  Tempo internado
+                </dt>
+                <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                  {{ internacao.tempoInternado }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideCalendarCheck class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  Previsão de alta
+                </dt>
+                <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                  {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+                </dd>
+              </div>
+            </div>
+          }
+
+          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+              [iconColor]="'#4a5565'"
+            >
+              <svg lucideIdCard class="h-4 w-4"></svg>
+            </span>
+            <div class="min-w-0">
+              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                CPF
+              </dt>
+              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                {{ data.cpf | cpf }}
+              </dd>
+            </div>
+          </div>
+
+          @if (!data.internacaoAtual) {
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucidePhone class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  Telefone
+                </dt>
+                <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
+                  {{ data.telefone }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideMail class="h-4 w-4"></svg>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
+                  E-mail
+                </dt>
+                <dd class="mt-1 break-all text-sm font-semibold leading-5 text-content-primary">
+                  {{ data.email }}
+                </dd>
+              </div>
+            </div>
+          }
+        </dl>
       </div>
     </div>
-
-    <div class="border-t border-border-default pt-4">
-      <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
-        @if (data().internacaoAtual; as internacao) {
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="internacao.convenio.cor"
-            >
-              <svg lucideLayers class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                Convênio
-              </dt>
-              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-                {{ internacao.convenio.descricao }}
-              </dd>
-            </div>
-          </div>
-
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="'#4a5565'"
-            >
-              <svg lucideCalendarDays class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                Data de entrada
-              </dt>
-              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-                {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-              </dd>
-            </div>
-          </div>
-
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="'#4a5565'"
-            >
-              <svg lucideClock3 class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                Tempo internado
-              </dt>
-              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-                {{ internacao.tempoInternado }}
-              </dd>
-            </div>
-          </div>
-
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="'#4a5565'"
-            >
-              <svg lucideCalendarCheck class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                Previsão de alta
-              </dt>
-              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-                {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
-              </dd>
-            </div>
-          </div>
-        }
-
-        <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-            [iconColor]="'#4a5565'"
-          >
-            <svg lucideIdCard class="h-4 w-4"></svg>
-          </span>
-          <div class="min-w-0">
-            <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">CPF</dt>
-            <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-              {{ data().cpf | cpf }}
-            </dd>
-          </div>
-        </div>
-
-        @if (!data().internacaoAtual) {
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="'#4a5565'"
-            >
-              <svg lucidePhone class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                Telefone
-              </dt>
-              <dd class="mt-1 text-sm font-semibold leading-5 text-content-primary">
-                {{ data().telefone }}
-              </dd>
-            </div>
-          </div>
-
-          <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-              [iconColor]="'#4a5565'"
-            >
-              <svg lucideMail class="h-4 w-4"></svg>
-            </span>
-            <div class="min-w-0">
-              <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-                E-mail
-              </dt>
-              <dd class="mt-1 break-all text-sm font-semibold leading-5 text-content-primary">
-                {{ data().email }}
-              </dd>
-            </div>
-          </div>
-        }
-      </dl>
-    </div>
-  </div>
-</card>
+  </card>
+}

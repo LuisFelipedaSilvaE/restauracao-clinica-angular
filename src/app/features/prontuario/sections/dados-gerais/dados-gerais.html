@@ -1,115 +1,149 @@
-<section class="grid min-w-0 gap-4 xl:grid-cols-2" aria-label="Dados gerais do acolhido">
-  <prontuario-section-card
-    title="Dados pessoais"
-    description="Identificação e informações básicas"
-    [icon]="dadosPessoaisIcon"
+@if (loading()) {
+  <section
+    class="grid min-w-0 gap-4 xl:grid-cols-2"
+    aria-label="Carregando dados gerais do acolhido"
+    aria-busy="true"
   >
-    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="Nome completo">
-        {{ acolhido().nome }}
-      </prontuario-info-field>
+    <span class="sr-only" role="status">Carregando dados gerais...</span>
 
-      <prontuario-info-field label="Data de nascimento">
-        {{ acolhido().dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
-        ({{ acolhido().idade }} anos)
-      </prontuario-info-field>
+    @for (campos of skeletonCards; track $index) {
+      <div
+        class="overflow-hidden rounded-xl border border-border-default bg-surface-card"
+        aria-hidden="true"
+      >
+        <div class="flex items-center gap-3 border-b border-border-default bg-surface-subtle p-4">
+          <p-skeleton width="2rem" height="2rem" borderRadius="0.5rem" />
+          <div class="flex flex-1 flex-col gap-2">
+            <p-skeleton width="8rem" height="1rem" />
+            <p-skeleton width="12rem" height="0.75rem" />
+          </div>
+        </div>
 
-      <prontuario-info-field label="CPF">
-        {{ acolhido().cpf | cpf }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Situação">
-        <p-tag
-          [value]="acolhido().ativo ? 'Ativo' : 'Inativo'"
-          [severity]="acolhido().ativo ? 'success' : 'secondary'"
-        />
-      </prontuario-info-field>
-    </div>
-  </prontuario-section-card>
-
-  <prontuario-section-card
-    title="Contato"
-    description="Formas de contato disponíveis"
-    [icon]="contatoIcon"
-  >
-    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="Telefone">
-        {{ acolhido().telefone | telefone }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="E-mail">
-        {{ acolhido().email }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="CEP">
-        {{ acolhido().cep | cep }}
-      </prontuario-info-field>
-    </div>
-  </prontuario-section-card>
-
-  <prontuario-section-card
-    title="Endereço"
-    description="Localização informada no cadastro"
-    [icon]="enderecoIcon"
-  >
-    <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-      <prontuario-info-field label="Logradouro">
-        {{ acolhido().endereco.logradouro }}, {{ acolhido().endereco.numero }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Complemento">
-        {{ acolhido().endereco.complemento || 'Não informado' }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Bairro">
-        {{ acolhido().endereco.bairro }}
-      </prontuario-info-field>
-
-      <prontuario-info-field label="Cidade/UF">
-        {{ acolhido().endereco.cidade }}/{{ acolhido().endereco.estado }}
-      </prontuario-info-field>
-    </div>
-  </prontuario-section-card>
-
-  @if (acolhido().internacaoAtual; as internacao) {
+        <div class="grid gap-x-6 gap-y-5 p-5 sm:grid-cols-2">
+          @for (_ of campos; track $index) {
+            <div class="flex flex-col gap-2">
+              <p-skeleton width="5rem" height="0.75rem" />
+              <p-skeleton width="min(11rem, 75%)" height="1rem" />
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+} @else if (acolhido(); as acolhido) {
+  <section class="grid min-w-0 gap-4 xl:grid-cols-2" aria-label="Dados gerais do acolhido">
     <prontuario-section-card
-      title="Internação"
-      description="Dados do processo de acolhimento atual"
-      [icon]="internacaoIcon"
+      title="Dados pessoais"
+      description="Identificação e informações básicas"
+      [icon]="dadosPessoaisIcon"
     >
       <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        <prontuario-info-field label="Data de entrada">
-          {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        <prontuario-info-field label="Nome completo">
+          {{ acolhido.nome }}
         </prontuario-info-field>
 
-        <prontuario-info-field label="Previsão de alta">
-          {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+        <prontuario-info-field label="Data de nascimento">
+          {{ acolhido.dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+          ({{ acolhido.idade }} anos)
         </prontuario-info-field>
 
-        <prontuario-info-field label="Tempo internado">
-          {{ internacao.tempoInternado }}
+        <prontuario-info-field label="CPF">
+          {{ acolhido.cpf | cpf }}
         </prontuario-info-field>
 
-        <prontuario-info-field label="Convênio">
-          {{ internacao.convenio.descricao }}
+        <prontuario-info-field label="Situação">
+          <p-tag
+            [value]="acolhido.ativo ? 'Ativo' : 'Inativo'"
+            [severity]="acolhido.ativo ? 'success' : 'secondary'"
+          />
         </prontuario-info-field>
-
-        <prontuario-info-field label="Etapa do tratamento">
-          <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
-        </prontuario-info-field>
-
-        <prontuario-info-field label="Triagem">
-          {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
-        </prontuario-info-field>
-
-        @if (internacao.observacaoIsencao) {
-          <div class="sm:col-span-2">
-            <prontuario-info-field label="Observação sobre a isenção">
-              {{ internacao.observacaoIsencao }}
-            </prontuario-info-field>
-          </div>
-        }
       </div>
     </prontuario-section-card>
-  }
-</section>
+
+    <prontuario-section-card
+      title="Contato"
+      description="Formas de contato disponíveis"
+      [icon]="contatoIcon"
+    >
+      <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+        <prontuario-info-field label="Telefone">
+          {{ acolhido.telefone | telefone }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="E-mail">
+          {{ acolhido.email }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="CEP">
+          {{ acolhido.cep | cep }}
+        </prontuario-info-field>
+      </div>
+    </prontuario-section-card>
+
+    <prontuario-section-card
+      title="Endereço"
+      description="Localização informada no cadastro"
+      [icon]="enderecoIcon"
+    >
+      <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+        <prontuario-info-field label="Logradouro">
+          {{ acolhido.endereco.logradouro }}, {{ acolhido.endereco.numero }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Complemento">
+          {{ acolhido.endereco.complemento || 'Não informado' }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Bairro">
+          {{ acolhido.endereco.bairro }}
+        </prontuario-info-field>
+
+        <prontuario-info-field label="Cidade/UF">
+          {{ acolhido.endereco.cidade }}/{{ acolhido.endereco.estado }}
+        </prontuario-info-field>
+      </div>
+    </prontuario-section-card>
+
+    @if (acolhido.internacaoAtual; as internacao) {
+      <prontuario-section-card
+        title="Internação"
+        description="Dados do processo de acolhimento atual"
+        [icon]="internacaoIcon"
+      >
+        <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+          <prontuario-info-field label="Data de entrada">
+            {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+          </prontuario-info-field>
+
+          <prontuario-info-field label="Previsão de alta">
+            {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+          </prontuario-info-field>
+
+          <prontuario-info-field label="Tempo internado">
+            {{ internacao.tempoInternado }}
+          </prontuario-info-field>
+
+          <prontuario-info-field label="Convênio">
+            {{ internacao.convenio.descricao }}
+          </prontuario-info-field>
+
+          <prontuario-info-field label="Etapa do tratamento">
+            <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+          </prontuario-info-field>
+
+          <prontuario-info-field label="Triagem">
+            {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
+          </prontuario-info-field>
+
+          @if (internacao.observacaoIsencao) {
+            <div class="sm:col-span-2">
+              <prontuario-info-field label="Observação sobre a isenção">
+                {{ internacao.observacaoIsencao }}
+              </prontuario-info-field>
+            </div>
+          }
+        </div>
+      </prontuario-section-card>
+    }
+  </section>
+}

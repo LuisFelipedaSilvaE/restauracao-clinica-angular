@@ -18,6 +18,7 @@ import {
   LucideTrash2,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
@@ -37,6 +38,7 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     RouterLink,
     ButtonModule,
     TagModule,
+    SkeletonModule,
     BackButton,
     Card,
     IconColor,
@@ -60,7 +62,8 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
   styleUrl: './prontuario-header.css',
 })
 export class ProntuarioHeader {
-  readonly data = input.required<ProntuarioHeaderContent>();
+  readonly data = input<ProntuarioHeaderContent | null>(null);
+  readonly loading = input(false);
   readonly statusChange = output<void>();
   readonly deleteRequest = output<void>();
 
@@ -70,7 +73,7 @@ export class ProntuarioHeader {
     },
   };
 
-  protected readonly estaAtivo = computed(() => this.data().ativo);
+  protected readonly estaAtivo = computed(() => this.data()?.ativo ?? false);
 
   protected readonly toggleConfig = computed(() =>
     this.estaAtivo()

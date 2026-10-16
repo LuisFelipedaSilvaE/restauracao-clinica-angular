@@ -5,6 +5,7 @@ import { Acolhido } from '../acolhidos/interfaces/acolhido';
 import { AcolhidosService } from '../acolhidos/services/acolhidos-service';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { ProntuarioHeaderContent } from './interfaces/prontuario-header-content';
+import { ProntuarioOutletData } from './interfaces/prontuario-outlet-data';
 import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
 import {
@@ -42,6 +43,7 @@ export class Prontuario implements OnInit {
   private readonly messageService = inject(MessageService);
   protected readonly confirmarAlteracao = signal(false);
   protected readonly confirmarExclusao = signal(false);
+  protected readonly detailLoading = computed(() => this.acolhidosService.loading().detail);
   protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
 
   protected readonly abas = [
@@ -91,6 +93,11 @@ export class Prontuario implements OnInit {
       idade: this.acolhidosService.calcularIdade(acolhido.dataNascimento),
     };
   });
+
+  protected readonly outletData = computed<ProntuarioOutletData>(() => ({
+    acolhido: this.headerData(),
+    loading: this.detailLoading(),
+  }));
 
   protected readonly toggleLabel = computed(() => (this.acolhido()?.ativo ? 'Inativar' : 'Ativar'));
 
