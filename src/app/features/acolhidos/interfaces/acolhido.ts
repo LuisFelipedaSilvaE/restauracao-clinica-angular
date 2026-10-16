@@ -8,6 +8,6 @@ export interface Acolhido {
   cep: string;
   endereco: Endereco;
   telefone: string;
-  dataNascimento: Date;
+  dataNascimento: string;
   ativo: boolean;
 }

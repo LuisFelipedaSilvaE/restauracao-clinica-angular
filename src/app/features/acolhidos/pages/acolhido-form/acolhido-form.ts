@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, ValidatorFn } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideUserPlus } from '@lucide/angular';
 import { MessageService, SelectItem } from 'primeng/api';
@@ -20,7 +20,8 @@ import { cpfValidator } from '../../../../shared/validators/cpf-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
 import { TriagensService } from '../../../triagens/services/triagens-service';
 import { Acolhido } from '../../interfaces/acolhido';
-import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
+import { AcolhidoRequest } from '../../interfaces/acolhido-request';
+import { AcolhidosService } from '../../services/acolhidos-service';
 
 type ModoForm = 'registro' | 'atualizacao';
 
@@ -59,7 +60,7 @@ export class AcolhidoForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
-  private readonly acolhidosService = inject(AcolhidosMockService);
+  private readonly acolhidosService = inject(AcolhidosService);
   private readonly triagensService = inject(TriagensService);
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
@@ -171,30 +172,39 @@ export class AcolhidoForm implements OnInit {
     }
 
     const idNumerico = Number(id);
-    const acolhido =
-      Number.isSafeInteger(idNumerico) && idNumerico > 0
-        ? this.acolhidosService.buscar(idNumerico)
-        : undefined;
-
-    if (!acolhido) {
+    if (!Number.isSafeInteger(idNumerico) || idNumerico <= 0) {
       this.registroNaoEncontrado();
       return;
     }
 
+    this.carregando.set(true);
+    this.acolhidosService.getAcolhidoById(idNumerico).subscribe({
+      next: (acolhido) => {
+        this.preencherFormulario(acolhido);
+        this.carregando.set(false);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.voltarParaLista();
+      },
+    });
+  }
+
+  private preencherFormulario(acolhido: Acolhido): void {
     this.acolhidoForm.patchValue({
       nome: acolhido.nome,
       cpf: formatCpf(acolhido.cpf),
       email: acolhido.email,
       telefone: formatTelefone(acolhido.telefone),
       cep: this.formatCep(acolhido.cep),
-      dataNascimento: new Date(acolhido.dataNascimento),
+      dataNascimento: this.converterDataDaApi(acolhido.dataNascimento),
       endereco: {
         logradouro: acolhido.endereco.logradouro,
         numero: String(acolhido.endereco.numero),
         bairro: acolhido.endereco.bairro,
         cidade: acolhido.endereco.cidade,
         estado: acolhido.endereco.estado,
-        complemento: acolhido.endereco.complemento,
+        complemento: acolhido.endereco.complemento ?? '',
       },
     });
   }
@@ -234,8 +244,7 @@ export class AcolhidoForm implements OnInit {
 
     const valor = this.acolhidoForm.getRawValue();
     const id = this.id();
-    const registroAtual = id === undefined ? undefined : this.acolhidosService.buscar(Number(id));
-    const dados: Omit<Acolhido, 'id'> = {
+    const dados: AcolhidoRequest = {
       nome: valor.nome.trim(),
       email: valor.email.trim(),
       cpf: valor.cpf,
@@ -246,43 +255,43 @@ export class AcolhidoForm implements OnInit {
         bairro: valor.endereco.bairro.trim(),
         cidade: valor.endereco.cidade.trim(),
         estado: valor.endereco.estado!,
-        complemento: valor.endereco.complemento.trim(),
+        complemento: (valor.endereco.complemento ?? '').trim(),
       },
       telefone: valor.telefone,
-      dataNascimento: new Date(valor.dataNascimento!),
-      ativo: registroAtual?.ativo ?? true,
+      dataNascimento: this.formatarDataParaApi(valor.dataNascimento!),
     };
 
     this.salvando.set(true);
-    let novoAcolhidoId: number | undefined;
-    if (id !== undefined) {
-      if (!this.acolhidosService.atualizar(Number(id), dados)) {
+    const request$ =
+      id !== undefined
+        ? this.acolhidosService.updateAcolhido(Number(id), dados)
+        : this.acolhidosService.createAcolhido(dados);
+
+    request$.subscribe({
+      next: (acolhidoSalvo) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: id !== undefined ? 'Acolhido atualizado!' : 'Acolhido cadastrado!',
+          detail: 'Os dados foram salvos com sucesso.',
+          life: 3000,
+        });
+
+        if (id === undefined && this.voltarUrl() !== '/acolhidos') {
+          this.router.navigate([this.voltarUrl()], {
+            queryParams: {
+              acolhidoId: acolhidoSalvo.id,
+              triagemId: this.triagemId(),
+            },
+          });
+          return;
+        }
+
+        this.voltarParaLista();
+      },
+      error: () => {
         this.salvando.set(false);
-        this.registroNaoEncontrado();
-        return;
-      }
-    } else {
-      novoAcolhidoId = this.acolhidosService.criar(dados).id;
-    }
-
-    this.messageService.add({
-      severity: 'success',
-      summary: id !== undefined ? 'Acolhido atualizado!' : 'Acolhido cadastrado!',
-      detail: 'Os dados foram salvos com sucesso.',
-      life: 3000,
+      },
     });
-
-    if (novoAcolhidoId !== undefined && this.voltarUrl() !== '/acolhidos') {
-      this.router.navigate([this.voltarUrl()], {
-        queryParams: {
-          acolhidoId: novoAcolhidoId,
-          triagemId: this.triagemId(),
-        },
-      });
-      return;
-    }
-
-    this.voltarParaLista();
   }
 
   private preencherDadosDaTriagem(): void {
@@ -311,5 +320,17 @@ export class AcolhidoForm implements OnInit {
   private formatCep(cep: string): string {
     const numeros = cep.replace(/\D/g, '');
     return numeros.length === 8 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : cep;
+  }
+
+  private formatarDataParaApi(data: Date): string {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  private converterDataDaApi(data: string): Date {
+    const [ano, mes, dia] = data.split('-').map(Number);
+    return new Date(ano, mes - 1, dia);
   }
 }

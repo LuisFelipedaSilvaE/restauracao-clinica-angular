@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideFunnelX,
@@ -11,18 +11,22 @@ import {
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
+import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { InternacoesMockService } from '../../../internacoes/services/internacoes-mock-service';
 import { AcolhidoCard } from '../../components/acolhido-card/acolhido-card';
 import { FilterAcolhidosCard } from '../../components/filter-acolhidos-card/filter-acolhidos-card';
 import { AcolhidoCardContent } from '../../interfaces/acolhido-card-content';
 import { FilterOption } from '../../interfaces/filter-option';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
-import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
+import { AcolhidosService } from '../../services/acolhidos-service';
+
+type AcaoPendente =
+  | { tipo: 'status'; dados: ToggleAcolhidoDto }
+  | { tipo: 'exclusao'; id: number; nome: string };
 
 @Component({
   selector: 'app-acolhidos-lista',
@@ -46,15 +50,16 @@ import { AcolhidosMockService } from '../../services/acolhidos-mock-service';
   templateUrl: './acolhidos-lista.html',
   styleUrl: './acolhidos-lista.css',
 })
-export class AcolhidosLista {
+export class AcolhidosLista implements OnInit {
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyAcolhidosIcon = LucideUserRoundX;
-  private readonly acolhidosService = inject(AcolhidosMockService);
-  private readonly internacoesService = inject(InternacoesMockService);
+  private readonly acolhidosService = inject(AcolhidosService);
+  private readonly messageService = inject(MessageService);
   protected readonly acolhidos = this.acolhidosService.acolhidos;
-  protected readonly loading = signal(false);
+  protected readonly loading = computed(() => this.acolhidosService.loading().list);
+  protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
   protected readonly skeletonCards = Array.from({ length: 10 });
-  protected readonly acaoPendente = signal<ToggleAcolhidoDto | null>(null);
+  protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly busca = signal('');
   protected readonly convenioSelecionado = signal('todos');
   protected readonly statusSelecionado = signal('todos');
@@ -62,31 +67,10 @@ export class AcolhidosLista {
 
   protected readonly convenios = computed<FilterOption[]>(() => [
     { name: 'Todos os convênios', code: 'todos' },
-    ...this.internacoesService.convenios.map((convenio) => ({
-      name: convenio.descricao,
-      code: convenio.descricao,
-    })),
   ]);
 
   private readonly acolhidosCards = computed<AcolhidoCardContent[]>(() =>
-    this.acolhidos().map((acolhido) => {
-      const internacao = this.internacoesService.buscarAtualPorAcolhido(acolhido.id);
-      const convenio = internacao
-        ? this.internacoesService.convenios.find((item) => item.id === internacao.idConvenio)
-        : undefined;
-
-      return {
-        ...acolhido,
-        internacaoAtual:
-          internacao && convenio
-            ? {
-                id: internacao.id,
-                etapaTratamento: internacao.etapaTratamento,
-                convenio,
-              }
-            : undefined,
-      };
-    }),
+    this.acolhidos().map((acolhido) => ({ ...acolhido })),
   );
 
   protected readonly infoAcolhidos = computed<InfoCardContent[]>(() => {
@@ -153,20 +137,34 @@ export class AcolhidosLista {
     });
   });
 
-  protected readonly confirmTitle = computed(() =>
-    this.acaoPendente()?.ativo ? 'Ativar acolhido' : 'Desativar acolhido',
-  );
-  protected readonly confirmMessage = computed(() =>
-    this.acaoPendente()?.ativo
+  protected readonly confirmTitle = computed(() => {
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir acolhido';
+    return acao?.dados.ativo ? 'Ativar acolhido' : 'Desativar acolhido';
+  });
+
+  protected readonly confirmMessage = computed(() => {
+    const acao = this.acaoPendente();
+
+    if (acao?.tipo === 'exclusao') {
+      return `Deseja excluir ${acao.nome}? Esta ação não poderá ser desfeita.`;
+    }
+
+    return acao?.dados.ativo
       ? 'Deseja ativar este acolhido? Ele voltará a ficar disponível.'
-      : 'Deseja desativar este acolhido? Ele deixará de ficar disponível.',
-  );
-  protected readonly confirmLabel = computed(() =>
-    this.acaoPendente()?.ativo ? 'Ativar' : 'Desativar',
-  );
-  protected readonly confirmSeverity = computed<'success' | 'danger'>(() =>
-    this.acaoPendente()?.ativo ? 'success' : 'danger',
-  );
+      : 'Deseja desativar este acolhido? Ele deixará de ficar disponível.';
+  });
+
+  protected readonly confirmLabel = computed(() => {
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir';
+    return acao?.dados.ativo ? 'Ativar' : 'Desativar';
+  });
+
+  protected readonly confirmSeverity = computed<'success' | 'danger'>(() => {
+    const acao = this.acaoPendente();
+    return acao?.tipo === 'status' && acao.dados.ativo ? 'success' : 'danger';
+  });
 
   protected clearFilters(): void {
     this.busca.set('');
@@ -174,16 +172,46 @@ export class AcolhidosLista {
     this.statusSelecionado.set('todos');
   }
 
-  protected confirmarAlteracaoStatus(): void {
-    const dto = this.acaoPendente();
-    if (!dto) return;
-    this.acolhidosService.alterarStatus(dto.id, dto.ativo);
-    this.dialogConfirmVisible.set(false);
+  protected confirmarAcao(): void {
+    const acao = this.acaoPendente();
+    if (!acao) return;
+
+    if (acao.tipo === 'exclusao') {
+      this.acolhidosService.deleteAcolhido(acao.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Acolhido excluído!',
+            detail: 'O acolhido foi excluído com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
+
+    const acao$ = acao.dados.ativo
+      ? this.acolhidosService.activateAcolhido(acao.dados.id)
+      : this.acolhidosService.deactivateAcolhido(acao.dados.id);
+
+    acao$.subscribe({
+      next: () => this.dialogConfirmVisible.set(false),
+    });
   }
 
   protected toggleAcolhido(dto: ToggleAcolhidoDto): void {
-    this.acaoPendente.set(dto);
+    this.acaoPendente.set({ tipo: 'status', dados: dto });
     this.dialogConfirmVisible.set(true);
+  }
+
+  protected solicitarExclusao(acolhido: { id: number; nome: string }): void {
+    this.acaoPendente.set({ tipo: 'exclusao', ...acolhido });
+    this.dialogConfirmVisible.set(true);
+  }
+
+  ngOnInit(): void {
+    this.acolhidosService.getAllAcolhidos().subscribe();
   }
 
   private normalizarTexto(valor: string): string {

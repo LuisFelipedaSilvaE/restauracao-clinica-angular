@@ -9,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { LucideBedSingle, LucidePencil, LucideUserPlus } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -23,7 +24,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { AcolhidosMockService } from '../../../acolhidos/services/acolhidos-mock-service';
+import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
 import { TriagensService } from '../../../triagens/services/triagens-service';
 import { Internacao } from '../../interfaces/internacao';
 import { InternacoesMockService } from '../../services/internacoes-mock-service';
@@ -78,7 +79,7 @@ export class InternacaoForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
-  private readonly acolhidosService = inject(AcolhidosMockService);
+  private readonly acolhidosService = inject(AcolhidosService);
   private readonly triagensService = inject(TriagensService);
   private readonly internacoesService = inject(InternacoesMockService);
 
@@ -191,13 +192,16 @@ export class InternacaoForm implements OnInit {
   };
 
   ngOnInit(): void {
-    this.triagensService.getAllTriagens().subscribe({
+    forkJoin({
+      triagens: this.triagensService.getAllTriagens(),
+      acolhidos: this.acolhidosService.getAllAcolhidos(),
+    }).subscribe({
       next: () => this.inicializarFormulario(),
       error: () => {
         this.carregando.set(false);
         this.messageService.add({
           severity: 'error',
-          summary: 'Não foi possível carregar as triagens',
+          summary: 'Não foi possível carregar os dados',
           detail: 'Tente novamente em alguns instantes.',
           life: 4000,
         });

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideBedSingle,
@@ -15,7 +15,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { AcolhidosMockService } from '../../../acolhidos/services/acolhidos-mock-service';
+import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
 import { FilterInternacoesCard } from '../../components/filter-internacoes-card/filter-internacoes-card';
 import { InternacaoCard } from '../../components/internacao-card/internacao-card';
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
@@ -41,11 +41,11 @@ import { InternacoesMockService } from '../../services/internacoes-mock-service'
   templateUrl: './internacoes-lista.html',
   styleUrl: './internacoes-lista.css',
 })
-export class InternacoesLista {
-  private readonly acolhidosService = inject(AcolhidosMockService);
+export class InternacoesLista implements OnInit {
+  private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesMockService);
   protected readonly internacoes = this.internacoesService.internacoes;
-  protected readonly loading = signal(false);
+  protected readonly loading = computed(() => this.acolhidosService.loading().list);
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyInternacoesIcon = LucideBedSingle;
@@ -185,6 +185,10 @@ export class InternacoesLista {
     this.convenioSelecionado.set('todos');
     this.etapaTratamentoSelecionada.set('todos');
     this.periodoEntradaSelecionado.set(null);
+  }
+
+  ngOnInit(): void {
+    this.acolhidosService.getAllAcolhidos().subscribe();
   }
 
   private normalizarTexto(valor: string): string {

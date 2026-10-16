@@ -93,6 +93,7 @@
                   @for (acolhido of items; track acolhido.id) {
                     <acolhido-card
                       (statusAcolhidoChange)="toggleAcolhido($event)"
+                      (excluirAcolhido)="solicitarExclusao($event)"
                       [acolhido]="acolhido"
                     />
                   }
@@ -139,6 +140,7 @@
   [message]="confirmMessage()"
   [confirmLabel]="confirmLabel()"
   [severity]="confirmSeverity()"
+  [loading]="mutationLoading()"
   (hidden)="this.acaoPendente.set(null)"
-  (onConfirm)="confirmarAlteracaoStatus()"
+  (onConfirm)="confirmarAcao()"
 />
