@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { localDateToDate } from '../../../shared/utils/local-date';
 import { Acolhido } from '../interfaces/acolhido';
 import { AcolhidoRequest } from '../interfaces/acolhido-request';
 
@@ -101,7 +102,7 @@ export class AcolhidosService {
   calcularIdade(dataNascimento: string | Date): number {
     const nascimento =
       typeof dataNascimento === 'string'
-        ? this.converterDataLocal(dataNascimento)
+        ? localDateToDate(dataNascimento)
         : new Date(dataNascimento);
     const hoje = new Date();
     let idade = hoje.getFullYear() - nascimento.getFullYear();
@@ -140,10 +141,5 @@ export class AcolhidosService {
 
   private ordenarPorStatus(acolhidos: Acolhido[]): Acolhido[] {
     return [...acolhidos].sort((a, b) => Number(b.ativo) - Number(a.ativo));
-  }
-
-  private converterDataLocal(data: string): Date {
-    const [ano, mes, dia] = data.split('-').map(Number);
-    return new Date(ano, mes - 1, dia);
   }
 }

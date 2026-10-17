@@ -25,6 +25,7 @@ import { cpfValidator } from '../../../../shared/validators/cpf-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
 import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
+import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 
 @Component({
@@ -183,8 +184,8 @@ export class FuncionarioForm {
       cep: formatCep(funcionario.cep),
       telefone: formatTelefone(funcionario.telefone),
       email: funcionario.email,
-      dataNascimento: new Date(funcionario.dataNascimento),
-      dataAdmissao: new Date(funcionario.dataAdmissao),
+      dataNascimento: localDateToDate(funcionario.dataNascimento),
+      dataAdmissao: localDateToDate(funcionario.dataAdmissao),
       user: {
         username: funcionario.user.username,
         password: '',
@@ -280,9 +281,9 @@ export class FuncionarioForm {
 
     return {
       ...formData,
-      dataNascimento: new Date(formData.dataNascimento!),
+      dataNascimento: dateToLocalDate(formData.dataNascimento!),
       cargoId: cargo!,
-      dataAdmissao: new Date(formData.dataAdmissao!),
+      dataAdmissao: dateToLocalDate(formData.dataAdmissao!),
       endereco: {
         ...endereco,
         numero: Number(endereco.numero),

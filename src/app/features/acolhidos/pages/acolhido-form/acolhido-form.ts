@@ -18,6 +18,7 @@ import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
+import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
 import {
@@ -186,7 +187,7 @@ export class AcolhidoForm implements OnInit {
       email: acolhido.email,
       telefone: formatTelefone(acolhido.telefone),
       cep: formatCep(acolhido.cep),
-      dataNascimento: this.converterDataDaApi(acolhido.dataNascimento),
+      dataNascimento: localDateToDate(acolhido.dataNascimento),
       endereco: {
         logradouro: acolhido.endereco.logradouro,
         numero: acolhido.endereco.numero,
@@ -265,7 +266,7 @@ export class AcolhidoForm implements OnInit {
         complemento: (valor.endereco.complemento ?? '').trim(),
       },
       telefone: valor.telefone,
-      dataNascimento: this.formatarDataParaApi(valor.dataNascimento!),
+      dataNascimento: dateToLocalDate(valor.dataNascimento!),
     };
 
     this.salvando.set(true);
@@ -322,17 +323,5 @@ export class AcolhidoForm implements OnInit {
       life: 4000,
     });
     this.voltarParaLista();
-  }
-
-  private formatarDataParaApi(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  }
-
-  private converterDataDaApi(data: string): Date {
-    const [ano, mes, dia] = data.split('-').map(Number);
-    return new Date(ano, mes - 1, dia);
   }
 }

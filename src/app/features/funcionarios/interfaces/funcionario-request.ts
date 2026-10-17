@@ -5,11 +5,11 @@ export interface FuncionarioRequest {
   nome: string;
   cpf: string;
   email: string;
-  dataNascimento: Date;
+  dataNascimento: string;
   endereco: Endereco;
   cep: string;
   telefone: string;
   cargoId: number;
-  dataAdmissao: Date;
+  dataAdmissao: string;
   user: Usuario;
 }

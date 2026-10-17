@@ -25,6 +25,7 @@ import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { localDateToDate } from '../../../../shared/utils/local-date';
 import { DialogEdicaoFuncionario } from '../../components/dialog-edicao-funcionario/dialog-edicao-funcionario';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
@@ -140,7 +141,7 @@ export class FuncionarioDetalhado implements OnInit {
       next: (res) => {
         this.funcionario.set(res);
         this.dataNascimentoNormalizada = this.normalizeDataNascimento(
-          new Date(this.funcionario()?.dataNascimento!),
+          localDateToDate(this.funcionario()!.dataNascimento),
         );
       },
     });

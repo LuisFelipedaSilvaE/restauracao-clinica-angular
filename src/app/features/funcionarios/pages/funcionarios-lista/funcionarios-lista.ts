@@ -21,6 +21,7 @@ import { RouterLink } from '@angular/router';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
+import { localDateToDate } from '../../../../shared/utils/local-date';
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -66,7 +67,7 @@ export class FuncionariosLista implements OnInit {
           .normalize('NFD')
           .toLowerCase()
           .replace(/[\W_\u0300-\u036f]/g, '') || '';
-      const mesAniversario = new Date(funcionario.dataNascimento) || null;
+      const mesAniversario = localDateToDate(funcionario.dataNascimento);
 
       const validBusca =
         !busca || nome.includes(busca) || cpf.includes(busca) || email.includes(busca);
