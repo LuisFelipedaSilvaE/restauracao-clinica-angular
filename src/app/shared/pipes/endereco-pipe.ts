@@ -10,8 +10,6 @@ export class EnderecoPipe implements PipeTransform {
       return '';
     }
 
-    console.log(value);
-
     if (value.complemento === null || value.complemento === '') {
       return `${value.logradouro}, ${value.numero} - ${value.bairro} - ${value.cidade}/${value.estado}`;
     }
