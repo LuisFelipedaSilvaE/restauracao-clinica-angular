@@ -155,7 +155,7 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN')],
       },
       {
-        path: 'estoque',
+        path: 'medicamentos',
         component: MedicamentosLista,
         canActivate: [roleGuard('ADMIN')],
       },

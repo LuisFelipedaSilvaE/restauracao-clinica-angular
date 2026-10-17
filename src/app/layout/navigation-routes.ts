@@ -22,7 +22,7 @@ export const NAVIGATION_ROUTES: NavigationRoute[] = [
   { label: 'Convênios', route: 'convenios', icon: LucideLayers },
   { label: 'Internações', route: 'internacoes', icon: LucideBedSingle },
   { label: 'Acolhidos', route: 'acolhidos', icon: LucideUsersRound },
-  { label: 'Estoque', route: 'estoque', icon: LucidePill },
+  { label: 'Estoque', route: 'medicamentos', icon: LucidePill },
   { label: 'Funcionários', route: 'funcionarios', icon: LucideBriefcase },
   { label: 'Relatórios', route: 'relatorios', icon: LucideChartColumn },
   { label: 'Declarações', route: 'declaracoes', icon: LucideFileText },
