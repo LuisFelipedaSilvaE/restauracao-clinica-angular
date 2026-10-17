@@ -1,0 +1,22 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col md:justify-between md:flex-row gap-2">
+    <div>
+      <h4 class="text-2xl font-semibold mb-1">Estoque de medicamentos</h4>
+      <p class="text-sm text-content-secondary">
+        Acompanhe os medicamentos por modalidade e registre cada movimentação.
+      </p>
+    </div>
+    <p-button label="Novo medicamento" routerLink="criar" class="text-nowrap">
+      <ng-template #icon>
+        <svg lucidePlus class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+  <div class="flex justify-center items-center flex-wrap gap-2.5">
+    @for (item of infomedicamentos(); track $index) {
+      <info-card [data]="item" />
+    }
+  </div>
+</div>
+
+<medicamento-grid [medicamentos]="medicamentos()" />

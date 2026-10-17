@@ -1,0 +1,32 @@
+<card class="grid! grid-cols-[auto_1fr_auto] sm:grid-cols-4 gap-2">
+  <div class="col-span-2 row-start-1 sm:col-span-1 flex min-w-0 items-center gap-3">
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+      iconColor="#be222d"
+    >
+      <svg lucidePill class="h-5 w-5"></svg>
+    </span>
+    <div class="min-w-0">
+      <p class="truncate text-sm font-semibold text-foreground">{{ medicamento().nome }}</p>
+      <p class="text-xs text-content-secondary">{{ medicamento().unidadeControle }}</p>
+    </div>
+  </div>
+  <div class="row-start-2 flex items-center sm:justify-center sm:row-start-1 gap-1">
+    <span class="font-semibold hidden sm:inline">{{ medicamento().estoque }}</span>
+    <p-tag [value]="`${medicamento().estoque} unidades`" class="sm:hidden!" />
+  </div>
+  <div
+    class="col-start-2 row-start-2 sm:row-start-1 sm:col-start-3 flex items-center sm:justify-center gap-2"
+  >
+    <span class="font-semibold"> R$ {{ medicamento().preco }} </span>
+  </div>
+  <div
+    class="col-start-3 row-span-2 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
+  >
+    <p-button severity="secondary" [text]="true">
+      <ng-template #icon>
+        <svg lucideEllipsis class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </div>
+</card>
