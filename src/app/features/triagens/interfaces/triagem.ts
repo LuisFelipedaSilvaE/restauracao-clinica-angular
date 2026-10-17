@@ -1,4 +1,5 @@
 import { Convenio } from '../../convenios/interfaces/convenio';
+import { StatusTriagem } from '../enums/status-triagem';
 
 export interface Triagem {
   id: number;
@@ -7,5 +8,5 @@ export interface Triagem {
   telefone: string;
   dataAgendada: string;
   observacaoEntrevista: string;
-  status: string;
+  status: StatusTriagem;
 }

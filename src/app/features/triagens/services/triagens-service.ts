@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { StatusTriagem } from '../enums/status-triagem';
 import { Triagem } from '../interfaces/triagem';
 import { TriagemRequest } from '../interfaces/triagem-request';
 
@@ -28,7 +29,7 @@ export class TriagensService {
       telefone: '(11) 98765-4321',
       dataAgendada: '2026-10-08T09:00:00',
       observacaoEntrevista: 'Demonstrou interesse em participar das atividades.',
-      status: 'AGENDADA',
+      status: StatusTriagem.AGENDADA,
     },
     {
       id: 2,
@@ -45,7 +46,7 @@ export class TriagensService {
       telefone: '(11) 97654-3210',
       dataAgendada: '2026-10-08T10:30:00',
       observacaoEntrevista: 'Possui experiência anterior com natação.',
-      status: 'CONCLUIDA',
+      status: StatusTriagem.CONCLUIDA,
     },
     {
       id: 3,
@@ -62,7 +63,7 @@ export class TriagensService {
       telefone: '(21) 98765-1234',
       dataAgendada: '2026-10-09T14:00:00',
       observacaoEntrevista: 'Necessita de avaliação antes da matrícula.',
-      status: 'AGENDADA',
+      status: StatusTriagem.AGENDADA,
     },
     {
       id: 4,
@@ -79,7 +80,7 @@ export class TriagensService {
       telefone: '(31) 99876-5432',
       dataAgendada: '2026-10-10T16:00:00',
       observacaoEntrevista: 'Triagem realizada. Aguardando disponibilidade de vaga.',
-      status: 'AGENDADA',
+      status: StatusTriagem.AGENDADA,
     },
     {
       id: 5,
@@ -96,7 +97,7 @@ export class TriagensService {
       telefone: '(41) 98765-6789',
       dataAgendada: '2026-10-11T08:30:00',
       observacaoEntrevista: 'Aprovado na entrevista inicial.',
-      status: 'ATRASADA',
+      status: StatusTriagem.ATRASADA,
     },
   ]);
   readonly triagens = this.internalTriagens.asReadonly();
@@ -131,9 +132,9 @@ export class TriagensService {
   }
 
   getAllTriagens(forceRefresh = false): Observable<Triagem[]> {
-    // if (this.listaCarregada() && !forceRefresh) {
-    return of(this.internalTriagens());
-    // }
+    if (this.listaCarregada() && !forceRefresh) {
+      return of(this.internalTriagens());
+    }
 
     this.setLoading('list', true);
 
@@ -151,8 +152,6 @@ export class TriagensService {
   getTriagemById(id: number): Observable<Triagem | undefined> {
     this.setLoading('detail', false);
 
-    return of(this.internalTriagens().find((t) => t.id === id));
-
     return this.http.get<Triagem>(`${this.baseAPIUrl}/${id}`).pipe(
       finalize(() => {
         this.setLoading('detail', false);
@@ -160,7 +159,7 @@ export class TriagensService {
     );
   }
 
-  changeTriagemStatus(id: number, status: string): Observable<void> {
+  changeTriagemStatus(id: number, status: StatusTriagem): Observable<void> {
     this.setLoading('mutation', true);
 
     return this.http.patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { status: status }).pipe(
@@ -183,7 +182,7 @@ export class TriagensService {
     );
   }
 
-  private atualizarStatusNaLista(id: number, status: string): void {
+  private atualizarStatusNaLista(id: number, status: StatusTriagem): void {
     this.internalTriagens.update((triagens) => {
       const atualizada = triagens.map((triagem) =>
         triagem.id === id ? { ...triagem, status } : triagem,
