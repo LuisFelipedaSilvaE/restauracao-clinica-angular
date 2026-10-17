@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Usuario } from '../guards/models/usuario.model';
-import { tap } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
-import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { TokenPayload } from '../guards/models/token-payload.model';
+import { Usuario } from '../guards/models/usuario.model';
 
 const CHAVE_TOKEN = 'auth_token';
 
