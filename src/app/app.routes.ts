@@ -5,15 +5,16 @@ import { ErrorPage } from './core/pages/error-page/error-page';
 import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 import { Login } from './features/auth/pages/login/login';
+import { ConvenioDetalhado } from './features/convenios/pages/convenio-detalhado/convenio-detalhado';
+import { ConvenioForm } from './features/convenios/pages/convenio-form/convenio-form';
+import { ConveniosLista } from './features/convenios/pages/convenios-lista/convenios-lista';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
 import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
 import { InternacaoDetalhada } from './features/internacoes/pages/internacao-detalhada/internacao-detalhada';
 import { InternacaoForm } from './features/internacoes/pages/internacao-form/internacao-form';
 import { InternacoesLista } from './features/internacoes/pages/internacoes-lista/internacoes-lista';
-import { ConvenioDetalhado } from './features/convenios/pages/convenio-detalhado/convenio-detalhado';
-import { ConvenioForm } from './features/convenios/pages/convenio-form/convenio-form';
-import { ConveniosLista } from './features/convenios/pages/convenios-lista/convenios-lista';
+import { MedicamentosLista } from './features/medicamentos/pages/medicamentos-lista/medicamentos-lista';
 import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
 import { TriagemDetalhada } from './features/triagens/pages/triagem-detalhada/triagem-detalhada';
@@ -151,6 +152,11 @@ export const routes: Routes = [
       {
         path: 'triagens/:id/editar',
         component: TriagemForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'estoque',
+        component: MedicamentosLista,
         canActivate: [roleGuard('ADMIN')],
       },
     ],
