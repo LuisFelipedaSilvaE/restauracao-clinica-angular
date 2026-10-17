@@ -16,6 +16,7 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
+import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
@@ -184,7 +185,7 @@ export class AcolhidoForm implements OnInit {
       cpf: formatCpf(acolhido.cpf),
       email: acolhido.email,
       telefone: formatTelefone(acolhido.telefone),
-      cep: this.formatCep(acolhido.cep),
+      cep: formatCep(acolhido.cep),
       dataNascimento: this.converterDataDaApi(acolhido.dataNascimento),
       endereco: {
         logradouro: acolhido.endereco.logradouro,
@@ -321,11 +322,6 @@ export class AcolhidoForm implements OnInit {
       life: 4000,
     });
     this.voltarParaLista();
-  }
-
-  private formatCep(cep: string): string {
-    const numeros = cep.replace(/\D/g, '');
-    return numeros.length === 8 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : cep;
   }
 
   private formatarDataParaApi(data: Date): string {

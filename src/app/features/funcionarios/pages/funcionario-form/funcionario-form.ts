@@ -23,6 +23,7 @@ import { CargosService } from '../../../cargos/services/cargos-service';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 
@@ -179,7 +180,7 @@ export class FuncionarioForm {
         cidade: funcionario.endereco.cidade,
         estado: funcionario.endereco.estado,
       },
-      cep: this.formatCep(funcionario.cep),
+      cep: formatCep(funcionario.cep),
       telefone: formatTelefone(funcionario.telefone),
       email: funcionario.email,
       dataNascimento: new Date(funcionario.dataNascimento),
@@ -298,9 +299,5 @@ export class FuncionarioForm {
     this.funcionarioForm.reset();
 
     this.router.navigate(['/funcionarios']);
-  }
-
-  formatCep(cep: string): string {
-    return `${cep.slice(0, 5)}-${cep.slice(5)}`;
   }
 }
