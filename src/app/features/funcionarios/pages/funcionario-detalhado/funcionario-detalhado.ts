@@ -1,31 +1,34 @@
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
-  LucidePencil,
-  LucidePowerOff,
-  LucideUserRound,
-  LucideMail,
   LucideBriefcase,
-  LucidePhone,
   LucideCake,
   LucideCalendarCheck,
   LucideDynamicIcon,
+  LucideMail,
+  LucidePencil,
+  LucidePhone,
   LucidePower,
+  LucidePowerOff,
+  LucideUserRound,
+  LucideUserRoundKey,
 } from '@lucide/angular';
-import { Funcionario } from '../../interfaces/funcionario';
-import { ProfileColor } from '../../../../shared/directives/profile-color';
-import { IconColor } from '../../../../shared/directives/icon-color';
-import { CommonModule, DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FuncionariosService } from '../../services/funcionarios-service';
-import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
-import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
-import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { IconColor } from '../../../../shared/directives/icon-color';
+import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
-import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
+import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { DialogEdicaoFuncionario } from '../../components/dialog-edicao-funcionario/dialog-edicao-funcionario';
+import { Funcionario } from '../../interfaces/funcionario';
+import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
+import { FuncionariosService } from '../../services/funcionarios-service';
 
 @Component({
   selector: 'app-funcionario-detalhado',
@@ -36,6 +39,7 @@ import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
   imports: [
     ButtonModule,
     TagModule,
+    TooltipModule,
     LucidePencil,
     ProfileColor,
     IconColor,
@@ -54,6 +58,8 @@ import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
     CpfPipe,
     TelefonePipe,
     EnderecoPipe,
+    LucideUserRoundKey,
+    DialogEdicaoFuncionario,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',
@@ -75,6 +81,8 @@ export class FuncionarioDetalhado implements OnInit {
   private readonly datePipe = inject(DatePipe);
   protected readonly loading = this.funcionariosService.loading;
   protected readonly confirmarAlteracao = signal(false);
+  protected readonly edicaoVisivel = signal(false);
+  protected readonly edicaoType = signal<'cargo' | 'senha' | null>(null);
   protected dataNascimentoNormalizada: string = '';
   protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {
@@ -100,6 +108,7 @@ export class FuncionarioDetalhado implements OnInit {
   ngOnInit(): void {
     this.getFuncionario();
   }
+
   protected alterarStatus(): void {
     const funcionario = this.funcionario();
     if (!funcionario) return;
@@ -160,5 +169,15 @@ export class FuncionarioDetalhado implements OnInit {
     }
 
     return idade;
+  }
+
+  toggleEdicaoSenha(): void {
+    this.edicaoVisivel.set(true);
+    this.edicaoType.set('senha');
+  }
+
+  toggleEdicaoCargo(): void {
+    this.edicaoVisivel.set(true);
+    this.edicaoType.set('cargo');
   }
 }

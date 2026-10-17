@@ -1,0 +1,102 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  (onHide)="hidden.emit()"
+  styleClass="w-sm!"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Teste</h2>
+  </ng-template>
+
+  @if (type()) {
+    <form [formGroup]="form" class="flex flex-col gap-4">
+      @if (type() === 'cargo') {
+        <form-field
+          label="Novo cargo"
+          inputId="novoCargo"
+          [errorMessage]="getErrorMessage('novoCargo')"
+          required
+        >
+          <p-select
+            [options]="cargos()"
+            optionLabel="nome"
+            optionValue="id"
+            formControlName="novoCargo"
+            [invalid]="isInvalid('novoCargo')"
+            inputId="novoCargo"
+            placeholder="Selecione o cargo"
+            appendTo="body"
+            fluid
+          />
+        </form-field>
+      } @else {
+        <form-field
+          label="Nova senha"
+          inputId="novaSenha"
+          [errorMessage]="getErrorMessage('novaSenha')"
+          required
+        >
+          <p-password
+            #passwordInput1
+            inputId="novaSenha"
+            name="novaSenha"
+            formControlName="novaSenha"
+            [class.tracking-widest]="!passwordInput1.unmasked"
+            [toggleMask]="true"
+            [feedback]="false"
+            [pKeyFilter]="blockspace"
+            autocomplete="off"
+            placeholder="••••••••••"
+            [invalid]="isInvalid('novaSenha')"
+            [attr.aria-describedby]="isInvalid('novaSenha') ? 'password-erro' : null"
+            [pt]="passwordInputPt"
+            fluid
+          />
+        </form-field>
+        <form-field
+          label="Confirmar nova senha"
+          inputId="confirmarNovaSenha"
+          [errorMessage]="getErrorMessage('confirmarNovaSenha')"
+          required
+        >
+          <p-password
+            #passwordInput
+            inputId="confirmarNovaSenha"
+            name="confirmarNovaSenha"
+            formControlName="confirmarNovaSenha"
+            [class.tracking-widest]="!passwordInput.unmasked"
+            [toggleMask]="true"
+            [feedback]="false"
+            [pKeyFilter]="blockspace"
+            autocomplete="off"
+            placeholder="••••••••••"
+            [invalid]="isInvalid('confirmarNovaSenha')"
+            [attr.aria-describedby]="isInvalid('confirmarNovaSenha') ? 'password-erro' : null"
+            [pt]="passwordInputPt"
+            fluid
+          />
+        </form-field>
+      }
+    </form>
+  }
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (click)="cancelarEdicao()"
+    />
+
+    <p-button
+      [label]="confirmLabel()"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (click)="onConfirm.emit()"
+    />
+  </ng-template>
+</p-dialog>
