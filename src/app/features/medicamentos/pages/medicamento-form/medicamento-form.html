@@ -1,0 +1,71 @@
+<form-header [data]="headerInfo()" btnLabel="Voltar para estoque" btnUrl="/medicamentos" />
+<card>
+  <form class="space-y-4" [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
+    <form-field
+      label="Nome do medicamento"
+      inputId="nome"
+      [errorMessage]="getErrorMessage('nome')"
+      required
+    >
+      <input
+        pInputText
+        id="nome"
+        formControlName="nome"
+        placeholder="Ex.: Paracetamol 500mg"
+        [invalid]="isInvalid('nome')"
+        autocomplete="off"
+        fluid
+      />
+    </form-field>
+    <form-field label="Preço" inputId="preco" [errorMessage]="getErrorMessage('preco')" required>
+      <p-inputnumber
+        inputId="preco"
+        formControlName="preco"
+        mode="currency"
+        currency="BRL"
+        placeholder="R$ 0,00"
+        [invalid]="isInvalid('preco')"
+        autocomplete="off"
+        fluid
+      />
+    </form-field>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <form-field
+        label="Unidade de controle"
+        inputId="unidadeControle"
+        [errorMessage]="getErrorMessage('unidadeControle')"
+        required
+      >
+        <input
+          pInputText
+          id="unidadeControle"
+          formControlName="unidadeControle"
+          placeholder="Ex.: Cápsula, Comprimido, frasco..."
+          [invalid]="isInvalid('unidadeControle')"
+          autocomplete="off"
+          fluid
+        />
+      </form-field>
+      <form-field
+        label="Estoque inicial"
+        inputId="estoque"
+        [errorMessage]="getErrorMessage('estoque')"
+        required
+      >
+        <p-inputnumber
+          inputId="estoque"
+          formControlName="estoque"
+          placeholder="0"
+          [invalid]="isInvalid('estoque')"
+          autocomplete="off"
+          fluid
+        />
+      </form-field>
+    </div>
+    <p-divider />
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="limparForm()" />
+      <p-button type="submit" [label]="btnLabel()" />
+    </div>
+  </form>
+</card>
