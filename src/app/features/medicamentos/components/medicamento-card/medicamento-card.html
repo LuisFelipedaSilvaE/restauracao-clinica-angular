@@ -12,21 +12,31 @@
     </div>
   </div>
   <div class="row-start-2 flex items-center sm:justify-center sm:row-start-1 gap-1">
-    <span class="font-semibold hidden sm:inline">{{ medicamento().estoque }}</span>
+    <span class="text-sm text-content-secondary hidden sm:inline">{{ medicamento().estoque }}</span>
     <p-tag [value]="`${medicamento().estoque} unidades`" class="sm:hidden!" />
   </div>
   <div
     class="col-start-2 row-start-2 sm:row-start-1 sm:col-start-3 flex items-center sm:justify-center gap-2"
   >
-    <span class="font-semibold"> R$ {{ medicamento().preco }} </span>
+    <span class="text-sm text-content-secondary">
+      {{ medicamento().preco | currency: 'BRL' : 'symbol' : '1.2-2' }}
+    </span>
   </div>
   <div
     class="col-start-3 row-span-2 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
   >
-    <p-button severity="secondary" [text]="true">
+    <p-button severity="secondary" [text]="true" (onClick)="menu.toggle($event)">
       <ng-template #icon>
         <svg lucideEllipsis class="h-5 w-5"></svg>
       </ng-template>
     </p-button>
+    <p-menu #menu [model]="acoes" [popup]="true" appendTo="body">
+      <ng-template #item let-item>
+        <div class="flex cursor-pointer items-center gap-2 px-3 py-2">
+          <svg [lucideIcon]="item.lucideIcon" [class]="item.iconClass"></svg>
+          <span>{{ item.label }}</span>
+        </div>
+      </ng-template>
+    </p-menu>
   </div>
 </card>
