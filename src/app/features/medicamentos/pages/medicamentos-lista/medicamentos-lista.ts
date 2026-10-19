@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { LucidePackageOpen, LucidePill, LucidePlus, LucideTriangleAlert } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
@@ -11,7 +12,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
   host: {
     class: 'flex flex-col gap-8',
   },
-  imports: [ButtonModule, MedicamentoGrid, InfoCard, LucidePlus],
+  imports: [ButtonModule, MedicamentoGrid, InfoCard, LucidePlus, RouterLink],
   templateUrl: './medicamentos-lista.html',
   styleUrl: './medicamentos-lista.css',
 })
