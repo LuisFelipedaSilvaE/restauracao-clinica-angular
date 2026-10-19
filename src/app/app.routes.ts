@@ -14,6 +14,8 @@ import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-li
 import { InternacaoDetalhada } from './features/internacoes/pages/internacao-detalhada/internacao-detalhada';
 import { InternacaoForm } from './features/internacoes/pages/internacao-form/internacao-form';
 import { InternacoesLista } from './features/internacoes/pages/internacoes-lista/internacoes-lista';
+import { MedicamentoDetalhado } from './features/medicamentos/pages/medicamento-detalhado/medicamento-detalhado';
+import { MedicamentoForm } from './features/medicamentos/pages/medicamento-form/medicamento-form';
 import { MedicamentosLista } from './features/medicamentos/pages/medicamentos-lista/medicamentos-lista';
 import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
@@ -155,8 +157,23 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN')],
       },
       {
+        path: 'medicamentos/criar',
+        component: MedicamentoForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
         path: 'medicamentos',
         component: MedicamentosLista,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'medicamentos/:id',
+        component: MedicamentoDetalhado,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'medicamentos/:id/editar',
+        component: MedicamentoForm,
         canActivate: [roleGuard('ADMIN')],
       },
     ],
