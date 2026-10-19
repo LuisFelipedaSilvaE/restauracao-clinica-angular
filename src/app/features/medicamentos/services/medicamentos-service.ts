@@ -45,18 +45,16 @@ export class MedicamentosService {
   createMedicamento(medicamento: MedicamentoRequest): Observable<Medicamento> {
     this.setLoading('mutation', true);
 
-    this.internalMedicamentos.update((medicamentos) => [
-      ...medicamentos,
-      { id: medicamentos.length, ...medicamento },
-    ]);
-    return of();
+    const novoMedicamento = { id: this.internalMedicamentos().length, ...medicamento };
+    this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
+    return of(novoMedicamento);
 
-    return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
-      tap((novoMedicamento) => {
-        this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
-      }),
-      finalize(() => this.setLoading('mutation', false)),
-    );
+    // return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
+    // tap((novoMedicamento) => {
+    // this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
+    // }),
+    // finalize(() => this.setLoading('mutation', false)),
+    // );
   }
 
   updateMedicamento(id: number, medicamento: MedicamentoRequest): Observable<Medicamento> {
@@ -66,14 +64,15 @@ export class MedicamentosService {
     if (!medicamentoOriginal) {
       return of();
     }
+    const medicamentoAtualizado = { ...medicamentoOriginal, ...medicamento };
 
-    this.substituirMedicamentoNaLista({ ...medicamentoOriginal, ...medicamento });
-    return of();
+    this.substituirMedicamentoNaLista(medicamentoAtualizado);
+    return of(medicamentoAtualizado);
 
-    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}`, medicamento).pipe(
-      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
-      finalize(() => this.setLoading('mutation', false)),
-    );
+    // return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}`, medicamento).pipe(
+    // tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+    // finalize(() => this.setLoading('mutation', false)),
+    // );
   }
 
   getAllMedicamentos(forceRefresh = false): Observable<Medicamento[]> {
@@ -104,11 +103,11 @@ export class MedicamentosService {
 
     return of(medicamento);
 
-    return this.http.get<Medicamento>(`${this.baseAPIUrl}/${id}`).pipe(
-      finalize(() => {
-        this.setLoading('detail', false);
-      }),
-    );
+    // return this.http.get<Medicamento>(`${this.baseAPIUrl}/${id}`).pipe(
+    // finalize(() => {
+    // this.setLoading('detail', false);
+    // }),
+    // );
   }
 
   private setLoading(type: LoadingType, value: boolean): void {
