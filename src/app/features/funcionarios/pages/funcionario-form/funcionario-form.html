@@ -48,7 +48,6 @@
             formControlName="dataNascimento"
             placeholder="dd/mm/aaaa"
             [showButtonBar]="true"
-            [readonlyInput]="true"
             [maxDate]="minDataNascimento"
             [defaultDate]="minDataNascimento"
             [invalid]="isInvalid('dataNascimento')"
@@ -74,7 +73,6 @@
           placeholder="dd/mm/aaaa"
           [maxDate]="hoje"
           [showButtonBar]="true"
-          [readonlyInput]="true"
           [invalid]="isInvalid('dataAdmissao')"
           dateFormat="dd/mm/yy"
           fluid
