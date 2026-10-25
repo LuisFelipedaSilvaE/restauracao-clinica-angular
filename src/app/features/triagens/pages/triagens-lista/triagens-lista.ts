@@ -39,22 +39,22 @@ export class TriagensLista implements OnInit {
   protected readonly triagensService = inject(TriagensService);
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
-  protected readonly statusSelecionado = signal('ATRASADA');
+  protected readonly statusSelecionado = signal('AGENDADA');
   protected readonly tabs = computed(() => {
     const triagens = this.triagens();
 
     return [
       {
-        label: 'Atrasadas',
-        status: 'ATRASADA',
-        icon: LucideCalendarX2,
-        total: triagens.filter((t) => t.status === 'ATRASADA').length,
-      },
-      {
         label: 'Agendadas',
         status: 'AGENDADA',
         icon: LucideCheck,
         total: triagens.filter((t) => t.status === 'AGENDADA').length,
+      },
+      {
+        label: 'Atrasadas',
+        status: 'ATRASADA',
+        icon: LucideCalendarX2,
+        total: triagens.filter((t) => t.status === 'ATRASADA').length,
       },
       {
         label: 'Concluídas',
@@ -93,10 +93,7 @@ export class TriagensLista implements OnInit {
           .replace(/[\W_\u0300-\u036f]/g, '') || '';
 
       const validBusca =
-        !busca ||
-        nome.includes(busca) ||
-        telefone.includes(busca) ||
-        convenioDesc.includes(busca);
+        !busca || nome.includes(busca) || telefone.includes(busca) || convenioDesc.includes(busca);
 
       const convenioValido =
         convenioFiltro === 'todos' || triagem.convenio.id === Number(convenioFiltro);
