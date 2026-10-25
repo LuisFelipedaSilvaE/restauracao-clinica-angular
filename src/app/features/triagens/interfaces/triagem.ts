@@ -7,6 +7,7 @@ export interface Triagem {
   nomePossivelAcolhido: string;
   telefone: string;
   dataAgendada: string;
+  dataConclusao: string | null;
   observacaoEntrevista: string;
   status: StatusTriagem;
 }

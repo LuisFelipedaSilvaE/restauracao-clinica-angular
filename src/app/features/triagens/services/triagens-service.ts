@@ -30,6 +30,7 @@ export class TriagensService {
       nomePossivelAcolhido: 'João da Silva',
       telefone: '(11) 98765-4321',
       dataAgendada: '2026-10-08T09:00:00',
+      dataConclusao: null,
       observacaoEntrevista: 'Demonstrou interesse em participar das atividades.',
       status: StatusTriagem.AGENDADA,
     },
@@ -47,6 +48,7 @@ export class TriagensService {
       nomePossivelAcolhido: 'Maria Oliveira',
       telefone: '(11) 97654-3210',
       dataAgendada: '2026-10-08T10:30:00',
+      dataConclusao: '2026-10-08T10:45:00',
       observacaoEntrevista: 'Possui experiência anterior com natação.',
       status: StatusTriagem.CONCLUIDA,
     },
@@ -64,6 +66,7 @@ export class TriagensService {
       nomePossivelAcolhido: 'Pedro Santos',
       telefone: '(21) 98765-1234',
       dataAgendada: '2026-10-09T14:00:00',
+      dataConclusao: null,
       observacaoEntrevista: 'Necessita de avaliação antes da matrícula.',
       status: StatusTriagem.AGENDADA,
     },
@@ -81,6 +84,7 @@ export class TriagensService {
       nomePossivelAcolhido: 'Ana Costa',
       telefone: '(31) 99876-5432',
       dataAgendada: '2026-10-10T16:00:00',
+      dataConclusao: null,
       observacaoEntrevista: 'Triagem realizada. Aguardando disponibilidade de vaga.',
       status: StatusTriagem.AGENDADA,
     },
@@ -98,6 +102,7 @@ export class TriagensService {
       nomePossivelAcolhido: 'Lucas Almeida',
       telefone: '(41) 98765-6789',
       dataAgendada: '2026-10-11T08:30:00',
+      dataConclusao: null,
       observacaoEntrevista: 'Aprovado na entrevista inicial.',
       status: StatusTriagem.ATRASADA,
     },
@@ -170,11 +175,11 @@ export class TriagensService {
     );
   }
 
-  changeTriagemStatus(id: number, status: StatusTriagem): Observable<void> {
+  concluirTriagem(id: number): Observable<Triagem> {
     this.setLoading('mutation', true);
 
-    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { status: status }).pipe(
-      tap(() => this.atualizarStatusNaLista(id, status)),
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/concluir`, null).pipe(
+      tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
@@ -191,15 +196,6 @@ export class TriagensService {
         ),
       ),
     );
-  }
-
-  private atualizarStatusNaLista(id: number, status: StatusTriagem): void {
-    this.internalTriagens.update((triagens) => {
-      const atualizada = triagens.map((triagem) =>
-        triagem.id === id ? { ...triagem, status } : triagem,
-      );
-      return this.ordenarPorStatus(atualizada);
-    });
   }
 
   private ordenarPorStatus(triagens: Triagem[]): Triagem[] {
