@@ -28,6 +28,7 @@
           id="nomePossivelAcolhido"
           formControlName="nomePossivelAcolhido"
           placeholder="Ex.: João da Silva"
+          maxlength="255"
           [invalid]="isInvalid('nomePossivelAcolhido')"
           fluid
           autocomplete="off"
@@ -64,6 +65,7 @@
             formControlName="dataAgendada"
             placeholder="dd/mm/aaaa"
             [showButtonBar]="true"
+            [minDate]="hoje"
             [invalid]="isInvalid('dataAgendada')"
             dateFormat="dd/mm/yy"
             fluid
@@ -116,8 +118,10 @@
         <textarea
           pInputTextarea
           id="observacaoEntrevista"
+          formControlName="observacaoEntrevista"
           class="resize-none"
           rows="4"
+          maxlength="1000"
           placeholder="Histórico breve, queixa principal, comorbidades..."
           fluid
           autocomplete="off"

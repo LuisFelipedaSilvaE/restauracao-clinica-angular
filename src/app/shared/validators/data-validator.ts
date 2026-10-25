@@ -46,3 +46,35 @@ export function idadeMinimaValidator(idade: number, referencia = new Date()): Va
     return control.value > dataLimite ? { idadeMinima: { idade } } : null;
   };
 }
+
+export function dataHoraFuturaValidator(
+  campoData: string,
+  campoHora: string,
+  obterDataAtual: () => Date = () => new Date(),
+): ValidatorFn {
+  return (form) => {
+    const data = form.get(campoData)?.value;
+    const hora = form.get(campoHora)?.value;
+
+    if (
+      !(data instanceof Date) ||
+      !Number.isFinite(data.getTime()) ||
+      !(hora instanceof Date) ||
+      !Number.isFinite(hora.getTime())
+    ) {
+      return null;
+    }
+
+    const dataHora = new Date(
+      data.getFullYear(),
+      data.getMonth(),
+      data.getDate(),
+      hora.getHours(),
+      hora.getMinutes(),
+      0,
+      0,
+    );
+
+    return dataHora > obterDataAtual() ? null : { dataHoraNaoFutura: true };
+  };
+}

@@ -14,7 +14,13 @@ import { TextareaModule } from 'primeng/textarea';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import {
+  dataHoraFuturaValidator,
+  dataValidaValidator,
+} from '../../../../shared/validators/data-validator';
+import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
 import { ConveniosService } from '../../../convenios/services/convenios-service';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagemRequest } from '../../interfaces/triagem-request';
@@ -48,20 +54,33 @@ export class TriagemForm implements OnInit {
   private readonly triagensService = inject(TriagensService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
-  protected readonly convenios = this.conveniosService.convenios;
+  protected readonly convenios = computed(() =>
+    this.conveniosService.convenios().filter((convenio) => convenio.ativo),
+  );
   protected readonly carregando = signal(false);
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
-  protected readonly hoje = new Date();
+  protected readonly hoje = (() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    return hoje;
+  })();
   private readonly fb = inject(FormBuilder);
-  protected readonly triagemForm = this.fb.nonNullable.group({
-    convenio: this.fb.control<number | null>(null, [Validators.required]),
-    nomePossivelAcolhido: ['', [Validators.required]],
-    telefone: ['', [Validators.required, telefoneValidator]],
-    dataAgendada: this.fb.control<Date | null>(null, [Validators.required]),
-    horaAgendada: this.fb.control<Date | null>(null, [Validators.required]),
-    observacaoEntrevista: [''],
-  });
+  protected readonly triagemForm = this.fb.nonNullable.group(
+    {
+      convenio: this.fb.control<number | null>(null, [
+        Validators.required,
+        integerValidator,
+        Validators.min(1),
+      ]),
+      nomePossivelAcolhido: ['', [Validators.required, comprimentoTextoValidator(3, 255)]],
+      telefone: ['', [Validators.required, telefoneValidator]],
+      dataAgendada: this.fb.control<Date | null>(null, [Validators.required, dataValidaValidator]),
+      horaAgendada: this.fb.control<Date | null>(null, [Validators.required, dataValidaValidator]),
+      observacaoEntrevista: ['', [Validators.maxLength(1000)]],
+    },
+    { validators: dataHoraFuturaValidator('dataAgendada', 'horaAgendada') },
+  );
   protected readonly headerContent = computed(() => {
     const id = this.id();
 
@@ -93,20 +112,48 @@ export class TriagemForm implements OnInit {
 
   protected isInvalid(controlName: string): boolean {
     const control = this.triagemForm.get(controlName);
-    return !!control?.invalid && (control.touched || this.formSubmitted());
+    const exibirErro = !!control && (control.touched || this.formSubmitted());
+    const dataHoraNaoFutura =
+      controlName === 'dataAgendada' && this.triagemForm.hasError('dataHoraNaoFutura');
+
+    return exibirErro && (!!control.invalid || dataHoraNaoFutura);
   }
 
   protected getErrorMessage(controlName: string): string | null {
     const control = this.triagemForm.get(controlName);
 
-    if (!this.isInvalid(controlName) || !control?.errors) return null;
+    if (!this.isInvalid(controlName)) return null;
+
+    if (controlName === 'dataAgendada' && this.triagemForm.hasError('dataHoraNaoFutura')) {
+      return 'A data e o horário agendados devem estar no futuro.';
+    }
+
+    if (!control?.errors) return null;
 
     if (control.errors['required']) {
       return `${this.labels[controlName]} é obrigatório`;
     }
 
     if (control.errors['telefoneInvalido']) {
-      return `${this.labels[controlName]} está no formato incorreto`;
+      return 'Informe um celular válido com DDD.';
+    }
+
+    if (control.errors['dataInvalida']) {
+      return controlName === 'horaAgendada'
+        ? 'Informe um horário válido.'
+        : 'Informe uma data válida.';
+    }
+
+    if (control.errors['minlength']) {
+      return `${this.labels[controlName]} deve ter no mínimo ${control.errors['minlength'].requiredLength} caracteres.`;
+    }
+
+    if (control.errors['maxlength']) {
+      return `${this.labels[controlName]} deve ter no máximo ${control.errors['maxlength'].requiredLength} caracteres.`;
+    }
+
+    if (control.errors['min'] || control.errors['inteiro']) {
+      return 'Selecione um convênio válido.';
     }
 
     return `${this.labels[controlName]} é inválido`;
@@ -192,6 +239,8 @@ export class TriagemForm implements OnInit {
 
     return {
       ...formData,
+      nomePossivelAcolhido: formData.nomePossivelAcolhido.trim(),
+      observacaoEntrevista: formData.observacaoEntrevista.trim(),
       convenioId: convenio!,
       dataAgendada: dataFinal.toISOString().split('T')[0].concat(`T${normalizedHours}`),
     };
