@@ -37,5 +37,17 @@
     [triagens]="triagensFiltradas()"
     [loading]="loading().list"
     (limparFiltros)="clearFilters()"
+    (concluirTriagem)="solicitarConclusao($event)"
   />
 </div>
+
+<confirm-dialog
+  [(visible)]="dialogConfirmVisible"
+  title="Concluir triagem"
+  [message]="confirmMessage()"
+  confirmLabel="Concluir"
+  severity="success"
+  [loading]="mutationLoading()"
+  (hidden)="triagemPendente.set(null)"
+  (onConfirm)="confirmarConclusao()"
+/>

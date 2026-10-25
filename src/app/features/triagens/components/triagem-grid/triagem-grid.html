@@ -59,7 +59,7 @@
           }
         } @else {
           @for (triagem of items; track $index) {
-            <triagem-card [triagem]="triagem" />
+            <triagem-card [triagem]="triagem" (concluirTriagem)="concluirTriagem.emit($event)" />
           }
         }
       </div>

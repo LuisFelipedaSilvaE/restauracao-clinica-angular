@@ -17,6 +17,7 @@ export class TriagemGrid {
   readonly triagens = input.required<Triagem[]>();
   readonly loading = input(false);
   readonly limparFiltros = output<void>();
+  readonly concluirTriagem = output<{ id: number; nome: string }>();
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly dataviewPt = {

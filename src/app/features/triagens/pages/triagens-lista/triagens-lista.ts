@@ -9,8 +9,10 @@ import {
 } from '@lucide/angular';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
 import { TabsModule } from 'primeng/tabs';
 import { Card } from '../../../../shared/components/card/card';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { FilterTriagensCard } from '../../components/filter-triagens-card/filter-triagens-card';
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
 import { Triagem } from '../../interfaces/triagem';
@@ -31,12 +33,14 @@ import { TriagensService } from '../../services/triagens-service';
     ButtonModule,
     FilterTriagensCard,
     TriagemGrid,
+    ConfirmDialog,
   ],
   templateUrl: './triagens-lista.html',
   styleUrl: './triagens-lista.css',
 })
 export class TriagensLista implements OnInit {
   protected readonly triagensService = inject(TriagensService);
+  private readonly messageService = inject(MessageService);
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
   protected readonly statusSelecionado = signal('AGENDADA');
@@ -67,6 +71,15 @@ export class TriagensLista implements OnInit {
   protected readonly busca = signal('');
   protected readonly convenioSelecionado = signal('todos');
   protected readonly rangeDataSelecionado = signal('todos');
+  protected readonly dialogConfirmVisible = signal(false);
+  protected readonly triagemPendente = signal<{ id: number; nome: string } | null>(null);
+  protected readonly mutationLoading = computed(() => this.loading().mutation);
+  protected readonly confirmMessage = computed(() => {
+    const triagem = this.triagemPendente();
+    return triagem
+      ? `Deseja concluir a triagem de ${triagem.nome}? A data de conclusão será registrada automaticamente.`
+      : '';
+  });
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
     const busca = (this.busca() || '')
       .toLowerCase()
@@ -127,5 +140,27 @@ export class TriagensLista implements OnInit {
     this.busca.set('');
     this.convenioSelecionado.set('todos');
     this.rangeDataSelecionado.set('todos');
+  }
+
+  protected solicitarConclusao(triagem: { id: number; nome: string }): void {
+    this.triagemPendente.set(triagem);
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected confirmarConclusao(): void {
+    const triagem = this.triagemPendente();
+    if (!triagem) return;
+
+    this.triagensService.concluirTriagem(triagem.id).subscribe({
+      next: () => {
+        this.dialogConfirmVisible.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Triagem concluída!',
+          detail: 'A triagem foi concluída com sucesso.',
+          life: 3000,
+        });
+      },
+    });
   }
 }
