@@ -13,8 +13,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      const validationMessages = Array.isArray(error.error?.erros)
+        ? error.error.erros
+            .map((fieldError: { erro?: unknown }) =>
+              typeof fieldError.erro === 'string' ? fieldError.erro.trim() : '',
+            )
+            .filter(Boolean)
+            .join(' ')
+        : '';
       const backendMessage =
-        typeof error.error?.message === 'string' ? error.error.message.trim() : '';
+        validationMessages ||
+        (typeof error.error?.message === 'string' ? error.error.message.trim() : '') ||
+        (typeof error.error?.mensagem === 'string' ? error.error.mensagem.trim() : '');
       let summary = 'Erro ao tentar concluir a operação';
       let detail = backendMessage || 'Não foi possível concluir a operação. Tente novamente.';
 
