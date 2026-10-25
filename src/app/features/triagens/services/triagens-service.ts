@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { ConveniosService } from '../../convenios/services/convenios-service';
 import { StatusTriagem } from '../enums/status-triagem';
 import { Triagem } from '../interfaces/triagem';
 import { TriagemRequest } from '../interfaces/triagem-request';
@@ -13,6 +14,7 @@ import { TriagemRequest } from '../interfaces/triagem-request';
 export class TriagensService {
   private readonly baseAPIUrl = `${environment.apiUrl}/triagens`;
   private readonly http = inject(HttpClient);
+  private readonly conveniosService = inject(ConveniosService);
   private readonly internalTriagens = signal<Triagem[]>([
     {
       id: 1,
@@ -100,7 +102,16 @@ export class TriagensService {
       status: StatusTriagem.ATRASADA,
     },
   ]);
-  readonly triagens = this.internalTriagens.asReadonly();
+  readonly triagens = computed(() => {
+    const conveniosPorId = new Map(
+      this.conveniosService.convenios().map((convenio) => [convenio.id, convenio]),
+    );
+
+    return this.internalTriagens().map((triagem) => ({
+      ...triagem,
+      convenio: conveniosPorId.get(triagem.convenio.id) ?? triagem.convenio,
+    }));
+  });
   private readonly listaCarregada = signal(false);
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
