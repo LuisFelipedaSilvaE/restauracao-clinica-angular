@@ -54,6 +54,18 @@
       </div>
     </div>
     <div class="flex gap-2">
+      @if (podeConcluir()) {
+        <p-button
+          label="Concluir"
+          severity="success"
+          variant="outlined"
+          (onClick)="solicitarConclusao()"
+        >
+          <ng-template #icon>
+            <svg lucideCircleCheckBig class="h-5 w-5"></svg>
+          </ng-template>
+        </p-button>
+      }
       <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['']">
         <svg lucidePencil class="h-4 w-4"></svg>
       </p-button>
@@ -123,3 +135,13 @@
     </div>
   </card>
 }
+
+<confirm-dialog
+  [(visible)]="dialogConfirmVisible"
+  title="Concluir triagem"
+  [message]="confirmMessage()"
+  confirmLabel="Concluir"
+  severity="success"
+  [loading]="mutationLoading()"
+  (onConfirm)="confirmarConclusao()"
+/>

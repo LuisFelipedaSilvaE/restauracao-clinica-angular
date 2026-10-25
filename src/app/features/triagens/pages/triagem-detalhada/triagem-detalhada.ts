@@ -3,17 +3,20 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideCalendar,
+  LucideCircleCheckBig,
   LucideHandshake,
   LucidePencil,
   LucidePhone,
   LucideTrash2,
 } from '@lucide/angular';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
@@ -43,7 +46,9 @@ import { TriagensService } from '../../services/triagens-service';
     LucideHandshake,
     LucidePhone,
     LucideCalendar,
+    LucideCircleCheckBig,
     BackButton,
+    ConfirmDialog,
   ],
   templateUrl: './triagem-detalhada.html',
   styleUrl: './triagem-detalhada.css',
@@ -51,10 +56,23 @@ import { TriagensService } from '../../services/triagens-service';
 export class TriagemDetalhada {
   protected readonly id = input<string>();
   private readonly router = inject(Router);
+  private readonly messageService = inject(MessageService);
   protected readonly triagem = signal<Triagem | undefined>(undefined);
   protected readonly carregando = signal(false);
+  protected readonly dialogConfirmVisible = signal(false);
   private readonly triagensService = inject(TriagensService);
   protected readonly loading = this.triagensService.loading;
+  protected readonly mutationLoading = computed(() => this.loading().mutation);
+  protected readonly podeConcluir = computed(() => {
+    const status = this.triagem()?.status;
+    return status === 'AGENDADA' || status === 'ATRASADA';
+  });
+  protected readonly confirmMessage = computed(() => {
+    const triagem = this.triagem();
+    return triagem
+      ? `Deseja concluir a triagem de ${triagem.nomePossivelAcolhido}? A data de conclusão será registrada automaticamente.`
+      : '';
+  });
   protected readonly statusTagSeverity = computed(() => {
     const triagem = this.triagem();
 
@@ -108,6 +126,30 @@ export class TriagemDetalhada {
       error: () => {
         this.carregando.set(false);
         this.router.navigate(['/triagens']);
+      },
+    });
+  }
+
+  protected solicitarConclusao(): void {
+    if (!this.podeConcluir()) return;
+
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected confirmarConclusao(): void {
+    const triagem = this.triagem();
+    if (!triagem || !this.podeConcluir()) return;
+
+    this.triagensService.concluirTriagem(triagem.id).subscribe({
+      next: (triagemAtualizada) => {
+        this.triagem.set(triagemAtualizada);
+        this.dialogConfirmVisible.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Triagem concluída!',
+          detail: 'A triagem foi concluída com sucesso.',
+          life: 3000,
+        });
       },
     });
   }
