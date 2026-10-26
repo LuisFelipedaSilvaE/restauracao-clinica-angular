@@ -66,6 +66,18 @@
           </ng-template>
         </p-button>
       }
+      @if (podeReabrir()) {
+        <p-button
+          label="Reabrir"
+          severity="warn"
+          variant="outlined"
+          (onClick)="solicitarReabertura()"
+        >
+          <ng-template #icon>
+            <svg lucideRotateCcwClock class="h-5 w-5"></svg>
+          </ng-template>
+        </p-button>
+      }
       <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['']">
         <svg lucidePencil class="h-4 w-4"></svg>
       </p-button>
@@ -138,10 +150,11 @@
 
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"
-  title="Concluir triagem"
+  [title]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir triagem' : 'Concluir triagem'"
   [message]="confirmMessage()"
-  confirmLabel="Concluir"
-  severity="success"
+  [confirmLabel]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir' : 'Concluir'"
+  [severity]="acaoConclusaoPendente() === 'reabrir' ? 'primary' : 'success'"
   [loading]="mutationLoading()"
-  (onConfirm)="confirmarConclusao()"
+  (hidden)="acaoConclusaoPendente.set(null)"
+  (onConfirm)="confirmarAlteracaoConclusao()"
 />

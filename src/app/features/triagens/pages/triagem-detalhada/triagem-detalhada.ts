@@ -7,6 +7,7 @@ import {
   LucideHandshake,
   LucidePencil,
   LucidePhone,
+  LucideRotateCcwClock,
   LucideTrash2,
 } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
@@ -47,6 +48,7 @@ import { TriagensService } from '../../services/triagens-service';
     LucidePhone,
     LucideCalendar,
     LucideCircleCheckBig,
+    LucideRotateCcwClock,
     BackButton,
     ConfirmDialog,
   ],
@@ -60,6 +62,7 @@ export class TriagemDetalhada {
   protected readonly triagem = signal<Triagem | undefined>(undefined);
   protected readonly carregando = signal(false);
   protected readonly dialogConfirmVisible = signal(false);
+  protected readonly acaoConclusaoPendente = signal<'concluir' | 'reabrir' | null>(null);
   private readonly triagensService = inject(TriagensService);
   protected readonly loading = this.triagensService.loading;
   protected readonly mutationLoading = computed(() => this.loading().mutation);
@@ -67,11 +70,15 @@ export class TriagemDetalhada {
     const status = this.triagem()?.status;
     return status === 'AGENDADA' || status === 'ATRASADA';
   });
+  protected readonly podeReabrir = computed(() => this.triagem()?.status === 'CONCLUIDA');
   protected readonly confirmMessage = computed(() => {
     const triagem = this.triagem();
-    return triagem
+    const acao = this.acaoConclusaoPendente();
+    if (!triagem || !acao) return '';
+
+    return acao === 'concluir'
       ? `Deseja concluir a triagem de ${triagem.nomePossivelAcolhido}? A data de conclusão será registrada automaticamente.`
-      : '';
+      : `Deseja reabrir a triagem de ${triagem.nomePossivelAcolhido}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
   });
   protected readonly statusTagSeverity = computed(() => {
     const triagem = this.triagem();
@@ -133,21 +140,41 @@ export class TriagemDetalhada {
   protected solicitarConclusao(): void {
     if (!this.podeConcluir()) return;
 
+    this.acaoConclusaoPendente.set('concluir');
     this.dialogConfirmVisible.set(true);
   }
 
-  protected confirmarConclusao(): void {
-    const triagem = this.triagem();
-    if (!triagem || !this.podeConcluir()) return;
+  protected solicitarReabertura(): void {
+    if (!this.podeReabrir()) return;
 
-    this.triagensService.concluirTriagem(triagem.id).subscribe({
+    this.acaoConclusaoPendente.set('reabrir');
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected confirmarAlteracaoConclusao(): void {
+    const triagem = this.triagem();
+    const acao = this.acaoConclusaoPendente();
+    if (!triagem || !acao) return;
+
+    if (acao === 'concluir' && !this.podeConcluir()) return;
+    if (acao === 'reabrir' && !this.podeReabrir()) return;
+
+    const acao$ =
+      acao === 'concluir'
+        ? this.triagensService.concluirTriagem(triagem.id)
+        : this.triagensService.reabrirTriagem(triagem.id);
+
+    acao$.subscribe({
       next: (triagemAtualizada) => {
         this.triagem.set(triagemAtualizada);
         this.dialogConfirmVisible.set(false);
         this.messageService.add({
           severity: 'success',
-          summary: 'Triagem concluída!',
-          detail: 'A triagem foi concluída com sucesso.',
+          summary: acao === 'concluir' ? 'Triagem concluída!' : 'Triagem reaberta!',
+          detail:
+            acao === 'concluir'
+              ? 'A triagem foi concluída com sucesso.'
+              : 'A triagem foi reaberta com sucesso.',
           life: 3000,
         });
       },
