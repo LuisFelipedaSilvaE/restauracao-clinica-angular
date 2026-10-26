@@ -64,7 +64,7 @@
               <div class="flex min-w-0 flex-col">
                 <span class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</span>
                 <span class="truncate text-xs text-content-secondary">
-                  T-{{ triagem.id }} · {{ triagem.telefone }} ·
+                  T-{{ triagem.id }} · {{ triagem.telefone | telefone }} ·
                   {{ triagem.dataAgendada | date: 'dd/MM/yyyy' : '' : 'pt-BR' }}
                 </span>
               </div>
@@ -82,7 +82,7 @@
             </div>
             <div class="min-w-0">
               <p class="text-xs text-content-secondary">Telefone</p>
-              <p class="truncate font-medium">{{ triagem.telefone }}</p>
+              <p class="truncate font-medium">{{ triagem.telefone | telefone }}</p>
             </div>
             <div class="min-w-0">
               <p class="text-xs text-content-secondary">Convênio</p>
@@ -91,7 +91,7 @@
           </div>
         }
 
-        <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div class="grid items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
           <form-field
             label="Acolhido"
             inputId="idAcolhido"
@@ -122,7 +122,7 @@
                 <div class="flex min-w-0 flex-col">
                   <span class="truncate font-medium">{{ acolhido.nome }}</span>
                   <span class="truncate text-xs text-content-secondary">
-                    CPF {{ acolhido.cpf }} · {{ acolhido.telefone }}
+                    CPF {{ acolhido.cpf }} · {{ acolhido.telefone | telefone }}
                   </span>
                 </div>
               </ng-template>
@@ -134,7 +134,7 @@
             label="Cadastrar acolhido"
             severity="secondary"
             variant="outlined"
-            class="w-full sm:w-auto"
+            class="w-full sm:mt-5 sm:w-auto"
             (onClick)="cadastrarNovoAcolhido()"
           >
             <ng-template #icon>
