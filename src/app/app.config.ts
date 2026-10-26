@@ -55,6 +55,8 @@ export const appConfig: ApplicationConfig = {
         ],
         today: 'Hoje',
         clear: 'Limpar',
+        emptyFilterMessage: 'Nenhum resultado encontrado',
+        emptySearchMessage: 'Nenhum resultado encontrado',
       },
       theme: {
         preset: PresetClinicaRestauracao,
