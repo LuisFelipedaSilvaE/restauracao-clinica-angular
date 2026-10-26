@@ -4,7 +4,6 @@ import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { ConveniosService } from '../../convenios/services/convenios-service';
-import { StatusTriagem } from '../enums/status-triagem';
 import { Triagem } from '../interfaces/triagem';
 import { TriagemReagendamentoRequest } from '../interfaces/triagem-reagendamento-request';
 import { TriagemRequest } from '../interfaces/triagem-request';
@@ -16,98 +15,7 @@ export class TriagensService {
   private readonly baseAPIUrl = `${environment.apiUrl}/triagens`;
   private readonly http = inject(HttpClient);
   private readonly conveniosService = inject(ConveniosService);
-  private readonly internalTriagens = signal<Triagem[]>([
-    {
-      id: 1,
-      convenio: {
-        id: 1,
-        descricao: 'Atendimento Social',
-        cnpj: null,
-        maxVagas: 40,
-        ativo: true,
-        pagamento: false,
-        cor: '#2E86C1',
-      },
-      nomePossivelAcolhido: 'João da Silva',
-      telefone: '(11) 98765-4321',
-      dataAgendada: '2026-10-08T09:00:00',
-      dataConclusao: null,
-      observacaoEntrevista: 'Demonstrou interesse em participar das atividades.',
-      status: StatusTriagem.AGENDADA,
-    },
-    {
-      id: 2,
-      convenio: {
-        id: 2,
-        descricao: 'Clínica Parceira',
-        cnpj: '11222333000181',
-        maxVagas: 20,
-        ativo: true,
-        pagamento: true,
-        cor: '#28B463',
-      },
-      nomePossivelAcolhido: 'Maria Oliveira',
-      telefone: '(11) 97654-3210',
-      dataAgendada: '2026-10-08T10:30:00',
-      dataConclusao: '2026-10-08T10:45:00',
-      observacaoEntrevista: 'Possui experiência anterior com natação.',
-      status: StatusTriagem.CONCLUIDA,
-    },
-    {
-      id: 3,
-      convenio: {
-        id: 4,
-        descricao: 'Lista de Espera',
-        cnpj: null,
-        maxVagas: 0,
-        ativo: true,
-        pagamento: false,
-        cor: '#F39C12',
-      },
-      nomePossivelAcolhido: 'Pedro Santos',
-      telefone: '(21) 98765-1234',
-      dataAgendada: '2026-10-09T14:00:00',
-      dataConclusao: null,
-      observacaoEntrevista: 'Necessita de avaliação antes da matrícula.',
-      status: StatusTriagem.AGENDADA,
-    },
-    {
-      id: 4,
-      convenio: {
-        id: 2,
-        descricao: 'Clínica Parceira',
-        cnpj: '11222333000181',
-        maxVagas: 20,
-        ativo: true,
-        pagamento: true,
-        cor: '#28B463',
-      },
-      nomePossivelAcolhido: 'Ana Costa',
-      telefone: '(31) 99876-5432',
-      dataAgendada: '2026-10-10T16:00:00',
-      dataConclusao: null,
-      observacaoEntrevista: 'Triagem realizada. Aguardando disponibilidade de vaga.',
-      status: StatusTriagem.AGENDADA,
-    },
-    {
-      id: 5,
-      convenio: {
-        id: 4,
-        descricao: 'Lista de Espera',
-        cnpj: null,
-        maxVagas: 0,
-        ativo: true,
-        pagamento: false,
-        cor: '#F39C12',
-      },
-      nomePossivelAcolhido: 'Lucas Almeida',
-      telefone: '(41) 98765-6789',
-      dataAgendada: '2026-10-11T08:30:00',
-      dataConclusao: null,
-      observacaoEntrevista: 'Aprovado na entrevista inicial.',
-      status: StatusTriagem.ATRASADA,
-    },
-  ]);
+  private readonly internalTriagens = signal<Triagem[]>([]);
   readonly triagens = computed(() => {
     const conveniosPorId = new Map(
       this.conveniosService.convenios().map((convenio) => [convenio.id, convenio]),

@@ -1,14 +1,14 @@
 import { Injectable, signal } from '@angular/core';
-import { INTERNACOES_MOCK, CONVENIOS_INTERNACOES_MOCK } from '../data/internacoes-mock';
+import { CONVENIOS_INTERNACOES_MOCK } from '../data/internacoes-mock';
+import { Internacao } from '../interfaces/internacao';
 import { InternacaoCardContent } from '../interfaces/internacao-card-content';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
-import { Internacao } from '../interfaces/internacao';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InternacoesMockService {
-  private readonly registros = signal<Internacao[]>(structuredClone(INTERNACOES_MOCK));
+  private readonly registros = signal<Internacao[]>([]);
   private readonly rascunhoForm = signal<InternacaoFormDraft | null>(null);
   readonly internacoes = this.registros.asReadonly();
   readonly convenios = structuredClone(CONVENIOS_INTERNACOES_MOCK);
