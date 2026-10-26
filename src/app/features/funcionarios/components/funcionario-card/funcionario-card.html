@@ -1,5 +1,5 @@
 <div
-  class="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40"
+  class="flex min-w-0 items-center gap-2 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40 2xl:gap-3"
 >
   <span
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
@@ -7,64 +7,50 @@
     >{{ funcionario().nome | siglaNome }}
   </span>
   <div class="min-w-0">
-    <div class="flex flex-wrap items-center gap-2">
-      <p class="truncate text-sm font-semibold text-foreground">
-        {{ funcionario().nome }}
-      </p>
-      <p-tag [value]="funcionario().cargo?.nome" />
-    </div>
-    <p class="truncate text-xs text-content-secondary">{{ funcionario().cpf | cpf }}</p>
+    <p class="truncate font-semibold text-content-primary">
+      {{ funcionario().nome }}
+    </p>
+    <p class="truncate text-xs text-content-secondary">
+      F-{{ funcionario().id | number: '2.0-0' }} &middot; CPF {{ funcionario().cpf | cpf }}
+    </p>
   </div>
 </div>
-<div class="hidden min-w-0 flex-col gap-2 text-xs text-content-secondary xl:flex xl:w-56">
-  <span class="flex items-center gap-2 truncate">
-    <svg lucideMail class="h-5 w-5"></svg> {{ funcionario().email }}
-  </span>
-  <span class="flex items-center gap-2 truncate">
-    <svg lucidePhone class="h-5 w-5"></svg>{{ funcionario().telefone | telefone }}</span
+
+<div class="contents">
+  <div class="hidden min-w-0 text-center text-sm text-content-secondary md:block">
+    <p class="truncate">{{ funcionario().telefone | telefone }}</p>
+    <p class="truncate text-xs">{{ funcionario().email }}</p>
+  </div>
+
+  <div class="hidden min-w-0 text-center text-sm text-content-secondary xl:block">
+    <p class="truncate">{{ funcionario().dataNascimento | date: 'dd/MM/yyyy' }}</p>
+    <p class="truncate text-xs">{{ idade() }} anos</p>
+  </div>
+
+  <p-tag
+    class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
+    [value]="funcionario().cargo?.nome"
+  />
+
+  <div
+    class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-span-1 sm:justify-self-end"
   >
-</div>
-<div class="hidden min-w-0 flex-col gap-2 text-xs text-content-secondary md:flex md:w-32">
-  <span class="flex items-center gap-2 truncate">
-    <svg lucideCake class="h-5 w-5"></svg>
-    {{ funcionario().dataNascimento | date: 'dd/MM/yyyy' }} </span
-  ><span class="pl-5">45 anos</span>
-</div>
-<p-tag [value]="activeConfig().label" [severity]="activeConfig().severity" />
-<div class="flex shrink-0 items-center gap-1">
-  <p-button
-    [text]="true"
-    severity="info"
-    (onClick)="seeDetails()"
-    pTooltip="Detalhes funcionário"
-    tooltipPosition="top"
-  >
-    <ng-template #icon>
-      <svg lucideEye class="h-4.5 w-4.5"></svg>
-    </ng-template>
-  </p-button>
-  @if (funcionario().ativo) {
-    <p-button
-      [text]="true"
-      severity="secondary"
-      pTooltip="Editar Funcionário"
-      tooltipPosition="top"
-      [routerLink]="[funcionario()?.id, 'editar']"
-    >
-      <ng-template #icon>
-        <svg lucidePencil class="h-4 w-4"></svg>
+    <p-menu #menu [model]="acoes()" [popup]="true" appendTo="body">
+      <ng-template #item let-item>
+        <div class="flex cursor-pointer items-center gap-2 px-3 py-2">
+          <svg [lucideIcon]="item.lucideIcon" [ngClass]="item.iconClass"></svg>
+          <span>{{ item.label }}</span>
+        </div>
       </ng-template>
-    </p-button>
-  }
-  <p-button
-    [text]="true"
-    (onClick)="toggleFuncionario()"
-    [severity]="activeConfig()?.button.severity"
-    [pTooltip]="activeConfig().tooltipValue"
-    tooltipPosition="top"
-  >
-    <ng-template #icon>
-      <svg [lucideIcon]="activeConfig()?.button.icon" class="h-4 w-4"></svg>
-    </ng-template>
-  </p-button>
+    </p-menu>
+
+    <button
+      type="button"
+      class="inline-flex h-9 w-9 items-center justify-center rounded-md text-content-secondary hover:bg-surface-subtle"
+      aria-label="Abrir ações do funcionário"
+      (click)="menu.toggle($event)"
+    >
+      <svg lucideEllipsisVertical class="h-5 w-5"></svg>
+    </button>
+  </div>
 </div>

@@ -1,52 +1,43 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
-import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
 import {
-  LucideCake,
   LucideDynamicIcon,
+  LucideEllipsisVertical,
   LucideEye,
-  LucideMail,
   LucidePencil,
-  LucidePhone,
   LucidePower,
   LucidePowerOff,
 } from '@lucide/angular';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
-import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
-import { FuncionariosService } from '../../services/funcionarios-service';
-import { TooltipModule } from 'primeng/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { MenuModule } from 'primeng/menu';
+import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
+import { localDateToDate } from '../../../../shared/utils/local-date';
 
 @Component({
   selector: 'funcionario-card',
   host: {
     class:
-      'group flex flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 transition-colors sm:flex-row sm:items-center relative',
+      'group relative grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-border-default bg-surface-card p-3 transition-colors sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:p-4',
     '[class]':
-      "!funcionario().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
+      "!funcionario().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
-    ButtonModule,
     TagModule,
-    TooltipModule,
     CommonModule,
     LucideDynamicIcon,
-    LucideMail,
-    LucidePhone,
-    LucideCake,
-    LucidePencil,
-    LucideEye,
     ProfileColor,
     SiglaNomePipe,
-    RouterLink,
     CpfPipe,
     TelefonePipe,
+    MenuModule,
+    LucideEllipsisVertical,
   ],
   templateUrl: './funcionario-card.html',
   styleUrl: './funcionario-card.css',
@@ -55,16 +46,42 @@ export class FuncionarioCard {
   private readonly router = inject(Router);
   readonly funcionario = input.required<FuncionarioCardContent>();
   readonly statusFuncionarioChange = output<ToggleFuncionarioDto>();
-  protected activeConfig = computed<FuncionarioActiveConfig>(() => {
-    return {
-      button: {
-        severity: this.funcionario()!.ativo ? 'warn' : 'success',
-        icon: this.funcionario()!.ativo ? LucidePowerOff : LucidePower,
+  protected readonly idade = computed(() => {
+    const hoje = new Date();
+    const nascimento = localDateToDate(this.funcionario().dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+    const aniversarioAindaNaoOcorreu =
+      hoje.getMonth() < nascimento.getMonth() ||
+      (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate());
+
+    if (aniversarioAindaNaoOcorreu) idade--;
+    return idade;
+  });
+  protected readonly acoes = computed<AcaoMenu[]>(() => {
+    const estaAtivo = this.funcionario().ativo;
+
+    return [
+      {
+        label: 'Ver detalhes',
+        lucideIcon: LucideEye,
+        iconClass: 'h-4.5 w-4.5 text-action-info',
+        command: () => this.router.navigate(['/funcionarios', this.funcionario().id]),
       },
-      severity: this.funcionario()!.ativo ? 'success' : 'secondary',
-      label: this.funcionario()!.ativo ? 'Ativo' : 'Inativo',
-      tooltipValue: this.funcionario()!.ativo ? 'Inativar funcionário' : 'Ativar funcionário',
-    };
+      {
+        label: 'Editar dados',
+        visible: estaAtivo,
+        lucideIcon: LucidePencil,
+        iconClass: 'h-4 w-4 text-action-secondary-text',
+        command: () => this.router.navigate(['/funcionarios', this.funcionario().id, 'editar']),
+      },
+      {
+        label: estaAtivo ? 'Inativar' : 'Ativar',
+        lucideIcon: estaAtivo ? LucidePowerOff : LucidePower,
+        iconClass: estaAtivo ? 'h-4 w-4 text-action-warning' : 'h-4 w-4 text-action-success',
+        command: () => this.toggleFuncionario(),
+      },
+    ];
   });
 
   toggleFuncionario(): void {
@@ -74,9 +91,5 @@ export class FuncionarioCard {
     };
 
     this.statusFuncionarioChange.emit(dto);
-  }
-
-  seeDetails(): void {
-    this.router.navigate(['/funcionarios', this.funcionario().id]);
   }
 }
