@@ -30,15 +30,25 @@
       [(mesSelecionado)]="mesSelecionado"
     />
 
+    <div
+      class="hidden min-w-0 grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] items-center mt-4 gap-2 px-3 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:px-4"
+    >
+      <span>Nome</span>
+      <span class="hidden text-center md:block">Contato</span>
+      <span class="hidden text-center xl:block">Nascimento</span>
+      <span class="text-center">Cargo</span>
+      <span class="justify-self-end text-center">Ações</span>
+    </div>
+
     @if (loading().list) {
       <div class="flex min-w-0 flex-col gap-2" aria-busy="true">
         <span class="sr-only" role="status">Carregando funcionários...</span>
         @for (_ of skeletonCards; track $index) {
           <div
             aria-hidden="true"
-            class="flex min-w-0 flex-col gap-3 rounded-xl border border-border-default bg-surface-card p-4 sm:flex-row sm:items-center"
+            class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:p-4"
           >
-            <div class="flex min-w-0 flex-1 items-center gap-3">
+            <div class="flex min-w-0 items-center gap-3">
               <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
               <div class="flex min-w-0 flex-1 flex-col gap-2">
                 <div class="flex flex-wrap items-center gap-2">
@@ -48,25 +58,31 @@
                 <p-skeleton width="7rem" height="0.75rem" />
               </div>
             </div>
-            <div class="hidden min-w-0 flex-col gap-2 xl:flex xl:w-56">
-              <p-skeleton width="90%" height="1rem" />
-              <p-skeleton width="70%" height="1rem" />
+            <div class="hidden min-w-0 flex-col items-center gap-2 md:flex">
+              <p-skeleton width="7rem" height="1rem" />
+              <p-skeleton width="9rem" height="0.75rem" />
             </div>
-            <div class="hidden min-w-0 flex-col gap-2 md:flex md:w-32">
+            <div class="hidden min-w-0 flex-col items-center gap-2 xl:flex">
               <p-skeleton width="7rem" height="1rem" />
               <p-skeleton width="4rem" height="0.75rem" />
             </div>
-            <p-skeleton width="4rem" height="1.5rem" borderRadius="0.375rem" />
-            <div class="flex shrink-0 items-center gap-1">
-              @for (_ of [1, 2, 3]; track $index) {
-                <p-skeleton size="2.5rem" borderRadius="0.375rem" />
-              }
-            </div>
+            <p-skeleton
+              width="4rem"
+              height="1.5rem"
+              borderRadius="0.375rem"
+              class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
+            />
+            <p-skeleton
+              size="2.25rem"
+              borderRadius="0.375rem"
+              class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-span-1 sm:justify-self-end"
+            />
           </div>
         }
       </div>
     } @else {
       <p-dataview
+        class="block w-full min-w-0 max-w-full"
         [value]="funcionariosCardsFiltrados()"
         [paginator]="true"
         [rows]="10"
@@ -74,8 +90,8 @@
         [pt]="dataviewPt"
       >
         <ng-template #list let-items>
-          <div class="flex flex-col gap-2">
-            @for (funcionario of items; track $index; let first = $first) {
+          <div class="flex min-w-0 flex-col gap-2 pb-2">
+            @for (funcionario of items; track funcionario.id) {
               <funcionario-card
                 [funcionario]="funcionario"
                 (statusFuncionarioChange)="toggleFuncionario($event)"

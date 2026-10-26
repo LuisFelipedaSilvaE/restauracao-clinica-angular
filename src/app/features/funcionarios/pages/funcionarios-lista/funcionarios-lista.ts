@@ -115,10 +115,10 @@ export class FuncionariosLista implements OnInit {
   });
   protected readonly dataviewPt = {
     root: {
-      class: 'flex! flex-col gap-2',
+      class: 'flex! min-w-0 flex-col gap-2',
     },
     content: {
-      class: 'bg-transparent!',
+      class: 'min-w-0 overflow-hidden bg-transparent!',
     },
     pcPaginator: {
       root: {
