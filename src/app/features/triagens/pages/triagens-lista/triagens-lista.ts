@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
   LucideCalendarPlus,
@@ -12,7 +12,7 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { TabsModule } from 'primeng/tabs';
-import { interval, map } from 'rxjs';
+import { interval, map, switchMap, timer } from 'rxjs';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { isSameLocalDate } from '../../../../shared/utils/local-date-time';
@@ -48,11 +48,13 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
 export class TriagensLista implements OnInit {
   protected readonly triagensService = inject(TriagensService);
   private readonly messageService = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
   protected readonly agora = toSignal(interval(60_000).pipe(map(() => new Date())), {
     initialValue: new Date(),
   });
+  private dataReferenciaAtual = this.agora();
   protected readonly statusSelecionado = signal('AGENDADA');
   protected readonly tabs = computed(() => {
     const triagens = this.triagens();
@@ -185,6 +187,24 @@ export class TriagensLista implements OnInit {
       return 0;
     });
   });
+
+  constructor() {
+    effect(() => {
+      const novaDataReferencia = this.agora();
+
+      if (isSameLocalDate(novaDataReferencia, this.dataReferenciaAtual)) return;
+
+      this.dataReferenciaAtual = novaDataReferencia;
+
+      timer(5_000)
+        .pipe(
+          switchMap(() => this.triagensService.getAllTriagens(true)),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe();
+    });
+  }
+
   ngOnInit(): void {
     this.triagensService.getAllTriagens().subscribe();
   }
