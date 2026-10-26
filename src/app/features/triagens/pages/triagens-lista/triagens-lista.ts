@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
   LucideCalendarPlus,
@@ -11,8 +12,10 @@ import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { TabsModule } from 'primeng/tabs';
+import { interval, map } from 'rxjs';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { isSameLocalDate } from '../../../../shared/utils/local-date-time';
 import { FilterTriagensCard } from '../../components/filter-triagens-card/filter-triagens-card';
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
 import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
@@ -47,6 +50,9 @@ export class TriagensLista implements OnInit {
   private readonly messageService = inject(MessageService);
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
+  protected readonly agora = toSignal(interval(60_000).pipe(map(() => new Date())), {
+    initialValue: new Date(),
+  });
   protected readonly statusSelecionado = signal('AGENDADA');
   protected readonly tabs = computed(() => {
     const triagens = this.triagens();
@@ -140,7 +146,19 @@ export class TriagensLista implements OnInit {
       return validBusca && validStatus && convenioValido && validRangeData;
     });
 
-    return triagensFiltradas;
+    const agora = this.agora();
+
+    return triagensFiltradas.sort((a, b) => {
+      const aEhHoje = a.status !== 'CONCLUIDA' && isSameLocalDate(a.dataAgendada, agora);
+      const bEhHoje = b.status !== 'CONCLUIDA' && isSameLocalDate(b.dataAgendada, agora);
+
+      if (aEhHoje !== bEhHoje) return aEhHoje ? -1 : 1;
+      if (aEhHoje && bEhHoje) {
+        return new Date(a.dataAgendada).getTime() - new Date(b.dataAgendada).getTime();
+      }
+
+      return 0;
+    });
   });
   ngOnInit(): void {
     this.triagensService.getAllTriagens().subscribe();

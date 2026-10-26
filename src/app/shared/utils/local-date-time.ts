@@ -6,3 +6,15 @@ export function dateAndTimeToLocalDateTime(data: Date, hora: Date): string {
 
   return `${dateToLocalDate(data)}T${horas}:${minutos}:00.000`;
 }
+
+export function isSameLocalDate(value: Date | string, reference: Date): boolean {
+  const data = value instanceof Date ? value : new Date(value);
+
+  if (!Number.isFinite(data.getTime())) return false;
+
+  return (
+    data.getFullYear() === reference.getFullYear() &&
+    data.getMonth() === reference.getMonth() &&
+    data.getDate() === reference.getDate()
+  );
+}

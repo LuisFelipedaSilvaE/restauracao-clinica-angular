@@ -1,5 +1,6 @@
 <card
   class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-4 xl:grid-cols-5 items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5 transition-colors"
+  [ngClass]="agendadaHoje() ? 'border-status-warning-border-strong!' : ''"
 >
   <div
     class="col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2 flex min-w-0 items-center gap-2.5"
@@ -19,7 +20,13 @@
   <div
     class="col-start-1 row-start-2 sm:col-start-1 sm:row-start-1 flex items-center gap-1 text-lg font-medium sm:font-semibold sm:text-foreground"
   >
-    @if (triagem().dataAgendada) {
+    @if (triagem().dataAgendada && agendadaHoje()) {
+      <p-tag
+        [value]="(triagem().dataAgendada | date: 'HH:mm') + ' - Hoje'"
+        severity="warn"
+        class="text-[17px]!"
+      />
+    } @else if (triagem().dataAgendada) {
       {{ triagem().dataAgendada | date: 'HH:mm' }}
     } @else {
       --:--

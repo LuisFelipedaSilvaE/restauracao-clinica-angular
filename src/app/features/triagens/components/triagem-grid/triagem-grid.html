@@ -61,6 +61,7 @@
           @for (triagem of items; track $index) {
             <triagem-card
               [triagem]="triagem"
+              [dataReferencia]="dataReferencia()"
               (concluirTriagem)="concluirTriagem.emit($event)"
               (reabrirTriagem)="reabrirTriagem.emit($event)"
               (reagendarTriagem)="reagendarTriagem.emit($event)"

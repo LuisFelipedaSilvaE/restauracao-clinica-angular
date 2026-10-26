@@ -35,6 +35,7 @@
 
   <triagem-grid
     [triagens]="triagensFiltradas()"
+    [dataReferencia]="agora()"
     [loading]="loading().list"
     (limparFiltros)="clearFilters()"
     (concluirTriagem)="solicitarConclusao($event)"

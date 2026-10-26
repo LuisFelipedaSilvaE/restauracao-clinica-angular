@@ -17,6 +17,7 @@ import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { isSameLocalDate } from '../../../../shared/utils/local-date-time';
 import { Triagem } from '../../interfaces/triagem';
 import { StatusTriagem } from '../../enums/status-triagem';
 
@@ -38,10 +39,16 @@ import { StatusTriagem } from '../../enums/status-triagem';
 })
 export class TriagemCard {
   readonly triagem = input.required<Triagem>();
+  readonly dataReferencia = input.required<Date>();
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
   private readonly router = inject(Router);
+  protected readonly agendadaHoje = computed(
+    () =>
+      this.triagem().status !== StatusTriagem.CONCLUIDA &&
+      isSameLocalDate(this.triagem().dataAgendada, this.dataReferencia()),
+  );
   protected readonly acoes = computed<AcaoMenu[]>(() => {
     return [
       {

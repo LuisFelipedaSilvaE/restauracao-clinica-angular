@@ -15,6 +15,7 @@ import { TriagemCard } from '../triagem-card/triagem-card';
 })
 export class TriagemGrid {
   readonly triagens = input.required<Triagem[]>();
+  readonly dataReferencia = input.required<Date>();
   readonly loading = input(false);
   readonly limparFiltros = output<void>();
   readonly concluirTriagem = output<{ id: number; nome: string }>();
