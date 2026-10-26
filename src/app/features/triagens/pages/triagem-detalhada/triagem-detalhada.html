@@ -21,7 +21,7 @@
   <card class="flex flex-col gap-5 p-6!">
     <p-skeleton class="h-5! w-48! rounded-md!" />
     <div class="grid gap-4 sm:grid-cols-2 mt-4">
-      @for (_ of [1, 2, 3]; track $index) {
+      @for (_ of [1, 2, 3, 4]; track $index) {
         <div class="flex items-center gap-2">
           <p-skeleton class="h-8! w-8! shrink-0! rounded-md!" />
           <div class="flex flex-1 flex-col gap-2">
@@ -118,7 +118,7 @@
           <p class="font-heading text-md font-medium">
             {{
               triagem.dataAgendada
-                ? (triagem.dataAgendada | date: 'dd/MM/yyyy - Hh:mm')
+                ? (triagem.dataAgendada | date: 'dd/MM/yyyy - HH:mm')
                 : 'Sem data definida'
             }}
           </p>
@@ -134,7 +134,7 @@
         <div>
           <p class="uppercase text-content-secondary text-sm">Telefone</p>
           <p class="font-heading text-md font-medium">
-            {{ triagem.telefone }}
+            {{ triagem.telefone | telefone }}
           </p>
         </div>
       </div>
@@ -152,6 +152,22 @@
           </p>
         </div>
       </div>
+      @if (triagem.dataConclusao) {
+        <div class="flex gap-2 items-center">
+          <div
+            class="flex justify-center items-center shrink-0 h-8 w-8 rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideCalendarCheck class="h-4 w-4"></svg>
+          </div>
+          <div>
+            <p class="uppercase text-content-secondary text-sm">Data de conclusão</p>
+            <p class="font-heading text-md font-medium">
+              {{ triagem.dataConclusao | date: 'dd/MM/yyyy - HH:mm' }}
+            </p>
+          </div>
+        </div>
+      }
     </div>
     <p-divider />
     <div>

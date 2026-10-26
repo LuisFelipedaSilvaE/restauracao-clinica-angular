@@ -3,6 +3,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideCalendar,
+  LucideCalendarCheck,
   LucideCalendarClock,
   LucideCircleCheckBig,
   LucideHandshake,
@@ -23,9 +24,10 @@ import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
-import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 
 type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
 
@@ -42,6 +44,7 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
     TagModule,
     RouterLink,
     SiglaNomePipe,
+    TelefonePipe,
     ProfileColor,
     CustomTag,
     IconColor,
@@ -51,6 +54,7 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
     LucideHandshake,
     LucidePhone,
     LucideCalendar,
+    LucideCalendarCheck,
     LucideCalendarClock,
     LucideCircleCheckBig,
     LucideRotateCcwClock,
@@ -130,22 +134,6 @@ export class TriagemDetalhada {
   ngOnInit(): void {
     this.getTriagem();
   }
-  // protected alterarStatus(): void {
-  //   const triagem = this.triagem();
-  //   if (!triagem) return;
-
-  //   const proximoStatus = !triagem.ativo;
-  //   const acao$ = proximoStatus
-  //     ? this.triagensService.activatetriagem(triagem.id)
-  //     : this.triagensService.deactivatetriagem(triagem.id);
-
-  //   acao$.subscribe({
-  //     next: () => {
-  //       this.triagem.update((atual) => (atual ? { ...atual, ativo: proximoStatus } : undefined));
-  //       this.confirmarAlteracao.set(false);
-  //     },
-  //   });
-  // }
 
   getTriagem(): void {
     const id = Number(this.id());
