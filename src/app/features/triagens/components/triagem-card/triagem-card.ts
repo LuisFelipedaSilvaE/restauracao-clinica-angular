@@ -9,6 +9,7 @@ import {
   LucideEye,
   LucidePencil,
   LucideRotateCcwClock,
+  LucideTrash2,
 } from '@lucide/angular';
 import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
@@ -43,6 +44,7 @@ export class TriagemCard {
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
+  readonly excluirTriagem = output<{ id: number; nome: string }>();
   private readonly router = inject(Router);
   protected readonly agendadaHoje = computed(
     () =>
@@ -92,6 +94,16 @@ export class TriagemCard {
         iconClass: 'h-4 w-4 text-action-warning',
         command: () =>
           this.reabrirTriagem.emit({
+            id: this.triagem().id,
+            nome: this.triagem().nomePossivelAcolhido,
+          }),
+      },
+      {
+        label: 'Excluir',
+        lucideIcon: LucideTrash2,
+        iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
+        command: () =>
+          this.excluirTriagem.emit({
             id: this.triagem().id,
             nome: this.triagem().nomePossivelAcolhido,
           }),

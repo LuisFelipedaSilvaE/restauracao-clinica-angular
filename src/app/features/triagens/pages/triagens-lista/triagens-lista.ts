@@ -22,7 +22,7 @@ import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 
-type AcaoConclusao = 'concluir' | 'reabrir';
+type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
 
 @Component({
   selector: 'app-triagens-lista',
@@ -83,18 +83,43 @@ export class TriagensLista implements OnInit {
   protected readonly rangeDataSelecionado = signal('todos');
   protected readonly dialogConfirmVisible = signal(false);
   protected readonly triagemPendente = signal<{ id: number; nome: string } | null>(null);
-  protected readonly acaoConclusaoPendente = signal<AcaoConclusao | null>(null);
+  protected readonly acaoPendente = signal<AcaoTriagem | null>(null);
   protected readonly reagendamentoDialogVisible = signal(false);
   protected readonly triagemParaReagendar = signal<Triagem | null>(null);
   protected readonly mutationLoading = computed(() => this.loading().mutation);
+  protected readonly confirmTitle = computed(() => {
+    const acao = this.acaoPendente();
+
+    if (acao === 'reabrir') return 'Reabrir triagem';
+    if (acao === 'excluir') return 'Excluir triagem';
+    return 'Concluir triagem';
+  });
   protected readonly confirmMessage = computed(() => {
     const triagem = this.triagemPendente();
-    const acao = this.acaoConclusaoPendente();
+    const acao = this.acaoPendente();
     if (!triagem || !acao) return '';
 
-    return acao === 'concluir'
-      ? `Deseja concluir a triagem de ${triagem.nome}? A data de conclusão será registrada automaticamente.`
-      : `Deseja reabrir a triagem de ${triagem.nome}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
+    if (acao === 'concluir') {
+      return `Deseja concluir a triagem de ${triagem.nome}? A data de conclusão será registrada automaticamente.`;
+    }
+
+    if (acao === 'reabrir') {
+      return `Deseja reabrir a triagem de ${triagem.nome}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
+    }
+
+    return `Deseja excluir a triagem de ${triagem.nome}? Esta ação não poderá ser desfeita.`;
+  });
+  protected readonly confirmLabel = computed(() => {
+    const acao = this.acaoPendente();
+    if (acao === 'reabrir') return 'Reabrir';
+    if (acao === 'excluir') return 'Excluir';
+    return 'Concluir';
+  });
+  protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
+    const acao = this.acaoPendente();
+    if (acao === 'reabrir') return 'primary';
+    if (acao === 'excluir') return 'danger';
+    return 'success';
   });
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
     const busca = (this.busca() || '')
@@ -172,13 +197,13 @@ export class TriagensLista implements OnInit {
 
   protected solicitarConclusao(triagem: { id: number; nome: string }): void {
     this.triagemPendente.set(triagem);
-    this.acaoConclusaoPendente.set('concluir');
+    this.acaoPendente.set('concluir');
     this.dialogConfirmVisible.set(true);
   }
 
   protected solicitarReabertura(triagem: { id: number; nome: string }): void {
     this.triagemPendente.set(triagem);
-    this.acaoConclusaoPendente.set('reabrir');
+    this.acaoPendente.set('reabrir');
     this.dialogConfirmVisible.set(true);
   }
 
@@ -187,10 +212,31 @@ export class TriagensLista implements OnInit {
     this.reagendamentoDialogVisible.set(true);
   }
 
-  protected confirmarAlteracaoConclusao(): void {
+  protected solicitarExclusao(triagem: { id: number; nome: string }): void {
+    this.triagemPendente.set(triagem);
+    this.acaoPendente.set('excluir');
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected confirmarAcao(): void {
     const triagem = this.triagemPendente();
-    const acao = this.acaoConclusaoPendente();
+    const acao = this.acaoPendente();
     if (!triagem || !acao) return;
+
+    if (acao === 'excluir') {
+      this.triagensService.deleteTriagem(triagem.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Triagem excluída!',
+            detail: 'A triagem foi excluída com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
 
     const acao$ =
       acao === 'concluir'

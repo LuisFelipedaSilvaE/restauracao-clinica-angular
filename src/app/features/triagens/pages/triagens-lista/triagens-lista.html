@@ -41,18 +41,19 @@
     (concluirTriagem)="solicitarConclusao($event)"
     (reabrirTriagem)="solicitarReabertura($event)"
     (reagendarTriagem)="solicitarReagendamento($event)"
+    (excluirTriagem)="solicitarExclusao($event)"
   />
 </div>
 
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"
-  [title]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir triagem' : 'Concluir triagem'"
+  [title]="confirmTitle()"
   [message]="confirmMessage()"
-  [confirmLabel]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir' : 'Concluir'"
-  [severity]="acaoConclusaoPendente() === 'reabrir' ? 'primary' : 'success'"
+  [confirmLabel]="confirmLabel()"
+  [severity]="confirmSeverity()"
   [loading]="mutationLoading()"
-  (hidden)="triagemPendente.set(null); acaoConclusaoPendente.set(null)"
-  (onConfirm)="confirmarAlteracaoConclusao()"
+  (hidden)="triagemPendente.set(null); acaoPendente.set(null)"
+  (onConfirm)="confirmarAcao()"
 />
 
 <triagem-reagendamento-form

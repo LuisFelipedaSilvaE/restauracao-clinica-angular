@@ -21,6 +21,7 @@ export class TriagemGrid {
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
+  readonly excluirTriagem = output<{ id: number; nome: string }>();
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly dataviewPt = {
