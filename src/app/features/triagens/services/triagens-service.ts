@@ -184,6 +184,15 @@ export class TriagensService {
     );
   }
 
+  reabrirTriagem(id: number): Observable<Triagem> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/desconcluir`, null).pipe(
+      tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
   private setLoading(type: LoadingType, value: boolean): void {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
   }
