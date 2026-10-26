@@ -27,6 +27,8 @@ import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 
+type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
+
 @Component({
   selector: 'app-triagem-detalhada',
   host: {
@@ -66,7 +68,7 @@ export class TriagemDetalhada {
   protected readonly triagem = signal<Triagem | undefined>(undefined);
   protected readonly carregando = signal(false);
   protected readonly dialogConfirmVisible = signal(false);
-  protected readonly acaoConclusaoPendente = signal<'concluir' | 'reabrir' | null>(null);
+  protected readonly acaoPendente = signal<AcaoTriagem | null>(null);
   protected readonly reagendamentoDialogVisible = signal(false);
   private readonly triagensService = inject(TriagensService);
   protected readonly loading = this.triagensService.loading;
@@ -76,14 +78,39 @@ export class TriagemDetalhada {
     return status === 'AGENDADA' || status === 'ATRASADA';
   });
   protected readonly podeReabrir = computed(() => this.triagem()?.status === 'CONCLUIDA');
+  protected readonly confirmTitle = computed(() => {
+    const acao = this.acaoPendente();
+
+    if (acao === 'reabrir') return 'Reabrir triagem';
+    if (acao === 'excluir') return 'Excluir triagem';
+    return 'Concluir triagem';
+  });
   protected readonly confirmMessage = computed(() => {
     const triagem = this.triagem();
-    const acao = this.acaoConclusaoPendente();
+    const acao = this.acaoPendente();
     if (!triagem || !acao) return '';
 
-    return acao === 'concluir'
-      ? `Deseja concluir a triagem de ${triagem.nomePossivelAcolhido}? A data de conclusão será registrada automaticamente.`
-      : `Deseja reabrir a triagem de ${triagem.nomePossivelAcolhido}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
+    if (acao === 'concluir') {
+      return `Deseja concluir a triagem de ${triagem.nomePossivelAcolhido}? A data de conclusão será registrada automaticamente.`;
+    }
+
+    if (acao === 'reabrir') {
+      return `Deseja reabrir a triagem de ${triagem.nomePossivelAcolhido}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
+    }
+
+    return `Deseja excluir a triagem de ${triagem.nomePossivelAcolhido}? Esta ação não poderá ser desfeita.`;
+  });
+  protected readonly confirmLabel = computed(() => {
+    const acao = this.acaoPendente();
+    if (acao === 'reabrir') return 'Reabrir';
+    if (acao === 'excluir') return 'Excluir';
+    return 'Concluir';
+  });
+  protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
+    const acao = this.acaoPendente();
+    if (acao === 'reabrir') return 'primary';
+    if (acao === 'excluir') return 'danger';
+    return 'success';
   });
   protected readonly statusTagSeverity = computed(() => {
     const triagem = this.triagem();
@@ -145,14 +172,14 @@ export class TriagemDetalhada {
   protected solicitarConclusao(): void {
     if (!this.podeConcluir()) return;
 
-    this.acaoConclusaoPendente.set('concluir');
+    this.acaoPendente.set('concluir');
     this.dialogConfirmVisible.set(true);
   }
 
   protected solicitarReabertura(): void {
     if (!this.podeReabrir()) return;
 
-    this.acaoConclusaoPendente.set('reabrir');
+    this.acaoPendente.set('reabrir');
     this.dialogConfirmVisible.set(true);
   }
 
@@ -162,10 +189,33 @@ export class TriagemDetalhada {
     this.reagendamentoDialogVisible.set(true);
   }
 
-  protected confirmarAlteracaoConclusao(): void {
+  protected solicitarExclusao(): void {
+    if (!this.triagem()) return;
+
+    this.acaoPendente.set('excluir');
+    this.dialogConfirmVisible.set(true);
+  }
+
+  protected confirmarAcao(): void {
     const triagem = this.triagem();
-    const acao = this.acaoConclusaoPendente();
+    const acao = this.acaoPendente();
     if (!triagem || !acao) return;
+
+    if (acao === 'excluir') {
+      this.triagensService.deleteTriagem(triagem.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Triagem excluída!',
+            detail: 'A triagem foi excluída com sucesso.',
+            life: 3000,
+          });
+          this.router.navigate(['/triagens']);
+        },
+      });
+      return;
+    }
 
     if (acao === 'concluir' && !this.podeConcluir()) return;
     if (acao === 'reabrir' && !this.podeReabrir()) return;

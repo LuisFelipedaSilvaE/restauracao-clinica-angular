@@ -91,7 +91,12 @@
       <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['']">
         <svg lucidePencil class="h-4 w-4"></svg>
       </p-button>
-      <p-button label="Remover" severity="danger" variant="outlined">
+      <p-button
+        label="Remover"
+        severity="danger"
+        variant="outlined"
+        (onClick)="solicitarExclusao()"
+      >
         <ng-template #icon>
           <svg lucideTrash2 class="h-5 w-5"></svg>
         </ng-template>
@@ -160,13 +165,13 @@
 
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"
-  [title]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir triagem' : 'Concluir triagem'"
+  [title]="confirmTitle()"
   [message]="confirmMessage()"
-  [confirmLabel]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir' : 'Concluir'"
-  [severity]="acaoConclusaoPendente() === 'reabrir' ? 'primary' : 'success'"
+  [confirmLabel]="confirmLabel()"
+  [severity]="confirmSeverity()"
   [loading]="mutationLoading()"
-  (hidden)="acaoConclusaoPendente.set(null)"
-  (onConfirm)="confirmarAlteracaoConclusao()"
+  (hidden)="acaoPendente.set(null)"
+  (onConfirm)="confirmarAcao()"
 />
 
 <triagem-reagendamento-form
