@@ -1,31 +1,39 @@
 <card class="flex flex-col gap-4">
-  <div class="flex gap-2 justify-between">
-    <div class="flex items-center gap-2">
-      <div class="w-fit p-2.5 rounded-md flex justify-center items-center" [iconColor]="'#be222d'">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex min-w-0 items-center gap-2">
+      <div
+        class="flex w-fit shrink-0 items-center justify-center rounded-md p-2.5"
+        [iconColor]="'#be222d'"
+      >
         <svg lucideBriefcase class="h-5 w-5"></svg>
       </div>
-      <div>
+      <div class="min-w-0">
         <h6 class="text-lg font-semibold">Cargos</h6>
         <p class="text-content-secondary text-xs">
           Gerencie os cargos disponíveis para vincular aos colaboradores.
         </p>
       </div>
     </div>
-    <p-button
-      label="Novo cargo"
-      severity="secondary"
-      variant="outlined"
-      (onClick)="registerCargo()"
-    >
-      <ng-template #icon>
-        <svg lucidePlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <div class="w-full shrink-0 sm:w-auto">
+      <p-button
+        label="Novo cargo"
+        severity="secondary"
+        variant="outlined"
+        styleClass="w-full whitespace-nowrap"
+        (onClick)="registerCargo()"
+      >
+        <ng-template #icon>
+          <svg lucidePlus class="h-5 w-5"></svg>
+        </ng-template>
+      </p-button>
+    </div>
   </div>
   @if (loading().list) {
     <div aria-busy="true">
       <span class="sr-only" role="status">Carregando cargos...</span>
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2 items-center">
+      <div
+        class="grid grid-cols-1 items-center gap-2 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"
+      >
         @for (_ of skeletonCards; track $index) {
           <div
             aria-hidden="true"
@@ -50,7 +58,9 @@
   } @else if (cargos().length > 0) {
     <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
       <ng-template #grid let-items>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2 items-center">
+        <div
+          class="grid grid-cols-1 items-center gap-2 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"
+        >
           @for (cargo of items; track cargo.id) {
             <cargo-card
               [cargo]="cargo"
