@@ -47,7 +47,7 @@
         }
       </div>
     </div>
-  } @else {
+  } @else if (cargos().length > 0) {
     <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
       <ng-template #grid let-items>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-2 items-center">
@@ -60,26 +60,24 @@
           }
         </div>
       </ng-template>
-      <ng-template #emptymessage>
-        <empty-list
-          [icon]="emptyCargosIcon"
-          title="Nenhum cargo encontrado"
-          description="Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo."
-        >
-          <p-button
-            label="Criar novo cargo"
-            severity="secondary"
-            variant="outlined"
-            [text]="true"
-            (onClick)="registerCargo()"
-          >
-            <ng-template #icon>
-              <svg lucidePlus class="h-5 w-5"></svg>
-            </ng-template>
-          </p-button>
-        </empty-list>
-      </ng-template>
     </p-dataview>
+  } @else {
+    <empty-list
+      [icon]="emptyCargosIcon"
+      title="Nenhum cargo cadastrado"
+      description="Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo."
+    >
+      <p-button
+        label="Criar primeiro cargo"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="registerCargo()"
+      >
+        <ng-template #icon>
+          <svg lucidePlus class="h-5 w-5"></svg>
+        </ng-template>
+      </p-button>
+    </empty-list>
   }
 </card>
 

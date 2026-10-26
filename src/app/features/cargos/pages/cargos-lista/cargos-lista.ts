@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Card } from '../../../../shared/components/card/card';
-import { LucideBriefcase, LucidePlus, LucideSearchX } from '@lucide/angular';
+import { LucideBriefcase, LucidePlus } from '@lucide/angular';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ButtonModule } from 'primeng/button';
@@ -32,7 +32,7 @@ import { SkeletonModule } from 'primeng/skeleton';
   styleUrl: './cargos-lista.css',
 })
 export class CargosLista implements OnInit {
-  protected readonly emptyCargosIcon = LucideSearchX;
+  protected readonly emptyCargosIcon = LucideBriefcase;
   private readonly cargosService = inject(CargosService);
   protected readonly cargos = this.cargosService.cargos;
   protected readonly loading = this.cargosService.loading;
