@@ -38,17 +38,17 @@
       <svg lucideCalendar class="h-5 w-5"></svg>
     </p-inputicon>
     <p-select
-      [options]="datas"
+      [options]="datas()"
       [ngModel]="rangeDataSelecionado()"
       (ngModelChange)="this.rangeDataSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
-      placeholder="Selecione o convênio"
+      placeholder="Selecione o período"
       class="w-full pl-7.5"
     >
       <ng-template #selectedItem let-selectedOption>
         <p class="text-content-primary text-sm truncate">
-          Data: <span>{{ selectedOption.name }}</span>
+          {{ dataLabel() }}: <span>{{ selectedOption.name }}</span>
         </p>
       </ng-template>
     </p-select>

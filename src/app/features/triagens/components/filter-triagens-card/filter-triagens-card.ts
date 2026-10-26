@@ -36,16 +36,26 @@ export class FilterTriagensCard implements OnInit {
     return [todos, ...convenios];
   });
 
-  protected readonly datas = [
-    { name: 'Todas as datas', code: 'todos' },
-    { name: 'Próximos 7 dias', code: '7' },
-    { name: 'Próximos 15 dias', code: '15' },
-    { name: 'Próximos 30 dias', code: '30' },
-  ];
+  protected readonly datas = computed(() => {
+    const status = this.statusSelecionado();
+    const prefixo = status === 'AGENDADA' ? 'Próximos' : 'Últimos';
+
+    return [
+      { name: 'Todas as datas', code: 'todos' },
+      ...(status !== 'ATRASADA' ? [{ name: 'Hoje', code: '0' }] : []),
+      { name: `${prefixo} 7 dias`, code: '7' },
+      { name: `${prefixo} 15 dias`, code: '15' },
+      { name: `${prefixo} 30 dias`, code: '30' },
+    ];
+  });
+  protected readonly dataLabel = computed(() =>
+    this.statusSelecionado() === 'CONCLUIDA' ? 'Conclusão' : 'Agendamento',
+  );
 
   readonly busca = input<string>();
   readonly convenioSelecionado = input<string>();
   readonly rangeDataSelecionado = input<string>();
+  readonly statusSelecionado = input.required<string>();
   protected readonly buscaChange = output<string>();
   protected readonly convenioSelecionadoChange = output<string>();
   protected readonly rangeDataSelecionadoChange = output<string>();

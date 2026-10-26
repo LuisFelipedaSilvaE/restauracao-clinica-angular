@@ -164,17 +164,29 @@ export class TriagensLista implements OnInit {
         convenioFiltro === 'todos' || triagem.convenio.id === Number(convenioFiltro);
 
       let validRangeData = true;
-      if (rangeDataFiltro !== 'todos' && triagem.dataAgendada) {
-        const hoje = new Date();
+      if (rangeDataFiltro !== 'todos') {
+        const dataReferencia =
+          statusFiltro === 'CONCLUIDA' ? triagem.dataConclusao : triagem.dataAgendada;
+
+        if (!dataReferencia) return false;
+
+        const hoje = new Date(this.agora());
         hoje.setHours(0, 0, 0, 0);
 
         const dias = Number(rangeDataFiltro);
-        const limite = new Date(hoje);
-        limite.setDate(limite.getDate() + dias);
-        limite.setHours(23, 59, 59, 999);
+        const inicio = new Date(hoje);
+        const fim = new Date(hoje);
 
-        const dataTriagem = new Date(triagem.dataAgendada);
-        validRangeData = dataTriagem >= hoje && dataTriagem <= limite;
+        if (statusFiltro === 'AGENDADA') {
+          fim.setDate(fim.getDate() + dias);
+        } else {
+          inicio.setDate(inicio.getDate() - dias);
+        }
+
+        fim.setHours(23, 59, 59, 999);
+
+        const dataTriagem = new Date(dataReferencia);
+        validRangeData = dataTriagem >= inicio && dataTriagem <= fim;
       }
 
       const validStatus = triagem.status === statusFiltro;
@@ -221,6 +233,13 @@ export class TriagensLista implements OnInit {
   clearFilters(): void {
     this.busca.set('');
     this.convenioSelecionado.set('todos');
+    this.rangeDataSelecionado.set('todos');
+  }
+
+  protected selecionarStatus(status: string | number | undefined): void {
+    if (typeof status !== 'string') return;
+
+    this.statusSelecionado.set(status);
     this.rangeDataSelecionado.set('todos');
   }
 

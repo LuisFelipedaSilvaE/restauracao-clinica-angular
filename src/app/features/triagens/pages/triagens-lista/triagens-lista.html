@@ -12,29 +12,30 @@
   </p-button>
 </div>
 
+<card class="border-0 p-0! overflow-hidden">
+  <p-tabs [value]="statusSelecionado()" (valueChange)="selecionarStatus($event)" scrollable>
+    <p-tablist>
+      @for (tab of tabs(); track $index) {
+        <p-tab [value]="tab.status" class="flex items-center gap-2! text-inherit">
+          <svg [lucideIcon]="tab.icon" class="h-5 w-5"></svg>
+          <span>{{ tab.label }}</span>
+          <p-badge severity="secondary" [value]="tab.total" />
+        </p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+</card>
+
 @if (loading().list || triagens().length > 0) {
   <filter-triagens-card
     [(busca)]="busca"
     [(convenioSelecionado)]="convenioSelecionado"
     [(rangeDataSelecionado)]="rangeDataSelecionado"
+    [statusSelecionado]="statusSelecionado()"
   />
 }
 
 <div class="flex flex-col gap-6">
-  <card class="border-0 p-0! overflow-hidden">
-    <p-tabs [value]="statusSelecionado()" (valueChange)="statusSelecionado.set($event)" scrollable>
-      <p-tablist>
-        @for (tab of tabs(); track $index) {
-          <p-tab [value]="tab.status" class="flex items-center gap-2! text-inherit">
-            <svg [lucideIcon]="tab.icon" class="h-5 w-5"></svg>
-            <span>{{ tab.label }}</span>
-            <p-badge severity="secondary" [value]="tab.total" />
-          </p-tab>
-        }
-      </p-tablist>
-    </p-tabs>
-  </card>
-
   <triagem-grid
     [triagens]="triagensFiltradas()"
     [dataReferencia]="agora()"
