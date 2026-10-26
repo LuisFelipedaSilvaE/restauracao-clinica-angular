@@ -15,6 +15,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { dateAndTimeToLocalDateTime } from '../../../../shared/utils/local-date-time';
+import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import {
   dataHoraFuturaValidator,
   dataValidaValidator,
@@ -245,7 +246,7 @@ export class TriagemForm implements OnInit {
     this.triagemForm.patchValue({
       convenio: triagem.convenio.id,
       nomePossivelAcolhido: triagem.nomePossivelAcolhido,
-      telefone: triagem.telefone,
+      telefone: formatTelefone(triagem.telefone),
       dataAgendada: new Date(triagem.dataAgendada),
       horaAgendada: new Date(triagem.dataAgendada),
       observacaoEntrevista: triagem.observacaoEntrevista,
