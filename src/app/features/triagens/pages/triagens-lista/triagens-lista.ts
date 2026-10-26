@@ -1,4 +1,14 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
@@ -23,6 +33,10 @@ import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 
 type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
+type StatusTriagemLista = 'AGENDADA' | 'ATRASADA' | 'CONCLUIDA';
+
+const STATUS_TRIAGEM_STORAGE_KEY = 'triagens-status-selecionado';
+const STATUS_TRIAGEM_VALIDOS: StatusTriagemLista[] = ['AGENDADA', 'ATRASADA', 'CONCLUIDA'];
 
 @Component({
   selector: 'app-triagens-lista',
@@ -49,13 +63,14 @@ export class TriagensLista implements OnInit {
   protected readonly triagensService = inject(TriagensService);
   private readonly messageService = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
   protected readonly agora = toSignal(interval(60_000).pipe(map(() => new Date())), {
     initialValue: new Date(),
   });
   private dataReferenciaAtual = this.agora();
-  protected readonly statusSelecionado = signal('AGENDADA');
+  protected readonly statusSelecionado = signal<StatusTriagemLista>(this.carregarStatusSelecionado());
   protected readonly tabs = computed(() => {
     const triagens = this.triagens();
 
@@ -237,10 +252,28 @@ export class TriagensLista implements OnInit {
   }
 
   protected selecionarStatus(status: string | number | undefined): void {
-    if (typeof status !== 'string') return;
+    if (!this.statusTriagemValido(status)) return;
 
     this.statusSelecionado.set(status);
     this.rangeDataSelecionado.set('todos');
+    this.salvarStatusSelecionado(status);
+  }
+
+  private carregarStatusSelecionado(): StatusTriagemLista {
+    if (!isPlatformBrowser(this.platformId)) return 'AGENDADA';
+
+    const statusSalvo = sessionStorage.getItem(STATUS_TRIAGEM_STORAGE_KEY);
+    return this.statusTriagemValido(statusSalvo) ? statusSalvo : 'AGENDADA';
+  }
+
+  private salvarStatusSelecionado(status: StatusTriagemLista): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    sessionStorage.setItem(STATUS_TRIAGEM_STORAGE_KEY, status);
+  }
+
+  private statusTriagemValido(status: unknown): status is StatusTriagemLista {
+    return STATUS_TRIAGEM_VALIDOS.includes(status as StatusTriagemLista);
   }
 
   protected solicitarConclusao(triagem: { id: number; nome: string }): void {
