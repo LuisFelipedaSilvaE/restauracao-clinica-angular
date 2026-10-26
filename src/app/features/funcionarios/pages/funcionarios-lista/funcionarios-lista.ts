@@ -47,6 +47,7 @@ import { localDateToDate } from '../../../../shared/utils/local-date';
 })
 export class FuncionariosLista implements OnInit {
   protected readonly emptySearchIcon = LucideSearchX;
+  protected readonly emptyFuncionariosIcon = LucideUsersRound;
   protected readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
