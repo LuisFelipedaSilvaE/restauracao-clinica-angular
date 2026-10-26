@@ -61,6 +61,7 @@ export class TriagemCard {
       },
       {
         label: 'Editar dados',
+        visible: this.triagem().status !== StatusTriagem.CONCLUIDA,
         lucideIcon: LucidePencil,
         iconClass: 'h-4 w-4 text-action-secondary-text',
         command: () => this.router.navigate(['/triagens', this.triagem().id, 'editar']),

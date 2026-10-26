@@ -94,17 +94,19 @@
           </ng-template>
         </p-button>
       }
+      @if (triagem.status !== 'CONCLUIDA') {
+        <p-button
+          severity="secondary"
+          variant="outlined"
+          label="Editar"
+          [pt]="actionButtonPt"
+          [routerLink]="['/triagens', triagem.id, 'editar']"
+        >
+          <svg lucidePencil class="h-4 w-4"></svg>
+        </p-button>
+      }
       <p-button
-        severity="secondary"
-        variant="outlined"
-        label="Editar"
-        [pt]="actionButtonPt"
-        [routerLink]="['/triagens', triagem.id, 'editar']"
-      >
-        <svg lucidePencil class="h-4 w-4"></svg>
-      </p-button>
-      <p-button
-        label="Remover"
+        label="Excluir"
         severity="danger"
         variant="outlined"
         [pt]="actionButtonPt"
