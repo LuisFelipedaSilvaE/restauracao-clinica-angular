@@ -310,7 +310,7 @@ export class AcolhidoForm implements OnInit {
       if (!triagem) return;
       this.acolhidoForm.patchValue({
         nome: triagem.nomePossivelAcolhido,
-        telefone: triagem.telefone,
+        telefone: formatTelefone(triagem.telefone),
       });
     });
   }
