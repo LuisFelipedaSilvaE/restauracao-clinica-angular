@@ -59,6 +59,11 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
 })
 export class ConvenioDetalhado implements OnInit {
   readonly id = input<string>();
+  protected readonly actionButtonPt = {
+    root: {
+      class: 'w-full justify-center sm:w-auto',
+    },
+  };
 
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
@@ -73,9 +78,7 @@ export class ConvenioDetalhado implements OnInit {
   protected readonly pagamentoLabel = computed(() =>
     this.convenio()?.pagamento ? 'Obrigatório' : 'Não obrigatório',
   );
-  protected readonly toggleLabel = computed(() =>
-    this.convenio()?.ativo ? 'Inativar' : 'Ativar',
-  );
+  protected readonly toggleLabel = computed(() => (this.convenio()?.ativo ? 'Inativar' : 'Ativar'));
   protected readonly toggleSeverity = computed<'danger' | 'success'>(() =>
     this.convenio()?.ativo ? 'danger' : 'success',
   );

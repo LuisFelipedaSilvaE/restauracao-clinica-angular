@@ -2,18 +2,21 @@
 
 @if (carregando()) {
   <card class="flex flex-col gap-6 p-6!">
-    <div class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <p-skeleton class="h-15! w-15! rounded-xl!" />
-        <div class="flex flex-col gap-2">
+    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex min-w-0 items-center gap-3">
+        <p-skeleton class="h-14! w-14! shrink-0! rounded-xl! sm:h-15! sm:w-15!" />
+        <div class="flex min-w-0 flex-col gap-2">
+          <p-skeleton class="h-6! w-36! max-w-full! rounded-md!" />
           <div class="flex gap-2">
-            <p-skeleton class="h-6! w-36! rounded-md!" />
-            <p-skeleton class="h-4! w-12! rounded-full!" />
+            <p-skeleton class="h-5! w-16! rounded-full!" />
+            <p-skeleton class="h-5! w-14! rounded-full!" />
           </div>
-          <p-skeleton class="h-5! w-16! rounded-full!" />
         </div>
       </div>
-      <p-skeleton class="h-10! w-28! rounded-md!" />
+      <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
+        <p-skeleton class="h-10! w-full! rounded-md! sm:w-24!" />
+        <p-skeleton class="h-10! w-full! rounded-md! sm:w-28!" />
+      </div>
     </div>
   </card>
 
@@ -33,31 +36,34 @@
   </card>
 } @else if (convenio(); as convenio) {
   <card class="flex flex-col gap-5 p-5! md:p-6!">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex items-center justify-center gap-2">
+    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex min-w-0 items-center gap-3">
         <span
-          class="flex h-15 w-15 shrink-0 items-center justify-center rounded-xl"
+          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
           [iconColor]="convenio.cor"
         >
           <svg lucideLayers class="h-6 w-6"></svg>
         </span>
-        <div class="flex flex-col gap-1 min-w-0">
-          <div class="flex gap-2">
-            <h1 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h1>
-            <p-badge [value]="`${convenio.maxVagas} vagas`" [customBadge]="convenio.cor" />
-          </div>
-          <div class="flex flex-wrap items-end gap-2">
+        <div class="flex min-w-0 flex-col gap-1">
+          <h1 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h1>
+          <div class="flex flex-wrap items-center gap-2">
             <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
+            <p-badge
+              class="shrink-0"
+              [value]="`${convenio.maxVagas} vagas`"
+              [customBadge]="convenio.cor"
+            />
           </div>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
+      <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
         @if (convenio.ativo) {
           <p-button
             label="Editar"
             severity="secondary"
             variant="outlined"
+            [pt]="actionButtonPt"
             [routerLink]="['/convenios', convenio.id, 'editar']"
           >
             <ng-template #icon>
@@ -70,6 +76,7 @@
           [severity]="convenio.ativo ? 'warn' : 'success'"
           [outlined]="true"
           [disabled]="loading().mutation"
+          [pt]="actionButtonPt"
           (onClick)="this.confirmarAlteracao.set(true)"
         >
           <ng-template #icon>
