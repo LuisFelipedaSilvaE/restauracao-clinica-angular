@@ -14,6 +14,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import { dateAndTimeToLocalDateTime } from '../../../../shared/utils/local-date-time';
 import {
   dataHoraFuturaValidator,
   dataValidaValidator,
@@ -230,19 +231,13 @@ export class TriagemForm implements OnInit {
 
   fromFormToRequest(form: FormGroup): TriagemRequest {
     const { convenio, dataAgendada, horaAgendada, ...formData } = form.getRawValue();
-    const dataFinal = new Date(dataAgendada);
-    const horario = new Date(horaAgendada);
-    const normalizedHours = `${String(horario.getHours()).padStart(2, '0')}:${String(horario.getMinutes()).padStart(2, '0')}:00.000`;
-    dataFinal.setHours(horario.getHours(), horario.getMinutes(), 0, 0);
-    console.log(dataFinal.toISOString());
-    console.log(dataFinal.toISOString().split('T')[0].concat(`T${normalizedHours}`));
 
     return {
       ...formData,
       nomePossivelAcolhido: formData.nomePossivelAcolhido.trim(),
       observacaoEntrevista: formData.observacaoEntrevista.trim(),
       convenioId: convenio!,
-      dataAgendada: dataFinal.toISOString().split('T')[0].concat(`T${normalizedHours}`),
+      dataAgendada: dateAndTimeToLocalDateTime(dataAgendada, horaAgendada),
     };
   }
 
