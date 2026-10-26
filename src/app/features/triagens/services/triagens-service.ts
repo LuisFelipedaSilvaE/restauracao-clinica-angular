@@ -203,6 +203,17 @@ export class TriagensService {
     );
   }
 
+  deleteTriagem(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
+      tap(() =>
+        this.internalTriagens.update((triagens) => triagens.filter((triagem) => triagem.id !== id)),
+      ),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
   private setLoading(type: LoadingType, value: boolean): void {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
   }
