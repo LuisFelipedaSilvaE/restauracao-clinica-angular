@@ -66,6 +66,11 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
   styleUrl: './triagem-detalhada.css',
 })
 export class TriagemDetalhada {
+  protected readonly actionButtonPt = {
+    root: {
+      class: 'w-full justify-center sm:w-auto',
+    },
+  };
   protected readonly id = input<string>();
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
