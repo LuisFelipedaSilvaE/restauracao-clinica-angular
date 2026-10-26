@@ -38,16 +38,17 @@
     [loading]="loading().list"
     (limparFiltros)="clearFilters()"
     (concluirTriagem)="solicitarConclusao($event)"
+    (reabrirTriagem)="solicitarReabertura($event)"
   />
 </div>
 
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"
-  title="Concluir triagem"
+  [title]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir triagem' : 'Concluir triagem'"
   [message]="confirmMessage()"
-  confirmLabel="Concluir"
-  severity="success"
+  [confirmLabel]="acaoConclusaoPendente() === 'reabrir' ? 'Reabrir' : 'Concluir'"
+  [severity]="acaoConclusaoPendente() === 'reabrir' ? 'primary' : 'success'"
   [loading]="mutationLoading()"
-  (hidden)="triagemPendente.set(null)"
-  (onConfirm)="confirmarConclusao()"
+  (hidden)="triagemPendente.set(null); acaoConclusaoPendente.set(null)"
+  (onConfirm)="confirmarAlteracaoConclusao()"
 />

@@ -7,6 +7,7 @@ import {
   LucideEllipsisVertical,
   LucideEye,
   LucidePencil,
+  LucideRotateCcwClock,
 } from '@lucide/angular';
 import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
@@ -37,6 +38,7 @@ import { StatusTriagem } from '../../enums/status-triagem';
 export class TriagemCard {
   readonly triagem = input.required<Triagem>();
   readonly concluirTriagem = output<{ id: number; nome: string }>();
+  readonly reabrirTriagem = output<{ id: number; nome: string }>();
   private readonly router = inject(Router);
   protected readonly acoes = computed<AcaoMenu[]>(() => {
     return [
@@ -61,6 +63,17 @@ export class TriagemCard {
         iconClass: 'h-4 w-4 text-action-success',
         command: () =>
           this.concluirTriagem.emit({
+            id: this.triagem().id,
+            nome: this.triagem().nomePossivelAcolhido,
+          }),
+      },
+      {
+        label: 'Reabrir triagem',
+        visible: this.triagem().status === StatusTriagem.CONCLUIDA,
+        lucideIcon: LucideRotateCcwClock,
+        iconClass: 'h-4 w-4 text-action-warning',
+        command: () =>
+          this.reabrirTriagem.emit({
             id: this.triagem().id,
             nome: this.triagem().nomePossivelAcolhido,
           }),
