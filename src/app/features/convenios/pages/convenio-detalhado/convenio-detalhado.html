@@ -35,167 +35,161 @@
     </div>
   </card>
 } @else if (convenio(); as convenio) {
-  <card class="flex flex-col gap-5 p-5! md:p-6!">
-    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div class="flex min-w-0 items-center gap-3">
-        <span
-          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
-          [iconColor]="convenio.cor"
-        >
-          <svg lucideLayers class="h-6 w-6"></svg>
-        </span>
-        <div class="flex min-w-0 flex-col gap-1">
-          <h1 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h1>
-          <div class="flex flex-wrap items-center gap-2">
-            <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
-            <p-badge
-              class="shrink-0"
-              [value]="`${convenio.maxVagas} vagas`"
-              [customBadge]="convenio.cor"
-            />
-          </div>
+  <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex min-w-0 items-center gap-3">
+      <span
+        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
+        [iconColor]="convenio.cor"
+      >
+        <svg lucideLayers class="h-6 w-6"></svg>
+      </span>
+      <div class="flex min-w-0 flex-col gap-1">
+        <h3 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h3>
+        <div class="flex flex-wrap items-center gap-2">
+          <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
+          <p-badge
+            class="shrink-0"
+            [value]="`${convenio.maxVagas} vagas`"
+            [customBadge]="convenio.cor"
+          />
         </div>
       </div>
+    </div>
 
-      <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
-        @if (convenio.ativo) {
-          <p-button
-            label="Editar"
-            severity="secondary"
-            variant="outlined"
-            [pt]="actionButtonPt"
-            [routerLink]="['/convenios', convenio.id, 'editar']"
-          >
-            <ng-template #icon>
-              <svg lucidePencil class="h-4 w-4"></svg>
-            </ng-template>
-          </p-button>
-        }
+    <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
+      @if (convenio.ativo) {
         <p-button
-          [label]="toggleLabel()"
-          [severity]="convenio.ativo ? 'warn' : 'success'"
-          [outlined]="true"
-          [disabled]="loading().mutation"
+          label="Editar"
+          severity="secondary"
+          variant="outlined"
           [pt]="actionButtonPt"
-          (onClick)="this.confirmarAlteracao.set(true)"
+          [routerLink]="['/convenios', convenio.id, 'editar']"
         >
           <ng-template #icon>
-            @if (convenio.ativo) {
-              <svg lucidePowerOff class="h-4 w-4"></svg>
-            } @else {
-              <svg lucidePower class="h-4 w-4"></svg>
-            }
+            <svg lucidePencil class="h-4 w-4"></svg>
           </ng-template>
         </p-button>
-      </div>
+      }
+      <p-button
+        [label]="toggleLabel()"
+        [severity]="convenio.ativo ? 'warn' : 'success'"
+        [outlined]="true"
+        [disabled]="loading().mutation"
+        [pt]="actionButtonPt"
+        (onClick)="this.confirmarAlteracao.set(true)"
+      >
+        <ng-template #icon>
+          @if (convenio.ativo) {
+            <svg lucidePowerOff class="h-4 w-4"></svg>
+          } @else {
+            <svg lucidePower class="h-4 w-4"></svg>
+          }
+        </ng-template>
+      </p-button>
     </div>
   </card>
 
-  <card class="flex flex-col gap-5 p-5! md:p-6!">
-    <h2 class="text-sm font-semibold">Resumo do convênio</h2>
-    <dl class="grid gap-5 sm:grid-cols-2">
-      <div class="flex items-start gap-2.5">
+  <card>
+    <p class="font-semibold">Resumo do convênio</p>
+    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideSquareDashedText class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Descrição
-          </dt>
-          <dd class="text-sm font-medium">{{ convenio.descricao }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Descrição</dt>
+          <dd class="font-heading text-md font-medium">{{ convenio.descricao }}</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideLayers class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">CNPJ</dt>
-          <dd class="text-sm font-medium">{{ formatarCnpj(convenio.cnpj) }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">CNPJ</dt>
+          <dd class="font-heading text-md font-medium">{{ formatarCnpj(convenio.cnpj) }}</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Capacidade total
-          </dt>
-          <dd class="text-sm font-medium">{{ convenio.maxVagas }} vagas</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Capacidade total</dt>
+          <dd class="font-heading text-md font-medium">{{ convenio.maxVagas }} vagas</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideCheck class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Acolhidos ativos
-          </dt>
-          <dd class="text-sm font-medium">{{ acolhidosAtivos() }} acolhidos</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Acolhidos ativos</dt>
+          <dd class="font-heading text-md font-medium">{{ acolhidosAtivos() }} acolhidos</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Vagas disponíveis
-          </dt>
-          <dd class="text-sm font-medium">{{ vagasDisponiveis() }} vagas</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Vagas disponíveis</dt>
+          <dd class="font-heading text-md font-medium">{{ vagasDisponiveis() }} vagas</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucideHandCoins class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Pagamento
-          </dt>
-          <dd class="text-sm font-medium">{{ pagamentoLabel() }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Pagamento</dt>
+          <dd class="font-heading text-md font-medium">{{ pagamentoLabel() }}</dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           <svg lucidePaintBucket class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Cor de identificação
-          </dt>
-          <dd class="flex items-center gap-2 text-sm font-medium">
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Cor de identificação</dt>
+          <dd class="flex items-center gap-2 font-heading text-md font-medium">
             <span class="h-2.5 w-2.5 rounded-full" [style.backgroundColor]="convenio.cor"></span>
             {{ convenio.cor }}
           </dd>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-center gap-2">
         <span
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-subtle text-content-secondary"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
         >
           @if (convenio.ativo) {
             <svg lucidePower class="h-4 w-4"></svg>
@@ -203,9 +197,9 @@
             <svg lucidePowerOff class="h-4 w-4"></svg>
           }
         </span>
-        <div class="min-w-0 space-y-0.5">
-          <dt class="text-xs font-medium uppercase tracking-wide text-content-secondary">Status</dt>
-          <dd class="text-sm font-medium">{{ statusLabel() }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Status</dt>
+          <dd class="font-heading text-md font-medium">{{ statusLabel() }}</dd>
         </div>
       </div>
     </dl>
