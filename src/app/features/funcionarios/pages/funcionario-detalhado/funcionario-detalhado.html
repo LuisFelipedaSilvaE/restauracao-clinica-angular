@@ -1,31 +1,38 @@
 <back-button label="Voltar para funcionários" url="/funcionarios" />
 
 <div
-  class="flex gap-4 bg-surface-card border border-border-default rounded-xl p-4 items-center justify-between"
+  class="flex min-w-0 flex-col gap-4 rounded-xl border border-border-default bg-surface-card p-4 lg:flex-row lg:items-start lg:justify-between"
 >
-  <div class="flex gap-2">
+  <div class="flex min-w-0 items-center gap-3">
     <span
-      class="flex h-15 w-15 shrink-0 items-center justify-center rounded-full text-xl font-semibold"
+      class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold sm:h-15 sm:w-15 sm:text-xl"
       [profileColor]="'#be222d'"
       >{{ funcionario()?.nome | siglaNome }}
     </span>
-    <div class="flex flex-col gap-1">
-      <h3 class="font-semibold text-xl">{{ funcionario()?.nome }}</h3>
-      <div class="flex gap-2">
+    <div class="flex min-w-0 flex-col gap-1">
+      <h3 class="truncate text-xl font-semibold">{{ funcionario()?.nome }}</h3>
+      <div class="flex flex-wrap gap-2">
         <p-tag [value]="activeConfig()?.label" [severity]="activeConfig()?.severity" />
         <p-tag [value]="funcionario()?.cargo.nome" />
       </div>
     </div>
   </div>
-  <div class="flex gap-2">
+  <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
     @if (funcionario()?.ativo) {
-      <p-button severity="secondary" variant="outlined" label="Editar" [routerLink]="['editar']">
+      <p-button
+        severity="secondary"
+        variant="outlined"
+        label="Editar"
+        [pt]="actionButtonPt"
+        [routerLink]="['editar']"
+      >
         <svg lucidePencil class="h-5 w-5"></svg>
       </p-button>
       <p-button
         severity="danger"
         variant="outlined"
         label="Alterar senha"
+        [pt]="actionButtonPt"
         (onClick)="toggleEdicaoSenha()"
       >
         <svg lucideUserRoundKey class="h-5 w-5"></svg>
@@ -36,6 +43,7 @@
       [label]="activeConfig()?.button.label"
       [severity]="activeConfig()?.button.severity"
       variant="outlined"
+      [pt]="actionButtonPt"
     >
       <ng-template #icon>
         <svg [lucideIcon]="activeConfig()?.button.icon" class="h-5 w-5"></svg>

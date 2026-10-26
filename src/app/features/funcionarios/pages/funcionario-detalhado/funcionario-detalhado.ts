@@ -66,6 +66,11 @@ import { FuncionariosService } from '../../services/funcionarios-service';
   styleUrl: './funcionario-detalhado.css',
 })
 export class FuncionarioDetalhado implements OnInit {
+  protected readonly actionButtonPt = {
+    root: {
+      class: 'w-full justify-center sm:w-auto',
+    },
+  };
   protected readonly funcionario = signal<Funcionario | undefined>(undefined);
   protected readonly cepFormatado = computed(() => {
     const cep: string | undefined = this.funcionario()?.cep;
