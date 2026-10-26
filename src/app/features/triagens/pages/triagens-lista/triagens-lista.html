@@ -12,11 +12,13 @@
   </p-button>
 </div>
 
-<filter-triagens-card
-  [(busca)]="busca"
-  [(convenioSelecionado)]="convenioSelecionado"
-  [(rangeDataSelecionado)]="rangeDataSelecionado"
-/>
+@if (loading().list || triagens().length > 0) {
+  <filter-triagens-card
+    [(busca)]="busca"
+    [(convenioSelecionado)]="convenioSelecionado"
+    [(rangeDataSelecionado)]="rangeDataSelecionado"
+  />
+}
 
 <div class="flex flex-col gap-6">
   <card class="border-0 p-0! overflow-hidden">
@@ -37,6 +39,9 @@
     [triagens]="triagensFiltradas()"
     [dataReferencia]="agora()"
     [loading]="loading().list"
+    [filtrosAtivos]="filtrosAtivos()"
+    [temTriagensNoStatus]="temTriagensNoStatus()"
+    [statusSelecionado]="statusSelecionado()"
     (limparFiltros)="clearFilters()"
     (concluirTriagem)="solicitarConclusao($event)"
     (reabrirTriagem)="solicitarReabertura($event)"

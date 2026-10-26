@@ -88,6 +88,15 @@ export class TriagensLista implements OnInit {
   protected readonly acaoPendente = signal<AcaoTriagem | null>(null);
   protected readonly reagendamentoDialogVisible = signal(false);
   protected readonly triagemParaReagendar = signal<Triagem | null>(null);
+  protected readonly filtrosAtivos = computed(
+    () =>
+      !!this.busca().trim() ||
+      this.convenioSelecionado() !== 'todos' ||
+      this.rangeDataSelecionado() !== 'todos',
+  );
+  protected readonly temTriagensNoStatus = computed(() =>
+    this.triagens().some((triagem) => triagem.status === this.statusSelecionado()),
+  );
   protected readonly mutationLoading = computed(() => this.loading().mutation);
   protected readonly confirmTitle = computed(() => {
     const acao = this.acaoPendente();

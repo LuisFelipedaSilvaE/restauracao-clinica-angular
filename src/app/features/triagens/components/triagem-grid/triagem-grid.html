@@ -1,91 +1,107 @@
-<p-dataview
-  [value]="loading() ? skeletonCards : triagens()"
-  [paginator]="!loading()"
-  [attr.aria-busy]="loading()"
-  [rows]="10"
-  layout="list"
-  [pt]="dataviewPt"
->
-  <ng-template #list let-items>
-    <div class="flex min-w-0 flex-col gap-2">
-      <div
-        class="hidden min-w-0 items-center gap-2 sm:grid sm:grid-cols-4 xl:grid-cols-5 text-xs font-semibold uppercase tracking-wide text-content-secondary px-4"
-      >
-        <span>Horário</span>
-        <span class="hidden sm:block text-center">Nome</span>
-        <span class="hidden xl:block text-center">Data Agendada</span>
-        <span class="block text-center">Convênio</span>
-        <span class="justify-self-end text-center">Ações</span>
-      </div>
+@if (loading() || temTriagensNoStatus() || filtrosAtivos()) {
+  <p-dataview
+    [value]="loading() ? skeletonCards : triagens()"
+    [paginator]="!loading()"
+    [attr.aria-busy]="loading()"
+    [rows]="10"
+    layout="list"
+    [pt]="dataviewPt"
+  >
+    <ng-template #list let-items>
+      <div class="flex min-w-0 flex-col gap-2">
+        <div
+          class="hidden min-w-0 items-center gap-2 sm:grid sm:grid-cols-4 xl:grid-cols-5 text-xs font-semibold uppercase tracking-wide text-content-secondary px-4"
+        >
+          <span>Horário</span>
+          <span class="hidden sm:block text-center">Nome</span>
+          <span class="hidden xl:block text-center">Data Agendada</span>
+          <span class="block text-center">Convênio</span>
+          <span class="justify-self-end text-center">Ações</span>
+        </div>
 
-      <div class="flex flex-col gap-2">
-        @if (loading()) {
-          <span class="sr-only" role="status">Carregando triagens...</span>
-          @for (_ of skeletonCards; track $index) {
-            <div
-              aria-hidden="true"
-              class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-4 xl:grid-cols-5 items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5"
-            >
+        <div class="flex flex-col gap-2">
+          @if (loading()) {
+            <span class="sr-only" role="status">Carregando triagens...</span>
+            @for (_ of skeletonCards; track $index) {
               <div
-                class="col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2 flex min-w-0 items-center gap-2.5"
+                aria-hidden="true"
+                class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-4 xl:grid-cols-5 items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5"
               >
-                <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
-                <p-skeleton width="8rem" height="1rem" />
+                <div
+                  class="col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2 flex min-w-0 items-center gap-2.5"
+                >
+                  <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
+                  <p-skeleton width="8rem" height="1rem" />
+                </div>
+                <p-skeleton
+                  class="col-start-1 row-start-2 sm:col-start-1 sm:row-start-1"
+                  width="3rem"
+                  height="1rem"
+                  borderRadius="0.25rem"
+                />
+                <p-skeleton
+                  class="col-start-2 row-start-2 sm:col-start-3 xl:col-start-4 justify-self-start sm:justify-self-center"
+                  width="6rem"
+                  height="1.5rem"
+                  borderRadius="0.375rem"
+                />
+                <p-skeleton
+                  class="hidden xl:block xl:col-start-3 row-start-1 justify-self-center"
+                  width="5rem"
+                  height="1rem"
+                  borderRadius="0.25rem"
+                />
+                <p-skeleton
+                  class="col-start-3 row-span-2 sm:row-span-1 sm:col-start-4 xl:col-start-5 justify-self-end self-center"
+                  size="2.25rem"
+                  borderRadius="0.375rem"
+                />
               </div>
-              <p-skeleton
-                class="col-start-1 row-start-2 sm:col-start-1 sm:row-start-1"
-                width="3rem"
-                height="1rem"
-                borderRadius="0.25rem"
+            }
+          } @else {
+            @for (triagem of items; track $index) {
+              <triagem-card
+                [triagem]="triagem"
+                [dataReferencia]="dataReferencia()"
+                (concluirTriagem)="concluirTriagem.emit($event)"
+                (reabrirTriagem)="reabrirTriagem.emit($event)"
+                (reagendarTriagem)="reagendarTriagem.emit($event)"
+                (excluirTriagem)="excluirTriagem.emit($event)"
               />
-              <p-skeleton
-                class="col-start-2 row-start-2 sm:col-start-3 xl:col-start-4 justify-self-start sm:justify-self-center"
-                width="6rem"
-                height="1.5rem"
-                borderRadius="0.375rem"
-              />
-              <p-skeleton
-                class="hidden xl:block xl:col-start-3 row-start-1 justify-self-center"
-                width="5rem"
-                height="1rem"
-                borderRadius="0.25rem"
-              />
-              <p-skeleton
-                class="col-start-3 row-span-2 sm:row-span-1 sm:col-start-4 xl:col-start-5 justify-self-end self-center"
-                size="2.25rem"
-                borderRadius="0.375rem"
-              />
-            </div>
+            }
           }
-        } @else {
-          @for (triagem of items; track $index) {
-            <triagem-card
-              [triagem]="triagem"
-              [dataReferencia]="dataReferencia()"
-              (concluirTriagem)="concluirTriagem.emit($event)"
-              (reabrirTriagem)="reabrirTriagem.emit($event)"
-              (reagendarTriagem)="reagendarTriagem.emit($event)"
-              (excluirTriagem)="excluirTriagem.emit($event)"
-            />
-          }
-        }
+        </div>
       </div>
-    </div>
-  </ng-template>
-  <ng-template #emptymessage>
-    <empty-list
-      [icon]="emptySearchIcon"
-      title="Nenhuma triagem encontrada"
-      description="Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca ou limpar os filtros."
-    >
-      <p-button
-        severity="secondary"
-        [text]="true"
-        (onClick)="limparFiltros.emit()"
-        label="Limpar filtros"
+    </ng-template>
+    <ng-template #emptymessage>
+      <empty-list
+        [icon]="emptySearchIcon"
+        title="Nenhuma triagem encontrada"
+        description="Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca ou limpar os filtros."
       >
-        <svg lucideFunnelX class="h-5 w-5"></svg>
+        <p-button
+          severity="secondary"
+          [text]="true"
+          (onClick)="limparFiltros.emit()"
+          label="Limpar filtros"
+        >
+          <svg lucideFunnelX class="h-5 w-5"></svg>
+        </p-button>
+      </empty-list>
+    </ng-template>
+  </p-dataview>
+} @else {
+  <empty-list
+    [icon]="emptyStatusContent().icon"
+    [title]="emptyStatusContent().title"
+    [description]="emptyStatusContent().description"
+  >
+    @if (statusSelecionado() === 'AGENDADA') {
+      <p-button routerLink="/triagens/criar" label="Agendar primeira triagem">
+        <ng-template #icon>
+          <svg lucideCalendarPlus class="h-5 w-5"></svg>
+        </ng-template>
       </p-button>
-    </empty-list>
-  </ng-template>
-</p-dataview>
+    }
+  </empty-list>
+}
