@@ -39,6 +39,7 @@
     (limparFiltros)="clearFilters()"
     (concluirTriagem)="solicitarConclusao($event)"
     (reabrirTriagem)="solicitarReabertura($event)"
+    (reagendarTriagem)="solicitarReagendamento($event)"
   />
 </div>
 
@@ -51,4 +52,11 @@
   [loading]="mutationLoading()"
   (hidden)="triagemPendente.set(null); acaoConclusaoPendente.set(null)"
   (onConfirm)="confirmarAlteracaoConclusao()"
+/>
+
+<triagem-reagendamento-form
+  [(visible)]="reagendamentoDialogVisible"
+  [triagem]="triagemParaReagendar()"
+  [loading]="mutationLoading()"
+  (hidden)="triagemParaReagendar.set(null)"
 />

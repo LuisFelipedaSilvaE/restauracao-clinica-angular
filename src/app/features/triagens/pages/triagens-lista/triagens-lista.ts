@@ -15,6 +15,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { FilterTriagensCard } from '../../components/filter-triagens-card/filter-triagens-card';
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
+import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 
@@ -36,6 +37,7 @@ type AcaoConclusao = 'concluir' | 'reabrir';
     FilterTriagensCard,
     TriagemGrid,
     ConfirmDialog,
+    TriagemReagendamentoForm,
   ],
   templateUrl: './triagens-lista.html',
   styleUrl: './triagens-lista.css',
@@ -76,6 +78,8 @@ export class TriagensLista implements OnInit {
   protected readonly dialogConfirmVisible = signal(false);
   protected readonly triagemPendente = signal<{ id: number; nome: string } | null>(null);
   protected readonly acaoConclusaoPendente = signal<AcaoConclusao | null>(null);
+  protected readonly reagendamentoDialogVisible = signal(false);
+  protected readonly triagemParaReagendar = signal<Triagem | null>(null);
   protected readonly mutationLoading = computed(() => this.loading().mutation);
   protected readonly confirmMessage = computed(() => {
     const triagem = this.triagemPendente();
@@ -158,6 +162,11 @@ export class TriagensLista implements OnInit {
     this.triagemPendente.set(triagem);
     this.acaoConclusaoPendente.set('reabrir');
     this.dialogConfirmVisible.set(true);
+  }
+
+  protected solicitarReagendamento(triagem: Triagem): void {
+    this.triagemParaReagendar.set(triagem);
+    this.reagendamentoDialogVisible.set(true);
   }
 
   protected confirmarAlteracaoConclusao(): void {

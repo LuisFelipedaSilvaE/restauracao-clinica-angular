@@ -56,6 +56,16 @@
     <div class="flex gap-2">
       @if (podeConcluir()) {
         <p-button
+          label="Reagendar"
+          severity="secondary"
+          variant="outlined"
+          (onClick)="solicitarReagendamento()"
+        >
+          <ng-template #icon>
+            <svg lucideCalendarClock class="h-5 w-5"></svg>
+          </ng-template>
+        </p-button>
+        <p-button
           label="Concluir"
           severity="success"
           variant="outlined"
@@ -157,4 +167,11 @@
   [loading]="mutationLoading()"
   (hidden)="acaoConclusaoPendente.set(null)"
   (onConfirm)="confirmarAlteracaoConclusao()"
+/>
+
+<triagem-reagendamento-form
+  [(visible)]="reagendamentoDialogVisible"
+  [triagem]="triagem() ?? null"
+  [loading]="mutationLoading()"
+  (reagendada)="triagem.set($event)"
 />

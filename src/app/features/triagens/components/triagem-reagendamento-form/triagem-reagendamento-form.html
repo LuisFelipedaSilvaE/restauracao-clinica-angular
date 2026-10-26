@@ -1,0 +1,88 @@
+<p-dialog
+  [modal]="true"
+  [visible]="visible()"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  (visibleChange)="visibleChange.emit($event)"
+  (onHide)="hidden.emit()"
+  styleClass="w-md!"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Reagendar triagem</h2>
+  </ng-template>
+
+  <form
+    id="triagemReagendamentoForm"
+    [formGroup]="reagendamentoForm"
+    class="space-y-5"
+    (ngSubmit)="reagendar()"
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      <form-field
+        label="Data"
+        inputId="novaDataAgendada"
+        required
+        [errorMessage]="getErrorMessage('dataAgendada')"
+      >
+        <p-datepicker
+          inputId="novaDataAgendada"
+          formControlName="dataAgendada"
+          placeholder="dd/mm/aaaa"
+          [showButtonBar]="true"
+          [minDate]="hoje"
+          [invalid]="isInvalid('dataAgendada')"
+          appendTo="body"
+          dateFormat="dd/mm/yy"
+          fluid
+        />
+      </form-field>
+
+      <form-field
+        label="Horário"
+        inputId="novoHorarioAgendado"
+        required
+        [errorMessage]="getErrorMessage('horaAgendada')"
+      >
+        <p-datepicker
+          inputId="novoHorarioAgendado"
+          formControlName="horaAgendada"
+          placeholder="hh:mm"
+          [timeOnly]="true"
+          [invalid]="isInvalid('horaAgendada')"
+          appendTo="body"
+          pInputMask="99:99"
+          fluid
+        />
+      </form-field>
+
+      @if (exibirErroDataHoraFutura()) {
+        <div class="sm:col-span-2">
+          <form-error
+            class="block w-full [&>p-message]:w-full"
+            message="A data e o horário agendados devem estar no futuro."
+            errorId="reagendamento-data-hora-erro"
+          />
+        </div>
+      }
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (onClick)="visibleChange.emit(false)"
+    />
+
+    <p-button
+      type="button"
+      label="Reagendar"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (onClick)="reagendar()"
+    />
+  </ng-template>
+</p-dialog>

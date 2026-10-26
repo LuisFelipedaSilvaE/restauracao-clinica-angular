@@ -3,6 +3,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideCalendar,
+  LucideCalendarClock,
   LucideCircleCheckBig,
   LucideHandshake,
   LucidePencil,
@@ -24,6 +25,7 @@ import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
+import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 
 @Component({
   selector: 'app-triagem-detalhada',
@@ -47,10 +49,12 @@ import { TriagensService } from '../../services/triagens-service';
     LucideHandshake,
     LucidePhone,
     LucideCalendar,
+    LucideCalendarClock,
     LucideCircleCheckBig,
     LucideRotateCcwClock,
     BackButton,
     ConfirmDialog,
+    TriagemReagendamentoForm,
   ],
   templateUrl: './triagem-detalhada.html',
   styleUrl: './triagem-detalhada.css',
@@ -63,6 +67,7 @@ export class TriagemDetalhada {
   protected readonly carregando = signal(false);
   protected readonly dialogConfirmVisible = signal(false);
   protected readonly acaoConclusaoPendente = signal<'concluir' | 'reabrir' | null>(null);
+  protected readonly reagendamentoDialogVisible = signal(false);
   private readonly triagensService = inject(TriagensService);
   protected readonly loading = this.triagensService.loading;
   protected readonly mutationLoading = computed(() => this.loading().mutation);
@@ -149,6 +154,12 @@ export class TriagemDetalhada {
 
     this.acaoConclusaoPendente.set('reabrir');
     this.dialogConfirmVisible.set(true);
+  }
+
+  protected solicitarReagendamento(): void {
+    if (!this.podeConcluir()) return;
+
+    this.reagendamentoDialogVisible.set(true);
   }
 
   protected confirmarAlteracaoConclusao(): void {

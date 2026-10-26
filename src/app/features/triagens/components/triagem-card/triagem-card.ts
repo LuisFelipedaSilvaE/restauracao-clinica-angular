@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  LucideCalendarClock,
   LucideDynamicIcon,
   LucideCircleCheckBig,
   LucideEllipsisVertical,
@@ -39,6 +40,7 @@ export class TriagemCard {
   readonly triagem = input.required<Triagem>();
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
+  readonly reagendarTriagem = output<Triagem>();
   private readonly router = inject(Router);
   protected readonly acoes = computed<AcaoMenu[]>(() => {
     return [
@@ -53,6 +55,15 @@ export class TriagemCard {
         lucideIcon: LucidePencil,
         iconClass: 'h-4 w-4 text-action-secondary-text',
         command: () => this.router.navigate(['/triagens', this.triagem().id, 'editar']),
+      },
+      {
+        label: 'Reagendar triagem',
+        visible:
+          this.triagem().status === StatusTriagem.AGENDADA ||
+          this.triagem().status === StatusTriagem.ATRASADA,
+        lucideIcon: LucideCalendarClock,
+        iconClass: 'h-4 w-4 text-action-info',
+        command: () => this.reagendarTriagem.emit(this.triagem()),
       },
       {
         label: 'Concluir triagem',

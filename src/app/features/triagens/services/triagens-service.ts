@@ -6,6 +6,7 @@ import { LoadingType } from '../../../shared/types/loading-type';
 import { ConveniosService } from '../../convenios/services/convenios-service';
 import { StatusTriagem } from '../enums/status-triagem';
 import { Triagem } from '../interfaces/triagem';
+import { TriagemReagendamentoRequest } from '../interfaces/triagem-reagendamento-request';
 import { TriagemRequest } from '../interfaces/triagem-request';
 
 @Injectable({
@@ -188,6 +189,15 @@ export class TriagensService {
     this.setLoading('mutation', true);
 
     return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/desconcluir`, null).pipe(
+      tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  reagendarTriagem(id: number, request: TriagemReagendamentoRequest): Observable<Triagem> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/reagendar`, request).pipe(
       tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
       finalize(() => this.setLoading('mutation', false)),
     );
