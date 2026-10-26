@@ -18,7 +18,7 @@
     }
   </div>
 </div>
-<div class="grid grid-cols-[repeat(auto-fit,minmax(384px,1fr))] gap-4">
+<div class="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(384px,1fr))]">
   @if (loading().list) {
     @for (_ of skeletonCards; track $index) {
       <div class="rounded-xl border border-border-default bg-surface-card p-4">
@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
           @for (_ of [1, 2]; track $index) {
             <div
               class="flex items-center gap-2.5 rounded-xl border border-border-default bg-surface-subtle p-3"

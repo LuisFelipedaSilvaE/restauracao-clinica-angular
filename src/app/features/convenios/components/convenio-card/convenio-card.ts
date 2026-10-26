@@ -33,9 +33,9 @@ interface ToggleConvenioButton {
   selector: 'convenio-card',
   host: {
     class:
-      'flex relative flex-col items-center gap-2 bg-surface-card border border-border-default rounded-lg p-4 min-w-sm overflow-hidden',
+      'relative flex w-full min-w-0 flex-col items-center gap-3 overflow-hidden rounded-lg border border-border-default bg-surface-card p-3 sm:p-4',
     '[class]':
-      "!convenio()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:top-0` : ''",
+      "!convenio()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
     LucideDynamicIcon,

@@ -1,23 +1,21 @@
-<div class="flex items-center gap-4 w-full">
-  <div class="w-fit p-2.5 rounded-md" [iconColor]="convenio().cor">
-    <svg lucideLayers class="h-5 w-5"></svg>
-  </div>
-  <div class="flex items-center gap-4 grow min-w-0">
-    @if (showActions()) {
-      <h6 class="truncate text-lg font-medium tracking-tight">
+<div class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+  <div class="flex min-w-0 items-center gap-3 sm:flex-1 sm:gap-4">
+    <div class="w-fit shrink-0 rounded-md p-2.5" [iconColor]="convenio().cor">
+      <svg lucideLayers class="h-5 w-5"></svg>
+    </div>
+    <div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
+      <h6 class="min-w-0 flex-1 truncate text-lg font-medium tracking-tight">
         {{ convenio().descricao }}
       </h6>
-    } @else {
-      <h6 class="truncate text-lg font-medium tracking-tight">{{ convenio().descricao }}</h6>
-    }
-    <p-badge
-      class="shrink-0"
-      [value]="`${convenio().maxVagas} Vagas`"
-      [customBadge]="convenio().cor"
-    />
+      <p-badge
+        class="shrink-0"
+        [value]="`${convenio().maxVagas} Vagas`"
+        [customBadge]="convenio().cor"
+      />
+    </div>
   </div>
   @if (showActions()) {
-    <div class="flex justify-end items-start h-full gap-1">
+    <div class="flex h-full w-full items-start justify-end gap-1 sm:w-auto sm:shrink-0">
       <p-button
         [routerLink]="convenio().id"
         pTooltip="Visualizar convênio"
@@ -56,15 +54,15 @@
     </div>
   }
 </div>
-<div class="flex items-start gap-4 w-full">
+<div class="grid w-full min-w-0 grid-cols-1 gap-2 min-[400px]:grid-cols-2 sm:gap-4">
   @for (item of computedInfoCards(); track $index) {
-    <info-card class="bg-surface-subtle! whitespace-nowrap p-3!" [data]="item" />
+    <info-card class="min-w-0 bg-surface-subtle! p-3!" [data]="item" />
   }
 </div>
-<div class="flex flex-col w-full">
-  <div class="flex justify-between w-full mb-1">
+<div class="flex w-full min-w-0 flex-col">
+  <div class="mb-1 flex w-full min-w-0 justify-between gap-2">
     <p class="text-xs text-content-secondary">Ocupação</p>
-    <p class="text-xs text-content-on-card font-semibold">
+    <p class="shrink-0 text-xs font-semibold text-content-on-card">
       {{ `${computedOcupacao()}%` }}
     </p>
   </div>
