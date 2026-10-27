@@ -24,6 +24,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
+import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
 import { TriagensService } from '../../../triagens/services/triagens-service';
@@ -68,6 +69,7 @@ const datasInternacaoCoerentes: ValidatorFn = (form: AbstractControl): Validatio
     FormField,
     FormHeader,
     LucideUserPlus,
+    CpfPipe,
     TelefonePipe,
   ],
   templateUrl: './internacao-form.html',

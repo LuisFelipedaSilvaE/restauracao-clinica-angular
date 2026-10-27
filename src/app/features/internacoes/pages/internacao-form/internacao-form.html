@@ -116,13 +116,13 @@
               (onChange)="onAcolhidoChange($event.value)"
             >
               <ng-template #selectedItem let-acolhido>
-                <span>{{ acolhido.nome }} · CPF {{ acolhido.cpf }}</span>
+                <span>{{ acolhido.nome }} · CPF {{ acolhido.cpf | cpf }}</span>
               </ng-template>
               <ng-template #item let-acolhido>
                 <div class="flex min-w-0 flex-col">
                   <span class="truncate font-medium">{{ acolhido.nome }}</span>
                   <span class="truncate text-xs text-content-secondary">
-                    CPF {{ acolhido.cpf }} · {{ acolhido.telefone | telefone }}
+                    CPF {{ acolhido.cpf | cpf }} · {{ acolhido.telefone | telefone }}
                   </span>
                 </div>
               </ng-template>
