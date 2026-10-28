@@ -1,32 +1,32 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { FuncionariosService } from '../../services/funcionarios-service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { LucideUsersRound } from '@lucide/angular';
-import { FuncionarioRequest } from '../../interfaces/funcionario-request';
-import { Funcionario } from '../../interfaces/funcionario';
-import { FormHeader } from '../../../../shared/components/form-header/form-header';
-import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
-import { InputMaskModule } from 'primeng/inputmask';
 import { DatePickerModule } from 'primeng/datepicker';
-import { SelectModule } from 'primeng/select';
+import { DividerModule } from 'primeng/divider';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { PasswordModule } from 'primeng/password';
+import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
-import { DividerModule } from 'primeng/divider';
-import { CargosService } from '../../../cargos/services/cargos-service';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { cpfValidator } from '../../../../shared/validators/cpf-validator';
-import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
+import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
+import { cpfValidator } from '../../../../shared/validators/cpf-validator';
+import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { CargosService } from '../../../cargos/services/cargos-service';
+import { Funcionario } from '../../interfaces/funcionario';
+import { FuncionarioRequest } from '../../interfaces/funcionario-request';
+import { FuncionariosService } from '../../services/funcionarios-service';
 
 @Component({
   selector: 'app-funcionario-form',
@@ -85,11 +85,11 @@ export class FuncionarioForm {
     }),
     cep: ['', [Validators.required]],
     telefone: ['', [Validators.required, telefoneValidator]],
+    cargo: this.fb.control<number | null>(null, [Validators.required]),
     dataAdmissao: this.fb.control<Date | null>(null, [Validators.required]),
     user: this.fb.nonNullable.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.maxLength(128)]],
-      cargo: this.fb.control<number | null>(null, [Validators.required]),
     }),
   });
   protected readonly estados = ESTADOS_BRASIL;
@@ -107,10 +107,10 @@ export class FuncionarioForm {
     'endereco.complemento': 'Complemento',
     cep: 'CEP',
     telefone: 'Telefone',
+    cargo: 'Cargo',
     dataAdmissao: 'Data de admissão',
     'user.username': 'Usuário',
     'user.password': 'Senha',
-    'user.cargo': 'Cargo',
   };
 
   protected readonly passwordInputPt = {
@@ -141,6 +141,7 @@ export class FuncionarioForm {
 
     this.cargosService.getAllCargos().subscribe();
     const id = this.id();
+
     if (!id) return;
 
     const idNumerico = Number(id);
@@ -174,6 +175,8 @@ export class FuncionarioForm {
     this.funcionarioForm.patchValue({
       nome: funcionario.nome,
       cpf: formatCpf(funcionario.cpf),
+      email: funcionario.email,
+      dataNascimento: localDateToDate(funcionario.dataNascimento),
       endereco: {
         logradouro: funcionario.endereco.logradouro,
         numero: String(funcionario.endereco.numero),
@@ -183,13 +186,11 @@ export class FuncionarioForm {
       },
       cep: formatCep(funcionario.cep),
       telefone: formatTelefone(funcionario.telefone),
-      email: funcionario.email,
-      dataNascimento: localDateToDate(funcionario.dataNascimento),
+      cargo: funcionario.cargo.id,
       dataAdmissao: localDateToDate(funcionario.dataAdmissao),
       user: {
         username: funcionario.user.username,
         password: '',
-        cargo: funcionario.cargo.id,
       },
     });
   }
@@ -247,7 +248,6 @@ export class FuncionarioForm {
   protected onSubmit(): void {
     this.formSubmitted.set(true);
 
-    console.log('entrou');
     if (this.funcionarioForm.invalid) {
       this.funcionarioForm.markAllAsDirty();
       return;
@@ -277,12 +277,12 @@ export class FuncionarioForm {
 
   fromFormToRequest(form: FormGroup): FuncionarioRequest {
     const { endereco, user, ...formData } = form.getRawValue();
-    const { cargo, ...userNormalizado } = user;
+    const { ...userNormalizado } = user;
 
     return {
       ...formData,
       dataNascimento: dateToLocalDate(formData.dataNascimento!),
-      cargoId: cargo!,
+      cargoId: formData.cargo!,
       dataAdmissao: dateToLocalDate(formData.dataAdmissao!),
       endereco: {
         ...endereco,

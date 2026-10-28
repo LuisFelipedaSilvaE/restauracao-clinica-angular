@@ -58,7 +58,7 @@
       </div>
     </fieldset>
     <p-divider />
-    <fieldset class="space-y-4">
+    <fieldset class="grid gap-4 space-y-4 sm:grid-cols-2">
       <legend class="font-semibold">Vínculo</legend>
       <form-field
         label="Data de admissão"
@@ -75,6 +75,19 @@
           [showButtonBar]="true"
           [invalid]="isInvalid('dataAdmissao')"
           dateFormat="dd/mm/yy"
+          fluid
+        />
+      </form-field>
+      <form-field label="Cargo" inputId="cargo" required [errorMessage]="getErrorMessage('cargo')">
+        <p-select
+          inputId="cargo"
+          name="cargo"
+          [options]="cargos()"
+          formControlName="cargo"
+          optionLabel="nome"
+          optionValue="id"
+          placeholder="Selecione um cargo"
+          [invalid]="isInvalid('cargo')"
           fluid
         />
       </form-field>
@@ -272,25 +285,6 @@
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2" formGroupName="user">
-        <form-field
-          class="sm:col-span-2"
-          label="Cargo"
-          inputId="cargo"
-          required
-          [errorMessage]="getErrorMessage('user.cargo')"
-        >
-          <p-select
-            inputId="cargo"
-            name="cargo"
-            [options]="cargos()"
-            formControlName="cargo"
-            optionLabel="nome"
-            optionValue="id"
-            placeholder="Selecione um cargo"
-            [invalid]="isInvalid('user.cargo')"
-            fluid
-          />
-        </form-field>
         <form-field
           label="Usuário"
           inputId="username"

@@ -26,7 +26,7 @@ import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { localDateToDate } from '../../../../shared/utils/local-date';
-import { DialogEdicaoFuncionario } from '../../components/dialog-edicao-funcionario/dialog-edicao-funcionario';
+import { DialogAlterarSenhaF } from '../../components/dialog-alterar-senha-f/dialog-alterar-senha-f';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioActiveConfig } from '../../interfaces/funcionario-active-config';
 import { FuncionariosService } from '../../services/funcionarios-service';
@@ -60,7 +60,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     TelefonePipe,
     EnderecoPipe,
     LucideUserRoundKey,
-    DialogEdicaoFuncionario,
+    DialogAlterarSenhaF,
   ],
   templateUrl: './funcionario-detalhado.html',
   styleUrl: './funcionario-detalhado.css',
@@ -87,8 +87,7 @@ export class FuncionarioDetalhado implements OnInit {
   private readonly datePipe = inject(DatePipe);
   protected readonly loading = this.funcionariosService.loading;
   protected readonly confirmarAlteracao = signal(false);
-  protected readonly edicaoVisivel = signal(false);
-  protected readonly edicaoType = signal<'cargo' | 'senha' | null>(null);
+  protected readonly dialogSenha = signal(false);
   protected dataNascimentoNormalizada: string = '';
   protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {
@@ -178,12 +177,6 @@ export class FuncionarioDetalhado implements OnInit {
   }
 
   toggleEdicaoSenha(): void {
-    this.edicaoVisivel.set(true);
-    this.edicaoType.set('senha');
-  }
-
-  toggleEdicaoCargo(): void {
-    this.edicaoVisivel.set(true);
-    this.edicaoType.set('cargo');
+    this.dialogSenha.set(true);
   }
 }

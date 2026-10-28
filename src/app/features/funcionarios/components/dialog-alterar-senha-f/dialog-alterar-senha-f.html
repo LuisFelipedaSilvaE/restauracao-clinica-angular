@@ -1,0 +1,78 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  styleClass="w-sm!"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Alterar senha</h2>
+  </ng-template>
+
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <form-field
+      label="Nova senha"
+      inputId="novaSenha"
+      [errorMessage]="getErrorMessage('novaSenha')"
+      required
+    >
+      <p-password
+        #passwordInput1
+        inputId="novaSenha"
+        name="novaSenha"
+        formControlName="novaSenha"
+        [class.tracking-widest]="!passwordInput1.unmasked"
+        [toggleMask]="true"
+        [feedback]="false"
+        [pKeyFilter]="blockspace"
+        autocomplete="off"
+        placeholder="••••••••••"
+        [invalid]="isInvalid('novaSenha')"
+        [attr.aria-describedby]="isInvalid('novaSenha') ? 'password-erro' : null"
+        [pt]="passwordInputPt"
+        fluid
+      />
+    </form-field>
+    <form-field
+      label="Confirmar nova senha"
+      inputId="confirmarNovaSenha"
+      [errorMessage]="getErrorMessage('confirmarNovaSenha')"
+      required
+    >
+      <p-password
+        #passwordInput
+        inputId="confirmarNovaSenha"
+        name="confirmarNovaSenha"
+        formControlName="confirmarNovaSenha"
+        [class.tracking-widest]="!passwordInput.unmasked"
+        [toggleMask]="true"
+        [feedback]="false"
+        [pKeyFilter]="blockspace"
+        autocomplete="off"
+        placeholder="••••••••••"
+        [invalid]="isInvalid('confirmarNovaSenha')"
+        [attr.aria-describedby]="isInvalid('confirmarNovaSenha') ? 'password-erro' : null"
+        [pt]="passwordInputPt"
+        fluid
+      />
+    </form-field>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (click)="cancelarAlteracao()"
+    />
+
+    <p-button
+      label="Confirmar"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (click)="alterarSenha()"
+    />
+  </ng-template>
+</p-dialog>

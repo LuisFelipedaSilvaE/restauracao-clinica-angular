@@ -74,20 +74,9 @@
       >
         <svg lucideBriefcase class="h-4 w-4"></svg>
       </div>
-      <div class="flex items-center gap-2">
-        <div>
-          <p class="uppercase text-content-secondary text-sm">cargo</p>
-          <p class="font-heading text-md font-medium">{{ funcionario()?.cargo.nome }}</p>
-        </div>
-        <p-button
-          severity="secondary"
-          [text]="true"
-          (onClick)="toggleEdicaoCargo()"
-          pTooltip="Editar cargo"
-          tooltipPosition="top"
-        >
-          <svg lucidePencil class="h-5 w-5"></svg>
-        </p-button>
+      <div>
+        <p class="uppercase text-content-secondary text-sm">cargo</p>
+        <p class="font-heading text-md font-medium">{{ funcionario()?.cargo.nome }}</p>
       </div>
     </div>
     <div class="flex gap-2 items-center">
@@ -172,9 +161,4 @@
   [loading]="loading().mutation"
   (onConfirm)="alterarStatus()"
 />
-<dialog-edicao-funcionario
-  [(visible)]="edicaoVisivel"
-  [type]="edicaoType()"
-  [funcionario]="funcionario()"
-  [loading]="loading()"
-/>
+<dialog-alterar-senha-f [(visible)]="dialogSenha" [userId]="funcionario()?.user?.id" />

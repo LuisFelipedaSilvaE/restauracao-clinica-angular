@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DialogEdicaoFuncionario } from './dialog-edicao-funcionario';
+import { DialogAlterarSenhaF } from './dialog-alterar-senha-f';
 
-describe('DialogEdicaoFuncionario', () => {
-  let component: DialogEdicaoFuncionario;
-  let fixture: ComponentFixture<DialogEdicaoFuncionario>;
+describe('DialogAlterarSenhaF', () => {
+  let component: DialogAlterarSenhaF;
+  let fixture: ComponentFixture<DialogAlterarSenhaF>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DialogEdicaoFuncionario],
+      imports: [DialogAlterarSenhaF],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DialogEdicaoFuncionario);
+    fixture = TestBed.createComponent(DialogAlterarSenhaF);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
