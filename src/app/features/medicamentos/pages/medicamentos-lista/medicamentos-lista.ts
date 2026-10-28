@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucidePackageOpen, LucidePill, LucidePlus, LucideTriangleAlert } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { MedicamentoGrid } from '../../components/medicamento-grid/medicamento-grid';
@@ -12,7 +13,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
   host: {
     class: 'flex flex-col gap-8',
   },
-  imports: [ButtonModule, MedicamentoGrid, InfoCard, LucidePlus, RouterLink],
+  imports: [ButtonModule, MedicamentoGrid, InfoCard, LucidePlus, RouterLink, EmptyList],
   templateUrl: './medicamentos-lista.html',
   styleUrl: './medicamentos-lista.css',
 })
@@ -20,6 +21,7 @@ export class MedicamentosLista implements OnInit {
   private readonly medicamentosService = inject(MedicamentosService);
   protected readonly medicamentos = this.medicamentosService.medicamentos;
   protected readonly loading = this.medicamentosService.loading;
+  protected readonly emptyMedicamentosIcon = LucidePill;
   protected readonly infomedicamentos = computed<InfoCardContent[]>(() => {
     const medicamentos = this.medicamentos();
     return [

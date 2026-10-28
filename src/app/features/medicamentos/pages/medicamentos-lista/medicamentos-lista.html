@@ -6,7 +6,7 @@
         Acompanhe os medicamentos por modalidade e registre cada movimentação.
       </p>
     </div>
-    <p-button label="Novo medicamento" routerLink="criar" class="text-nowrap" routerLink="criar">
+    <p-button label="Novo medicamento" routerLink="criar" class="text-nowrap">
       <ng-template #icon>
         <svg lucidePlus class="h-5 w-5"></svg>
       </ng-template>
@@ -19,4 +19,18 @@
   </div>
 </div>
 
-<medicamento-grid [medicamentos]="medicamentos()" [loading]="loading().list" />
+@if (loading().list || medicamentos().length > 0) {
+  <medicamento-grid [medicamentos]="medicamentos()" [loading]="loading().list" />
+} @else {
+  <empty-list
+    [icon]="emptyMedicamentosIcon"
+    title="Nenhum medicamento cadastrado"
+    description="Não há medicamentos cadastrados no momento."
+  >
+    <p-button routerLink="criar" label="Cadastrar primeiro medicamento">
+      <ng-template #icon>
+        <svg lucidePlus class="h-5 w-5"></svg>
+      </ng-template>
+    </p-button>
+  </empty-list>
+}

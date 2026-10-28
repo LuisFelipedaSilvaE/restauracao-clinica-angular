@@ -1,9 +1,8 @@
 import { Component, inject, input, output, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { LucidePlus } from '@lucide/angular';
+import { LucideSearchX } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
+import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { Medicamento } from '../../interfaces/medicamento';
@@ -19,9 +18,7 @@ import { MedicamentoCard } from '../medicamento-card/medicamento-card';
     DialogMovimentacaoMedicamento,
     ConfirmDialog,
     EmptyList,
-    ButtonModule,
-    RouterLink,
-    LucidePlus,
+    SkeletonModule,
   ],
   templateUrl: './medicamento-grid.html',
   styleUrl: './medicamento-grid.css',
@@ -36,7 +33,7 @@ export class MedicamentoGrid {
   protected readonly confirmarExclusao = signal<boolean>(false);
   protected readonly typeMovimentacao = signal<'entrada' | 'saida' | null>(null);
   protected readonly medicamentoMovimentacao = signal<Medicamento | null>(null);
-  protected readonly emptySearchIcon = LucidePlus;
+  protected readonly emptySearchIcon = LucideSearchX;
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly dataviewPt = {
     root: {
