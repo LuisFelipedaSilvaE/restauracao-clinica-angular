@@ -1,0 +1,194 @@
+<back-button label="Voltar para internações" url="/internacoes" />
+
+@if (carregando()) {
+  <card class="flex flex-col gap-6 p-6!">
+    <span class="sr-only" role="status">Carregando dados da internação...</span>
+    <div
+      class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      aria-hidden="true"
+    >
+      <div class="flex min-w-0 items-center gap-3">
+        <p-skeleton class="h-14! w-14! shrink-0! rounded-xl! sm:h-15! sm:w-15!" />
+        <div class="flex min-w-0 flex-col gap-2">
+          <p-skeleton class="h-6! w-48! max-w-full! rounded-md!" />
+          <div class="flex gap-2">
+            <p-skeleton class="h-5! w-28! rounded-full!" />
+            <p-skeleton class="h-5! w-24! rounded-full!" />
+          </div>
+        </div>
+      </div>
+      <p-skeleton class="h-10! w-full! rounded-md! sm:w-24!" />
+    </div>
+  </card>
+
+  @for (_ of [1]; track $index) {
+    <card class="flex flex-col gap-5 p-6!" aria-hidden="true">
+      <p-skeleton class="h-5! w-44! rounded-md!" />
+      <div class="grid gap-4 sm:grid-cols-2">
+        @for (_ of [1, 2, 3, 4]; track $index) {
+          <div class="flex items-center gap-2">
+            <p-skeleton class="h-8! w-8! shrink-0! rounded-md!" />
+            <div class="flex flex-1 flex-col gap-2">
+              <p-skeleton class="h-3! w-20! rounded-md!" />
+              <p-skeleton class="h-4! w-3/4! rounded-md!" />
+            </div>
+          </div>
+        }
+      </div>
+    </card>
+  }
+} @else if (detalhes(); as internacao) {
+  <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex min-w-0 items-center gap-3">
+      <span
+        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
+        [iconColor]="internacao.convenio.cor"
+      >
+        <svg lucideBedSingle class="h-6 w-6" aria-hidden="true"></svg>
+      </span>
+      <div class="flex min-w-0 flex-col gap-1">
+        <h3 class="truncate text-xl font-semibold">{{ internacao.acolhido.nome }}</h3>
+        <div class="flex flex-wrap items-center gap-2">
+          <p-tag [value]="internacao.convenio.descricao" [customTag]="internacao.convenio.cor" />
+          <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
+      <p-button
+        label="Ver prontuário"
+        severity="secondary"
+        variant="outlined"
+        [pt]="actionButtonPt"
+        [routerLink]="['/acolhidos', internacao.acolhido.id, 'prontuario']"
+      >
+        <ng-template #icon>
+          <svg lucideClipboardList class="h-4 w-4" aria-hidden="true"></svg>
+        </ng-template>
+      </p-button>
+      <p-button
+        label="Editar"
+        severity="secondary"
+        variant="outlined"
+        [pt]="actionButtonPt"
+        [routerLink]="['/internacoes', internacao.id, 'editar']"
+      >
+        <ng-template #icon>
+          <svg lucidePencil class="h-4 w-4" aria-hidden="true"></svg>
+        </ng-template>
+      </p-button>
+    </div>
+  </card>
+
+  <card>
+    <p class="font-semibold">Dados da internação</p>
+    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideBedSingle class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Identificador</dt>
+          <dd class="font-heading text-md font-medium">I-{{ internacao.id | number: '3.0-0' }}</dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideLayers class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Convênio</dt>
+          <dd class="font-heading text-md font-medium">{{ internacao.convenio.descricao }}</dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Data de entrada</dt>
+          <dd class="font-heading text-md font-medium">
+            {{ internacao.dataAdmissao | date: 'dd/MM/yyyy' }}
+          </dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Previsão de alta</dt>
+          <dd class="font-heading text-md font-medium">
+            {{ internacao.dataPrevisaoAlta | date: 'dd/MM/yyyy' }}
+          </dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideClock3 class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Tempo internado</dt>
+          <dd class="font-heading text-md font-medium">{{ internacao.tempoInternado }}</dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideStethoscope class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Etapa do tratamento</dt>
+          <dd class="font-heading text-md font-medium">{{ internacao.etapaTratamento }}</dd>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+          [iconColor]="'#4a5565'"
+        >
+          <svg lucideClipboardList class="h-4 w-4" aria-hidden="true"></svg>
+        </span>
+        <div class="min-w-0">
+          <dt class="text-sm uppercase text-content-secondary">Triagem vinculada</dt>
+          <dd class="font-heading text-md font-medium">
+            {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
+          </dd>
+        </div>
+      </div>
+    </dl>
+
+    <p-divider />
+
+    <div>
+      <p class="text-sm uppercase text-content-secondary">Observação sobre isenção</p>
+      <p class="font-heading text-md font-medium">
+        {{ internacao.observacaoIsencao || 'Nenhuma observação informada.' }}
+      </p>
+    </div>
+  </card>
+}
