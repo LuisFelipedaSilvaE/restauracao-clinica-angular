@@ -8,6 +8,7 @@ import { Login } from './features/auth/pages/login/login';
 import { ConvenioDetalhado } from './features/convenios/pages/convenio-detalhado/convenio-detalhado';
 import { ConvenioForm } from './features/convenios/pages/convenio-form/convenio-form';
 import { ConveniosLista } from './features/convenios/pages/convenios-lista/convenios-lista';
+import { cargoExistenteGuard } from './features/funcionarios/guards/cargo-existente-guard';
 import { FuncionarioDetalhado } from './features/funcionarios/pages/funcionario-detalhado/funcionario-detalhado';
 import { FuncionarioForm } from './features/funcionarios/pages/funcionario-form/funcionario-form';
 import { FuncionariosLista } from './features/funcionarios/pages/funcionarios-lista/funcionarios-lista';
@@ -124,7 +125,7 @@ export const routes: Routes = [
       {
         path: 'funcionarios/criar',
         component: FuncionarioForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN'), cargoExistenteGuard],
       },
       {
         path: 'funcionarios/:id/editar',
