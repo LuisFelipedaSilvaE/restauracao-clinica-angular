@@ -1,71 +1,103 @@
 <form-header [data]="headerInfo()" btnLabel="Voltar para estoque" btnUrl="/medicamentos" />
-<card>
-  <form class="space-y-4" [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
-    <form-field
-      label="Nome do medicamento"
-      inputId="nome"
-      [errorMessage]="getErrorMessage('nome')"
-      required
-    >
-      <input
-        pInputText
-        id="nome"
-        formControlName="nome"
-        placeholder="Ex.: Paracetamol 500mg"
-        [invalid]="isInvalid('nome')"
-        autocomplete="off"
-        fluid
-      />
-    </form-field>
-    <form-field label="Preço" inputId="preco" [errorMessage]="getErrorMessage('preco')" required>
-      <p-inputnumber
-        inputId="preco"
-        formControlName="preco"
-        mode="currency"
-        currency="BRL"
-        placeholder="R$ 0,00"
-        [invalid]="isInvalid('preco')"
-        autocomplete="off"
-        fluid
-      />
-    </form-field>
+
+@if (carregando()) {
+  <card class="flex flex-col gap-5 p-6!">
+    <span class="sr-only" role="status">Carregando dados do medicamento...</span>
+    @for (campo of skeletonCampos; track $index) {
+      <div class="flex flex-col gap-2" aria-hidden="true">
+        <p-skeleton class="h-4! w-40! rounded-md!" />
+        <p-skeleton class="h-10! w-full! rounded-lg!" />
+      </div>
+    }
     <div class="grid gap-4 sm:grid-cols-2">
+      @for (_ of [1, 2]; track $index) {
+        <div class="flex flex-col gap-2" aria-hidden="true">
+          <p-skeleton class="h-4! w-32! rounded-md!" />
+          <p-skeleton class="h-10! w-full! rounded-lg!" />
+        </div>
+      }
+    </div>
+  </card>
+} @else {
+  <card>
+    <form class="space-y-4" [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
       <form-field
-        label="Unidade de controle"
-        inputId="unidadeControle"
-        [errorMessage]="getErrorMessage('unidadeControle')"
+        label="Nome do medicamento"
+        inputId="nome"
+        [errorMessage]="getErrorMessage('nome')"
         required
       >
         <input
           pInputText
-          id="unidadeControle"
-          formControlName="unidadeControle"
-          placeholder="Ex.: Cápsula, Comprimido, frasco..."
-          [invalid]="isInvalid('unidadeControle')"
+          id="nome"
+          formControlName="nome"
+          placeholder="Ex.: Paracetamol 500mg"
+          [invalid]="isInvalid('nome')"
           autocomplete="off"
           fluid
         />
       </form-field>
-      <form-field
-        label="Estoque inicial"
-        inputId="estoque"
-        [errorMessage]="getErrorMessage('estoque')"
-        required
-      >
-        <p-inputnumber
-          inputId="estoque"
-          formControlName="estoque"
-          placeholder="0"
-          [invalid]="isInvalid('estoque')"
-          autocomplete="off"
-          fluid
+      <div class="grid gap-4 sm:grid-cols-2">
+        <form-field
+          label="Preço"
+          inputId="preco"
+          [errorMessage]="getErrorMessage('preco')"
+          required
+        >
+          <p-inputnumber
+            inputId="preco"
+            formControlName="preco"
+            mode="currency"
+            currency="BRL"
+            placeholder="R$ 0,00"
+            [invalid]="isInvalid('preco')"
+            autocomplete="off"
+            fluid
+          />
+        </form-field>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <form-field
+          label="Estoque inicial"
+          inputId="quantidadeEstoque"
+          [errorMessage]="getErrorMessage('quantidadeEstoque')"
+          required
+        >
+          <p-inputnumber
+            inputId="quantidadeEstoque"
+            formControlName="quantidadeEstoque"
+            placeholder="0"
+            [invalid]="isInvalid('quantidadeEstoque')"
+            autocomplete="off"
+            fluid
+          />
+        </form-field>
+        <form-field
+          label="Estoque mínimo"
+          inputId="quantidadeMinima"
+          [errorMessage]="getErrorMessage('quantidadeMinima')"
+          required
+        >
+          <p-inputnumber
+            inputId="quantidadeMinima"
+            formControlName="quantidadeMinima"
+            placeholder="0"
+            [invalid]="isInvalid('quantidadeMinima')"
+            autocomplete="off"
+            fluid
+          />
+        </form-field>
+      </div>
+      <p-divider />
+      <div class="flex justify-end gap-2">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          variant="outlined"
+          (onClick)="limparForm()"
         />
-      </form-field>
-    </div>
-    <p-divider />
-    <div class="flex justify-end gap-2">
-      <p-button label="Cancelar" severity="secondary" variant="outlined" (onClick)="limparForm()" />
-      <p-button type="submit" [label]="btnLabel()" />
-    </div>
-  </form>
-</card>
+        <p-button type="submit" [label]="btnLabel()" />
+      </div>
+    </form>
+  </card>
+}

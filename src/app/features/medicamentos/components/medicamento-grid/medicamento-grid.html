@@ -9,10 +9,10 @@
   <ng-template #list let-items>
     <div class="flex min-w-0 flex-col gap-2">
       <div
-        class="hidden min-w-0 items-center gap-2 sm:grid sm:grid-cols-4 text-xs font-semibold uppercase tracking-wide text-content-secondary px-4"
+        class="hidden sm:grid sm:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)_minmax(0,1fr)_auto] gap-2 text-xs font-semibold uppercase tracking-wide text-content-secondary px-4"
       >
         <span class="text-center">Medicamento</span>
-        <span class="text-center">Unidades</span>
+        <span class="text-center">Disponibilidade</span>
         <span class="block text-center">Preço</span>
         <span class="justify-self-end text-center">Ações</span>
       </div>
@@ -58,7 +58,12 @@
           }
         } @else {
           @for (medicamento of items; track $index) {
-            <medicamento-card [medicamento]="medicamento" />
+            <medicamento-card
+              [medicamento]="medicamento"
+              (onEntrada)="aumentarQuantidadeEstoque($event)"
+              (onSaida)="reduzirQuantidadeEstoque($event)"
+              (onDelete)="enableConfirmDialog($event)"
+            />
           }
         }
       </div>
@@ -67,17 +72,32 @@
   <ng-template #emptymessage>
     <empty-list
       [icon]="emptySearchIcon"
-      title="Nenhum medicamento encontrado"
-      description="Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca ou limpar os filtros."
+      title="Nenhum medicamento cadastrado"
+      description="Ainda não há medicamentos registrados. Cadastre o primeiro para começar a controlar o estoque."
     >
-      <p-button
-        severity="secondary"
-        [text]="true"
-        (onClick)="limparFiltros.emit()"
-        label="Limpar filtros"
-      >
-        <svg lucideFunnelX class="h-5 w-5"></svg>
+      <p-button severity="secondary" [text]="true" routerLink="criar" label="Cadastrar medicamento">
+        <svg lucidePlus class="h-5 w-5"></svg>
       </p-button>
     </empty-list>
   </ng-template>
 </p-dataview>
+
+<dialog-movimentacao-medicamento
+  [(visible)]="dialogVisible"
+  [type]="typeMovimentacao()"
+  [medicamento]="medicamentoMovimentacao()"
+/>
+
+<confirm-dialog
+  [(visible)]="confirmarExclusao"
+  title="Excluir medicamento"
+  [message]="
+    'Deseja excluir ' +
+    (medicamentoMovimentacao()?.nome ?? 'este medicamento') +
+    '? Esta ação não poderá ser desfeita.'
+  "
+  confirmLabel="Excluir"
+  severity="danger"
+  [loading]="loading()"
+  (onConfirm)="excluirMedicamento()"
+/>

@@ -1,4 +1,6 @@
-<card class="grid! grid-cols-[auto_1fr_auto] sm:grid-cols-4 gap-2">
+<card
+  class="grid! grid-cols-[auto_1fr_auto] sm:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)_minmax(0,1fr)_auto] gap-2"
+>
   <div class="col-span-2 row-start-1 sm:col-span-1 flex min-w-0 items-center gap-3">
     <span
       class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
@@ -6,14 +8,37 @@
     >
       <svg lucidePill class="h-5 w-5"></svg>
     </span>
-    <div class="min-w-0">
-      <p class="truncate text-sm font-semibold text-foreground">{{ medicamento().nome }}</p>
-      <p class="text-xs text-content-secondary">{{ medicamento().unidadeControle }}</p>
-    </div>
+    <p class="truncate text-sm font-semibold text-foreground">{{ medicamento().nome }}</p>
   </div>
-  <div class="row-start-2 flex items-center sm:justify-center sm:row-start-1 gap-1">
-    <span class="text-sm text-content-secondary hidden sm:inline">{{ medicamento().estoque }}</span>
-    <p-tag [value]="`${medicamento().estoque} unidades`" class="sm:hidden!" />
+  <p-tag
+    [value]="statusMedicamento().tag.label"
+    [severity]="statusMedicamento().tag.severity"
+    class="text-xs! sm:hidden! row-start-2"
+  />
+  <div
+    class="row-start-3 col-span-2 flex min-w-0 flex-col items-start justify-center gap-1 sm:row-start-1 sm:col-span-1"
+  >
+    <p-tag
+      [value]="statusMedicamento().tag.label"
+      [severity]="statusMedicamento().tag.severity"
+      class="text-xs! hidden! sm:block!"
+    />
+
+    <div class="flex w-full min-w-0 items-center gap-2 -mt-1 sm:mt-0">
+      <p-progressbar
+        class="h-2! min-w-0 flex-1"
+        [value]="porcentagemEstoque()"
+        showValue="false"
+        [customProgressbar]="statusMedicamento().pb.severity"
+      />
+
+      <p class="shrink-0 text-sm text-content-secondary text-nowrap">
+        <strong class="text-content-primary">
+          {{ medicamento().quantidadeEstoque }}
+        </strong>
+        / mín. {{ medicamento().quantidadeMinima }}
+      </p>
+    </div>
   </div>
   <div
     class="col-start-2 row-start-2 sm:row-start-1 sm:col-start-3 flex items-center sm:justify-center gap-2"
@@ -23,7 +48,7 @@
     </span>
   </div>
   <div
-    class="col-start-3 row-span-2 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
+    class="col-start-3 row-span-3 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
   >
     <p-button severity="secondary" [text]="true" (onClick)="menu.toggle($event)">
       <ng-template #icon>

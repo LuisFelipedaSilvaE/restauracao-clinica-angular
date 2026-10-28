@@ -9,6 +9,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
@@ -30,6 +31,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
     Card,
     FormField,
     ReactiveFormsModule,
+    SkeletonModule,
   ],
   templateUrl: './medicamento-form.html',
   styleUrl: './medicamento-form.css',
@@ -43,14 +45,16 @@ export class MedicamentoForm implements OnInit {
   protected readonly medicamentoForm = this.fb.nonNullable.group({
     nome: ['', [Validators.required]],
     preco: this.fb.control<number | null>(null, [Validators.required]),
-    unidadeControle: ['', [Validators.required]],
-    estoque: this.fb.control<number | null>(null, [Validators.required]),
+    quantidadeEstoque: this.fb.control<number | null>(null, [Validators.required]),
+    quantidadeMinima: this.fb.control<number | null>(null, [Validators.required]),
   });
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
   protected readonly btnLabel = computed(() => {
     return this.modo() === 'registro' ? 'Cadastrar medicamento' : 'Salvar alterações';
   });
+  protected readonly carregando = signal(false);
+  protected readonly skeletonCampos = Array.from({ length: 4 });
   protected readonly headerInfo = computed(() => {
     const modo = this.modo();
 
@@ -67,8 +71,8 @@ export class MedicamentoForm implements OnInit {
   private readonly labels: Record<string, string> = {
     nome: 'Nome do medicamento',
     preco: 'Preço',
-    unidadeControle: 'Unidade de controle',
-    estoque: 'Estoque inicial',
+    quantidadeEstoque: 'Estoque inicial',
+    quantidadeMinima: 'Estoque mínimo',
   };
 
   ngOnInit(): void {
@@ -85,12 +89,16 @@ export class MedicamentoForm implements OnInit {
       return;
     }
 
+    this.carregando.set(true);
+
     this.medicamentosService.getMedicamentoById(idNumerico).subscribe({
       next: (medicamento) => {
+        this.carregando.set(false);
+
         if (!medicamento) {
           this.messageService.add({
             severity: 'warn',
-            summary: 'Funcionário não encontrado',
+            summary: 'Medicamento não encontrado',
             detail: 'O registro solicitado não existe ou foi removido.',
             life: 4000,
           });
@@ -103,6 +111,7 @@ export class MedicamentoForm implements OnInit {
         this.medicamentoForm.patchValue(medicamentoFormData);
       },
       error: () => {
+        this.carregando.set(false);
         this.router.navigate(['/medicamentos']);
       },
     });
@@ -144,7 +153,8 @@ export class MedicamentoForm implements OnInit {
     const medicamento = {
       ...rawForm,
       preco: rawForm.preco!,
-      estoque: rawForm.estoque!,
+      quantidadeEstoque: rawForm.quantidadeEstoque!,
+      quantidadeMinima: rawForm.quantidadeMinima!,
     };
 
     const id = this.id();

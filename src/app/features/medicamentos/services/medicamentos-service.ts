@@ -13,25 +13,7 @@ export class MedicamentosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/medicamentos`;
   private readonly http = inject(HttpClient);
 
-  private readonly internalMedicamentos = signal<Medicamento[]>([
-    {
-      id: 1,
-      nome: 'Paracetamol 500mg',
-      preco: 15.5,
-      unidadeControle: 'Caixa',
-      estoque: 100,
-    },
-    { id: 2, nome: 'Ibuprofeno 400mg', preco: 22.0, unidadeControle: 'Caixa', estoque: 80 },
-    {
-      id: 3,
-      nome: 'Dipirona 500mg/mL',
-      preco: 12.3,
-      unidadeControle: 'Frasco',
-      estoque: 150,
-    },
-    { id: 4, nome: 'Amoxicilina 500mg', preco: 45.9, unidadeControle: 'Caixa', estoque: 50 },
-    { id: 5, nome: 'Omeprazol 20mg', preco: 28.75, unidadeControle: 'Caixa', estoque: 120 },
-  ]);
+  private readonly internalMedicamentos = signal<Medicamento[]>([]);
 
   readonly medicamentos = this.internalMedicamentos.asReadonly();
   private readonly listaCarregada = signal(false);
@@ -45,40 +27,62 @@ export class MedicamentosService {
   createMedicamento(medicamento: MedicamentoRequest): Observable<Medicamento> {
     this.setLoading('mutation', true);
 
-    const novoMedicamento = { id: this.internalMedicamentos().length, ...medicamento };
-    this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
-    return of(novoMedicamento);
-
-    // return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
-    // tap((novoMedicamento) => {
-    // this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
-    // }),
-    // finalize(() => this.setLoading('mutation', false)),
-    // );
+    return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
+      tap((novoMedicamento) => {
+        this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
+      }),
+      finalize(() => this.setLoading('mutation', false)),
+    );
   }
 
   updateMedicamento(id: number, medicamento: MedicamentoRequest): Observable<Medicamento> {
     this.setLoading('mutation', true);
-    const medicamentoOriginal = this.internalMedicamentos().find((m) => m.id === id);
 
-    if (!medicamentoOriginal) {
-      return of();
-    }
-    const medicamentoAtualizado = { ...medicamentoOriginal, ...medicamento };
+    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}`, medicamento).pipe(
+      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
 
-    this.substituirMedicamentoNaLista(medicamentoAtualizado);
-    return of(medicamentoAtualizado);
+  deleteMedicamento(id: number): Observable<void> {
+    this.setLoading('mutation', true);
 
-    // return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}`, medicamento).pipe(
-    // tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
-    // finalize(() => this.setLoading('mutation', false)),
-    // );
+    return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
+      tap(() =>
+        this.internalMedicamentos.update((medicamentos) => medicamentos.filter((m) => m.id !== id)),
+      ),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  updateMedicamentoAumentarQuantidadeEstoque(
+    id: number,
+    quantidade: number,
+  ): Observable<Medicamento> {
+    this.setLoading('mutation', true);
+
+    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}/adicionar`, { quantidade }).pipe(
+      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  updateMedicamentoReduzirQuantidadeEstoque(
+    id: number,
+    quantidade: number,
+  ): Observable<Medicamento> {
+    this.setLoading('mutation', true);
+
+    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}/baixar`, { quantidade }).pipe(
+      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
   }
 
   getAllMedicamentos(forceRefresh = false): Observable<Medicamento[]> {
-    // if (this.listaCarregada() && !forceRefresh) {
-    return of(this.internalMedicamentos());
-    // }
+    if (this.listaCarregada() && !forceRefresh) {
+      return of(this.internalMedicamentos());
+    }
 
     this.setLoading('list', true);
 
@@ -95,19 +99,12 @@ export class MedicamentosService {
 
   getMedicamentoById(id: number): Observable<Medicamento> {
     this.setLoading('detail', true);
-    const medicamento = this.internalMedicamentos().find((m) => m.id === id);
 
-    if (!medicamento) {
-      return of();
-    }
-
-    return of(medicamento);
-
-    // return this.http.get<Medicamento>(`${this.baseAPIUrl}/${id}`).pipe(
-    // finalize(() => {
-    // this.setLoading('detail', false);
-    // }),
-    // );
+    return this.http.get<Medicamento>(`${this.baseAPIUrl}/${id}`).pipe(
+      finalize(() => {
+        this.setLoading('detail', false);
+      }),
+    );
   }
 
   private setLoading(type: LoadingType, value: boolean): void {

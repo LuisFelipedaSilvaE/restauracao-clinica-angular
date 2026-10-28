@@ -1,0 +1,70 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  styleClass="w-md!"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">{{ config().title }}</h2>
+  </ng-template>
+
+  @if (type()) {
+    <div class="flex flex-col gap-5 mt-0.5">
+      <p-message [severity]="config().severity" (ngSubmit)="atualizarQuantidadeEstoque()">
+        <div class="flex justify-center items-center gap-2">
+          <span
+            class="flex justify-center items-center w-10 h-10 p-2 rounded-md"
+            [class]="type() === 'entrada' ? 'bg-green-200' : 'bg-yellow-200'"
+          >
+            <svg [lucideIcon]="config().msgIcon" class="h-5 w-5"></svg>
+          </span>
+          <div>
+            <p class="font-bold">
+              {{ medicamento().nome }}
+            </p>
+            <p class="font-normal">
+              Saldo atual: <strong>{{ medicamento().quantidadeEstoque }}</strong>
+            </p>
+          </div>
+        </div>
+      </p-message>
+
+      <form [formGroup]="form" class="flex flex-col gap-4">
+        <form-field
+          label="Quantidade"
+          inputId="quantidade"
+          [errorMessage]="getErrorMessage('quantidade')"
+          required
+        >
+          <p-inputNumber
+            inputId="quantidade"
+            formControlName="quantidade"
+            [invalid]="isInvalid('quantidade')"
+            placeholder="0"
+            fluid
+          />
+        </form-field>
+      </form>
+    </div>
+  }
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (click)="limparFormulario()"
+    />
+
+    <p-button
+      [label]="config().btnLabel"
+      [severity]="config().severity"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (onClick)="atualizarQuantidadeEstoque()"
+    />
+  </ng-template>
+</p-dialog>

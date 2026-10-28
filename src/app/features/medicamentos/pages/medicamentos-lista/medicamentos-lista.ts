@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucidePackageOpen, LucidePill, LucidePlus, LucideTriangleAlert } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
@@ -16,9 +16,10 @@ import { MedicamentosService } from '../../services/medicamentos-service';
   templateUrl: './medicamentos-lista.html',
   styleUrl: './medicamentos-lista.css',
 })
-export class MedicamentosLista {
+export class MedicamentosLista implements OnInit {
   private readonly medicamentosService = inject(MedicamentosService);
   protected readonly medicamentos = this.medicamentosService.medicamentos;
+  protected readonly loading = this.medicamentosService.loading;
   protected readonly infomedicamentos = computed<InfoCardContent[]>(() => {
     const medicamentos = this.medicamentos();
     return [
@@ -42,4 +43,8 @@ export class MedicamentosLista {
       },
     ];
   });
+
+  ngOnInit(): void {
+    this.medicamentosService.getAllMedicamentos().subscribe();
+  }
 }
