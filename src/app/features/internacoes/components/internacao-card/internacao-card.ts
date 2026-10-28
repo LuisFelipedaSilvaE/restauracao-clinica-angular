@@ -13,6 +13,7 @@ import {
 import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
+import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { AcaoMenuInternacao } from '../../interfaces/acao-menu-internacao';
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
 
@@ -30,6 +31,7 @@ import { InternacaoCardContent } from '../../interfaces/internacao-card-content'
     MenuModule,
     TagModule,
     IconColor,
+    CpfPipe,
     LucideBedSingle,
     LucideDynamicIcon,
     LucideEllipsisVertical,

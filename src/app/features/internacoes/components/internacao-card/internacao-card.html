@@ -11,7 +11,7 @@
       {{ internacao().acolhido.nome }}
     </p>
     <p class="truncate text-xs text-content-secondary">
-      I-{{ internacao().id | number: '3.0-0' }} &middot; CPF {{ internacao().acolhido.cpf }}
+      I-{{ internacao().id | number: '3.0-0' }} &middot; CPF {{ internacao().acolhido.cpf | cpf }}
     </p>
   </div>
 </div>
