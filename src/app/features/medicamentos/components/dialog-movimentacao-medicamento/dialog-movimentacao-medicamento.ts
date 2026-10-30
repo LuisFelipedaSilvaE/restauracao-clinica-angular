@@ -32,7 +32,11 @@ export class DialogMovimentacaoMedicamento {
   protected medicamentosService = inject(MedicamentosService);
   protected messageService = inject(MessageService);
   protected form = this.fb.group({
-    quantidade: this.fb.control<number | null>(null, [Validators.required]),
+    quantidade: this.fb.control<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+      Validators.pattern(/^[0-9]+$/),
+    ]),
   });
   readonly type = model.required<'entrada' | 'saida' | null>();
   readonly confirmLabel = input<string>('Confirmar');
@@ -54,7 +58,7 @@ export class DialogMovimentacaoMedicamento {
 
   protected isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return !!control?.invalid && (control.touched || this.formSubmitted());
+    return !!control?.invalid && (control.touched || this.formSubmitted() || control.dirty);
   }
 
   protected getErrorMessage(controlName: string): string | null {
@@ -62,18 +66,16 @@ export class DialogMovimentacaoMedicamento {
 
     if (!this.isInvalid(controlName) || !control?.errors) return null;
 
-    if (controlName === 'confirmarNovaSenha') {
-      if (control.errors['required']) {
-        return `Confirme a nova senha`;
-      }
-
-      if (control.errors['novaSenhaInvalida']) {
-        return `Informe senhas iguais`;
-      }
-    }
-
     if (control.errors['required']) {
       return `${this.labels[controlName]} é obrigatório`;
+    }
+
+    if (control.errors['min']) {
+      return `${this.labels[controlName]} deve ser maior ou igual a 1`;
+    }
+
+    if (control.errors['pattern']) {
+      return `${this.labels[controlName]} deve ser um número inteiro`;
     }
 
     return `${this.labels[controlName]} é inválido`;
@@ -88,13 +90,20 @@ export class DialogMovimentacaoMedicamento {
   }
 
   atualizarQuantidadeEstoque(): void {
+    this.formSubmitted.set(true);
+
     if (this.form.invalid) {
       this.form.markAllAsDirty();
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    if (this.medicamentosService.loading().mutation) {
       return;
     }
 
     const mode = this.type();
-    const quantidade = this.form.controls.quantidade.value!;
+    const quantidade = Number(this.form.controls.quantidade.value);
 
     const acao$ =
       mode === 'entrada'
@@ -110,6 +119,7 @@ export class DialogMovimentacaoMedicamento {
     acao$.subscribe({
       next: (res) => {
         this.visible.set(false);
+        this.formSubmitted.set(false);
         this.limparFormulario();
         this.messageService.add({
           severity: 'success',
@@ -119,6 +129,9 @@ export class DialogMovimentacaoMedicamento {
         });
 
         this.onSucess.emit(res);
+      },
+      error: () => {
+        this.formSubmitted.set(false);
       },
     });
   }

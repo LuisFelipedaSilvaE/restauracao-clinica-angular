@@ -42,12 +42,15 @@ import { Medicamento } from '../../interfaces/medicamento';
 export class MedicamentoCard {
   protected readonly medicamento = input.required<Medicamento>();
   protected readonly porcentagemEstoque = computed(() => {
-    if (this.medicamento().quantidadeEstoque <= 0) return 0;
-    if (this.medicamento().quantidadeEstoque == this.medicamento().quantidadeMinima) return 100;
+    const estoque = Number(this.medicamento().quantidadeEstoque) || 0;
+    const minimo = Number(this.medicamento().quantidadeMinima) || 0;
 
-    const porcentagem =
-      (this.medicamento().quantidadeEstoque / this.medicamento().quantidadeMinima) * 100;
-    return Math.ceil(porcentagem);
+    if (estoque <= 0) return 0;
+    if (minimo <= 0) return 100;
+
+    const porcentagem = (estoque / minimo) * 100;
+    if (!Number.isFinite(porcentagem)) return 0;
+    return Math.min(Math.ceil(porcentagem), 100);
   });
   private readonly router = inject(Router);
   readonly onEntrada = output<Medicamento>();
@@ -55,16 +58,18 @@ export class MedicamentoCard {
   readonly onDelete = output<Medicamento>();
   protected readonly statusMedicamento = computed(() => {
     const medicamento = this.medicamento();
-    const estoqueMinimoAtendido = medicamento.quantidadeEstoque >= medicamento.quantidadeMinima;
+    const estoque = Number(medicamento.quantidadeEstoque) || 0;
+    const minimo = Number(medicamento.quantidadeMinima) || 0;
+    const estoqueBaixo = estoque <= minimo;
 
     return {
       pb: {
-        severity: estoqueMinimoAtendido ? '#00a63e' : '#e7000b',
+        severity: estoqueBaixo ? '#e7000b' : '#00a63e',
       },
 
       tag: {
-        severity: estoqueMinimoAtendido ? 'success' : 'danger',
-        label: estoqueMinimoAtendido ? 'Estoque normal' : 'Estoque baixo',
+        severity: estoqueBaixo ? 'danger' : 'success',
+        label: estoqueBaixo ? 'Estoque baixo' : 'Estoque normal',
       },
     };
   });

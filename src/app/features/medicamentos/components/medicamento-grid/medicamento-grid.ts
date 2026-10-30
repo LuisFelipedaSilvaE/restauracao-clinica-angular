@@ -63,7 +63,10 @@ export class MedicamentoGrid {
   }
 
   excluirMedicamento(): void {
-    this.medicamentosService.deleteMedicamento(this.medicamentoMovimentacao()!.id).subscribe({
+    const medicamento = this.medicamentoMovimentacao();
+    if (!medicamento) return;
+
+    this.medicamentosService.deleteMedicamento(medicamento.id).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
@@ -71,10 +74,12 @@ export class MedicamentoGrid {
           detail: 'O medicamento foi removido com sucesso.',
           life: 3000,
         });
+        this.confirmarExclusao.set(false);
+      },
+      error: () => {
+        this.confirmarExclusao.set(false);
       },
     });
-
-    this.confirmarExclusao.set(false);
   }
 
   movimentar(mode: 'entrada' | 'saida', medicamento: Medicamento) {

@@ -2,8 +2,8 @@
   [modal]="true"
   [(visible)]="visible"
   [focusOnShow]="false"
-  [closable]="!loading()"
-  [dismissableMask]="!loading()"
+  [closable]="!medicamentosService.loading().mutation"
+  [dismissableMask]="!medicamentosService.loading().mutation"
   styleClass="w-md!"
 >
   <ng-template #header>
@@ -55,15 +55,15 @@
       type="button"
       label="Cancelar"
       severity="secondary"
-      [disabled]="loading()"
+      [disabled]="medicamentosService.loading().mutation"
       (click)="limparFormulario()"
     />
 
     <p-button
       [label]="config().btnLabel"
       [severity]="config().severity"
-      [loading]="loading()"
-      [disabled]="loading()"
+      [loading]="medicamentosService.loading().mutation"
+      [disabled]="medicamentosService.loading().mutation"
       (onClick)="atualizarQuantidadeEstoque()"
     />
   </ng-template>

@@ -40,8 +40,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           summary = 'Erro no login';
           break;
         case 403:
-          summary = 'Acesso negado';
-          detail = backendMessage || 'Você não tem permissão para realizar esta ação.';
+          if (backendMessage) {
+            summary = 'Erro ao tentar concluir a operação';
+            detail = backendMessage;
+          } else {
+            summary = 'Acesso negado';
+            detail = 'Você não tem permissão para realizar esta ação.';
+          }
           break;
         case 0:
           summary = 'Falha de conexão';
@@ -49,7 +54,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.';
           break;
         default:
-          if (error.status >= 500) {
+          if (error.status >= 400 && error.status < 500 && backendMessage) {
+            summary = 'Erro ao tentar concluir a operação';
+            detail = backendMessage;
+          } else if (error.status >= 500) {
             summary = 'Erro no servidor';
             detail = 'Ocorreu um erro no servidor. Tente novamente mais tarde.';
           } else if (isLoginRequest) {

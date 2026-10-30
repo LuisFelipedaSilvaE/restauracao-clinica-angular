@@ -24,21 +24,31 @@ export class MedicamentosLista implements OnInit {
   protected readonly emptyMedicamentosIcon = LucidePill;
   protected readonly infomedicamentos = computed<InfoCardContent[]>(() => {
     const medicamentos = this.medicamentos();
+    const itensCadastrados = medicamentos.length;
+    const unidadesEmMedicamentos = medicamentos.reduce(
+      (total, medicamento) => total + (Number(medicamento.quantidadeEstoque) || 0),
+      0,
+    );
+    const precisamDeAtencao = medicamentos.filter(
+      (medicamento) =>
+        Number(medicamento.quantidadeEstoque) <= Number(medicamento.quantidadeMinima),
+    ).length;
+
     return [
       {
-        value: medicamentos.length,
+        value: itensCadastrados,
         label: 'Itens cadastrados',
         icon: LucidePill,
         color: '#e7000b',
       },
       {
-        value: medicamentos.length,
-        label: 'Unidades em medicamentos',
+        value: unidadesEmMedicamentos,
+        label: 'Unidades em estoque',
         icon: LucidePackageOpen,
         color: '#0084d1',
       },
       {
-        value: medicamentos.length,
+        value: precisamDeAtencao,
         label: 'Precisam de atenção',
         icon: LucideTriangleAlert,
         color: '#e17100',

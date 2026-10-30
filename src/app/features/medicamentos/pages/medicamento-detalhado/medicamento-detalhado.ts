@@ -68,7 +68,7 @@ export class MedicamentoDetalhado implements OnInit {
 
   getMedicamento(): void {
     const id = Number(this.id());
-    if (Number.isNaN(id)) {
+    if (!Number.isInteger(id) || id <= 0) {
       this.router.navigate(['/medicamentos']);
       return;
     }
@@ -78,6 +78,10 @@ export class MedicamentoDetalhado implements OnInit {
     this.medicamentosService.getMedicamentoById(id).subscribe({
       next: (res) => {
         this.carregando.set(false);
+        if (!res) {
+          this.router.navigate(['/medicamentos']);
+          return;
+        }
         this.medicamento.set(res);
       },
       error: () => {

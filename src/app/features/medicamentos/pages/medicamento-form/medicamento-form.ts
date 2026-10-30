@@ -43,10 +43,22 @@ export class MedicamentoForm implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   protected readonly medicamentoForm = this.fb.nonNullable.group({
-    nome: ['', [Validators.required]],
-    preco: this.fb.control<number | null>(null, [Validators.required]),
-    quantidadeEstoque: this.fb.control<number | null>(null, [Validators.required]),
-    quantidadeMinima: this.fb.control<number | null>(null, [Validators.required]),
+    nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    preco: this.fb.control<number | null>(null, [
+      Validators.required,
+      Validators.min(0.01),
+      Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/),
+    ]),
+    quantidadeEstoque: this.fb.control<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.pattern(/^[0-9]+$/),
+    ]),
+    quantidadeMinima: this.fb.control<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+      Validators.pattern(/^[0-9]+$/),
+    ]),
   });
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
@@ -136,6 +148,28 @@ export class MedicamentoForm implements OnInit {
 
     if (control.errors['required']) {
       return `${this.labels[controlName]} é obrigatório`;
+    }
+
+    if (control.errors['minlength']) {
+      return `${this.labels[controlName]} deve ter pelo menos 3 caracteres`;
+    }
+
+    if (control.errors['maxlength']) {
+      return `${this.labels[controlName]} deve ter no máximo 100 caracteres`;
+    }
+
+    if (control.errors['min']) {
+      if (controlName === 'preco') {
+        return `${this.labels[controlName]} deve ser maior que 0`;
+      }
+      return `${this.labels[controlName]} não pode ser negativo`;
+    }
+
+    if (control.errors['pattern']) {
+      if (controlName === 'preco') {
+        return `${this.labels[controlName]} deve ter no máximo 2 casas decimais`;
+      }
+      return `${this.labels[controlName]} deve ser um número inteiro`;
     }
 
     return `${this.labels[controlName]} é inválido`;
