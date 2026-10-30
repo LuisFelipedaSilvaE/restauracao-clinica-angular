@@ -1,13 +1,14 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { UserRole } from './models/user-role.model';
 import { AuthService } from '../services/auth-service';
 
-export function roleGuard(role: string): CanActivateFn {
+export function roleGuard(...roles: UserRole[]): CanActivateFn {
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    if (authService.hasRole(role)) {
+    if (roles.some((role) => authService.hasRole(role))) {
       return true;
     }
 

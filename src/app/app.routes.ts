@@ -89,7 +89,7 @@ export const routes: Routes = [
       {
         path: 'acolhidos',
         component: AcolhidosLista,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'acolhidos/criar',
