@@ -2,7 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideUsersRound } from '@lucide/angular';
-import { MessageService } from 'primeng/api';
+import { MessageService, SelectItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DividerModule } from 'primeng/divider';
@@ -13,6 +13,7 @@ import { PasswordModule } from 'primeng/password';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { Card } from '../../../../shared/components/card/card';
+import { UserRole } from '../../../../core/guards/models/user-role.model';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
@@ -70,6 +71,10 @@ export class FuncionarioForm {
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
+  protected readonly roles: SelectItem<UserRole>[] = [
+    { label: 'Administrador', value: 'ADMIN' },
+    { label: 'Usuário', value: 'USER' },
+  ];
   protected readonly funcionarioForm = this.fb.nonNullable.group({
     nome: ['', [Validators.required]],
     cpf: ['', [Validators.required, cpfValidator]],
@@ -88,8 +93,10 @@ export class FuncionarioForm {
     cargo: this.fb.control<number | null>(null, [Validators.required]),
     dataAdmissao: this.fb.control<Date | null>(null, [Validators.required]),
     user: this.fb.nonNullable.group({
+      id: this.fb.control<number | undefined>(undefined),
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       password: ['', [Validators.required, Validators.maxLength(128)]],
+      role: this.fb.nonNullable.control<UserRole>('USER', [Validators.required]),
     }),
   });
   protected readonly estados = ESTADOS_BRASIL;
@@ -111,6 +118,7 @@ export class FuncionarioForm {
     dataAdmissao: 'Data de admissão',
     'user.username': 'Usuário',
     'user.password': 'Senha',
+    'user.role': 'Nível de acesso',
   };
 
   protected readonly passwordInputPt = {
@@ -143,6 +151,10 @@ export class FuncionarioForm {
     const id = this.id();
 
     if (!id) return;
+
+    const passwordControl = this.funcionarioForm.controls.user.controls.password;
+    passwordControl.clearValidators();
+    passwordControl.updateValueAndValidity();
 
     const idNumerico = Number(id);
 
@@ -189,8 +201,10 @@ export class FuncionarioForm {
       cargo: funcionario.cargo.id,
       dataAdmissao: localDateToDate(funcionario.dataAdmissao),
       user: {
+        id: funcionario.user.id,
         username: funcionario.user.username,
         password: '',
+        role: funcionario.user.role ?? 'USER',
       },
     });
   }

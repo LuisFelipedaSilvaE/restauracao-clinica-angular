@@ -2,9 +2,10 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Funcionario } from '../interfaces/funcionario';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { finalize, map, Observable, of, switchMap, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { UsersService } from '../../../core/services/users-service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { LoadingType } from '../../../shared/types/loading-type';
 export class FuncionariosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/funcionarios`;
   private readonly http = inject(HttpClient);
+  private readonly usersService = inject(UsersService);
   private readonly internalFuncionarios = signal<Funcionario[]>([]);
   readonly funcionarios = this.internalFuncionarios.asReadonly();
   private readonly listaCarregada = signal(false);
@@ -39,6 +41,19 @@ export class FuncionariosService {
     this.setLoading('mutation', true);
 
     return this.http.put<Funcionario>(`${this.baseAPIUrl}/${id}`, funcionario).pipe(
+      switchMap((funcionarioAtualizado) => {
+        const userId = funcionario.user.id;
+        const role = funcionario.user.role;
+
+        if (!userId || !role) return of(funcionarioAtualizado);
+
+        return this.usersService.alterarRole(userId, role).pipe(
+          map(() => ({
+            ...funcionarioAtualizado,
+            user: { ...funcionarioAtualizado.user, role },
+          })),
+        );
+      }),
       tap((funcionarioAtualizado) => this.substituirFuncionarioNaLista(funcionarioAtualizado)),
       finalize(() => this.setLoading('mutation', false)),
     );

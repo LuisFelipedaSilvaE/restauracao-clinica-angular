@@ -304,26 +304,44 @@
             autocomplete="off"
           />
         </form-field>
-        <form-field
-          label="Senha"
-          inputId="password"
-          required
-          [errorMessage]="getErrorMessage('user.password')"
-        >
-          <p-password
-            #passwordInput
+        @if (modo() === 'registro') {
+          <form-field
+            label="Senha"
             inputId="password"
-            name="password"
-            formControlName="password"
-            [class.tracking-widest]="!passwordInput.unmasked"
-            [toggleMask]="true"
-            [feedback]="false"
-            [pKeyFilter]="blockspace"
-            autocomplete="off"
-            placeholder="••••••••••"
-            [invalid]="isInvalid('user.password')"
-            [attr.aria-describedby]="isInvalid('user.password') ? 'password-erro' : null"
-            [pt]="passwordInputPt"
+            required
+            [errorMessage]="getErrorMessage('user.password')"
+          >
+            <p-password
+              #passwordInput
+              inputId="password"
+              name="password"
+              formControlName="password"
+              [class.tracking-widest]="!passwordInput.unmasked"
+              [toggleMask]="true"
+              [feedback]="false"
+              [pKeyFilter]="blockspace"
+              autocomplete="off"
+              placeholder="••••••••••"
+              [invalid]="isInvalid('user.password')"
+              [attr.aria-describedby]="isInvalid('user.password') ? 'password-erro' : null"
+              [pt]="passwordInputPt"
+              fluid
+            />
+          </form-field>
+        }
+        <form-field
+          label="Nível de acesso"
+          inputId="role"
+          required
+          [errorMessage]="getErrorMessage('user.role')"
+        >
+          <p-select
+            inputId="role"
+            name="role"
+            formControlName="role"
+            [options]="roles"
+            placeholder="Selecione o nível de acesso"
+            [invalid]="isInvalid('user.role')"
             fluid
           />
         </form-field>
