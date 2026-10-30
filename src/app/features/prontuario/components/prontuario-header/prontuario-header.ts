@@ -26,6 +26,7 @@ import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-content';
 
 @Component({
@@ -45,6 +46,7 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     ProfileColor,
     CpfPipe,
     SiglaNomePipe,
+    TelefonePipe,
     LucideDynamicIcon,
     LucideCalendarCheck,
     LucideCalendarDays,
