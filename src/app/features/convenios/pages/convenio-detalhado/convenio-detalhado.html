@@ -2,7 +2,7 @@
 
 @if (carregando()) {
   <card class="flex flex-col gap-6 p-6!">
-    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex min-w-0 items-center gap-3">
         <p-skeleton class="h-14! w-14! shrink-0! rounded-xl! sm:h-15! sm:w-15!" />
         <div class="flex min-w-0 flex-col gap-2">
@@ -35,7 +35,7 @@
     </div>
   </card>
 } @else if (convenio(); as convenio) {
-  <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+  <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <div class="flex min-w-0 items-center gap-3">
       <span
         class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
