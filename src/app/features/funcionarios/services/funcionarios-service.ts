@@ -5,6 +5,7 @@ import { Funcionario } from '../interfaces/funcionario';
 import { finalize, map, Observable, of, switchMap, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { dateToLocalDate } from '../../../shared/utils/local-date';
 import { UsersService } from '../../../core/services/users-service';
 
 @Injectable({
@@ -78,7 +79,7 @@ export class FuncionariosService {
   }
 
   getFuncionarioById(id: number): Observable<Funcionario | undefined> {
-    this.setLoading('detail', false);
+    this.setLoading('detail', true);
 
     return this.http.get<Funcionario>(`${this.baseAPIUrl}/${id}`).pipe(
       finalize(() => {
@@ -100,7 +101,9 @@ export class FuncionariosService {
     this.setLoading('mutation', true);
 
     return this.http
-      .patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, { dataDemissao: new Date() })
+      .patch<void>(`${this.baseAPIUrl}/${id}/dismiss`, {
+        dataDemissao: dateToLocalDate(new Date()),
+      })
       .pipe(
         tap(() => this.atualizarStatusNaLista(id, false)),
         finalize(() => this.setLoading('mutation', false)),

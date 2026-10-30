@@ -75,7 +75,7 @@ export class TriagensService {
   }
 
   getTriagemById(id: number): Observable<Triagem | undefined> {
-    this.setLoading('detail', false);
+    this.setLoading('detail', true);
 
     return this.http.get<Triagem>(`${this.baseAPIUrl}/${id}`).pipe(
       finalize(() => {

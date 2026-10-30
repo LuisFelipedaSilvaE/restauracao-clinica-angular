@@ -61,7 +61,7 @@ export class CargosService {
   }
 
   getCargoById(id: number): Observable<Cargo | undefined> {
-    this.setLoading('detail', false);
+    this.setLoading('detail', true);
 
     return this.http.get<Cargo>(`${this.baseAPIUrl}/${id}`).pipe(
       finalize(() => {
