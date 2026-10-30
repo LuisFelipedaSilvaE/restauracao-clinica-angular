@@ -11,6 +11,7 @@ import {
   LucidePhone,
   LucidePower,
   LucidePowerOff,
+  LucideShieldCheck,
   LucideUserRound,
   LucideUserRoundKey,
 } from '@lucide/angular';
@@ -19,6 +20,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { UserRole } from '../../../../core/guards/models/user-role.model';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
@@ -51,6 +53,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     LucidePhone,
     LucideCake,
     LucideCalendarCheck,
+    LucideShieldCheck,
     CommonModule,
     RouterLink,
     SiglaNomePipe,
@@ -86,6 +89,16 @@ export class FuncionarioDetalhado implements OnInit {
   private readonly router = inject(Router);
   private readonly datePipe = inject(DatePipe);
   protected readonly loading = this.funcionariosService.loading;
+  protected readonly privilegio = computed(() => {
+    const role = this.funcionario()?.user.role;
+    const labels: Record<UserRole, string> = {
+      ADMIN: 'Administrador',
+      USER: 'Usuário',
+      NO_ACCESS: 'Sem acesso',
+    };
+
+    return role ? labels[role] : 'Não informado';
+  });
   protected readonly confirmarAlteracao = signal(false);
   protected readonly dialogSenha = signal(false);
   protected dataNascimentoNormalizada: string = '';
