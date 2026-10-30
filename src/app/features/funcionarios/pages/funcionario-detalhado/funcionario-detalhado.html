@@ -187,4 +187,8 @@
   [loading]="loading().mutation"
   (onConfirm)="alterarStatus()"
 />
-<dialog-alterar-senha-f [(visible)]="dialogSenha" [userId]="funcionario()?.user?.id" />
+<dialog-alterar-senha-f
+  [(visible)]="dialogSenha"
+  [userId]="funcionario()?.user?.id"
+  [encerrarSessaoAposAlteracao]="alterandoPropriaSenha()"
+/>

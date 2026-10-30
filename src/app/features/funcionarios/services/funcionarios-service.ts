@@ -46,7 +46,9 @@ export class FuncionariosService {
         const userId = funcionario.user.id;
         const role = funcionario.user.role;
 
-        if (!userId || !role) return of(funcionarioAtualizado);
+        if (!userId || !role || funcionarioAtualizado.user.role === role) {
+          return of(funcionarioAtualizado);
+        }
 
         return this.usersService.alterarRole(userId, role).pipe(
           map(() => ({

@@ -13,6 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { PasswordModule } from 'primeng/password';
 import { UsersService } from '../../../../core/services/users-service';
+import { AuthService } from '../../../../core/services/auth-service';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 
 @Component({
@@ -31,9 +32,11 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
 export class DialogAlterarSenhaF implements OnInit {
   readonly userId = input.required<number>();
   readonly visible = model.required<boolean>();
+  readonly encerrarSessaoAposAlteracao = input(false);
   protected readonly fb = inject(FormBuilder);
   protected readonly usersService = inject(UsersService);
   protected readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
   protected readonly loading = this.usersService.loading;
   protected readonly blockspace: RegExp = /^[^\s]+$/;
   private readonly confirmarNovaSenha: ValidatorFn = (
@@ -109,9 +112,15 @@ export class DialogAlterarSenhaF implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Senha atualizada!',
-          detail: 'A senha foi alterada com sucesso.',
+          detail: this.encerrarSessaoAposAlteracao()
+            ? 'Sua senha foi alterada. Entre novamente para continuar.'
+            : 'A senha foi alterada com sucesso.',
           life: 3000,
         });
+
+        if (this.encerrarSessaoAposAlteracao()) {
+          this.authService.logout();
+        }
       },
     });
   }

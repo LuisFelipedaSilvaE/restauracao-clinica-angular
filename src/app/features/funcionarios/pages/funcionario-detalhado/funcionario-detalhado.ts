@@ -21,6 +21,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { UserRole } from '../../../../core/guards/models/user-role.model';
+import { AuthService } from '../../../../core/services/auth-service';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
@@ -85,6 +86,7 @@ export class FuncionarioDetalhado implements OnInit {
     return `${cep.slice(0, 5)}-${cep.slice(5)}`;
   });
   private readonly funcionariosService = inject(FuncionariosService);
+  private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly datePipe = inject(DatePipe);
@@ -101,6 +103,9 @@ export class FuncionarioDetalhado implements OnInit {
   });
   protected readonly confirmarAlteracao = signal(false);
   protected readonly dialogSenha = signal(false);
+  protected readonly alterandoPropriaSenha = computed(
+    () => this.funcionario()?.user.username === this.authService.getUsername(),
+  );
   protected dataNascimentoNormalizada: string = '';
   protected activeConfig = computed<FuncionarioActiveConfig>(() => {
     return {

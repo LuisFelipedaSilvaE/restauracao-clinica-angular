@@ -14,6 +14,7 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { Card } from '../../../../shared/components/card/card';
 import { UserRole } from '../../../../core/guards/models/user-role.model';
+import { AuthService } from '../../../../core/services/auth-service';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
@@ -59,6 +60,7 @@ export class FuncionarioForm {
   protected readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly cargosService = inject(CargosService);
   protected readonly blockspace = /^[^\s]+$/;
@@ -70,6 +72,7 @@ export class FuncionarioForm {
   protected readonly carregando = signal(false);
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
+  private usernameOriginal: string | null = null;
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
   protected readonly roles: SelectItem<UserRole>[] = [
     { label: 'Administrador', value: 'ADMIN' },
@@ -184,6 +187,8 @@ export class FuncionarioForm {
   }
 
   private preencherFormulario(funcionario: Funcionario): void {
+    this.usernameOriginal = funcionario.user.username;
+
     this.funcionarioForm.patchValue({
       nome: funcionario.nome,
       cpf: formatCpf(funcionario.cpf),
@@ -269,6 +274,10 @@ export class FuncionarioForm {
     const funcionario = this.fromFormToRequest(this.funcionarioForm);
 
     const id = this.id();
+    const alterouProprioUsername =
+      !!id &&
+      this.usernameOriginal === this.authService.getUsername() &&
+      funcionario.user.username !== this.usernameOriginal;
     const request$ = id
       ? this.funcionariosService.updateFuncionario(Number(id), funcionario!)
       : this.funcionariosService.createFuncionario(funcionario!);
@@ -278,11 +287,18 @@ export class FuncionarioForm {
         this.messageService.add({
           severity: 'success',
           summary: id ? 'Funcionário atualizado!' : 'Funcionário criado!',
-          detail: id
-            ? 'As alterações foram salvas com sucesso.'
-            : 'O funcionário foi cadastrado com sucesso.',
+          detail: alterouProprioUsername
+            ? 'Seu nome de usuário foi alterado. Entre novamente para continuar.'
+            : id
+              ? 'As alterações foram salvas com sucesso.'
+              : 'O funcionário foi cadastrado com sucesso.',
           life: 3000,
         });
+
+        if (alterouProprioUsername) {
+          this.authService.logout();
+          return;
+        }
 
         this.voltarParaLista();
       },
