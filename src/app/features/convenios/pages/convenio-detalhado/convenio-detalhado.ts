@@ -11,6 +11,7 @@ import {
   LucideHandCoins,
   LucidePaintBucket,
   LucideSquareDashedText,
+  LucideTrash2,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -49,6 +50,7 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
     LucideHandCoins,
     LucideSquareDashedText,
     LucidePaintBucket,
+    LucideTrash2,
     BadgeModule,
     TagModule,
     CustomBadge,
@@ -72,6 +74,7 @@ export class ConvenioDetalhado implements OnInit {
   protected readonly convenio = signal<Convenio | null>(null);
   protected readonly carregando = signal(false);
   protected readonly confirmarAlteracao = signal(false);
+  protected readonly confirmarExclusao = signal(false);
   protected readonly loading = this.conveniosService.loading;
 
   protected readonly statusLabel = computed(() => (this.convenio()?.ativo ? 'Ativo' : 'Inativo'));
@@ -153,6 +156,24 @@ export class ConvenioDetalhado implements OnInit {
       next: () => {
         this.convenio.update((atual) => (atual ? { ...atual, ativo: proximoStatus } : null));
         this.confirmarAlteracao.set(false);
+      },
+    });
+  }
+
+  protected excluirConvenio(): void {
+    const convenio = this.convenio();
+    if (!convenio) return;
+
+    this.conveniosService.deleteConvenio(convenio.id).subscribe({
+      next: () => {
+        this.confirmarExclusao.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Convênio excluído!',
+          detail: 'O convênio foi excluído com sucesso.',
+          life: 3000,
+        });
+        this.voltarParaLista();
       },
     });
   }

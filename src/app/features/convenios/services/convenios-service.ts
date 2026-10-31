@@ -95,7 +95,7 @@ export class ConveniosService {
   deactivateConvenio(id: number): Observable<void> {
     this.setLoading('mutation', true);
 
-    return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/deactivate`, null).pipe(
       tap(() => this.atualizarStatusNaLista(id, false)),
       finalize(() => this.setLoading('mutation', false)),
     );
@@ -104,8 +104,21 @@ export class ConveniosService {
   activateConvenio(id: number): Observable<void> {
     this.setLoading('mutation', true);
 
-    return this.http.put<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(
+    return this.http.patch<void>(`${this.baseAPIUrl}/${id}/activate`, null).pipe(
       tap(() => this.atualizarStatusNaLista(id, true)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  deleteConvenio(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
+      tap(() =>
+        this.internalConvenios.update((convenios) =>
+          convenios.filter((convenio) => convenio.id !== id),
+        ),
+      ),
       finalize(() => this.setLoading('mutation', false)),
     );
   }

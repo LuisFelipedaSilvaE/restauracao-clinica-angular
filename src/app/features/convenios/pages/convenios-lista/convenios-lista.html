@@ -60,7 +60,11 @@
     }
   } @else {
     @for (item of convenios(); track $index) {
-      <convenio-card (statusConvenioChange)="toggleConvenio($event)" [convenio]="item" />
+      <convenio-card
+        (statusConvenioChange)="toggleConvenio($event)"
+        (excluirConvenio)="solicitarExclusao($event)"
+        [convenio]="item"
+      />
     } @empty {
       <empty-list
         [icon]="emptyConveniosIcon"
@@ -85,5 +89,5 @@
   [severity]="confirmSeverity()"
   [loading]="loading().mutation"
   (hidden)="this.acaoPendente.set(null)"
-  (onConfirm)="confirmarAlteracaoStatus()"
+  (onConfirm)="confirmarAcao()"
 />

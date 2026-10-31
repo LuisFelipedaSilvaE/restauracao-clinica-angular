@@ -51,6 +51,17 @@
           <svg [lucideIcon]="computedConvenioAtivoBtn().icon" class="h-4 w-4"></svg>
         </ng-template>
       </p-button>
+      <p-button
+        (onClick)="solicitarExclusao()"
+        severity="danger"
+        pTooltip="Excluir convênio"
+        tooltipPosition="top"
+        [text]="true"
+      >
+        <ng-template #icon>
+          <svg lucideTrash2 class="h-4 w-4"></svg>
+        </ng-template>
+      </p-button>
     </div>
   }
 </div>

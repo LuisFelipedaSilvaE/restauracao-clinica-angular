@@ -10,6 +10,7 @@ import {
   LucideLayers,
   LucideIcon,
   LucideEye,
+  LucideTrash2,
 } from '@lucide/angular';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
@@ -51,6 +52,7 @@ interface ToggleConvenioButton {
     TooltipModule,
     RouterLink,
     LucideEye,
+    LucideTrash2,
   ],
   templateUrl: './convenio-card.html',
   styleUrl: './convenio-card.css',
@@ -59,6 +61,7 @@ export class ConvenioCard {
   readonly convenio = input.required<ConvenioCardContent>();
   readonly showActions = input(true);
   readonly statusConvenioChange = output<ToggleConvenioDto>();
+  readonly excluirConvenio = output<{ id: number; nome: string }>();
   readonly computedInfoCards = computed<InfoCardContent[]>(() => {
     const card1 = {
       value: this.convenio().acolhidosAtivos,
@@ -98,5 +101,12 @@ export class ConvenioCard {
     };
 
     this.statusConvenioChange.emit(dto);
+  }
+
+  solicitarExclusao(): void {
+    this.excluirConvenio.emit({
+      id: this.convenio().id,
+      nome: this.convenio().descricao,
+    });
   }
 }

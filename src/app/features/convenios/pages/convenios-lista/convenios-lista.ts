@@ -18,6 +18,10 @@ import { ConveniosService } from '../../services/convenios-service';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
+import { MessageService } from 'primeng/api';
+
+type AcaoPendente =
+  { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
 
 @Component({
   selector: 'app-convenios-lista',
@@ -40,6 +44,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 export class ConveniosLista implements OnInit {
   protected readonly emptyConveniosIcon = LucideFolderX;
   private readonly conveniosService = inject(ConveniosService);
+  private readonly messageService = inject(MessageService);
 
   protected readonly convenios = computed<ConvenioCardContent[]>(() => {
     return this.conveniosService.convenios().map((convenio) => {
@@ -81,36 +86,60 @@ export class ConveniosLista implements OnInit {
   });
 
   protected readonly dialogConfirmVisible = signal<boolean>(false);
-  protected readonly acaoPendente = signal<ToggleConvenioDto | null>(null);
+  protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly loading = this.conveniosService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
 
   protected readonly confirmTitle = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar convênio' : 'Desativar convênio';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir convênio';
+    return acao?.dados.ativo ? 'Ativar convênio' : 'Desativar convênio';
   });
 
   protected readonly confirmMessage = computed(() => {
-    return this.acaoPendente()?.ativo
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') {
+      return `Deseja excluir ${acao.nome}? Esta ação não poderá ser desfeita.`;
+    }
+    return acao?.dados.ativo
       ? 'Deseja ativar este convênio? Ele voltará a ficar disponível.'
       : 'Deseja desativar este convênio? Ele deixará de ficar disponível.';
   });
 
   protected readonly confirmLabel = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar' : 'Desativar';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir';
+    return acao?.dados.ativo ? 'Ativar' : 'Desativar';
   });
 
   protected readonly confirmSeverity = computed<'success' | 'danger'>(() => {
-    return this.acaoPendente()?.ativo ? 'success' : 'danger';
+    const acao = this.acaoPendente();
+    return acao?.tipo === 'status' && acao.dados.ativo ? 'success' : 'danger';
   });
 
-  confirmarAlteracaoStatus(): void {
-    const dto = this.acaoPendente();
+  confirmarAcao(): void {
+    const acao = this.acaoPendente();
 
-    if (!dto) return;
+    if (!acao) return;
 
-    const acao$ = dto.ativo
-      ? this.conveniosService.activateConvenio(dto.id)
-      : this.conveniosService.deactivateConvenio(dto.id);
+    if (acao.tipo === 'exclusao') {
+      this.conveniosService.deleteConvenio(acao.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Convênio excluído!',
+            detail: 'O convênio foi excluído com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
+
+    const acao$ = acao.dados.ativo
+      ? this.conveniosService.activateConvenio(acao.dados.id)
+      : this.conveniosService.deactivateConvenio(acao.dados.id);
 
     acao$.subscribe({
       next: () => this.dialogConfirmVisible.set(false),
@@ -118,7 +147,12 @@ export class ConveniosLista implements OnInit {
   }
 
   toggleConvenio(dto: ToggleConvenioDto): void {
-    this.acaoPendente.set(dto);
+    this.acaoPendente.set({ tipo: 'status', dados: dto });
+    this.dialogConfirmVisible.set(true);
+  }
+
+  solicitarExclusao(convenio: { id: number; nome: string }): void {
+    this.acaoPendente.set({ tipo: 'exclusao', ...convenio });
     this.dialogConfirmVisible.set(true);
   }
 
