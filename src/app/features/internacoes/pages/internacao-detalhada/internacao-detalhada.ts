@@ -21,7 +21,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
-import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
+import { InternacaoDetalhadaMock } from '../../interfaces/internacao-detalhada-mock';
 import { InternacoesMockService } from '../../services/internacoes-mock-service';
 
 @Component({
@@ -61,7 +61,7 @@ export class InternacaoDetalhada implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly carregando = signal(true);
-  protected readonly detalhes = signal<InternacaoCardContent | null>(null);
+  protected readonly detalhes = signal<InternacaoDetalhadaMock | null>(null);
   protected readonly actionButtonPt = {
     root: {
       class: 'w-full justify-center sm:w-auto',

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { CONVENIOS_INTERNACOES_MOCK, INTERNACOES_MOCK } from '../data/internacoes-mock';
+import { InternacaoDetalhadaMock } from '../interfaces/internacao-detalhada-mock';
 import { InternacaoMock } from '../interfaces/internacao-mock';
-import { InternacaoCardContent } from '../interfaces/internacao-card-content';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
 
 @Injectable({
@@ -62,8 +62,8 @@ export class InternacoesMockService {
     return rascunho ? structuredClone(rascunho) : null;
   }
 
-  obterSeverity(etapa: string): InternacaoCardContent['severity'] {
-    const severidades: Record<string, InternacaoCardContent['severity']> = {
+  obterSeverity(etapa: string): InternacaoDetalhadaMock['severity'] {
+    const severidades: Record<string, InternacaoDetalhadaMock['severity']> = {
       'Em tratamento': 'success',
       'Próximo da alta': 'warn',
       'Alta vencida': 'danger',
