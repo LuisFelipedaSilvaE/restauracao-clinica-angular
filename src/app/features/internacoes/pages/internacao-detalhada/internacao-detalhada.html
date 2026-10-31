@@ -37,7 +37,7 @@
       </div>
     </card>
   }
-} @else if (detalhes(); as internacao) {
+} @else if (internacao(); as internacao) {
   <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <div class="flex min-w-0 items-center gap-3">
       <span
@@ -50,7 +50,9 @@
         <h3 class="truncate text-xl font-semibold">{{ internacao.acolhido.nome }}</h3>
         <div class="flex flex-wrap items-center gap-2">
           <p-tag [value]="internacao.convenio.descricao" [customTag]="internacao.convenio.cor" />
-          <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+          @if (etapaConfig(); as etapa) {
+            <p-tag [value]="etapa.label" [severity]="etapa.severity" />
+          }
         </div>
       </div>
     </div>
@@ -67,17 +69,19 @@
           <svg lucideClipboardList class="h-4 w-4" aria-hidden="true"></svg>
         </ng-template>
       </p-button>
-      <p-button
-        label="Editar"
-        severity="secondary"
-        variant="outlined"
-        [pt]="actionButtonPt"
-        [routerLink]="['/internacoes', internacao.id, 'editar']"
-      >
-        <ng-template #icon>
-          <svg lucidePencil class="h-4 w-4" aria-hidden="true"></svg>
-        </ng-template>
-      </p-button>
+      @if (internacao.ativo) {
+        <p-button
+          label="Editar"
+          severity="secondary"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          [routerLink]="['/internacoes', internacao.id, 'editar']"
+        >
+          <ng-template #icon>
+            <svg lucidePencil class="h-4 w-4" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+      }
     </div>
   </card>
 
@@ -120,25 +124,42 @@
         <div class="min-w-0">
           <dt class="text-sm uppercase text-content-secondary">Data de entrada</dt>
           <dd class="font-heading text-md font-medium">
-            {{ internacao.dataAdmissao | date: 'dd/MM/yyyy' }}
+            {{ dataEntrada() | date: 'dd/MM/yyyy' }}
           </dd>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <span
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-          [iconColor]="'#4a5565'"
-        >
-          <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
-        </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Previsão de alta</dt>
-          <dd class="font-heading text-md font-medium">
-            {{ internacao.dataPrevisaoAlta | date: 'dd/MM/yyyy' }}
-          </dd>
+      @if (dataSaida(); as dataSaida) {
+        <div class="flex items-center gap-2">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-sm uppercase text-content-secondary">Data de saída</dt>
+            <dd class="font-heading text-md font-medium">
+              {{ dataSaida | date: 'dd/MM/yyyy' }}
+            </dd>
+          </div>
         </div>
-      </div>
+      } @else {
+        <div class="flex items-center gap-2">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-sm uppercase text-content-secondary">Previsão de alta</dt>
+            <dd class="font-heading text-md font-medium">
+              {{ dataSaidaPrevista() | date: 'dd/MM/yyyy' }}
+            </dd>
+          </div>
+        </div>
+      }
 
       <div class="flex items-center gap-2">
         <span
@@ -149,7 +170,7 @@
         </span>
         <div class="min-w-0">
           <dt class="text-sm uppercase text-content-secondary">Tempo internado</dt>
-          <dd class="font-heading text-md font-medium">{{ internacao.tempoInternado }}</dd>
+          <dd class="font-heading text-md font-medium">{{ tempoInternado() }}</dd>
         </div>
       </div>
 
@@ -162,7 +183,9 @@
         </span>
         <div class="min-w-0">
           <dt class="text-sm uppercase text-content-secondary">Etapa do tratamento</dt>
-          <dd class="font-heading text-md font-medium">{{ internacao.etapaTratamento }}</dd>
+          <dd class="font-heading text-md font-medium">
+            {{ etapaConfig()?.label }}
+          </dd>
         </div>
       </div>
 
@@ -171,24 +194,30 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideClipboardList class="h-4 w-4" aria-hidden="true"></svg>
+          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
         </span>
         <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Triagem vinculada</dt>
+          <dt class="text-sm uppercase text-content-secondary">Valor da mensalidade</dt>
           <dd class="font-heading text-md font-medium">
-            {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
+            {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
           </dd>
         </div>
       </div>
+
+      @if (tipoAltaLabel(); as tipoAlta) {
+        <div class="flex items-center gap-2">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+            [iconColor]="'#4a5565'"
+          >
+            <svg lucideCircleCheckBig class="h-4 w-4" aria-hidden="true"></svg>
+          </span>
+          <div class="min-w-0">
+            <dt class="text-sm uppercase text-content-secondary">Tipo de alta</dt>
+            <dd class="font-heading text-md font-medium">{{ tipoAlta }}</dd>
+          </div>
+        </div>
+      }
     </dl>
-
-    <p-divider />
-
-    <div>
-      <p class="text-sm uppercase text-content-secondary">Observação sobre isenção</p>
-      <p class="font-heading text-md font-medium">
-        {{ internacao.observacaoIsencao || 'Nenhuma observação informada.' }}
-      </p>
-    </div>
   </card>
 }

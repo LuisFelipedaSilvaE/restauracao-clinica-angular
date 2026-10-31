@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { CONVENIOS_INTERNACOES_MOCK, INTERNACOES_MOCK } from '../data/internacoes-mock';
-import { InternacaoDetalhadaMock } from '../interfaces/internacao-detalhada-mock';
 import { InternacaoMock } from '../interfaces/internacao-mock';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
 
@@ -60,35 +59,5 @@ export class InternacoesMockService {
     const rascunho = this.rascunhoForm();
     this.rascunhoForm.set(null);
     return rascunho ? structuredClone(rascunho) : null;
-  }
-
-  obterSeverity(etapa: string): InternacaoDetalhadaMock['severity'] {
-    const severidades: Record<string, InternacaoDetalhadaMock['severity']> = {
-      'Em tratamento': 'success',
-      'Próximo da alta': 'warn',
-      'Alta vencida': 'danger',
-      'Alta concedida': 'info',
-      Desligado: 'secondary',
-    };
-
-    return severidades[etapa] ?? 'secondary';
-  }
-
-  buscarAtualPorAcolhido(idAcolhido: number): InternacaoMock | undefined {
-    const etapasEncerradas = new Set(['Alta concedida', 'Desligado']);
-    return this.internacoes().find(
-      (internacao) =>
-        internacao.idAcolhido === idAcolhido && !etapasEncerradas.has(internacao.etapaTratamento),
-    );
-  }
-
-  calcularTempoInternado(dataAdmissao: Date): string {
-    const diasTotais = Math.max(
-      0,
-      Math.floor((Date.now() - new Date(dataAdmissao).getTime()) / 86_400_000),
-    );
-    const meses = Math.floor(diasTotais / 30);
-    const dias = diasTotais % 30;
-    return meses === 0 ? `${dias}d` : `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
   }
 }
