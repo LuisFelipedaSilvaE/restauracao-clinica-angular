@@ -122,6 +122,12 @@ export class InternacoesService {
     return meses === 0 ? `${dias}d` : `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
   }
 
+  getInternacaoAtualDoAcolhido(acolhidoId: number): Internacao | undefined {
+    return this.internacoes()
+      .filter((internacao) => internacao.ativo && internacao.acolhido.id === acolhidoId)
+      .sort((a, b) => b.dataEntrada.localeCompare(a.dataEntrada))[0];
+  }
+
   private setLoading(type: LoadingType, value: boolean): void {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
   }

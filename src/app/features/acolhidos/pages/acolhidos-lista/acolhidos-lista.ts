@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
+import { forkJoin } from 'rxjs';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
@@ -23,10 +24,10 @@ import { AcolhidoCardContent } from '../../interfaces/acolhido-card-content';
 import { FilterOption } from '../../interfaces/filter-option';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 import { AcolhidosService } from '../../services/acolhidos-service';
+import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 
 type AcaoPendente =
-  | { tipo: 'status'; dados: ToggleAcolhidoDto }
-  | { tipo: 'exclusao'; id: number; nome: string };
+  { tipo: 'status'; dados: ToggleAcolhidoDto } | { tipo: 'exclusao'; id: number; nome: string };
 
 @Component({
   selector: 'app-acolhidos-lista',
@@ -54,9 +55,12 @@ export class AcolhidosLista implements OnInit {
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyAcolhidosIcon = LucideUserRoundX;
   private readonly acolhidosService = inject(AcolhidosService);
+  private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
   protected readonly acolhidos = this.acolhidosService.acolhidos;
-  protected readonly loading = computed(() => this.acolhidosService.loading().list);
+  protected readonly loading = computed(
+    () => this.acolhidosService.loading().list || this.internacoesService.loading().list,
+  );
   protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly acaoPendente = signal<AcaoPendente | null>(null);
@@ -65,12 +69,37 @@ export class AcolhidosLista implements OnInit {
   protected readonly statusSelecionado = signal('todos');
   protected readonly dialogConfirmVisible = signal(false);
 
-  protected readonly convenios = computed<FilterOption[]>(() => [
-    { name: 'Todos os convênios', code: 'todos' },
-  ]);
+  protected readonly convenios = computed<FilterOption[]>(() => {
+    const conveniosUnicos = new Map(
+      this.acolhidosCards().flatMap((acolhido) => {
+        const convenio = acolhido.internacaoAtual?.convenio;
+        return convenio ? [[convenio.id, convenio] as const] : [];
+      }),
+    );
+
+    return [
+      { name: 'Todos os convênios', code: 'todos' },
+      ...Array.from(conveniosUnicos.values())
+        .sort((a, b) => a.descricao.localeCompare(b.descricao, 'pt-BR'))
+        .map((convenio) => ({ name: convenio.descricao, code: String(convenio.id) })),
+    ];
+  });
 
   private readonly acolhidosCards = computed<AcolhidoCardContent[]>(() =>
-    this.acolhidos().map((acolhido) => ({ ...acolhido })),
+    this.acolhidos().map((acolhido) => {
+      const internacaoAtual = this.internacoesService.getInternacaoAtualDoAcolhido(acolhido.id);
+
+      return {
+        ...acolhido,
+        internacaoAtual: internacaoAtual
+          ? {
+              id: internacaoAtual.id,
+              etapaTratamento: internacaoAtual.etapaTratamento,
+              convenio: internacaoAtual.convenio,
+            }
+          : undefined,
+      };
+    }),
   );
 
   protected readonly infoAcolhidos = computed<InfoCardContent[]>(() => {
@@ -131,7 +160,7 @@ export class AcolhidosLista implements OnInit {
       const correspondeStatus =
         status === 'todos' || (status === 'ativo' ? acolhido.ativo : !acolhido.ativo);
       const correspondeConvenio =
-        convenio === 'todos' || acolhido.internacaoAtual?.convenio.descricao === convenio;
+        convenio === 'todos' || String(acolhido.internacaoAtual?.convenio.id) === convenio;
 
       return correspondeBusca && correspondeStatus && correspondeConvenio;
     });
@@ -211,7 +240,10 @@ export class AcolhidosLista implements OnInit {
   }
 
   ngOnInit(): void {
-    this.acolhidosService.getAllAcolhidos().subscribe();
+    forkJoin({
+      acolhidos: this.acolhidosService.getAllAcolhidos(),
+      internacoes: this.internacoesService.getAllInternacoes(),
+    }).subscribe();
   }
 
   private normalizarTexto(valor: string): string {
