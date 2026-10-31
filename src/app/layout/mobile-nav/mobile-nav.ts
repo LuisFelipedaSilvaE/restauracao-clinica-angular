@@ -15,7 +15,7 @@ import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../core/services/auth-service';
 import { ProfileColor } from '../../shared/directives/profile-color';
-import { NAVIGATION_ROUTES } from '../navigation-routes';
+import { isNavigationRouteActive, NAVIGATION_ROUTES } from '../navigation-routes';
 
 @Component({
   selector: 'app-mobile-nav',
@@ -43,6 +43,7 @@ export class MobileNav {
   closeMenu = output<void>();
 
   protected readonly routes = signal(NAVIGATION_ROUTES);
+  private readonly currentUrl = signal(this.router.url);
 
   protected readonly navButtonPt = {
     root: {
@@ -66,11 +67,15 @@ export class MobileNav {
       this.renderer.removeClass(this.document.body, 'overflow-hidden');
     });
 
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      if (this.isOpen()) {
-        this.closeMenu.emit();
-      }
-    });
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.currentUrl.set(event.urlAfterRedirects);
+
+        if (this.isOpen()) {
+          this.closeMenu.emit();
+        }
+      });
   }
 
   onNavigate(): void {
@@ -84,5 +89,9 @@ export class MobileNav {
   onLogoutClick(): void {
     this.closeMenu.emit();
     this.authService.logout();
+  }
+
+  protected isRouteActive(route: string, routerLinkActive: boolean): boolean {
+    return isNavigationRouteActive(route, this.currentUrl(), routerLinkActive);
   }
 }

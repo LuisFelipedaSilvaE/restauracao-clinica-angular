@@ -13,8 +13,8 @@
           [routerLink]="[route.route]"
           routerLinkActive
           #rla="routerLinkActive"
-          [severity]="rla.isActive ? null : 'secondary'"
-          [text]="!rla.isActive"
+          [severity]="isRouteActive(route.route, rla.isActive) ? null : 'secondary'"
+          [text]="!isRouteActive(route.route, rla.isActive)"
           [label]="route.label"
           [pt]="navButtonPt"
           fluid
