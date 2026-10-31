@@ -1,9 +1,11 @@
+import { EtapaTratamento } from '../enums/etapa-tratamento';
+
 export interface InternacaoFormDraft {
   triagemId: number | null;
-  idAcolhido: number | null;
-  idConvenio: number | null;
-  dataAdmissao: Date | null;
-  dataPrevisaoAlta: Date | null;
-  etapaTratamento: string;
-  observacaoIsencao: string;
+  acolhidoId: number | null;
+  convenioId: number | null;
+  dataEntrada: Date | null;
+  dataSaidaPrevista: Date | null;
+  etapaTratamento: EtapaTratamento;
+  valorMensalidade: number | null;
 }

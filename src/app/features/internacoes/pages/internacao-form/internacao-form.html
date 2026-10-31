@@ -31,150 +31,228 @@
 } @else {
   <card>
     <form [formGroup]="internacaoForm" (ngSubmit)="onSubmit()" class="space-y-5">
-      <fieldset class="space-y-4">
-        <legend class="font-semibold">Origem e vínculo</legend>
+      @if (modo() === 'registro') {
+        <fieldset class="space-y-4">
+          <legend class="font-semibold">Origem e vínculo</legend>
 
-        <form-field
-          label="Triagem"
-          inputId="triagemId"
-          required
-          [errorMessage]="getErrorMessage('triagemId')"
-        >
-          <p-select
-            inputId="triagemId"
-            name="triagemId"
-            formControlName="triagemId"
-            [options]="triagensDisponiveis()"
-            optionLabel="nomePossivelAcolhido"
-            optionValue="id"
-            [filter]="true"
-            filterBy="nomePossivelAcolhido,telefone"
-            filterPlaceholder="Buscar por nome ou telefone"
-            placeholder="Selecione uma triagem concluída"
-            emptyMessage="Nenhuma triagem concluída disponível"
-            [invalid]="isInvalid('triagemId')"
-            appendTo="body"
-            fluid
-            (onChange)="onTriagemChange($event.value)"
-          >
-            <ng-template #selectedItem let-triagem>
-              <span>{{ triagem.nomePossivelAcolhido }} · Triagem T-{{ triagem.id }}</span>
-            </ng-template>
-            <ng-template #item let-triagem>
-              <div class="flex min-w-0 flex-col">
-                <span class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</span>
-                <span class="truncate text-xs text-content-secondary">
-                  T-{{ triagem.id }} · {{ triagem.telefone | telefone }} ·
-                  {{ triagem.dataAgendada | date: 'dd/MM/yyyy' : '' : 'pt-BR' }}
-                </span>
-              </div>
-            </ng-template>
-          </p-select>
-        </form-field>
-
-        @if (triagemSelecionada(); as triagem) {
-          <div
-            class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
-          >
-            <div class="min-w-0">
-              <p class="text-xs text-content-secondary">Candidato</p>
-              <p class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</p>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs text-content-secondary">Telefone</p>
-              <p class="truncate font-medium">{{ triagem.telefone | telefone }}</p>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs text-content-secondary">Convênio</p>
-              <p class="truncate font-medium">{{ triagem.convenio.descricao }}</p>
-            </div>
-          </div>
-        }
-
-        <div class="grid items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
           <form-field
-            label="Acolhido"
-            inputId="idAcolhido"
+            label="Triagem"
+            inputId="triagemId"
             required
-            [errorMessage]="getErrorMessage('idAcolhido')"
+            [errorMessage]="getErrorMessage('triagemId')"
           >
             <p-select
-              inputId="idAcolhido"
-              name="idAcolhido"
-              formControlName="idAcolhido"
-              [options]="acolhidosDisponiveis()"
-              optionLabel="nome"
+              inputId="triagemId"
+              name="triagemId"
+              formControlName="triagemId"
+              [options]="triagensDisponiveis()"
+              optionLabel="nomePossivelAcolhido"
               optionValue="id"
               [filter]="true"
-              filterBy="nome,cpf,telefone"
-              filterPlaceholder="Buscar por nome, CPF ou telefone"
-              placeholder="Selecione um acolhido"
-              emptyMessage="Nenhum acolhido encontrado"
-              [invalid]="isInvalid('idAcolhido')"
+              filterBy="nomePossivelAcolhido,telefone"
+              filterPlaceholder="Buscar por nome ou telefone"
+              placeholder="Selecione uma triagem concluída"
+              emptyMessage="Nenhuma triagem concluída disponível"
+              [invalid]="isInvalid('triagemId')"
               appendTo="body"
+              autocomplete="off"
               fluid
-              (onChange)="onAcolhidoChange($event.value)"
+              (onChange)="onTriagemChange($event.value)"
             >
-              <ng-template #selectedItem let-acolhido>
-                <span>{{ acolhido.nome }} · CPF {{ acolhido.cpf | cpf }}</span>
+              <ng-template #selectedItem let-triagem>
+                <span>{{ triagem.nomePossivelAcolhido }} · Triagem T-{{ triagem.id }}</span>
               </ng-template>
-              <ng-template #item let-acolhido>
+              <ng-template #item let-triagem>
                 <div class="flex min-w-0 flex-col">
-                  <span class="truncate font-medium">{{ acolhido.nome }}</span>
+                  <span class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</span>
                   <span class="truncate text-xs text-content-secondary">
-                    CPF {{ acolhido.cpf | cpf }} · {{ acolhido.telefone | telefone }}
+                    T-{{ triagem.id }} · {{ triagem.telefone | telefone }} ·
+                    {{ triagem.dataAgendada | date: 'dd/MM/yyyy' : '' : 'pt-BR' }}
                   </span>
                 </div>
               </ng-template>
             </p-select>
           </form-field>
 
-          <p-button
-            type="button"
-            label="Cadastrar acolhido"
-            severity="secondary"
-            variant="outlined"
-            class="w-full sm:mt-5 sm:w-auto"
-            (onClick)="cadastrarNovoAcolhido()"
-          >
-            <ng-template #icon>
-              <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
-            </ng-template>
-          </p-button>
+          @if (triagemSelecionada(); as triagem) {
+            <div
+              class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+            >
+              <div class="min-w-0">
+                <p class="text-xs text-content-secondary">Candidato</p>
+                <p class="truncate font-medium">{{ triagem.nomePossivelAcolhido }}</p>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs text-content-secondary">Telefone</p>
+                <p class="truncate font-medium">{{ triagem.telefone | telefone }}</p>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs text-content-secondary">Convênio sugerido</p>
+                <p class="truncate font-medium">{{ triagem.convenio.descricao }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="grid items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <form-field
+              label="Acolhido"
+              inputId="acolhidoId"
+              required
+              [errorMessage]="getErrorMessage('acolhidoId')"
+            >
+              <p-select
+                inputId="acolhidoId"
+                name="acolhidoId"
+                formControlName="acolhidoId"
+                [options]="acolhidosDisponiveis()"
+                optionLabel="nome"
+                optionValue="id"
+                [filter]="true"
+                filterBy="nome,cpf,telefone"
+                filterPlaceholder="Buscar por nome, CPF ou telefone"
+                placeholder="Selecione um acolhido"
+                emptyMessage="Nenhum acolhido encontrado"
+                [invalid]="isInvalid('acolhidoId')"
+                appendTo="body"
+                autocomplete="off"
+                fluid
+                (onChange)="onAcolhidoChange($event.value)"
+              >
+                <ng-template #selectedItem let-acolhido>
+                  <span>{{ acolhido.nome }} · CPF {{ acolhido.cpf | cpf }}</span>
+                </ng-template>
+                <ng-template #item let-acolhido>
+                  <div class="flex min-w-0 flex-col">
+                    <span class="truncate font-medium">{{ acolhido.nome }}</span>
+                    <span class="truncate text-xs text-content-secondary">
+                      CPF {{ acolhido.cpf | cpf }} · {{ acolhido.telefone | telefone }}
+                    </span>
+                  </div>
+                </ng-template>
+              </p-select>
+            </form-field>
+
+            <p-button
+              type="button"
+              label="Cadastrar acolhido"
+              severity="secondary"
+              variant="outlined"
+              class="w-full sm:mt-5 sm:w-auto"
+              (onClick)="cadastrarNovoAcolhido()"
+            >
+              <ng-template #icon>
+                <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
+              </ng-template>
+            </p-button>
+          </div>
+
+          @if (dadosDivergentes()) {
+            <p-message severity="warn" size="small">
+              O nome ou o telefone da triagem é diferente dos dados do acolhido selecionado.
+              Confirme o vínculo antes de registrar a internação.
+            </p-message>
+          }
+        </fieldset>
+
+        <p-divider />
+      } @else if (registroAtual(); as internacao) {
+        <div
+          class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+        >
+          <div class="min-w-0">
+            <p class="text-xs text-content-secondary">Acolhido</p>
+            <p class="truncate font-medium">{{ internacao.acolhido.nome }}</p>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs text-content-secondary">Convênio</p>
+            <p class="truncate font-medium">{{ internacao.convenio.descricao }}</p>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs text-content-secondary">Data de entrada</p>
+            <p class="font-medium">
+              {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' : 'pt-BR' }}
+            </p>
+          </div>
         </div>
 
-        @if (dadosDivergentes()) {
-          <p-message severity="warn" size="small">
-            O nome e o telefone da triagem são diferentes dos dados do acolhido selecionado.
-            Confirme o vínculo antes de registrar a internação.
-          </p-message>
-        }
-      </fieldset>
-
-      <p-divider />
+        <p-divider />
+      }
 
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados da internação</legend>
 
         <div class="grid gap-4 sm:grid-cols-2">
-          <form-field
-            label="Convênio definido pela triagem"
-            inputId="idConvenio"
-            required
-            [errorMessage]="getErrorMessage('idConvenio')"
-          >
-            <input
-              pInputText
-              id="idConvenio"
-              [value]="triagemSelecionada()?.convenio?.descricao ?? ''"
-              placeholder="Selecione primeiro uma triagem"
-              [invalid]="isInvalid('idConvenio')"
-              readonly
-              fluid
-            />
-          </form-field>
+          @if (modo() === 'registro') {
+            <form-field
+              label="Convênio"
+              inputId="convenioId"
+              required
+              [errorMessage]="getErrorMessage('convenioId')"
+            >
+              <p-select
+                inputId="convenioId"
+                name="convenioId"
+                formControlName="convenioId"
+                [options]="conveniosDisponiveis()"
+                optionLabel="descricao"
+                optionValue="id"
+                [filter]="true"
+                filterBy="descricao"
+                filterPlaceholder="Buscar convênio"
+                placeholder="Selecione um convênio"
+                emptyMessage="Nenhum convênio encontrado"
+                [invalid]="isInvalid('convenioId')"
+                appendTo="body"
+                autocomplete="off"
+                fluid
+                (onChange)="onConvenioChange($event.value)"
+              />
+            </form-field>
 
-          @if (modo() === 'atualizacao') {
+            <form-field
+              label="Data de entrada"
+              inputId="dataEntrada"
+              required
+              [errorMessage]="getErrorMessage('dataEntrada')"
+            >
+              <p-datepicker
+                inputId="dataEntrada"
+                name="dataEntrada"
+                formControlName="dataEntrada"
+                placeholder="dd/mm/aaaa"
+                dateFormat="dd/mm/yy"
+                [showButtonBar]="true"
+                [readonlyInput]="false"
+                [maxDate]="hoje"
+                [invalid]="isInvalid('dataEntrada')"
+                appendTo="body"
+                autocomplete="off"
+                fluid
+              />
+            </form-field>
+          } @else {
+            <form-field
+              label="Previsão de saída"
+              inputId="dataSaidaPrevista"
+              required
+              [errorMessage]="getErrorMessage('dataSaidaPrevista')"
+            >
+              <p-datepicker
+                inputId="dataSaidaPrevista"
+                name="dataSaidaPrevista"
+                formControlName="dataSaidaPrevista"
+                placeholder="dd/mm/aaaa"
+                dateFormat="dd/mm/yy"
+                [showButtonBar]="true"
+                [readonlyInput]="false"
+                [minDate]="internacaoForm.controls.dataEntrada.value ?? hoje"
+                [invalid]="isInvalid('dataSaidaPrevista')"
+                appendTo="body"
+                autocomplete="off"
+                fluid
+              />
+            </form-field>
+
             <form-field
               label="Etapa de tratamento"
               inputId="etapaTratamento"
@@ -186,73 +264,40 @@
                 name="etapaTratamento"
                 formControlName="etapaTratamento"
                 [options]="etapasTratamento"
+                optionLabel="label"
+                optionValue="value"
                 placeholder="Selecione uma etapa"
                 [invalid]="isInvalid('etapaTratamento')"
                 appendTo="body"
+                autocomplete="off"
                 fluid
               />
             </form-field>
           }
 
           <form-field
-            label="Data de admissão"
-            inputId="dataAdmissao"
+            label="Valor da mensalidade"
+            inputId="valorMensalidade"
             required
-            [errorMessage]="getErrorMessage('dataAdmissao')"
+            [errorMessage]="getErrorMessage('valorMensalidade')"
           >
-            <p-datepicker
-              inputId="dataAdmissao"
-              name="dataAdmissao"
-              formControlName="dataAdmissao"
-              placeholder="dd/mm/aaaa"
-              dateFormat="dd/mm/yy"
-              [showButtonBar]="true"
-              [readonlyInput]="true"
-              [maxDate]="hoje"
-              [invalid]="isInvalid('dataAdmissao')"
-              appendTo="body"
-              fluid
-            />
-          </form-field>
-
-          <form-field
-            label="Previsão de alta"
-            inputId="dataPrevisaoAlta"
-            required
-            [errorMessage]="getErrorMessage('dataPrevisaoAlta')"
-          >
-            <p-datepicker
-              inputId="dataPrevisaoAlta"
-              name="dataPrevisaoAlta"
-              formControlName="dataPrevisaoAlta"
-              placeholder="dd/mm/aaaa"
-              dateFormat="dd/mm/yy"
-              [showButtonBar]="true"
-              [readonlyInput]="true"
-              [minDate]="internacaoForm.controls.dataAdmissao.value ?? hoje"
-              [invalid]="isInvalid('dataPrevisaoAlta')"
-              appendTo="body"
+            <p-inputnumber
+              inputId="valorMensalidade"
+              name="valorMensalidade"
+              formControlName="valorMensalidade"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              [readonly]="convenioSelecionado()?.pagamento === false"
+              [invalid]="isInvalid('valorMensalidade')"
+              placeholder="R$ 0,00"
+              autocomplete="off"
               fluid
             />
           </form-field>
         </div>
-
-        <form-field
-          label="Observação sobre isenção"
-          inputId="observacaoIsencao"
-          [errorMessage]="getErrorMessage('observacaoIsencao')"
-        >
-          <textarea
-            pTextarea
-            id="observacaoIsencao"
-            name="observacaoIsencao"
-            formControlName="observacaoIsencao"
-            rows="4"
-            maxlength="500"
-            class="w-full resize-y"
-            placeholder="Informe o motivo da isenção, quando aplicável."
-          ></textarea>
-        </form-field>
       </fieldset>
 
       <p-divider />
