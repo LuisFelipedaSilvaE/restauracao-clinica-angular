@@ -103,6 +103,10 @@ export const routes: Routes = [
       },
       {
         path: 'acolhidos/:id/prontuario',
+        redirectTo: 'prontuarios/:id',
+      },
+      {
+        path: 'prontuarios/:acolhidoId',
         component: Prontuario,
         canActivate: [roleGuard('ADMIN')],
         children: [

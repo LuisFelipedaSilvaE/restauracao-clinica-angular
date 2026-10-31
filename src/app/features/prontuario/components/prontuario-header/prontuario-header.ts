@@ -66,6 +66,8 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
 export class ProntuarioHeader {
   readonly data = input<ProntuarioHeaderContent | null>(null);
   readonly loading = input(false);
+  readonly backLabel = input('Voltar para lista de acolhidos');
+  readonly backUrl = input('/acolhidos');
   readonly statusChange = output<void>();
   readonly deleteRequest = output<void>();
 

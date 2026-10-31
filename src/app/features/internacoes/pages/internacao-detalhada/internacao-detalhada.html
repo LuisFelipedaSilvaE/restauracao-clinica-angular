@@ -63,7 +63,8 @@
         severity="secondary"
         variant="outlined"
         [pt]="actionButtonPt"
-        [routerLink]="['/acolhidos', internacao.acolhido.id, 'prontuario']"
+        [routerLink]="['/prontuarios', internacao.acolhido.id]"
+        [queryParams]="{ origem: 'internacao', internacaoId: internacao.id }"
       >
         <ng-template #icon>
           <svg lucideClipboardList class="h-4 w-4" aria-hidden="true"></svg>

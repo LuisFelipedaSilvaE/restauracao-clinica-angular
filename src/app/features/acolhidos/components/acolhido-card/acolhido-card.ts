@@ -57,7 +57,10 @@ export class AcolhidoCard {
         label: 'Ver prontuário',
         lucideIcon: LucideEye,
         iconClass: 'h-4.5 w-4.5 text-action-info',
-        command: () => this.router.navigate(['/acolhidos', this.acolhido().id, 'prontuario']),
+        command: () =>
+          this.router.navigate(['/prontuarios', this.acolhido().id], {
+            queryParams: { origem: 'acolhidos' },
+          }),
       },
       {
         label: 'Editar dados',

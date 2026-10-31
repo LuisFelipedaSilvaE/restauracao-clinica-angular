@@ -39,7 +39,9 @@ import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratame
   styleUrl: './prontuario.css',
 })
 export class Prontuario implements OnInit {
-  readonly id = input<string>();
+  readonly acolhidoId = input<string>();
+  readonly origem = input<'acolhidos' | 'internacao'>('acolhidos');
+  readonly internacaoId = input<string>();
   private readonly router = inject(Router);
   protected readonly acolhido = signal<Acolhido | null>(null);
   private readonly acolhidosService = inject(AcolhidosService);
@@ -51,6 +53,21 @@ export class Prontuario implements OnInit {
     () => this.acolhidosService.loading().detail || this.internacoesService.loading().list,
   );
   protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
+  protected readonly backConfig = computed(() => {
+    const internacaoId = Number(this.internacaoId());
+
+    if (this.origem() === 'internacao' && Number.isSafeInteger(internacaoId) && internacaoId > 0) {
+      return {
+        label: 'Voltar para internação',
+        url: `/internacoes/${internacaoId}`,
+      };
+    }
+
+    return {
+      label: 'Voltar para lista de acolhidos',
+      url: '/acolhidos',
+    };
+  });
 
   protected readonly abas = [
     {
@@ -135,10 +152,10 @@ export class Prontuario implements OnInit {
   );
 
   ngOnInit(): void {
-    const idNumerico = Number(this.id());
+    const idNumerico = Number(this.acolhidoId());
 
     if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
-      this.voltarParaLista();
+      this.voltarParaOrigem();
       return;
     }
 
@@ -147,12 +164,12 @@ export class Prontuario implements OnInit {
       internacoes: this.internacoesService.getAllInternacoes(),
     }).subscribe({
       next: ({ acolhido }) => this.acolhido.set(acolhido),
-      error: () => this.voltarParaLista(),
+      error: () => this.voltarParaOrigem(),
     });
   }
 
-  protected voltarParaLista(): void {
-    this.router.navigate(['/acolhidos']);
+  protected voltarParaOrigem(): void {
+    this.router.navigateByUrl(this.backConfig().url);
   }
 
   protected alterarStatus(): void {
@@ -185,7 +202,7 @@ export class Prontuario implements OnInit {
           detail: 'O acolhido foi excluído com sucesso.',
           life: 3000,
         });
-        this.voltarParaLista();
+        this.voltarParaOrigem();
       },
     });
   }

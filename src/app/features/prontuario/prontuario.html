@@ -1,6 +1,8 @@
 <prontuario-header
   [data]="headerData()"
   [loading]="detailLoading()"
+  [backLabel]="backConfig().label"
+  [backUrl]="backConfig().url"
   (statusChange)="confirmarAlteracao.set(true)"
   (deleteRequest)="confirmarExclusao.set(true)"
 />
@@ -8,7 +10,7 @@
 <p-tabs value="dados-gerais" scrollable>
   <p-tablist>
     @for (aba of abas; track aba.route) {
-      <p-tab [value]="aba.route" [routerLink]="aba.route">
+      <p-tab [value]="aba.route" [routerLink]="aba.route" queryParamsHandling="preserve">
         <div class="flex items-center gap-2 whitespace-nowrap">
           <svg [lucideIcon]="aba.icon" class="h-4 w-4"></svg>
           <span>{{ aba.label }}</span>

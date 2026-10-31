@@ -1,4 +1,4 @@
-<back-button label="Voltar para lista de acolhidos" url="/acolhidos" />
+<back-button [label]="backLabel()" [url]="backUrl()" />
 
 @if (loading()) {
   <card class="border-l-4 border-l-border-muted p-4! sm:p-5!" aria-busy="true">
