@@ -15,11 +15,13 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
+import { localDateToDate } from '../../../../shared/utils/local-date';
 import { FilterInternacoesCard } from '../../components/filter-internacoes-card/filter-internacoes-card';
 import { InternacaoCard } from '../../components/internacao-card/internacao-card';
+import { EtapaTratamento } from '../../enums/etapa-tratamento';
+import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
-import { InternacoesMockService } from '../../services/internacoes-mock-service';
+import { InternacoesService } from '../../services/internacoes-service';
 
 @Component({
   selector: 'app-internacoes-lista',
@@ -42,10 +44,9 @@ import { InternacoesMockService } from '../../services/internacoes-mock-service'
   styleUrl: './internacoes-lista.css',
 })
 export class InternacoesLista implements OnInit {
-  private readonly acolhidosService = inject(AcolhidosService);
-  private readonly internacoesService = inject(InternacoesMockService);
+  private readonly internacoesService = inject(InternacoesService);
   protected readonly internacoes = this.internacoesService.internacoes;
-  protected readonly loading = computed(() => this.acolhidosService.loading().list);
+  protected readonly loading = computed(() => this.internacoesService.loading().list);
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyInternacoesIcon = LucideBedSingle;
@@ -66,7 +67,6 @@ export class InternacoesLista implements OnInit {
 
   protected readonly infoInternacoes = computed<InfoCardContent[]>(() => {
     const internacoes = this.internacoes();
-    const etapasEncerradas = new Set(['Alta concedida', 'Desligado']);
 
     return [
       {
@@ -76,22 +76,25 @@ export class InternacoesLista implements OnInit {
         color: '#155dfc',
       },
       {
-        value: internacoes.filter((internacao) => !etapasEncerradas.has(internacao.etapaTratamento))
-          .length,
+        value: internacoes.filter((internacao) => internacao.ativo).length,
         label: 'Internações ativas',
         icon: LucideBedSingle,
         color: '#00a63e',
       },
       {
-        value: internacoes.filter((internacao) => internacao.etapaTratamento === 'Próximo da alta')
-          .length,
+        value: internacoes.filter(
+          (internacao) =>
+            internacao.ativo && internacao.etapaTratamento === EtapaTratamento.PROXIMO_ALTA,
+        ).length,
         label: 'Próximas da alta',
         icon: LucideBellRing,
         color: '#e17100',
       },
       {
-        value: internacoes.filter((internacao) => internacao.etapaTratamento === 'Alta vencida')
-          .length,
+        value: internacoes.filter(
+          (internacao) =>
+            internacao.ativo && internacao.etapaTratamento === EtapaTratamento.ALTA_VENCIDA,
+        ).length,
         label: 'Altas vencidas',
         icon: LucideTriangleAlert,
         color: '#e7000b',
@@ -104,59 +107,53 @@ export class InternacoesLista implements OnInit {
   protected readonly etapaTratamentoSelecionada = signal('todos');
   protected readonly periodoEntradaSelecionado = signal<Date[] | null>(null);
 
-  protected readonly convenios = computed(() => [
-    { name: 'Todos os convênios', code: 'todos' },
-    ...this.internacoesService.convenios.map((convenio) => ({
-      name: convenio.descricao,
-      code: convenio.descricao,
-    })),
-  ]);
+  protected readonly convenios = computed(() => {
+    const conveniosUnicos = new Map(
+      this.internacoes().map((internacao) => [internacao.convenio.id, internacao.convenio]),
+    );
+
+    return [
+      { name: 'Todos os convênios', code: 'todos' },
+      ...Array.from(conveniosUnicos.values())
+        .sort((a, b) => a.descricao.localeCompare(b.descricao, 'pt-BR'))
+        .map((convenio) => ({
+          name: convenio.descricao,
+          code: String(convenio.id),
+        })),
+    ];
+  });
 
   protected readonly etapasTratamento = [
     { name: 'Todas etapas', code: 'todos' },
-    { name: 'Em tratamento', code: 'Em tratamento' },
-    { name: 'Próximo da alta', code: 'Próximo da alta' },
-    { name: 'Alta vencida', code: 'Alta vencida' },
-    { name: 'Alta concedida', code: 'Alta concedida' },
-    { name: 'Desligado', code: 'Desligado' },
+    ...Object.values(EtapaTratamento).map((etapa) => ({
+      name: ETAPA_TRATAMENTO_CONFIG[etapa].label,
+      code: etapa,
+    })),
   ];
 
   protected readonly internacoesCardsFiltradas = computed<InternacaoCardContent[]>(() => {
     const busca = this.normalizarTexto(this.busca());
     const convenioFiltro =
-      this.convenioSelecionado() === 'todos' ? null : this.convenioSelecionado().toLowerCase();
+      this.convenioSelecionado() === 'todos' ? null : this.convenioSelecionado();
     const etapaFiltro =
       this.etapaTratamentoSelecionada() === 'todos'
         ? null
-        : this.etapaTratamentoSelecionada().toLowerCase();
+        : (this.etapaTratamentoSelecionada() as EtapaTratamento);
     const [dataEntradaInicial, dataEntradaFinal] = this.periodoEntradaSelecionado() ?? [];
 
-    const acolhidosPorId = new Map(
-      this.acolhidosService.acolhidos().map((acolhido) => [acolhido.id, acolhido]),
-    );
-    const conveniosPorId = new Map(
-      this.internacoesService.convenios.map((convenio) => [convenio.id, convenio]),
-    );
-
-    return this.internacoes().flatMap((internacao) => {
-      const acolhido = acolhidosPorId.get(internacao.idAcolhido);
-      const convenio = conveniosPorId.get(internacao.idConvenio);
-
-      if (!acolhido || !convenio) return [];
-
+    return this.internacoes().flatMap<InternacaoCardContent>((internacao) => {
       const correspondeBusca =
         !busca ||
-        this.normalizarTexto(acolhido.nome).includes(busca) ||
-        acolhido.cpf.replace(/\D/g, '').includes(busca) ||
-        this.normalizarTexto(acolhido.email).includes(busca);
+        this.normalizarTexto(internacao.acolhido.nome).includes(busca) ||
+        internacao.acolhido.cpf.replace(/\D/g, '').includes(busca) ||
+        this.normalizarTexto(internacao.acolhido.email).includes(busca);
       const correspondeConvenio =
-        convenioFiltro === null || convenio.descricao.toLowerCase() === convenioFiltro;
-      const correspondeEtapa =
-        etapaFiltro === null || internacao.etapaTratamento.toLowerCase() === etapaFiltro;
+        convenioFiltro === null || String(internacao.convenio.id) === convenioFiltro;
+      const correspondeEtapa = etapaFiltro === null || internacao.etapaTratamento === etapaFiltro;
       const correspondePeriodoEntrada =
         !dataEntradaInicial ||
         !dataEntradaFinal ||
-        this.dataDentroDoIntervalo(internacao.dataAdmissao, dataEntradaInicial, dataEntradaFinal);
+        this.dataDentroDoIntervalo(internacao.dataEntrada, dataEntradaInicial, dataEntradaFinal);
 
       if (
         !correspondeBusca ||
@@ -170,11 +167,10 @@ export class InternacoesLista implements OnInit {
       return [
         {
           ...internacao,
-          acolhido,
-          convenio,
-          tempoInternado: this.internacoesService.calcularTempoInternado(internacao.dataAdmissao),
-          encerrada: ['Alta concedida', 'Desligado'].includes(internacao.etapaTratamento),
-          severity: this.internacoesService.obterSeverity(internacao.etapaTratamento),
+          tempoInternado: this.internacoesService.calcularTempoInternado(
+            internacao.dataEntrada,
+            internacao.dataSaida,
+          ),
         },
       ];
     });
@@ -188,7 +184,7 @@ export class InternacoesLista implements OnInit {
   }
 
   ngOnInit(): void {
-    this.acolhidosService.getAllAcolhidos().subscribe();
+    this.internacoesService.getAllInternacoes().subscribe();
   }
 
   private normalizarTexto(valor: string): string {
@@ -198,8 +194,8 @@ export class InternacoesLista implements OnInit {
       .replace(/[\W_\u0300-\u036f]/g, '');
   }
 
-  private dataDentroDoIntervalo(data: Date, inicio: Date, fim: Date): boolean {
-    const valor = new Date(data);
+  private dataDentroDoIntervalo(data: string, inicio: Date, fim: Date): boolean {
+    const valor = localDateToDate(data);
     const dataInicial = new Date(inicio);
     const dataFinal = new Date(fim);
 

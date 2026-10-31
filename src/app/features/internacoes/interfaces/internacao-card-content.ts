@@ -1,11 +1,5 @@
-import { Acolhido } from '../../acolhidos/interfaces/acolhido';
-import { Convenio } from '../../convenios/interfaces/convenio';
-import { InternacaoMock } from './internacao-mock';
+import { Internacao } from './internacao';
 
-export interface InternacaoCardContent extends InternacaoMock {
-  acolhido: Acolhido;
-  convenio: Convenio;
+export interface InternacaoCardContent extends Internacao {
   tempoInternado: string;
-  encerrada: boolean;
-  severity: 'secondary' | 'warn' | 'success' | 'info' | 'danger' | 'contrast';
 }

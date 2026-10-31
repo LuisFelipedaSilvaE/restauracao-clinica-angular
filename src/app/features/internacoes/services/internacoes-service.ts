@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
+import { localDateToDate } from '../../../shared/utils/local-date';
+import { ConveniosService } from '../../convenios/services/convenios-service';
 import { Internacao } from '../interfaces/internacao';
 import { InternacaoCreateRequest } from '../interfaces/internacao-create-request';
 import { InternacaoEndRequest } from '../interfaces/internacao-end-request';
@@ -14,9 +16,19 @@ import { InternacaoUpdateRequest } from '../interfaces/internacao-update-request
 export class InternacoesService {
   private readonly baseAPIUrl = `${environment.apiUrl}/internacoes`;
   private readonly http = inject(HttpClient);
+  private readonly conveniosService = inject(ConveniosService);
 
   private readonly internalInternacoes = signal<Internacao[]>([]);
-  readonly internacoes = this.internalInternacoes.asReadonly();
+  readonly internacoes = computed(() => {
+    const conveniosPorId = new Map(
+      this.conveniosService.convenios().map((convenio) => [convenio.id, convenio]),
+    );
+
+    return this.internalInternacoes().map((internacao) => ({
+      ...internacao,
+      convenio: conveniosPorId.get(internacao.convenio.id) ?? internacao.convenio,
+    }));
+  });
 
   private readonly listaCarregada = signal(false);
 
@@ -29,7 +41,7 @@ export class InternacoesService {
 
   getAllInternacoes(forceRefresh = false): Observable<Internacao[]> {
     if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalInternacoes());
+      return of(this.internacoes());
     }
 
     this.setLoading('list', true);
@@ -91,6 +103,23 @@ export class InternacoesService {
       ),
       finalize(() => this.setLoading('mutation', false)),
     );
+  }
+
+  calcularTempoInternado(dataEntrada: string, dataSaida: string | null = null): string {
+    const entrada = localDateToDate(dataEntrada);
+    const referencia = dataSaida ? localDateToDate(dataSaida) : new Date();
+
+    entrada.setHours(0, 0, 0, 0);
+    referencia.setHours(0, 0, 0, 0);
+
+    const diasTotais = Math.max(
+      0,
+      Math.floor((referencia.getTime() - entrada.getTime()) / 86_400_000),
+    );
+    const meses = Math.floor(diasTotais / 30);
+    const dias = diasTotais % 30;
+
+    return meses === 0 ? `${dias}d` : `${meses} ${meses === 1 ? 'mês' : 'meses'} e ${dias}d`;
   }
 
   private setLoading(type: LoadingType, value: boolean): void {

@@ -17,11 +17,11 @@
 </div>
 
 <p class="hidden text-center text-sm text-content-secondary md:block">
-  {{ internacao().dataAdmissao | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+  {{ dataEntrada() | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
 </p>
 
 <p class="hidden text-center text-sm text-content-secondary md:block">
-  {{ internacao().dataPrevisaoAlta | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
+  {{ dataSaidaPrevista() | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
 </p>
 
 <p class="hidden text-center text-sm text-content-secondary md:block">
@@ -30,8 +30,8 @@
 
 <p-tag
   class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
-  [value]="internacao().etapaTratamento"
-  [severity]="internacao().severity"
+  [value]="etapaConfig().label"
+  [severity]="etapaConfig().severity"
 />
 
 <div
