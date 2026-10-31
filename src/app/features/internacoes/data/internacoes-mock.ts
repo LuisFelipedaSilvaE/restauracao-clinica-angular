@@ -1,5 +1,5 @@
 import { Convenio } from '../../convenios/interfaces/convenio';
-import { Internacao } from '../interfaces/internacao';
+import { InternacaoMock } from '../interfaces/internacao-mock';
 
 export const CONVENIOS_INTERNACOES_MOCK: Convenio[] = [
   {
@@ -31,7 +31,7 @@ export const CONVENIOS_INTERNACOES_MOCK: Convenio[] = [
   },
 ];
 
-export const INTERNACOES_MOCK: Internacao[] = [
+export const INTERNACOES_MOCK: InternacaoMock[] = [
   {
     id: 1,
     idAcolhido: 1,

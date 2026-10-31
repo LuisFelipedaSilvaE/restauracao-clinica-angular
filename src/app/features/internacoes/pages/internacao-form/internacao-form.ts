@@ -28,7 +28,7 @@ import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
 import { TriagensService } from '../../../triagens/services/triagens-service';
-import { Internacao } from '../../interfaces/internacao';
+import { InternacaoMock } from '../../interfaces/internacao-mock';
 import { InternacoesMockService } from '../../services/internacoes-mock-service';
 
 type ModoForm = 'registro' | 'atualizacao';
@@ -100,7 +100,7 @@ export class InternacaoForm implements OnInit {
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(true);
-  protected readonly registroAtual = signal<Internacao | null>(null);
+  protected readonly registroAtual = signal<InternacaoMock | null>(null);
   private readonly triagemSelecionadaId = signal<number | null>(null);
   private readonly acolhidoSelecionadoId = signal<number | null>(null);
 
@@ -324,7 +324,7 @@ export class InternacaoForm implements OnInit {
       return;
     }
 
-    const dados: Omit<Internacao, 'id'> = {
+    const dados: Omit<InternacaoMock, 'id'> = {
       idAcolhido: acolhido.id,
       idConvenio: triagem.convenio.id,
       idTriagem: triagem.id,

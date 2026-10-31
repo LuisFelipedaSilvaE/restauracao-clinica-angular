@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { CONVENIOS_INTERNACOES_MOCK, INTERNACOES_MOCK } from '../data/internacoes-mock';
-import { Internacao } from '../interfaces/internacao';
+import { InternacaoMock } from '../interfaces/internacao-mock';
 import { InternacaoCardContent } from '../interfaces/internacao-card-content';
 import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
 
@@ -8,23 +8,23 @@ import { InternacaoFormDraft } from '../interfaces/internacao-form-draft';
   providedIn: 'root',
 })
 export class InternacoesMockService {
-  private readonly registros = signal<Internacao[]>(structuredClone(INTERNACOES_MOCK));
+  private readonly registros = signal<InternacaoMock[]>(structuredClone(INTERNACOES_MOCK));
   private readonly rascunhoForm = signal<InternacaoFormDraft | null>(null);
   readonly internacoes = this.registros.asReadonly();
   readonly convenios = structuredClone(CONVENIOS_INTERNACOES_MOCK);
 
-  criar(dados: Omit<Internacao, 'id'>): Internacao {
+  criar(dados: Omit<InternacaoMock, 'id'>): InternacaoMock {
     const id = Math.max(0, ...this.registros().map((internacao) => internacao.id)) + 1;
     const novaInternacao = { ...structuredClone(dados), id };
     this.registros.update((internacoes) => [...internacoes, novaInternacao]);
     return novaInternacao;
   }
 
-  buscar(id: number): Internacao | undefined {
+  buscar(id: number): InternacaoMock | undefined {
     return this.internacoes().find((internacao) => internacao.id === id);
   }
 
-  atualizar(id: number, dados: Omit<Internacao, 'id'>): boolean {
+  atualizar(id: number, dados: Omit<InternacaoMock, 'id'>): boolean {
     if (!this.registros().some((internacao) => internacao.id === id)) return false;
 
     this.registros.update((internacoes) =>
@@ -74,7 +74,7 @@ export class InternacoesMockService {
     return severidades[etapa] ?? 'secondary';
   }
 
-  buscarAtualPorAcolhido(idAcolhido: number): Internacao | undefined {
+  buscarAtualPorAcolhido(idAcolhido: number): InternacaoMock | undefined {
     const etapasEncerradas = new Set(['Alta concedida', 'Desligado']);
     return this.internacoes().find(
       (internacao) =>

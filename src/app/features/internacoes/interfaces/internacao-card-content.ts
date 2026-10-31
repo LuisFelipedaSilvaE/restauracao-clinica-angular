@@ -1,8 +1,8 @@
 import { Acolhido } from '../../acolhidos/interfaces/acolhido';
 import { Convenio } from '../../convenios/interfaces/convenio';
-import { Internacao } from './internacao';
+import { InternacaoMock } from './internacao-mock';
 
-export interface InternacaoCardContent extends Internacao {
+export interface InternacaoCardContent extends InternacaoMock {
   acolhido: Acolhido;
   convenio: Convenio;
   tempoInternado: string;
