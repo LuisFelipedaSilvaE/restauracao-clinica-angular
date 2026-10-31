@@ -60,6 +60,7 @@ export class ConvenioForm implements OnInit {
   protected readonly carregando = signal(false);
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
+  protected readonly maximoVagas = 2_147_483_647;
 
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
 
@@ -74,7 +75,10 @@ export class ConvenioForm implements OnInit {
       ],
     ],
     cnpj: ['', [cnpjValidator]],
-    maxVagas: [null as number | null, [Validators.required, Validators.min(0), integerValidator]],
+    maxVagas: [
+      null as number | null,
+      [Validators.required, Validators.min(0), Validators.max(this.maximoVagas), integerValidator],
+    ],
     pagamento: [true, [Validators.required]],
     cor: ['#3b82f6', [Validators.required]],
   });
@@ -228,6 +232,10 @@ export class ConvenioForm implements OnInit {
     if (control.errors['min']) {
       const { min } = control.errors['min'];
       return `${this.labels[controlName]} deve ser de no mínimo ${min}`;
+    }
+
+    if (control.errors['max']) {
+      return `${this.labels[controlName]} deve ser de no máximo ${this.maximoVagas.toLocaleString('pt-BR')}`;
     }
 
     if (control.errors['inteiro']) {
