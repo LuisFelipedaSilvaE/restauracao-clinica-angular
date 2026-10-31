@@ -17,10 +17,12 @@ import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { localDateToDate } from '../../../../shared/utils/local-date';
 import { FilterInternacoesCard } from '../../components/filter-internacoes-card/filter-internacoes-card';
+import { DialogRegistrarAltaInternacao } from '../../components/dialog-registrar-alta-internacao/dialog-registrar-alta-internacao';
 import { InternacaoCard } from '../../components/internacao-card/internacao-card';
 import { EtapaTratamento } from '../../enums/etapa-tratamento';
 import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
+import { Internacao } from '../../interfaces/internacao';
 import { InternacoesService } from '../../services/internacoes-service';
 
 @Component({
@@ -34,6 +36,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     RouterLink,
     SkeletonModule,
     EmptyList,
+    DialogRegistrarAltaInternacao,
     FilterInternacoesCard,
     InfoCard,
     InternacaoCard,
@@ -106,6 +109,8 @@ export class InternacoesLista implements OnInit {
   protected readonly convenioSelecionado = signal('todos');
   protected readonly etapaTratamentoSelecionada = signal('todos');
   protected readonly periodoEntradaSelecionado = signal<Date[] | null>(null);
+  protected readonly internacaoSelecionada = signal<Internacao | null>(null);
+  protected readonly registrarAltaVisible = signal(false);
 
   protected readonly convenios = computed(() => {
     const conveniosUnicos = new Map(
@@ -181,6 +186,11 @@ export class InternacoesLista implements OnInit {
     this.convenioSelecionado.set('todos');
     this.etapaTratamentoSelecionada.set('todos');
     this.periodoEntradaSelecionado.set(null);
+  }
+
+  protected abrirRegistrarAlta(internacao: Internacao): void {
+    this.internacaoSelecionada.set(internacao);
+    this.registrarAltaVisible.set(true);
   }
 
   ngOnInit(): void {

@@ -24,6 +24,7 @@ import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { localDateToDate } from '../../../../shared/utils/local-date';
 import { TIPO_ALTA_LABELS } from '../../enums/tipo-alta';
+import { DialogRegistrarAltaInternacao } from '../../components/dialog-registrar-alta-internacao/dialog-registrar-alta-internacao';
 import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { Internacao } from '../../interfaces/internacao';
 import { InternacoesService } from '../../services/internacoes-service';
@@ -39,6 +40,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     Card,
     CommonModule,
     CustomTag,
+    DialogRegistrarAltaInternacao,
     IconColor,
     LucideBedSingle,
     LucideCalendarCheck,
@@ -66,6 +68,7 @@ export class InternacaoDetalhada implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly internacao = signal<Internacao | null>(null);
+  protected readonly registrarAltaVisible = signal(false);
   protected readonly carregando = computed(() => this.internacoesService.loading().detail);
   protected readonly etapaConfig = computed(() => {
     const internacao = this.internacao();
@@ -119,6 +122,10 @@ export class InternacaoDetalhada implements OnInit {
         this.router.navigate(['/internacoes']);
       },
     });
+  }
+
+  protected onAltaRegistrada(internacao: Internacao): void {
+    this.internacao.set(internacao);
   }
 
   private registroNaoEncontrado(

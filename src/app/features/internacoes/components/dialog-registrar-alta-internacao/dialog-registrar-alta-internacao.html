@@ -1,0 +1,77 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  styleClass="w-sm!"
+  (onHide)="limparFormulario()"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Registrar alta</h2>
+  </ng-template>
+
+  <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="registrarAlta()">
+    <form-field
+      label="Tipo de alta"
+      inputId="tipoAlta"
+      [errorMessage]="getErrorMessage('alta')"
+      required
+    >
+      <p-select
+        inputId="tipoAlta"
+        name="tipoAlta"
+        formControlName="alta"
+        [options]="tiposAlta"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione o tipo de alta"
+        [invalid]="isInvalid('alta')"
+        appendTo="body"
+        autocomplete="off"
+        fluid
+      />
+    </form-field>
+
+    <form-field
+      label="Data de saída"
+      inputId="dataSaida"
+      [errorMessage]="getErrorMessage('dataSaida')"
+      required
+    >
+      <p-datepicker
+        inputId="dataSaida"
+        name="dataSaida"
+        formControlName="dataSaida"
+        placeholder="dd/mm/aaaa"
+        dateFormat="dd/mm/yy"
+        [showButtonBar]="true"
+        [readonlyInput]="false"
+        [minDate]="dataEntrada()"
+        [maxDate]="hoje"
+        [invalid]="isInvalid('dataSaida')"
+        appendTo="body"
+        autocomplete="off"
+        fluid
+      />
+    </form-field>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (onClick)="cancelar()"
+    />
+
+    <p-button
+      type="button"
+      label="Registrar alta"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (onClick)="registrarAlta()"
+    />
+  </ng-template>
+</p-dialog>

@@ -81,6 +81,15 @@
             <svg lucidePencil class="h-4 w-4" aria-hidden="true"></svg>
           </ng-template>
         </p-button>
+        <p-button
+          label="Registrar alta"
+          [pt]="actionButtonPt"
+          (onClick)="registrarAltaVisible.set(true)"
+        >
+          <ng-template #icon>
+            <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
       }
     </div>
   </card>
@@ -220,4 +229,11 @@
       }
     </dl>
   </card>
+}
+@if (internacao(); as internacaoAtual) {
+  <dialog-registrar-alta-internacao
+    [internacao]="internacaoAtual"
+    [(visible)]="registrarAltaVisible"
+    (altaRegistrada)="onAltaRegistrada($event)"
+  />
 }

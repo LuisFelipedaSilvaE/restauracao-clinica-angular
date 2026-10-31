@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideBedSingle,
@@ -8,7 +8,6 @@ import {
   LucideEye,
   LucideLogOut,
   LucidePencil,
-  LucidePowerOff,
 } from '@lucide/angular';
 import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
@@ -20,7 +19,7 @@ import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-confi
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
 
 @Component({
-  selector: 'app-internacao-card',
+  selector: 'internacao-card',
   host: {
     class:
       'group relative grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-l-4 border-border-default bg-surface-card p-3 transition-colors sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_36px] xl:gap-3 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] 2xl:gap-4 2xl:p-4',
@@ -44,6 +43,7 @@ import { InternacaoCardContent } from '../../interfaces/internacao-card-content'
 export class InternacaoCard {
   private readonly router = inject(Router);
   readonly internacao = input.required<InternacaoCardContent>();
+  readonly registrarAlta = output<InternacaoCardContent>();
   protected readonly etapaConfig = computed(
     () => ETAPA_TRATAMENTO_CONFIG[this.internacao().etapaTratamento],
   );
@@ -71,12 +71,7 @@ export class InternacaoCard {
       visible: this.internacao().ativo,
       lucideIcon: LucideLogOut,
       iconClass: 'h-4 w-4 text-action-success',
-    },
-    {
-      label: 'Inativar internação',
-      visible: this.internacao().ativo,
-      lucideIcon: LucidePowerOff,
-      iconClass: 'h-4 w-4 text-action-warning',
+      command: () => this.registrarAlta.emit(this.internacao()),
     },
   ]);
 }

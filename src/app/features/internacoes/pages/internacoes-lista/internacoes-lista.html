@@ -101,7 +101,10 @@
                   }
                 } @else {
                   @for (internacao of items; track internacao.id) {
-                    <app-internacao-card [internacao]="internacao" />
+                    <internacao-card
+                      [internacao]="internacao"
+                      (registrarAlta)="abrirRegistrarAlta($event)"
+                    />
                   }
                 }
               </div>
@@ -141,3 +144,7 @@
     </empty-list>
   }
 </div>
+
+@if (internacaoSelecionada(); as internacao) {
+  <dialog-registrar-alta-internacao [internacao]="internacao" [(visible)]="registrarAltaVisible" />
+}
