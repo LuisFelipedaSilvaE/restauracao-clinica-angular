@@ -8,6 +8,7 @@ import { ProntuarioHeaderContent } from './interfaces/prontuario-header-content'
 import { ProntuarioOutletData } from './interfaces/prontuario-outlet-data';
 import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
+import { forkJoin } from 'rxjs';
 import {
   LucideApple,
   LucideBrain,
@@ -18,6 +19,8 @@ import {
   LucideFolderOpen,
   LucideHeartHandshake,
 } from '@lucide/angular';
+import { InternacoesService } from '../internacoes/services/internacoes-service';
+import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
 
 @Component({
   selector: 'app-prontuario',
@@ -40,10 +43,13 @@ export class Prontuario implements OnInit {
   private readonly router = inject(Router);
   protected readonly acolhido = signal<Acolhido | null>(null);
   private readonly acolhidosService = inject(AcolhidosService);
+  private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
   protected readonly confirmarAlteracao = signal(false);
   protected readonly confirmarExclusao = signal(false);
-  protected readonly detailLoading = computed(() => this.acolhidosService.loading().detail);
+  protected readonly detailLoading = computed(
+    () => this.acolhidosService.loading().detail || this.internacoesService.loading().list,
+  );
   protected readonly mutationLoading = computed(() => this.acolhidosService.loading().mutation);
 
   protected readonly abas = [
@@ -88,9 +94,26 @@ export class Prontuario implements OnInit {
     const acolhido = this.acolhido();
     if (!acolhido) return null;
 
+    const internacaoAtual = this.internacoesService.getInternacaoAtualDoAcolhido(acolhido.id);
+    const etapaConfig = internacaoAtual
+      ? ETAPA_TRATAMENTO_CONFIG[internacaoAtual.etapaTratamento]
+      : null;
+
     return {
       ...acolhido,
       idade: this.acolhidosService.calcularIdade(acolhido.dataNascimento),
+      internacaoAtual:
+        internacaoAtual && etapaConfig
+          ? {
+              ...internacaoAtual,
+              tempoInternado: this.internacoesService.calcularTempoInternado(
+                internacaoAtual.dataEntrada,
+                internacaoAtual.dataSaida,
+              ),
+              etapaTratamentoLabel: etapaConfig.label,
+              severity: etapaConfig.severity,
+            }
+          : undefined,
     };
   });
 
@@ -119,8 +142,11 @@ export class Prontuario implements OnInit {
       return;
     }
 
-    this.acolhidosService.getAcolhidoById(idNumerico).subscribe({
-      next: (acolhido) => this.acolhido.set(acolhido),
+    forkJoin({
+      acolhido: this.acolhidosService.getAcolhidoById(idNumerico),
+      internacoes: this.internacoesService.getAllInternacoes(),
+    }).subscribe({
+      next: ({ acolhido }) => this.acolhido.set(acolhido),
       error: () => this.voltarParaLista(),
     });
   }

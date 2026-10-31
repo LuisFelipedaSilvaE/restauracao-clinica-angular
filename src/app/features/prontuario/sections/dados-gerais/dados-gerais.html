@@ -112,11 +112,11 @@
       >
         <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
           <prontuario-info-field label="Data de entrada">
-            {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+            {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
           </prontuario-info-field>
 
           <prontuario-info-field label="Previsão de alta">
-            {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+            {{ internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
           </prontuario-info-field>
 
           <prontuario-info-field label="Tempo internado">
@@ -128,20 +128,8 @@
           </prontuario-info-field>
 
           <prontuario-info-field label="Etapa do tratamento">
-            <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+            <p-tag [value]="internacao.etapaTratamentoLabel" [severity]="internacao.severity" />
           </prontuario-info-field>
-
-          <prontuario-info-field label="Triagem">
-            {{ internacao.idTriagem ? 'T-' + internacao.idTriagem : 'Não vinculada' }}
-          </prontuario-info-field>
-
-          @if (internacao.observacaoIsencao) {
-            <div class="sm:col-span-2">
-              <prontuario-info-field label="Observação sobre a isenção">
-                {{ internacao.observacaoIsencao }}
-              </prontuario-info-field>
-            </div>
-          }
         </div>
       </prontuario-section-card>
     }

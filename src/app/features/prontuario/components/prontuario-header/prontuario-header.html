@@ -60,12 +60,13 @@
               <span class="text-xs font-medium text-content-secondary">
                 P-{{ data.id | number: '2.0-0' }}
               </span>
-              <p-tag
-                [value]="data.ativo ? 'Ativo' : 'Inativo'"
-                [severity]="data.ativo ? 'success' : 'secondary'"
-              />
               @if (data.internacaoAtual; as internacao) {
-                <p-tag [value]="internacao.etapaTratamento" [severity]="internacao.severity" />
+                <p-tag [value]="internacao.etapaTratamentoLabel" [severity]="internacao.severity" />
+              } @else {
+                <p-tag
+                  [value]="data.ativo ? 'Ativo' : 'Inativo'"
+                  [severity]="data.ativo ? 'success' : 'secondary'"
+                />
               }
             </div>
             <h1 class="truncate text-xl font-semibold text-content-primary sm:text-2xl">
@@ -133,7 +134,7 @@
             <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
               <span
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
-                [iconColor]="internacao.convenio.cor"
+                [iconColor]="'#4a5565'"
               >
                 <svg lucideLayers class="h-4 w-4"></svg>
               </span>
@@ -159,7 +160,7 @@
                   Data de entrada
                 </dt>
                 <dd class="mt-1 text-sm/5 font-semibold text-content-primary">
-                  {{ internacao.dataAdmissao | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+                  {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
                 </dd>
               </div>
             </div>
@@ -193,7 +194,9 @@
                   Previsão de alta
                 </dt>
                 <dd class="mt-1 text-sm/5 font-semibold text-content-primary">
-                  {{ internacao.dataPrevisaoAlta | date: "dd 'de' MMMM 'de' yyyy" : '' : 'pt-BR' }}
+                  {{
+                    internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
+                  }}
                 </dd>
               </div>
             </div>
