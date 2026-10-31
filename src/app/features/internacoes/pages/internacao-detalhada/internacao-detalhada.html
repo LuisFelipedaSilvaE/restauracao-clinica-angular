@@ -81,8 +81,23 @@
             <svg lucidePencil class="h-4 w-4" aria-hidden="true"></svg>
           </ng-template>
         </p-button>
+      }
+      <p-button
+        label="Excluir"
+        severity="danger"
+        variant="outlined"
+        [pt]="actionButtonPt"
+        (onClick)="excluirInternacaoVisible.set(true)"
+      >
+        <ng-template #icon>
+          <svg lucideTrash2 class="h-4 w-4" aria-hidden="true"></svg>
+        </ng-template>
+      </p-button>
+      @if (internacao.ativo) {
         <p-button
           label="Registrar alta"
+          severity="success"
+          variant="outlined"
           [pt]="actionButtonPt"
           (onClick)="registrarAltaVisible.set(true)"
         >
@@ -237,3 +252,17 @@
     (altaRegistrada)="onAltaRegistrada($event)"
   />
 }
+
+<confirm-dialog
+  [(visible)]="excluirInternacaoVisible"
+  title="Excluir internação"
+  [message]="
+    'Deseja excluir a internação de ' +
+    (internacao()?.acolhido?.nome ?? 'este acolhido') +
+    '? Esta ação não poderá ser desfeita.'
+  "
+  confirmLabel="Excluir"
+  severity="danger"
+  [loading]="mutationLoading()"
+  (onConfirm)="excluirInternacao()"
+/>

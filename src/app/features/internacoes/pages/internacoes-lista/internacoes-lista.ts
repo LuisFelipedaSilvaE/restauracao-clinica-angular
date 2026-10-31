@@ -11,7 +11,9 @@ import {
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
+import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
@@ -32,6 +34,7 @@ import { InternacoesService } from '../../services/internacoes-service';
   },
   imports: [
     ButtonModule,
+    ConfirmDialog,
     DataViewModule,
     RouterLink,
     SkeletonModule,
@@ -48,8 +51,10 @@ import { InternacoesService } from '../../services/internacoes-service';
 })
 export class InternacoesLista implements OnInit {
   private readonly internacoesService = inject(InternacoesService);
+  private readonly messageService = inject(MessageService);
   protected readonly internacoes = this.internacoesService.internacoes;
   protected readonly loading = computed(() => this.internacoesService.loading().list);
+  protected readonly mutationLoading = computed(() => this.internacoesService.loading().mutation);
   protected readonly skeletonCards = Array.from({ length: 10 });
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyInternacoesIcon = LucideBedSingle;
@@ -110,7 +115,9 @@ export class InternacoesLista implements OnInit {
   protected readonly etapaTratamentoSelecionada = signal('todos');
   protected readonly periodoEntradaSelecionado = signal<Date[] | null>(null);
   protected readonly internacaoSelecionada = signal<Internacao | null>(null);
+  protected readonly internacaoParaExclusao = signal<{ id: number; nome: string } | null>(null);
   protected readonly registrarAltaVisible = signal(false);
+  protected readonly excluirInternacaoVisible = signal(false);
 
   protected readonly convenios = computed(() => {
     const conveniosUnicos = new Map(
@@ -191,6 +198,28 @@ export class InternacoesLista implements OnInit {
   protected abrirRegistrarAlta(internacao: Internacao): void {
     this.internacaoSelecionada.set(internacao);
     this.registrarAltaVisible.set(true);
+  }
+
+  protected solicitarExclusao(internacao: { id: number; nome: string }): void {
+    this.internacaoParaExclusao.set(internacao);
+    this.excluirInternacaoVisible.set(true);
+  }
+
+  protected excluirInternacao(): void {
+    const internacao = this.internacaoParaExclusao();
+    if (!internacao) return;
+
+    this.internacoesService.deleteInternacao(internacao.id).subscribe({
+      next: () => {
+        this.excluirInternacaoVisible.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Internação excluída!',
+          detail: 'A internação foi excluída com sucesso.',
+          life: 3000,
+        });
+      },
+    });
   }
 
   ngOnInit(): void {

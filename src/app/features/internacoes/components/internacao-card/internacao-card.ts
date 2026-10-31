@@ -8,6 +8,7 @@ import {
   LucideEye,
   LucideLogOut,
   LucidePencil,
+  LucideTrash2,
 } from '@lucide/angular';
 import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
@@ -44,6 +45,7 @@ export class InternacaoCard {
   private readonly router = inject(Router);
   readonly internacao = input.required<InternacaoCardContent>();
   readonly registrarAlta = output<InternacaoCardContent>();
+  readonly excluirInternacao = output<{ id: number; nome: string }>();
   protected readonly etapaConfig = computed(
     () => ETAPA_TRATAMENTO_CONFIG[this.internacao().etapaTratamento],
   );
@@ -65,6 +67,16 @@ export class InternacaoCard {
       lucideIcon: LucidePencil,
       iconClass: 'h-4 w-4 text-action-secondary-text',
       command: () => this.router.navigate(['/internacoes', this.internacao().id, 'editar']),
+    },
+    {
+      label: 'Excluir',
+      lucideIcon: LucideTrash2,
+      iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
+      command: () =>
+        this.excluirInternacao.emit({
+          id: this.internacao().id,
+          nome: this.internacao().acolhido.nome,
+        }),
     },
     {
       label: 'Registrar alta',

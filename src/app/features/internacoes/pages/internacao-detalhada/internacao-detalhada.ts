@@ -13,6 +13,7 @@ import {
   LucideLogOut,
   LucidePencil,
   LucideStethoscope,
+  LucideTrash2,
 } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -20,6 +21,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { localDateToDate } from '../../../../shared/utils/local-date';
@@ -39,6 +41,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     ButtonModule,
     Card,
     CommonModule,
+    ConfirmDialog,
     CustomTag,
     DialogRegistrarAltaInternacao,
     IconColor,
@@ -53,6 +56,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     LucideLogOut,
     LucidePencil,
     LucideStethoscope,
+    LucideTrash2,
     RouterLink,
     SkeletonModule,
     TagModule,
@@ -69,7 +73,9 @@ export class InternacaoDetalhada implements OnInit {
 
   protected readonly internacao = signal<Internacao | null>(null);
   protected readonly registrarAltaVisible = signal(false);
+  protected readonly excluirInternacaoVisible = signal(false);
   protected readonly carregando = computed(() => this.internacoesService.loading().detail);
+  protected readonly mutationLoading = computed(() => this.internacoesService.loading().mutation);
   protected readonly etapaConfig = computed(() => {
     const internacao = this.internacao();
     return internacao ? ETAPA_TRATAMENTO_CONFIG[internacao.etapaTratamento] : null;
@@ -126,6 +132,24 @@ export class InternacaoDetalhada implements OnInit {
 
   protected onAltaRegistrada(internacao: Internacao): void {
     this.internacao.set(internacao);
+  }
+
+  protected excluirInternacao(): void {
+    const internacao = this.internacao();
+    if (!internacao) return;
+
+    this.internacoesService.deleteInternacao(internacao.id).subscribe({
+      next: () => {
+        this.excluirInternacaoVisible.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Internação excluída!',
+          detail: 'A internação foi excluída com sucesso.',
+          life: 3000,
+        });
+        this.router.navigate(['/internacoes']);
+      },
+    });
   }
 
   private registroNaoEncontrado(

@@ -104,6 +104,7 @@
                     <internacao-card
                       [internacao]="internacao"
                       (registrarAlta)="abrirRegistrarAlta($event)"
+                      (excluirInternacao)="solicitarExclusao($event)"
                     />
                   }
                 }
@@ -148,3 +149,18 @@
 @if (internacaoSelecionada(); as internacao) {
   <dialog-registrar-alta-internacao [internacao]="internacao" [(visible)]="registrarAltaVisible" />
 }
+
+<confirm-dialog
+  [(visible)]="excluirInternacaoVisible"
+  title="Excluir internação"
+  [message]="
+    'Deseja excluir a internação de ' +
+    (internacaoParaExclusao()?.nome ?? 'este acolhido') +
+    '? Esta ação não poderá ser desfeita.'
+  "
+  confirmLabel="Excluir"
+  severity="danger"
+  [loading]="mutationLoading()"
+  (hidden)="internacaoParaExclusao.set(null)"
+  (onConfirm)="excluirInternacao()"
+/>
