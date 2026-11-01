@@ -1,10 +1,10 @@
 @if (loading()) {
   <section
     class="grid min-w-0 gap-4 xl:grid-cols-2"
-    aria-label="Carregando dados gerais do acolhido"
+    aria-label="Carregando dados pessoais do acolhido"
     aria-busy="true"
   >
-    <span class="sr-only" role="status">Carregando dados gerais...</span>
+    <span class="sr-only" role="status">Carregando dados pessoais...</span>
 
     @for (campos of skeletonCards; track $index) {
       <div
@@ -31,7 +31,7 @@
     }
   </section>
 } @else if (acolhido(); as acolhido) {
-  <section class="grid min-w-0 gap-4 xl:grid-cols-2" aria-label="Dados gerais do acolhido">
+  <section class="grid min-w-0 gap-4 xl:grid-cols-2" aria-label="Dados pessoais do acolhido">
     <prontuario-section-card
       title="Dados pessoais"
       description="Identificação e informações básicas"
@@ -103,35 +103,5 @@
         </prontuario-info-field>
       </div>
     </prontuario-section-card>
-
-    @if (acolhido.internacaoAtual; as internacao) {
-      <prontuario-section-card
-        title="Internação"
-        description="Dados do processo de acolhimento atual"
-        [icon]="internacaoIcon"
-      >
-        <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-          <prontuario-info-field label="Data de entrada">
-            {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
-          </prontuario-info-field>
-
-          <prontuario-info-field label="Previsão de alta">
-            {{ internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
-          </prontuario-info-field>
-
-          <prontuario-info-field label="Tempo internado">
-            {{ internacao.tempoInternado }}
-          </prontuario-info-field>
-
-          <prontuario-info-field label="Convênio">
-            {{ internacao.convenio.descricao }}
-          </prontuario-info-field>
-
-          <prontuario-info-field label="Etapa do tratamento">
-            <p-tag [value]="internacao.etapaTratamentoLabel" [severity]="internacao.severity" />
-          </prontuario-info-field>
-        </div>
-      </prontuario-section-card>
-    }
   </section>
 }

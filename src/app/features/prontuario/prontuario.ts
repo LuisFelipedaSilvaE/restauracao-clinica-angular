@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ProntuarioHeader } from './components/prontuario-header/prontuario-header';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Acolhido } from '../acolhidos/interfaces/acolhido';
 import { AcolhidosService } from '../acolhidos/services/acolhidos-service';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
@@ -8,16 +9,17 @@ import { ProntuarioHeaderContent } from './interfaces/prontuario-header-content'
 import { ProntuarioOutletData } from './interfaces/prontuario-outlet-data';
 import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
-import { forkJoin } from 'rxjs';
+import { filter, forkJoin, map } from 'rxjs';
 import {
   LucideApple,
+  LucideBedSingle,
   LucideBrain,
-  LucideClipboardList,
   LucideDynamicIcon,
   LucideFileHeart,
   LucideFileText,
   LucideFolderOpen,
   LucideHeartHandshake,
+  LucideUserRound,
 } from '@lucide/angular';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
@@ -47,6 +49,13 @@ export class Prontuario implements OnInit {
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects),
+    ),
+    { initialValue: this.router.url },
+  );
   protected readonly confirmarAlteracao = signal(false);
   protected readonly confirmarExclusao = signal(false);
   protected readonly detailLoading = computed(
@@ -71,9 +80,14 @@ export class Prontuario implements OnInit {
 
   protected readonly abas = [
     {
-      label: 'Dados gerais',
-      route: 'dados-gerais',
-      icon: LucideClipboardList,
+      label: 'Internações',
+      route: 'internacoes',
+      icon: LucideBedSingle,
+    },
+    {
+      label: 'Dados pessoais',
+      route: 'dados-pessoais',
+      icon: LucideUserRound,
     },
     {
       label: 'Relatórios médicos',
@@ -107,6 +121,11 @@ export class Prontuario implements OnInit {
     },
   ];
 
+  protected readonly abaAtiva = computed(() => {
+    const path = this.currentUrl().split('?')[0].split('/').at(-1);
+    return this.abas.some((aba) => aba.route === path) ? path : 'internacoes';
+  });
+
   protected readonly headerData = computed<ProntuarioHeaderContent | null>(() => {
     const acolhido = this.acolhido();
     if (!acolhido) return null;
@@ -136,6 +155,10 @@ export class Prontuario implements OnInit {
 
   protected readonly outletData = computed<ProntuarioOutletData>(() => ({
     acolhido: this.headerData(),
+    internacoes: this.internacoesService
+      .internacoes()
+      .filter((internacao) => internacao.acolhido.id === this.acolhido()?.id)
+      .sort((a, b) => b.dataEntrada.localeCompare(a.dataEntrada)),
     loading: this.detailLoading(),
   }));
 

@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, Signal } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
-import { LucideCalendarHeart, LucideMapPin, LucidePhone, LucideUserRound } from '@lucide/angular';
+import { LucideMapPin, LucidePhone, LucideUserRound } from '@lucide/angular';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { CepPipe } from '../../../../shared/pipes/cep-pipe';
@@ -44,6 +44,5 @@ export class DadosGerais {
 
   protected readonly dadosPessoaisIcon = LucideUserRound;
   protected readonly contatoIcon = LucidePhone;
-  protected readonly internacaoIcon = LucideCalendarHeart;
   protected readonly enderecoIcon = LucideMapPin;
 }

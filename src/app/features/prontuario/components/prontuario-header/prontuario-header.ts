@@ -2,17 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
-  LucideCalendarCheck,
-  LucideCalendarDays,
-  LucideClock3,
   LucideDynamicIcon,
   LucideFileText,
-  LucideIdCard,
-  LucideLayers,
-  LucideLogOut,
-  LucideMail,
   LucidePencil,
-  LucidePhone,
   LucidePower,
   LucidePowerOff,
   LucideTrash2,
@@ -22,11 +14,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
-import { IconColor } from '../../../../shared/directives/icon-color';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
-import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
-import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-content';
 
 @Component({
@@ -42,22 +31,11 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     SkeletonModule,
     BackButton,
     Card,
-    IconColor,
     ProfileColor,
-    CpfPipe,
     SiglaNomePipe,
-    TelefonePipe,
     LucideDynamicIcon,
-    LucideCalendarCheck,
-    LucideCalendarDays,
-    LucideClock3,
     LucideFileText,
-    LucideIdCard,
-    LucideLayers,
-    LucideLogOut,
-    LucideMail,
     LucidePencil,
-    LucidePhone,
     LucideTrash2,
   ],
   templateUrl: './prontuario-header.html',

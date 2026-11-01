@@ -7,7 +7,7 @@
   (deleteRequest)="confirmarExclusao.set(true)"
 />
 
-<p-tabs value="dados-gerais" scrollable>
+<p-tabs [value]="abaAtiva()" scrollable>
   <p-tablist>
     @for (aba of abas; track aba.route) {
       <p-tab [value]="aba.route" [routerLink]="aba.route" queryParamsHandling="preserve">

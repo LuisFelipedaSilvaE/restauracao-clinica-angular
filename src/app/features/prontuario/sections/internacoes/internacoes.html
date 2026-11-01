@@ -1,0 +1,270 @@
+@if (loading()) {
+  <section class="flex min-w-0 flex-col gap-4" aria-label="Carregando internações" aria-busy="true">
+    <span class="sr-only" role="status">Carregando internações...</span>
+
+    <div class="rounded-xl border border-border-default bg-surface-card p-5" aria-hidden="true">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <p-skeleton width="3rem" height="3rem" borderRadius="0.75rem" />
+          <div class="flex flex-col gap-2">
+            <p-skeleton width="9rem" height="1rem" />
+            <p-skeleton width="13rem" height="0.75rem" />
+          </div>
+        </div>
+        <p-skeleton width="8rem" height="2.5rem" borderRadius="0.375rem" />
+      </div>
+
+      <div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        @for (_ of [1, 2, 3, 4]; track $index) {
+          <div class="flex flex-col gap-2">
+            <p-skeleton width="5rem" height="0.75rem" />
+            <p-skeleton width="8rem" height="1rem" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-border-default bg-surface-card p-5" aria-hidden="true">
+      <p-skeleton width="12rem" height="1rem" />
+      <div class="mt-4 flex flex-col gap-2">
+        @for (_ of skeletonHistorico; track $index) {
+          <p-skeleton width="100%" height="4.5rem" borderRadius="0.75rem" />
+        }
+      </div>
+    </div>
+  </section>
+} @else if (acolhido(); as acolhido) {
+  <section class="flex min-w-0 flex-col gap-4" aria-label="Internações do acolhido">
+    <prontuario-section-card
+      title="Internação atual"
+      description="Situação assistencial atual do acolhido"
+      [icon]="internacaoIcon"
+    >
+      @if (internacaoAtual(); as internacao) {
+        <div class="flex min-w-0 flex-col gap-5">
+          <div class="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex min-w-0 items-center gap-3">
+              <span
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                [iconColor]="internacao.convenio.cor"
+              >
+                <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+              </span>
+
+              <div class="min-w-0">
+                <p class="font-semibold text-content-primary">
+                  Internação I-{{ internacao.id | number: '3.0-0' }}
+                </p>
+                <div class="mt-1 flex flex-wrap items-center gap-2">
+                  <p-tag
+                    [value]="internacao.convenio.descricao"
+                    [customTag]="internacao.convenio.cor"
+                  />
+                  <p-tag
+                    [value]="etapaConfig(internacao).label"
+                    [severity]="etapaConfig(internacao).severity"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p-button
+              label="Ver internação"
+              severity="secondary"
+              variant="outlined"
+              [routerLink]="['/internacoes', internacao.id]"
+            >
+              <ng-template #icon>
+                <svg lucideEye class="h-4 w-4" aria-hidden="true"></svg>
+              </ng-template>
+            </p-button>
+          </div>
+
+          <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
+              </span>
+              <prontuario-info-field label="Data de entrada">
+                {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+              </prontuario-info-field>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
+              </span>
+              <prontuario-info-field label="Previsão de alta">
+                {{
+                  internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
+                }}
+              </prontuario-info-field>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideClock3 class="h-4 w-4" aria-hidden="true"></svg>
+              </span>
+              <prontuario-info-field label="Tempo internado">
+                {{ tempoInternado(internacao) }}
+              </prontuario-info-field>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <span
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                [iconColor]="'#4a5565'"
+              >
+                <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
+              </span>
+              <prontuario-info-field label="Valor da mensalidade">
+                {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
+              </prontuario-info-field>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex items-center gap-3">
+            <span
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-subtle text-content-secondary"
+            >
+              <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+            </span>
+            <div>
+              <p class="font-semibold text-content-primary">Nenhuma internação atual</p>
+              <p class="text-sm text-content-secondary">
+                Este acolhido não está internado no momento.
+              </p>
+            </div>
+          </div>
+
+          @if (acolhido.ativo) {
+            <p-button
+              label="Internar"
+              [routerLink]="['/internacoes/criar']"
+              [queryParams]="{ acolhidoId: acolhido.id }"
+            >
+              <ng-template #icon>
+                <svg lucideBedSingle class="h-4 w-4" aria-hidden="true"></svg>
+              </ng-template>
+            </p-button>
+          }
+        </div>
+      }
+    </prontuario-section-card>
+
+    <prontuario-section-card
+      title="Histórico de internações"
+      description="Internações anteriores registradas para este acolhido"
+      [icon]="historicoIcon"
+    >
+      @if (historico().length > 0) {
+        <div class="flex min-w-0 flex-col gap-2">
+          @for (internacao of historico(); track internacao.id) {
+            <article
+              class="grid min-w-0 gap-4 rounded-xl border border-border-default p-4 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_auto] lg:items-center"
+            >
+              <div class="flex min-w-0 items-center gap-3">
+                <span
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                  [iconColor]="internacao.convenio.cor"
+                >
+                  <svg lucideBedSingle class="h-4.5 w-4.5" aria-hidden="true"></svg>
+                </span>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="font-semibold text-content-primary">
+                      I-{{ internacao.id | number: '3.0-0' }}
+                    </p>
+                    <p-tag
+                      [value]="etapaConfig(internacao).label"
+                      [severity]="etapaConfig(internacao).severity"
+                    />
+                  </div>
+                  <p class="mt-1 truncate text-sm text-content-secondary">
+                    {{ internacao.convenio.descricao }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+                <span
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                  [iconColor]="'#4a5565'"
+                >
+                  <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
+                </span>
+                <prontuario-info-field label="Data de entrada">
+                  {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' }}
+                </prontuario-info-field>
+              </div>
+
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+                <span
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                  [iconColor]="'#4a5565'"
+                >
+                  <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
+                </span>
+                <prontuario-info-field label="Data de saída">
+                  {{
+                    internacao.dataSaida
+                      ? (internacao.dataSaida | date: 'dd/MM/yyyy' : 'UTC')
+                      : 'Não informada'
+                  }}
+                </prontuario-info-field>
+              </div>
+
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+                <span
+                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
+                  [iconColor]="'#4a5565'"
+                >
+                  <svg lucideCircleCheckBig class="h-4 w-4" aria-hidden="true"></svg>
+                </span>
+                <prontuario-info-field label="Tipo de alta">
+                  {{ tipoAltaLabel(internacao) }}
+                </prontuario-info-field>
+              </div>
+
+              <p-button
+                ariaLabel="Ver internação"
+                severity="secondary"
+                variant="outlined"
+                [routerLink]="['/internacoes', internacao.id]"
+              >
+                <ng-template #icon>
+                  <svg lucideEye class="h-4 w-4" aria-hidden="true"></svg>
+                </ng-template>
+              </p-button>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="flex items-center gap-3 py-2">
+          <span
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-content-secondary"
+          >
+            <svg lucideHistory class="h-4.5 w-4.5" aria-hidden="true"></svg>
+          </span>
+          <div>
+            <p class="font-semibold text-content-primary">Nenhuma internação anterior</p>
+            <p class="text-sm text-content-secondary">
+              Ainda não há internações encerradas no histórico deste acolhido.
+            </p>
+          </div>
+        </div>
+      }
+    </prontuario-section-card>
+  </section>
+}
