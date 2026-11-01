@@ -168,9 +168,18 @@ export class InternacaoForm implements OnInit {
   protected readonly triagemSelecionada = computed(() =>
     this.triagens().find((triagem) => triagem.id === this.triagemSelecionadaId()),
   );
-  protected readonly acolhidosDisponiveis = computed(() =>
-    this.acolhidos().filter((acolhido) => acolhido.ativo),
-  );
+  protected readonly acolhidosDisponiveis = computed(() => {
+    const acolhidosComInternacaoAtiva = new Set(
+      this.internacoesService
+        .internacoes()
+        .filter((internacao) => internacao.ativo)
+        .map((internacao) => internacao.acolhido.id),
+    );
+
+    return this.acolhidos().filter(
+      (acolhido) => acolhido.ativo && !acolhidosComInternacaoAtiva.has(acolhido.id),
+    );
+  });
   protected readonly acolhidoSelecionado = computed(() =>
     this.acolhidos().find((acolhido) => acolhido.id === this.acolhidoSelecionadoId()),
   );
@@ -217,6 +226,7 @@ export class InternacaoForm implements OnInit {
       triagens: this.triagensService.getAllTriagens(),
       acolhidos: this.acolhidosService.getAllAcolhidos(),
       convenios: this.conveniosService.getAllConvenios(),
+      internacoes: this.internacoesService.getAllInternacoes(),
     }).subscribe({
       next: () => this.inicializarCriacao(),
       error: () => this.falhaAoCarregar(),
@@ -341,6 +351,10 @@ export class InternacaoForm implements OnInit {
       this.avisoFormulario('Selecione um acolhido ativo.');
       return;
     }
+    if (this.internacoesService.getInternacaoAtualDoAcolhido(acolhido.id)) {
+      this.avisoFormulario('O acolhido selecionado já possui uma internação ativa.');
+      return;
+    }
     if (!convenio?.ativo) {
       this.avisoFormulario('Selecione um convênio ativo.');
       return;
@@ -448,11 +462,17 @@ export class InternacaoForm implements OnInit {
       this.triagemSelecionadaId.set(triagemId);
       if (!rascunho) this.onTriagemChange(triagemId);
     }
+    const acolhidoEstaDisponivel = this.acolhidosDisponiveis().some(
+      (acolhido) => acolhido.id === acolhidoId,
+    );
+
     if (Number.isSafeInteger(acolhidoId) && acolhidoId > 0) {
-      this.internacaoForm.patchValue({ acolhidoId });
-      this.acolhidoSelecionadoId.set(acolhidoId);
-    } else if (rascunho?.acolhidoId) {
-      this.acolhidoSelecionadoId.set(rascunho.acolhidoId);
+      if (acolhidoEstaDisponivel) {
+        this.internacaoForm.patchValue({ acolhidoId });
+        this.acolhidoSelecionadoId.set(acolhidoId);
+      } else {
+        this.internacaoForm.patchValue({ acolhidoId: null });
+      }
     }
 
     this.configurarMensalidade(this.internacaoForm.controls.convenioId.value, true);
