@@ -50,8 +50,8 @@ export class InternacaoCard {
     () => ETAPA_TRATAMENTO_CONFIG[this.internacao().etapaTratamento],
   );
   protected readonly dataEntrada = computed(() => localDateToDate(this.internacao().dataEntrada));
-  protected readonly dataSaidaPrevista = computed(() =>
-    localDateToDate(this.internacao().dataSaidaPrevista),
+  protected readonly dataSaidaExibida = computed(() =>
+    localDateToDate(this.internacao().dataSaida ?? this.internacao().dataSaidaPrevista),
   );
 
   protected readonly acoes = computed<AcaoMenuInternacao[]>(() => [
