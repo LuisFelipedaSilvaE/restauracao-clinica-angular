@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  LucideBedSingle,
   LucideDynamicIcon,
   LucideEllipsisVertical,
   LucideEye,
-  LucideLogOut,
   LucidePencil,
   LucidePower,
   LucidePowerOff,
@@ -18,6 +18,7 @@ import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
+import { ETAPA_TRATAMENTO_CONFIG } from '../../../internacoes/interfaces/etapa-tratamento-config';
 import { AcolhidoCardContent } from '../../interfaces/acolhido-card-content';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 
@@ -49,8 +50,24 @@ export class AcolhidoCard {
   readonly acolhido = input.required<AcolhidoCardContent>();
   readonly statusAcolhidoChange = output<ToggleAcolhidoDto>();
   readonly excluirAcolhido = output<{ id: number; nome: string }>();
+  protected readonly situacaoConfig = computed(() => {
+    if (!this.acolhido().ativo) {
+      return { label: 'Inativo', severity: 'secondary' as const };
+    }
+
+    const internacaoAtual = this.acolhido().internacaoAtual;
+
+    if (internacaoAtual) {
+      const etapaConfig = ETAPA_TRATAMENTO_CONFIG[internacaoAtual.etapaTratamento];
+      return { label: etapaConfig.label, severity: etapaConfig.severity };
+    }
+
+    return { label: 'Sem internação', severity: 'secondary' as const };
+  });
+
   protected readonly acoes = computed<AcaoMenu[]>(() => {
     const estaAtivo = this.acolhido().ativo;
+    const possuiInternacaoAtual = !!this.acolhido().internacaoAtual;
 
     return [
       {
@@ -70,10 +87,14 @@ export class AcolhidoCard {
         command: () => this.router.navigate(['/acolhidos', this.acolhido().id, 'editar']),
       },
       {
-        label: 'Registrar alta',
-        visible: estaAtivo && !!this.acolhido().internacaoAtual,
-        lucideIcon: LucideLogOut,
-        iconClass: 'h-4 w-4 text-action-success',
+        label: 'Internar',
+        visible: estaAtivo && !possuiInternacaoAtual,
+        lucideIcon: LucideBedSingle,
+        iconClass: 'h-4 w-4 text-action-info',
+        command: () =>
+          this.router.navigate(['/internacoes/criar'], {
+            queryParams: { acolhidoId: this.acolhido().id },
+          }),
       },
       {
         label: estaAtivo ? 'Inativar' : 'Ativar',

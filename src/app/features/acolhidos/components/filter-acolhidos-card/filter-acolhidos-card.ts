@@ -5,6 +5,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { EtapaTratamento } from '../../../internacoes/enums/etapa-tratamento';
+import { ETAPA_TRATAMENTO_CONFIG } from '../../../internacoes/interfaces/etapa-tratamento-config';
 import { FilterOption } from '../../interfaces/filter-option';
 
 @Component({
@@ -24,15 +26,27 @@ import { FilterOption } from '../../interfaces/filter-option';
 })
 export class FilterAcolhidosCard {
   readonly convenios = input.required<FilterOption[]>();
-  readonly status = [
-    { name: 'Todos', code: 'todos' },
-    { name: 'Ativo', code: 'ativo' },
+  readonly situacoes: FilterOption[] = [
+    { name: 'Todas as situações', code: 'todos' },
+    {
+      name: ETAPA_TRATAMENTO_CONFIG[EtapaTratamento.EM_TRATAMENTO].label,
+      code: EtapaTratamento.EM_TRATAMENTO,
+    },
+    {
+      name: ETAPA_TRATAMENTO_CONFIG[EtapaTratamento.PROXIMO_ALTA].label,
+      code: EtapaTratamento.PROXIMO_ALTA,
+    },
+    {
+      name: ETAPA_TRATAMENTO_CONFIG[EtapaTratamento.ALTA_VENCIDA].label,
+      code: EtapaTratamento.ALTA_VENCIDA,
+    },
+    { name: 'Sem internação', code: 'sem_internacao' },
     { name: 'Inativo', code: 'inativo' },
   ];
   readonly busca = input<string>();
   readonly convenioSelecionado = input<string>();
-  readonly statusSelecionado = input<string>();
+  readonly situacaoSelecionada = input<string>();
   protected readonly buscaChange = output<string>();
   protected readonly convenioSelecionadoChange = output<string>();
-  protected readonly statusSelecionadoChange = output<string>();
+  protected readonly situacaoSelecionadaChange = output<string>();
 }

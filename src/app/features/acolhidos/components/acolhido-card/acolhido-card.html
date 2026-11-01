@@ -26,8 +26,8 @@
 
   <p-tag
     class="col-start-1 row-start-2 justify-self-start sm:col-auto sm:row-auto sm:justify-self-center"
-    [value]="acolhido().ativo ? 'Ativo' : 'Inativo'"
-    [severity]="acolhido().ativo ? 'success' : 'secondary'"
+    [value]="situacaoConfig().label"
+    [severity]="situacaoConfig().severity"
   />
 
   <div

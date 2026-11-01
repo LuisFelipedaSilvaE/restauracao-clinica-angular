@@ -66,7 +66,7 @@ export class AcolhidosLista implements OnInit {
   protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly busca = signal('');
   protected readonly convenioSelecionado = signal('todos');
-  protected readonly statusSelecionado = signal('todos');
+  protected readonly situacaoSelecionada = signal('todos');
   protected readonly dialogConfirmVisible = signal(false);
 
   protected readonly convenios = computed<FilterOption[]>(() => {
@@ -145,7 +145,7 @@ export class AcolhidosLista implements OnInit {
   protected readonly acolhidosCardsFiltrados = computed<AcolhidoCardContent[]>(() => {
     const busca = this.normalizarTexto(this.busca());
     const buscaNumerica = this.busca().replace(/\D/g, '');
-    const status = this.statusSelecionado();
+    const situacao = this.situacaoSelecionada();
     const convenio = this.convenioSelecionado();
 
     return this.acolhidosCards().filter((acolhido) => {
@@ -157,12 +157,15 @@ export class AcolhidosLista implements OnInit {
         (!!buscaNumerica &&
           (acolhido.cpf.replace(/\D/g, '').includes(buscaNumerica) ||
             acolhido.telefone.replace(/\D/g, '').includes(buscaNumerica)));
-      const correspondeStatus =
-        status === 'todos' || (status === 'ativo' ? acolhido.ativo : !acolhido.ativo);
+      const correspondeSituacao =
+        situacao === 'todos' ||
+        (situacao === 'inativo' && !acolhido.ativo) ||
+        (situacao === 'sem_internacao' && acolhido.ativo && !acolhido.internacaoAtual) ||
+        (acolhido.ativo && acolhido.internacaoAtual?.etapaTratamento === situacao);
       const correspondeConvenio =
         convenio === 'todos' || String(acolhido.internacaoAtual?.convenio.id) === convenio;
 
-      return correspondeBusca && correspondeStatus && correspondeConvenio;
+      return correspondeBusca && correspondeSituacao && correspondeConvenio;
     });
   });
 
@@ -198,7 +201,7 @@ export class AcolhidosLista implements OnInit {
   protected clearFilters(): void {
     this.busca.set('');
     this.convenioSelecionado.set('todos');
-    this.statusSelecionado.set('todos');
+    this.situacaoSelecionada.set('todos');
   }
 
   protected confirmarAcao(): void {
