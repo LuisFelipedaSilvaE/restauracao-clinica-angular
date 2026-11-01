@@ -1,0 +1,282 @@
+<section class="flex flex-col gap-4">
+  <div>
+    <h1 class="mb-1 text-2xl font-semibold">Visão geral da clínica</h1>
+    <p class="text-sm text-content-secondary">
+      Acompanhe os principais indicadores, movimentações e a ocupação atual da clínica.
+    </p>
+  </div>
+
+  @if (falhaCarregamento()) {
+    <p-message severity="error">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span>Não foi possível carregar todos os dados do dashboard.</span>
+        <p-button
+          type="button"
+          label="Tentar novamente"
+          severity="danger"
+          variant="outlined"
+          size="small"
+          (onClick)="carregarDados(true)"
+        />
+      </div>
+    </p-message>
+  }
+
+  <div class="flex flex-wrap items-stretch justify-center gap-2.5">
+    @if (carregando()) {
+      @for (_ of skeletonIndicadores; track $index) {
+        <div
+          class="flex min-h-20 basis-52 grow items-center gap-3 rounded-lg border border-border-default bg-surface-card p-4"
+          aria-hidden="true"
+        >
+          <p-skeleton size="2.75rem" borderRadius="0.5rem" />
+          <div class="flex flex-1 flex-col gap-2">
+            <p-skeleton width="3rem" height="1.25rem" />
+            <p-skeleton width="8rem" height="0.75rem" />
+          </div>
+        </div>
+      }
+      <span class="sr-only" role="status">Carregando indicadores do dashboard...</span>
+    } @else {
+      @for (item of indicadores(); track item.label) {
+        <info-card class="min-w-52" [data]="item" />
+      }
+    }
+  </div>
+</section>
+
+<section class="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(260px,0.85fr)]">
+  <card class="min-w-0">
+    <div class="flex h-full min-h-80 flex-col gap-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold">Entradas × saídas</h2>
+          <p class="text-xs text-content-secondary">
+            Movimentações registradas nos últimos 6 meses
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4 pt-1 text-xs text-content-secondary">
+          <span class="flex items-center gap-1.5">
+            <span class="h-2.5 w-2.5 rounded-full bg-[#be222d]"></span>
+            Entradas
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="h-2.5 w-2.5 rounded-full bg-[#a3a8b1]"></span>
+            Saídas
+          </span>
+        </div>
+      </div>
+
+      @if (carregando()) {
+        <p-skeleton class="min-h-64 flex-1 rounded-lg!" />
+      } @else if (possuiMovimentacoes()) {
+        <div class="h-64 min-w-0 flex-1 sm:h-72">
+          <p-chart
+            type="bar"
+            [data]="dadosGrafico()"
+            [options]="opcoesGrafico"
+            height="100%"
+            class="block h-full w-full"
+            ariaLabel="Gráfico de entradas e saídas dos últimos seis meses"
+          />
+        </div>
+      } @else {
+        <div
+          class="flex min-h-64 flex-1 items-center justify-center rounded-lg border border-dashed border-border-muted bg-surface-subtle p-6 text-center"
+        >
+          <div>
+            <p class="font-medium">Ainda não há movimentações neste período</p>
+            <p class="mt-1 text-sm text-content-secondary">
+              Entradas e saídas aparecerão aqui conforme as internações forem registradas.
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </card>
+
+  <card>
+    <div class="flex h-full flex-col gap-4">
+      <div>
+        <h2 class="font-semibold">Ações rápidas</h2>
+        <p class="text-xs text-content-secondary">Acesse os fluxos mais utilizados</p>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <p-button routerLink="/acolhidos/criar" label="Novo acolhido" fluid>
+          <ng-template #icon>
+            <svg lucideUserRoundPlus class="h-5 w-5" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+
+        <p-button
+          routerLink="/triagens/criar"
+          label="Nova triagem"
+          severity="secondary"
+          variant="outlined"
+          fluid
+        >
+          <ng-template #icon>
+            <svg lucideCalendarPlus class="h-5 w-5" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+
+        <p-button
+          routerLink="/internacoes/criar"
+          label="Nova internação"
+          severity="secondary"
+          variant="outlined"
+          fluid
+        >
+          <ng-template #icon>
+            <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+      </div>
+
+      <div class="mt-auto rounded-lg bg-surface-subtle p-3 text-xs text-content-secondary">
+        Os indicadores são calculados com os dados atuais de internações, convênios e triagens.
+      </div>
+    </div>
+  </card>
+</section>
+
+<section class="grid min-w-0 gap-4 xl:grid-cols-2">
+  <card class="min-w-0">
+    <div class="flex flex-col gap-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold">Ocupação por convênio</h2>
+          <p class="text-xs text-content-secondary">
+            Internações ativas em relação ao limite cadastrado
+          </p>
+        </div>
+        <p-button
+          routerLink="/convenios"
+          ariaLabel="Ver convênios"
+          severity="secondary"
+          variant="text"
+          [rounded]="true"
+        >
+          <ng-template #icon>
+            <svg lucideArrowRight class="h-5 w-5" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+      </div>
+
+      @if (carregando()) {
+        @for (_ of [1, 2, 3]; track $index) {
+          <div class="flex flex-col gap-2" aria-hidden="true">
+            <div class="flex justify-between gap-4">
+              <p-skeleton width="9rem" height="0.875rem" />
+              <p-skeleton width="5rem" height="0.875rem" />
+            </div>
+            <p-skeleton height="0.5rem" borderRadius="9999px" />
+          </div>
+        }
+      } @else if (ocupacaoConvenios().length > 0) {
+        @for (convenio of ocupacaoConvenios(); track convenio.id) {
+          <div class="flex flex-col gap-2">
+            <div class="flex min-w-0 items-center justify-between gap-4 text-sm">
+              <span class="flex min-w-0 items-center gap-2 font-medium">
+                <span
+                  class="h-2.5 w-2.5 shrink-0 rounded-full"
+                  [style.backgroundColor]="convenio.cor"
+                ></span>
+                <span class="truncate">{{ convenio.descricao }}</span>
+              </span>
+              <span class="shrink-0 text-xs text-content-secondary">
+                {{ convenio.ocupadas }}/{{ convenio.total }} ocupadas ·
+                {{ convenio.disponiveis }} livres
+              </span>
+            </div>
+            <p-progressbar
+              [value]="convenio.percentual"
+              [showValue]="false"
+              class="h-2!"
+              [attr.aria-label]="convenio.percentual + '% de ocupação em ' + convenio.descricao"
+            />
+          </div>
+        }
+      } @else {
+        <div class="rounded-lg border border-dashed border-border-muted p-5 text-center">
+          <p class="font-medium">Nenhum convênio ativo</p>
+          <p class="mt-1 text-sm text-content-secondary">
+            Cadastre ou ative um convênio para acompanhar a ocupação.
+          </p>
+        </div>
+      }
+    </div>
+  </card>
+
+  <card class="min-w-0">
+    <div class="flex flex-col gap-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold">Movimentações recentes</h2>
+          <p class="text-xs text-content-secondary">Últimas entradas e saídas registradas</p>
+        </div>
+        <p-button
+          routerLink="/internacoes"
+          ariaLabel="Ver internações"
+          severity="secondary"
+          variant="text"
+          [rounded]="true"
+        >
+          <ng-template #icon>
+            <svg lucideArrowRight class="h-5 w-5" aria-hidden="true"></svg>
+          </ng-template>
+        </p-button>
+      </div>
+
+      @if (carregando()) {
+        @for (_ of [1, 2, 3, 4]; track $index) {
+          <div class="flex items-center gap-3" aria-hidden="true">
+            <p-skeleton shape="circle" size="2.5rem" />
+            <div class="flex flex-1 flex-col gap-2">
+              <p-skeleton width="55%" height="0.875rem" />
+              <p-skeleton width="75%" height="0.75rem" />
+            </div>
+            <p-skeleton width="4rem" height="1.5rem" borderRadius="0.375rem" />
+          </div>
+        }
+      } @else if (movimentacoesRecentes().length > 0) {
+        <div class="divide-y divide-border-default">
+          @for (movimento of movimentacoesRecentes(); track movimento.chave) {
+            <a
+              [routerLink]="['/internacoes', movimento.internacao.id]"
+              class="group flex min-w-0 items-center gap-3 py-3 first:pt-0 last:pb-0"
+            >
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-subtle text-content-secondary group-hover:text-content-primary"
+              >
+                <svg [lucideIcon]="movimento.icon" class="h-5 w-5" aria-hidden="true"></svg>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate font-medium">
+                  {{ movimento.internacao.acolhido.nome }}
+                </span>
+                <span class="block truncate text-xs text-content-secondary">
+                  {{ movimento.internacao.convenio.descricao }} ·
+                  {{ movimento.data | date: 'dd MMM yyyy' : 'UTC' : 'pt-BR' }}
+                </span>
+              </span>
+              <p-tag
+                [value]="movimento.tipo"
+                [severity]="movimento.tipo === 'Entrada' ? 'success' : 'secondary'"
+              />
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="rounded-lg border border-dashed border-border-muted p-5 text-center">
+          <p class="font-medium">Nenhuma movimentação registrada</p>
+          <p class="mt-1 text-sm text-content-secondary">
+            As entradas e saídas das internações serão exibidas aqui.
+          </p>
+        </div>
+      }
+    </div>
+  </card>
+</section>

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { roleGuard } from './core/guards/role-guard';
 import { ErrorPage } from './core/pages/error-page/error-page';
+import { Dashboard } from './features/dashboard/dashboard';
 import { AcolhidoForm } from './features/acolhidos/pages/acolhido-form/acolhido-form';
 import { AcolhidosLista } from './features/acolhidos/pages/acolhidos-lista/acolhidos-lista';
 import { Login } from './features/auth/pages/login/login';
@@ -46,6 +47,11 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'acolhidos',
         pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        component: Dashboard,
+        canActivate: [roleGuard('ADMIN')],
       },
       {
         path: 'convenios',
