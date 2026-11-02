@@ -20,18 +20,58 @@
         </ng-template>
       </p-button>
     </div>
-    <div class="flex grow justify-center md:justify-start">
-      <p-iconfield class="basis-120">
+    <div class="flex min-w-0 grow justify-center md:justify-start">
+      <p-iconfield class="min-w-0 basis-120">
         <p-inputicon>
           <svg lucideSearch class="w-4 h-4"></svg>
         </p-inputicon>
-        <input
-          type="text"
-          pInputText
+        <p-autocomplete
           class="w-full"
-          placeholder="Buscar acolhidos, relatórios..."
+          inputStyleClass="w-full"
+          panelStyleClass="min-w-80"
+          placeholder="Buscar acolhidos e triagens..."
           [(ngModel)]="searchValue"
-        />
+          [suggestions]="searchSuggestions()"
+          [group]="true"
+          optionLabel="titulo"
+          optionGroupLabel="label"
+          optionGroupChildren="items"
+          [minQueryLength]="2"
+          [delay]="300"
+          [showClear]="true"
+          [autoHighlight]="true"
+          emptyMessage="Nenhum resultado encontrado"
+          searchMessage="Resultados disponíveis"
+          emptySelectionMessage="Nenhum resultado selecionado"
+          appendTo="body"
+          (completeMethod)="buscar($event)"
+          (onSelect)="selecionarResultado($event)"
+          (onClear)="limparBusca()"
+        >
+          <ng-template #group let-group>
+            <span class="text-xs font-semibold uppercase tracking-wide text-content-secondary">
+              {{ group.label }}
+            </span>
+          </ng-template>
+
+          <ng-template #item let-result>
+            <div class="flex min-w-0 items-center gap-3 py-1">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-content-secondary"
+              >
+                <svg [lucideIcon]="result.icon" class="h-4.5 w-4.5"></svg>
+              </span>
+              <span class="min-w-0">
+                <span class="block truncate text-sm font-medium text-content-primary">
+                  {{ result.titulo }}
+                </span>
+                <span class="block truncate text-xs text-content-secondary">
+                  {{ result.descricao }}
+                </span>
+              </span>
+            </div>
+          </ng-template>
+        </p-autocomplete>
       </p-iconfield>
     </div>
     <div class="flex items-center gap-2 text-content-secondary">

@@ -1,13 +1,27 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { AuthService } from '../../core/services/auth-service';
-import { InputTextModule } from 'primeng/inputtext';
-import { FormsModule } from '@angular/forms';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
-import { LucideBell, LucideCalendar, LucideSearch, LucideMenu, LucideX } from '@lucide/angular';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import {
+  LucideBell,
+  LucideCalendar,
+  LucideDynamicIcon,
+  LucideMenu,
+  LucideSearch,
+  LucideX,
+} from '@lucide/angular';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import type {
+  AutoCompleteCompleteEvent,
+  AutoCompleteSelectEvent,
+} from 'primeng/types/autocomplete';
 import { ButtonModule } from 'primeng/button';
+import { AuthService } from '../../core/services/auth-service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { MobileNav } from '../mobile-nav/mobile-nav';
+import { GlobalSearchGroup, GlobalSearchResult } from './interfaces/global-search-result';
+import { GlobalSearchService } from './services/global-search-service';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +30,7 @@ import { MobileNav } from '../mobile-nav/mobile-nav';
   },
   providers: [DatePipe],
   imports: [
-    InputTextModule,
+    AutoCompleteModule,
     IconFieldModule,
     InputIconModule,
     FormsModule,
@@ -26,6 +40,7 @@ import { MobileNav } from '../mobile-nav/mobile-nav';
     LucideBell,
     LucideMenu,
     LucideX,
+    LucideDynamicIcon,
     CommonModule,
     MobileNav,
   ],
@@ -35,12 +50,48 @@ import { MobileNav } from '../mobile-nav/mobile-nav';
 export class Header {
   protected readonly authService = inject(AuthService);
   private readonly datePipe = inject(DatePipe);
-  protected readonly searchValue = signal('');
+  private readonly globalSearchService = inject(GlobalSearchService);
+  private readonly router = inject(Router);
+  protected readonly searchValue = signal<GlobalSearchResult | string | null>('');
+  protected readonly searchSuggestions = signal<GlobalSearchGroup[]>([]);
   protected readonly dataAtual = signal(new Date());
   protected readonly isMobileNavOpen = signal(false);
+  private searchSequence = 0;
 
   toggleMobileNav(): void {
     this.isMobileNavOpen.update((open) => !open);
+  }
+
+  protected buscar(event: AutoCompleteCompleteEvent): void {
+    const searchSequence = ++this.searchSequence;
+
+    this.globalSearchService.buscar(event.query).subscribe({
+      next: (grupos) => {
+        if (searchSequence === this.searchSequence) {
+          this.searchSuggestions.set(grupos);
+        }
+      },
+      error: () => {
+        if (searchSequence === this.searchSequence) {
+          this.searchSuggestions.set([]);
+        }
+      },
+    });
+  }
+
+  protected selecionarResultado(event: AutoCompleteSelectEvent): void {
+    const resultado = event.value as GlobalSearchResult;
+
+    this.router.navigate(resultado.rota, { queryParams: resultado.queryParams }).then(() => {
+      this.searchValue.set('');
+      this.searchSuggestions.set([]);
+    });
+  }
+
+  protected limparBusca(): void {
+    this.searchSequence++;
+    this.searchValue.set('');
+    this.searchSuggestions.set([]);
   }
 
   protected readonly dataFormatada = computed(() => {
