@@ -13,6 +13,11 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import {
+  MEDICAMENTO_NOME_MAX_LENGTH,
+  MEDICAMENTO_PRECO_MAXIMO,
+  MEDICAMENTO_QUANTIDADE_MAXIMA,
+} from '../../constants/medicamento-limits';
 import { MedicamentosService } from '../../services/medicamentos-service';
 
 @Component({
@@ -38,25 +43,38 @@ import { MedicamentosService } from '../../services/medicamentos-service';
 })
 export class MedicamentoForm implements OnInit {
   protected readonly id = input<string>();
+  protected readonly nomeMaxLength = MEDICAMENTO_NOME_MAX_LENGTH;
+  protected readonly precoMaximo = MEDICAMENTO_PRECO_MAXIMO;
+  protected readonly quantidadeMaxima = MEDICAMENTO_QUANTIDADE_MAXIMA;
   private readonly fb = inject(FormBuilder);
   private readonly medicamentosService = inject(MedicamentosService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   protected readonly medicamentoForm = this.fb.nonNullable.group({
-    nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    nome: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(MEDICAMENTO_NOME_MAX_LENGTH),
+      ],
+    ],
     preco: this.fb.control<number | null>(null, [
       Validators.required,
-      Validators.min(0.01),
+      Validators.min(0),
+      Validators.max(MEDICAMENTO_PRECO_MAXIMO),
       Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/),
     ]),
     quantidadeEstoque: this.fb.control<number | null>(null, [
       Validators.required,
       Validators.min(0),
+      Validators.max(MEDICAMENTO_QUANTIDADE_MAXIMA),
       Validators.pattern(/^[0-9]+$/),
     ]),
     quantidadeMinima: this.fb.control<number | null>(null, [
       Validators.required,
       Validators.min(0),
+      Validators.max(MEDICAMENTO_QUANTIDADE_MAXIMA),
       Validators.pattern(/^[0-9]+$/),
     ]),
   });
@@ -155,14 +173,21 @@ export class MedicamentoForm implements OnInit {
     }
 
     if (control.errors['maxlength']) {
-      return `${this.labels[controlName]} deve ter no máximo 100 caracteres`;
+      return `${this.labels[controlName]} deve ter no máximo ${MEDICAMENTO_NOME_MAX_LENGTH} caracteres`;
     }
 
     if (control.errors['min']) {
       if (controlName === 'preco') {
-        return `${this.labels[controlName]} deve ser maior que 0`;
+        return `${this.labels[controlName]} não pode ser negativo`;
       }
       return `${this.labels[controlName]} não pode ser negativo`;
+    }
+
+    if (control.errors['max']) {
+      if (controlName === 'preco') {
+        return `${this.labels[controlName]} deve ser de no máximo R$ 9.999.999.999,99`;
+      }
+      return `${this.labels[controlName]} deve ser de no máximo ${MEDICAMENTO_QUANTIDADE_MAXIMA.toLocaleString('pt-BR')}`;
     }
 
     if (control.errors['pattern']) {

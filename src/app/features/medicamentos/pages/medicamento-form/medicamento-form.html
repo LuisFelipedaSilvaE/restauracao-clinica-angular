@@ -32,6 +32,7 @@
           id="nome"
           formControlName="nome"
           placeholder="Ex.: Paracetamol 500mg"
+          [maxlength]="nomeMaxLength"
           [invalid]="isInvalid('nome')"
           autocomplete="off"
           fluid
@@ -50,6 +51,9 @@
             mode="currency"
             currency="BRL"
             placeholder="R$ 0,00"
+            [min]="0"
+            [max]="precoMaximo"
+            [maxFractionDigits]="2"
             [invalid]="isInvalid('preco')"
             autocomplete="off"
             fluid
@@ -67,6 +71,11 @@
             inputId="quantidadeEstoque"
             formControlName="quantidadeEstoque"
             placeholder="0"
+            [min]="0"
+            [max]="quantidadeMaxima"
+            [maxFractionDigits]="0"
+            locale="pt-BR"
+            [useGrouping]="true"
             [invalid]="isInvalid('quantidadeEstoque')"
             autocomplete="off"
             fluid
@@ -82,6 +91,11 @@
             inputId="quantidadeMinima"
             formControlName="quantidadeMinima"
             placeholder="0"
+            [min]="0"
+            [max]="quantidadeMaxima"
+            [maxFractionDigits]="0"
+            locale="pt-BR"
+            [useGrouping]="true"
             [invalid]="isInvalid('quantidadeMinima')"
             autocomplete="off"
             fluid
