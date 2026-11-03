@@ -42,7 +42,7 @@ export class MedicamentosLista implements OnInit {
         color: '#e7000b',
       },
       {
-        value: unidadesEmMedicamentos,
+        value: unidadesEmMedicamentos.toLocaleString('pt-BR'),
         label: 'Unidades em estoque',
         icon: LucidePackageOpen,
         color: '#0084d1',
