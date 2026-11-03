@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideArrowDownToLine, LucideArrowUpFromLine, LucideDynamicIcon } from '@lucide/angular';
@@ -7,6 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageModule } from 'primeng/message';
 import { FormField } from '../../../../shared/components/form-field/form-field';
+import { MEDICAMENTO_QUANTIDADE_MAXIMA } from '../../constants/medicamento-limits';
 import { Medicamento } from '../../interfaces/medicamento';
 import { MedicamentosService } from '../../services/medicamentos-service';
 
@@ -20,6 +22,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
     FormField,
     InputNumberModule,
     LucideDynamicIcon,
+    DecimalPipe,
   ],
   templateUrl: './dialog-movimentacao-medicamento.html',
   styleUrl: './dialog-movimentacao-medicamento.css',
@@ -28,6 +31,7 @@ export class DialogMovimentacaoMedicamento {
   readonly medicamento = input.required<Medicamento>();
   readonly visible = model.required<boolean>();
   readonly onSucess = output<Medicamento>();
+  protected readonly quantidadeMaxima = MEDICAMENTO_QUANTIDADE_MAXIMA;
   protected fb = inject(FormBuilder);
   protected medicamentosService = inject(MedicamentosService);
   protected messageService = inject(MessageService);
@@ -35,6 +39,7 @@ export class DialogMovimentacaoMedicamento {
     quantidade: this.fb.control<number | null>(null, [
       Validators.required,
       Validators.min(1),
+      Validators.max(MEDICAMENTO_QUANTIDADE_MAXIMA),
       Validators.pattern(/^[0-9]+$/),
     ]),
   });
@@ -49,7 +54,7 @@ export class DialogMovimentacaoMedicamento {
     const mode = this.type();
 
     return {
-      title: mode === 'entrada' ? 'Aumentar quantidadeEstoque' : 'Reduzir quantidadeEstoque',
+      title: mode === 'entrada' ? 'Registrar entrada' : 'Registrar saída',
       severity: mode === 'entrada' ? 'success' : 'warn',
       btnLabel: mode === 'entrada' ? 'Registrar entrada' : 'Registrar saída',
       msgIcon: mode === 'entrada' ? LucideArrowDownToLine : LucideArrowUpFromLine,
@@ -72,6 +77,10 @@ export class DialogMovimentacaoMedicamento {
 
     if (control.errors['min']) {
       return `${this.labels[controlName]} deve ser maior ou igual a 1`;
+    }
+
+    if (control.errors['max']) {
+      return `${this.labels[controlName]} deve ser de no máximo ${MEDICAMENTO_QUANTIDADE_MAXIMA.toLocaleString('pt-BR')}`;
     }
 
     if (control.errors['pattern']) {

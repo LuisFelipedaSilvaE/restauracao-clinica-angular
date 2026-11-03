@@ -116,11 +116,8 @@
             Estoque atual
           </p>
           <p class="text-sm font-medium text-foreground">
-            {{
-              medicamento.quantidadeEstoque === 1
-                ? medicamento.quantidadeEstoque + ' unidade'
-                : medicamento.quantidadeEstoque + ' unidades'
-            }}
+            {{ medicamento.quantidadeEstoque | number: '1.0-0' }}
+            {{ medicamento.quantidadeEstoque === 1 ? 'unidade' : 'unidades' }}
           </p>
         </div>
       </div>
@@ -133,11 +130,8 @@
             Estoque mínimo
           </p>
           <p class="text-sm font-medium text-foreground">
-            {{
-              medicamento.quantidadeMinima === 1
-                ? medicamento.quantidadeMinima + ' unidade'
-                : medicamento.quantidadeMinima + ' unidades'
-            }}
+            {{ medicamento.quantidadeMinima | number: '1.0-0' }}
+            {{ medicamento.quantidadeMinima === 1 ? 'unidade' : 'unidades' }}
           </p>
         </div>
       </div>

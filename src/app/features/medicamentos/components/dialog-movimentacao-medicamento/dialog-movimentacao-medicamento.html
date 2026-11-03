@@ -25,7 +25,8 @@
               {{ medicamento().nome }}
             </p>
             <p class="font-normal">
-              Saldo atual: <strong>{{ medicamento().quantidadeEstoque }}</strong>
+              Saldo atual:
+              <strong>{{ medicamento().quantidadeEstoque | number: '1.0-0' }}</strong>
             </p>
           </div>
         </div>
@@ -43,6 +44,11 @@
             formControlName="quantidade"
             [invalid]="isInvalid('quantidade')"
             placeholder="0"
+            [min]="1"
+            [max]="quantidadeMaxima"
+            [maxFractionDigits]="0"
+            locale="pt-BR"
+            [useGrouping]="true"
             fluid
           />
         </form-field>

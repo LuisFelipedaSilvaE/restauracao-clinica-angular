@@ -34,9 +34,9 @@
 
       <p class="shrink-0 text-sm text-content-secondary text-nowrap">
         <strong class="text-content-primary">
-          {{ medicamento().quantidadeEstoque }}
+          {{ medicamento().quantidadeEstoque | number: '1.0-0' }}
         </strong>
-        / mín. {{ medicamento().quantidadeMinima }}
+        / mín. {{ medicamento().quantidadeMinima | number: '1.0-0' }}
       </p>
     </div>
   </div>
