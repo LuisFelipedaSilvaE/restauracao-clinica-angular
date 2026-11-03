@@ -15,6 +15,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { Card } from '../../../../shared/components/card/card';
 import { UserRole } from '../../../../core/guards/models/user-role.model';
 import { AuthService } from '../../../../core/services/auth-service';
+import { UsersService } from '../../../../core/services/users-service';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
@@ -61,6 +62,7 @@ export class FuncionarioForm {
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly authService = inject(AuthService);
+  private readonly usersService = inject(UsersService);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly cargosService = inject(CargosService);
   protected readonly blockspace = /^[^\s]+$/;
@@ -74,10 +76,12 @@ export class FuncionarioForm {
   protected readonly skeletonCampos = Array.from({ length: 5 });
   private usernameOriginal: string | null = null;
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
-  protected readonly roles: SelectItem<UserRole>[] = [
-    { label: 'Administrador', value: 'ADMIN' },
-    { label: 'Usuário', value: 'USER' },
-  ];
+  protected readonly roles = computed<SelectItem<UserRole>[]>(() =>
+    this.usersService.roles().map((role) => ({
+      label: this.roleLabels[role],
+      value: role,
+    })),
+  );
   protected readonly funcionarioForm = this.fb.nonNullable.group({
     nome: ['', [Validators.required]],
     cpf: ['', [Validators.required, cpfValidator]],
@@ -124,6 +128,12 @@ export class FuncionarioForm {
     'user.role': 'Nível de acesso',
   };
 
+  private readonly roleLabels: Record<UserRole, string> = {
+    ADMIN: 'Administrador',
+    USER: 'Usuário',
+    NO_ACCESS: 'Sem acesso',
+  };
+
   protected readonly passwordInputPt = {
     pcInputText: { root: { class: 'placeholder:tracking-widest' } },
   };
@@ -151,6 +161,7 @@ export class FuncionarioForm {
     this.minDataNascimento = new Date(dataMinima);
 
     this.cargosService.getAllCargos().subscribe();
+    this.usersService.getAllRoles().subscribe();
     const id = this.id();
 
     if (!id) return;
