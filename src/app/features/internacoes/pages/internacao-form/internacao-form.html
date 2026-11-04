@@ -252,27 +252,6 @@
                 fluid
               />
             </form-field>
-
-            <form-field
-              label="Etapa de tratamento"
-              inputId="etapaTratamento"
-              required
-              [errorMessage]="getErrorMessage('etapaTratamento')"
-            >
-              <p-select
-                inputId="etapaTratamento"
-                name="etapaTratamento"
-                formControlName="etapaTratamento"
-                [options]="etapasTratamento"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Selecione uma etapa"
-                [invalid]="isInvalid('etapaTratamento')"
-                appendTo="body"
-                autocomplete="off"
-                fluid
-              />
-            </form-field>
           }
 
           <form-field

@@ -30,8 +30,6 @@ import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service'
 import { ConveniosService } from '../../../convenios/services/convenios-service';
 import { StatusTriagem } from '../../../triagens/enums/status-triagem';
 import { TriagensService } from '../../../triagens/services/triagens-service';
-import { EtapaTratamento } from '../../enums/etapa-tratamento';
-import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { Internacao } from '../../interfaces/internacao';
 import { InternacaoCreateRequest } from '../../interfaces/internacao-create-request';
 import { InternacaoUpdateRequest } from '../../interfaces/internacao-update-request';
@@ -99,10 +97,6 @@ export class InternacaoForm implements OnInit {
   protected readonly convenios = this.conveniosService.convenios;
   protected readonly triagens = this.triagensService.triagens;
   protected readonly hoje = new Date();
-  protected readonly etapasTratamento = Object.values(EtapaTratamento).map((value) => ({
-    value,
-    label: ETAPA_TRATAMENTO_CONFIG[value].label,
-  }));
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(true);
@@ -137,9 +131,6 @@ export class InternacaoForm implements OnInit {
       dataSaidaPrevista: this.fb.control<Date | null>(this.saidaPrevistaInicial, [
         Validators.required,
         dataValida,
-      ]),
-      etapaTratamento: this.fb.nonNullable.control(EtapaTratamento.EM_TRATAMENTO, [
-        Validators.required,
       ]),
       valorMensalidade: this.fb.control<number | null>(null, [Validators.required]),
     },
@@ -209,7 +200,6 @@ export class InternacaoForm implements OnInit {
     convenioId: 'Convênio',
     dataEntrada: 'Data de entrada',
     dataSaidaPrevista: 'Previsão de saída',
-    etapaTratamento: 'Etapa de tratamento',
     valorMensalidade: 'Valor da mensalidade',
   };
 
@@ -307,7 +297,7 @@ export class InternacaoForm implements OnInit {
     if (errors?.['min']) return 'O valor da mensalidade deve ser maior que zero.';
     if (errors?.['max']) {
       return this.convenioSelecionado()?.pagamento
-        ? 'Informe um valor de mensalidade válido.'
+        ? 'O valor da mensalidade não pode ser maior que R$ 1.000.000,00.'
         : 'Este convênio não permite cobrança de mensalidade.';
     }
     if (
@@ -368,7 +358,6 @@ export class InternacaoForm implements OnInit {
       acolhidoId: acolhido.id,
       convenioId: convenio.id,
       dataEntrada: dateToLocalDate(valor.dataEntrada!),
-      etapaTratamento: EtapaTratamento.EM_TRATAMENTO,
       valorMensalidade: convenio.pagamento ? valor.valorMensalidade : null,
     };
 
@@ -386,7 +375,6 @@ export class InternacaoForm implements OnInit {
 
     const dados: InternacaoUpdateRequest = {
       dataSaidaPrevista: dateToLocalDate(valor.dataSaidaPrevista!),
-      etapaTratamento: valor.etapaTratamento,
       valorMensalidade: valor.valorMensalidade!,
     };
 
@@ -440,7 +428,6 @@ export class InternacaoForm implements OnInit {
           convenioId: internacao.convenio.id,
           dataEntrada: localDateToDate(internacao.dataEntrada),
           dataSaidaPrevista: localDateToDate(internacao.dataSaidaPrevista),
-          etapaTratamento: internacao.etapaTratamento,
           valorMensalidade: internacao.valorMensalidade,
         });
         this.configurarMensalidade(internacao.convenio.id, true);
@@ -485,11 +472,7 @@ export class InternacaoForm implements OnInit {
     const control = this.internacaoForm.controls.valorMensalidade;
 
     if (convenio?.pagamento) {
-      control.setValidators([
-        Validators.required,
-        Validators.min(0.01),
-        Validators.max(99_999_999.99),
-      ]);
+      control.setValidators([Validators.required, Validators.min(0.01), Validators.max(1_000_000)]);
       if (!preservarValor && control.value === 0) control.setValue(null);
     } else {
       control.setValidators([Validators.required, Validators.min(0), Validators.max(0)]);
