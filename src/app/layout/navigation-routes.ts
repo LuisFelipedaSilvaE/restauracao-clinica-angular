@@ -1,8 +1,6 @@
 import {
   LucideBedSingle,
   LucideBriefcase,
-  LucideChartColumn,
-  LucideFileText,
   LucideIcon,
   LucideLayers,
   LucideLayoutDashboard,
@@ -24,8 +22,6 @@ export const NAVIGATION_ROUTES: NavigationRoute[] = [
   { label: 'Acolhidos', route: 'acolhidos', icon: LucideUsersRound },
   { label: 'Estoque', route: 'medicamentos', icon: LucidePill },
   { label: 'Funcionários', route: 'funcionarios', icon: LucideBriefcase },
-  { label: 'Relatórios', route: 'relatorios', icon: LucideChartColumn },
-  { label: 'Declarações', route: 'declaracoes', icon: LucideFileText },
   { label: 'Triagens', route: 'triagens', icon: LucideStethoscope },
 ];
 

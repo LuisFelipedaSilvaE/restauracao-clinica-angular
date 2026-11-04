@@ -3,7 +3,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  LucideBell,
   LucideCalendar,
   LucideDynamicIcon,
   LucideMenu,
@@ -37,7 +36,6 @@ import { GlobalSearchService } from './services/global-search-service';
     ButtonModule,
     LucideSearch,
     LucideCalendar,
-    LucideBell,
     LucideMenu,
     LucideX,
     LucideDynamicIcon,
