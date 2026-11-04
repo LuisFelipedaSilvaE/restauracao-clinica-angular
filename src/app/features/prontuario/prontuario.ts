@@ -10,17 +10,7 @@ import { ProntuarioOutletData } from './interfaces/prontuario-outlet-data';
 import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
 import { filter, forkJoin, map } from 'rxjs';
-import {
-  LucideApple,
-  LucideBedSingle,
-  LucideBrain,
-  LucideDynamicIcon,
-  LucideFileHeart,
-  LucideFileText,
-  LucideFolderOpen,
-  LucideHeartHandshake,
-  LucideUserRound,
-} from '@lucide/angular';
+import { LucideBedSingle, LucideDynamicIcon, LucideUserRound } from '@lucide/angular';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
 
@@ -88,36 +78,6 @@ export class Prontuario implements OnInit {
       label: 'Dados pessoais',
       route: 'dados-pessoais',
       icon: LucideUserRound,
-    },
-    {
-      label: 'Relatórios médicos',
-      route: 'relatorios-medicos',
-      icon: LucideFileHeart,
-    },
-    {
-      label: 'Relatórios sociais',
-      route: 'relatorios-sociais',
-      icon: LucideHeartHandshake,
-    },
-    {
-      label: 'Relatórios psicológicos',
-      route: 'relatorios-psicologicos',
-      icon: LucideBrain,
-    },
-    {
-      label: 'Nutrição',
-      route: 'nutricao',
-      icon: LucideApple,
-    },
-    {
-      label: 'Declarações',
-      route: 'declaracoes',
-      icon: LucideFileText,
-    },
-    {
-      label: 'Documentos',
-      route: 'documentos',
-      icon: LucideFolderOpen,
     },
   ];
 

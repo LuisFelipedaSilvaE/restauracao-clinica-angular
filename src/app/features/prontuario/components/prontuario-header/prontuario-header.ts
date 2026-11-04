@@ -3,7 +3,6 @@ import { Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideDynamicIcon,
-  LucideFileText,
   LucidePencil,
   LucidePower,
   LucidePowerOff,
@@ -34,7 +33,6 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     ProfileColor,
     SiglaNomePipe,
     LucideDynamicIcon,
-    LucideFileText,
     LucidePencil,
     LucideTrash2,
   ],
