@@ -3,19 +3,17 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideBedSingle,
-  LucideDynamicIcon,
-  LucideEllipsisVertical,
   LucideEye,
   LucideLogOut,
   LucidePencil,
   LucideTrash2,
 } from '@lucide/angular';
-import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { IconColor } from '../../../../shared/directives/icon-color';
+import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { localDateToDate } from '../../../../shared/utils/local-date';
-import { AcaoMenuInternacao } from '../../interfaces/acao-menu-internacao';
 import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
 
@@ -28,16 +26,7 @@ import { InternacaoCardContent } from '../../interfaces/internacao-card-content'
       "!internacao().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
     '[style.border-left-color]': 'internacao().convenio.cor',
   },
-  imports: [
-    CommonModule,
-    MenuModule,
-    TagModule,
-    IconColor,
-    CpfPipe,
-    LucideBedSingle,
-    LucideDynamicIcon,
-    LucideEllipsisVertical,
-  ],
+  imports: [CommonModule, ActionMenu, TagModule, IconColor, CpfPipe, LucideBedSingle],
   templateUrl: './internacao-card.html',
   styleUrl: './internacao-card.css',
 })
@@ -54,7 +43,7 @@ export class InternacaoCard {
     localDateToDate(this.internacao().dataSaida ?? this.internacao().dataSaidaPrevista),
   );
 
-  protected readonly acoes = computed<AcaoMenuInternacao[]>(() => [
+  protected readonly acoes = computed<AcaoMenu[]>(() => [
     {
       label: 'Visualizar internação',
       lucideIcon: LucideEye,

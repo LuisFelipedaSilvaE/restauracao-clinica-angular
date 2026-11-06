@@ -46,21 +46,6 @@
   <div
     class="col-start-3 row-span-2 sm:row-span-1 sm:col-start-4 xl:col-start-5 justify-self-end self-center flex items-center"
   >
-    <p-menu #menu [model]="acoes()" [popup]="true" appendTo="body">
-      <ng-template #item let-item>
-        <div class="flex items-center gap-2 px-3 py-2 cursor-pointer">
-          <svg [lucideIcon]="item.lucideIcon" [ngClass]="item.iconClass"></svg>
-          <span>{{ item.label }}</span>
-        </div>
-      </ng-template>
-    </p-menu>
-
-    <button
-      type="button"
-      class="inline-flex h-9 w-9 items-center justify-center rounded-md text-content-secondary hover:bg-surface-subtle transition-colors"
-      (click)="menu.toggle($event)"
-    >
-      <svg lucideEllipsisVertical class="h-5 w-5"></svg>
-    </button>
+    <action-menu [actions]="acoes()" ariaLabel="Abrir ações da triagem" />
   </div>
 </card>

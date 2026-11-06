@@ -4,17 +4,14 @@ import { Router } from '@angular/router';
 import {
   LucideArrowDownToLine,
   LucideArrowUpFromLine,
-  LucideDynamicIcon,
-  LucideEllipsisVertical,
   LucideEye,
   LucidePencil,
   LucidePill,
   LucideTrash2,
 } from '@lucide/angular';
-import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
 import { IconColor } from '../../../../shared/directives/icon-color';
@@ -24,16 +21,13 @@ import { Medicamento } from '../../interfaces/medicamento';
 @Component({
   selector: 'medicamento-card',
   imports: [
-    ButtonModule,
+    ActionMenu,
     TagModule,
-    MenuModule,
     ProgressBarModule,
     Card,
     IconColor,
     CustomProgressbar,
     LucidePill,
-    LucideEllipsisVertical,
-    LucideDynamicIcon,
     CommonModule,
   ],
   templateUrl: './medicamento-card.html',

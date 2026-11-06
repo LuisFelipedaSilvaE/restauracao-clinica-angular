@@ -3,16 +3,14 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideBedSingle,
-  LucideDynamicIcon,
-  LucideEllipsisVertical,
   LucideEye,
   LucidePencil,
   LucidePower,
   LucidePowerOff,
   LucideTrash2,
 } from '@lucide/angular';
-import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
@@ -34,11 +32,9 @@ import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
   imports: [
     TagModule,
     CommonModule,
-    LucideDynamicIcon,
+    ActionMenu,
     ProfileColor,
     SiglaNomePipe,
-    MenuModule,
-    LucideEllipsisVertical,
     CpfPipe,
     TelefonePipe,
   ],

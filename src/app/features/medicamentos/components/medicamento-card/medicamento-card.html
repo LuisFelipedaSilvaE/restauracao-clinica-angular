@@ -50,18 +50,6 @@
   <div
     class="col-start-3 row-span-3 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
   >
-    <p-button severity="secondary" [text]="true" (onClick)="menu.toggle($event)">
-      <ng-template #icon>
-        <svg lucideEllipsisVertical class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
-    <p-menu #menu [model]="acoes" [popup]="true" appendTo="body">
-      <ng-template #item let-item>
-        <div class="flex cursor-pointer items-center gap-2 px-3 py-2">
-          <svg [lucideIcon]="item.lucideIcon" [class]="item.iconClass"></svg>
-          <span>{{ item.label }}</span>
-        </div>
-      </ng-template>
-    </p-menu>
+    <action-menu [actions]="acoes" ariaLabel="Abrir ações do medicamento" />
   </div>
 </card>

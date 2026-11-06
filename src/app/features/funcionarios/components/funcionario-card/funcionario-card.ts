@@ -2,23 +2,16 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
-import {
-  LucideDynamicIcon,
-  LucideEllipsisVertical,
-  LucideEye,
-  LucidePencil,
-  LucidePower,
-  LucidePowerOff,
-} from '@lucide/angular';
+import { LucideEye, LucidePencil, LucidePower, LucidePowerOff } from '@lucide/angular';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { Router } from '@angular/router';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
-import { MenuModule } from 'primeng/menu';
 import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { localDateToDate } from '../../../../shared/utils/local-date';
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 
 @Component({
   selector: 'funcionario-card',
@@ -31,13 +24,11 @@ import { localDateToDate } from '../../../../shared/utils/local-date';
   imports: [
     TagModule,
     CommonModule,
-    LucideDynamicIcon,
+    ActionMenu,
     ProfileColor,
     SiglaNomePipe,
     CpfPipe,
     TelefonePipe,
-    MenuModule,
-    LucideEllipsisVertical,
   ],
   templateUrl: './funcionario-card.html',
   styleUrl: './funcionario-card.css',

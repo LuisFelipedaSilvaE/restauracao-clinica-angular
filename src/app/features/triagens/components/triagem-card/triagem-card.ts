@@ -3,16 +3,14 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideCalendarClock,
-  LucideDynamicIcon,
   LucideCircleCheckBig,
-  LucideEllipsisVertical,
   LucideEye,
   LucidePencil,
   LucideRotateCcwClock,
   LucideTrash2,
 } from '@lucide/angular';
-import { MenuModule } from 'primeng/menu';
 import { TagModule } from 'primeng/tag';
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
@@ -24,17 +22,7 @@ import { StatusTriagem } from '../../enums/status-triagem';
 
 @Component({
   selector: 'triagem-card',
-  imports: [
-    LucideDynamicIcon,
-    TagModule,
-    CommonModule,
-    ProfileColor,
-    SiglaNomePipe,
-    MenuModule,
-    LucideEllipsisVertical,
-    Card,
-    CustomTag,
-  ],
+  imports: [ActionMenu, TagModule, CommonModule, ProfileColor, SiglaNomePipe, Card, CustomTag],
   templateUrl: './triagem-card.html',
   styleUrl: './triagem-card.css',
 })
