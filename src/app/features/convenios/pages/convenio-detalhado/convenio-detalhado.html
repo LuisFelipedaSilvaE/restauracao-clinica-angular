@@ -102,7 +102,7 @@
 
   <card>
     <p class="font-semibold">Resumo do convênio</p>
-    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <div class="flex items-center gap-2">
         <span
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
@@ -110,10 +110,7 @@
         >
           <svg lucideSquareDashedText class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Descrição</dt>
-          <dd class="font-heading text-md font-medium">{{ convenio.descricao }}</dd>
-        </div>
+        <detail-info-field label="Descrição">{{ convenio.descricao }}</detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -123,10 +120,7 @@
         >
           <svg lucideLayers class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">CNPJ</dt>
-          <dd class="font-heading text-md font-medium">{{ formatarCnpj(convenio.cnpj) }}</dd>
-        </div>
+        <detail-info-field label="CNPJ">{{ formatarCnpj(convenio.cnpj) }}</detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -136,10 +130,9 @@
         >
           <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Capacidade total</dt>
-          <dd class="font-heading text-md font-medium">{{ convenio.maxVagas }} vagas</dd>
-        </div>
+        <detail-info-field label="Capacidade total">
+          {{ convenio.maxVagas }} vagas
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -149,10 +142,9 @@
         >
           <svg lucideCheck class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Acolhidos ativos</dt>
-          <dd class="font-heading text-md font-medium">{{ acolhidosAtivos() }} acolhidos</dd>
-        </div>
+        <detail-info-field label="Acolhidos ativos">
+          {{ acolhidosAtivos() }} acolhidos
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -162,10 +154,9 @@
         >
           <svg lucideDoorOpen class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Vagas disponíveis</dt>
-          <dd class="font-heading text-md font-medium">{{ vagasDisponiveis() }} vagas</dd>
-        </div>
+        <detail-info-field label="Vagas disponíveis">
+          {{ vagasDisponiveis() }} vagas
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -175,10 +166,7 @@
         >
           <svg lucideHandCoins class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Pagamento</dt>
-          <dd class="font-heading text-md font-medium">{{ pagamentoLabel() }}</dd>
-        </div>
+        <detail-info-field label="Pagamento">{{ pagamentoLabel() }}</detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -188,13 +176,12 @@
         >
           <svg lucidePaintBucket class="h-4 w-4"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Cor de identificação</dt>
-          <dd class="flex items-center gap-2 font-heading text-md font-medium">
+        <detail-info-field label="Cor de identificação">
+          <span class="flex items-center gap-2">
             <span class="h-2.5 w-2.5 rounded-full" [style.backgroundColor]="convenio.cor"></span>
             {{ convenio.cor }}
-          </dd>
-        </div>
+          </span>
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -208,12 +195,9 @@
             <svg lucidePowerOff class="h-4 w-4"></svg>
           }
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Status</dt>
-          <dd class="font-heading text-md font-medium">{{ statusLabel() }}</dd>
-        </div>
+        <detail-info-field label="Status">{{ statusLabel() }}</detail-info-field>
       </div>
-    </dl>
+    </div>
   </card>
 }
 

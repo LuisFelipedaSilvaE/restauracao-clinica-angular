@@ -19,6 +19,7 @@ import { MessageService } from 'primeng/api';
 
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { Convenio } from '../../interfaces/convenio';
 import { ConveniosService } from '../../services/convenios-service';
@@ -39,6 +40,7 @@ const ACOLHIDOS_ATIVOS_MOCK = 10;
     SkeletonModule,
     Card,
     ConfirmDialog,
+    DetailInfoField,
     IconColor,
     RouterLink,
     LucideCheck,

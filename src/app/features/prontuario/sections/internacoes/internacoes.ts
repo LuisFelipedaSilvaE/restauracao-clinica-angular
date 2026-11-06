@@ -15,13 +15,13 @@ import {
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { TIPO_ALTA_LABELS } from '../../../internacoes/enums/tipo-alta';
 import { Internacao } from '../../../internacoes/interfaces/internacao';
 import { ETAPA_TRATAMENTO_CONFIG } from '../../../internacoes/interfaces/etapa-tratamento-config';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
-import { ProntuarioInfoField } from '../../components/prontuario-info-field/prontuario-info-field';
 import { ProntuarioSectionCard } from '../../components/prontuario-section-card/prontuario-section-card';
 import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
 
@@ -44,7 +44,7 @@ import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
     LucideHandCoins,
     LucideHistory,
     LucideLogOut,
-    ProntuarioInfoField,
+    DetailInfoField,
     ProntuarioSectionCard,
     RouterLink,
     SkeletonModule,

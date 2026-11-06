@@ -112,7 +112,7 @@
 
   <card>
     <p class="font-semibold">Dados da internação</p>
-    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <div class="flex items-center gap-2">
         <span
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
@@ -120,10 +120,9 @@
         >
           <svg lucideBedSingle class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Identificador</dt>
-          <dd class="font-heading text-md font-medium">I-{{ internacao.id | number: '3.0-0' }}</dd>
-        </div>
+        <detail-info-field label="Identificador">
+          I-{{ internacao.id | number: '3.0-0' }}
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -133,10 +132,9 @@
         >
           <svg lucideLayers class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Convênio</dt>
-          <dd class="font-heading text-md font-medium">{{ internacao.convenio.descricao }}</dd>
-        </div>
+        <detail-info-field label="Convênio">
+          {{ internacao.convenio.descricao }}
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -146,12 +144,9 @@
         >
           <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Data de entrada</dt>
-          <dd class="font-heading text-md font-medium">
-            {{ dataEntrada() | date: 'dd/MM/yyyy' }}
-          </dd>
-        </div>
+        <detail-info-field label="Data de entrada">
+          {{ dataEntrada() | date: 'dd/MM/yyyy' }}
+        </detail-info-field>
       </div>
 
       @if (dataSaida(); as dataSaida) {
@@ -162,12 +157,9 @@
           >
             <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
           </span>
-          <div class="min-w-0">
-            <dt class="text-sm uppercase text-content-secondary">Data de saída</dt>
-            <dd class="font-heading text-md font-medium">
-              {{ dataSaida | date: 'dd/MM/yyyy' }}
-            </dd>
-          </div>
+          <detail-info-field label="Data de saída">
+            {{ dataSaida | date: 'dd/MM/yyyy' }}
+          </detail-info-field>
         </div>
       } @else {
         <div class="flex items-center gap-2">
@@ -177,12 +169,9 @@
           >
             <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
           </span>
-          <div class="min-w-0">
-            <dt class="text-sm uppercase text-content-secondary">Previsão de alta</dt>
-            <dd class="font-heading text-md font-medium">
-              {{ dataSaidaPrevista() | date: 'dd/MM/yyyy' }}
-            </dd>
-          </div>
+          <detail-info-field label="Previsão de alta">
+            {{ dataSaidaPrevista() | date: 'dd/MM/yyyy' }}
+          </detail-info-field>
         </div>
       }
 
@@ -193,10 +182,7 @@
         >
           <svg lucideClock3 class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Tempo internado</dt>
-          <dd class="font-heading text-md font-medium">{{ tempoInternado() }}</dd>
-        </div>
+        <detail-info-field label="Tempo internado">{{ tempoInternado() }}</detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -206,12 +192,9 @@
         >
           <svg lucideStethoscope class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Etapa do tratamento</dt>
-          <dd class="font-heading text-md font-medium">
-            {{ etapaConfig()?.label }}
-          </dd>
-        </div>
+        <detail-info-field label="Etapa do tratamento">
+          {{ etapaConfig()?.label }}
+        </detail-info-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -221,12 +204,9 @@
         >
           <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
         </span>
-        <div class="min-w-0">
-          <dt class="text-sm uppercase text-content-secondary">Valor da mensalidade</dt>
-          <dd class="font-heading text-md font-medium">
-            {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
-          </dd>
-        </div>
+        <detail-info-field label="Valor da mensalidade">
+          {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </detail-info-field>
       </div>
 
       @if (tipoAltaLabel(); as tipoAlta) {
@@ -237,13 +217,10 @@
           >
             <svg lucideCircleCheckBig class="h-4 w-4" aria-hidden="true"></svg>
           </span>
-          <div class="min-w-0">
-            <dt class="text-sm uppercase text-content-secondary">Tipo de alta</dt>
-            <dd class="font-heading text-md font-medium">{{ tipoAlta }}</dd>
-          </div>
+          <detail-info-field label="Tipo de alta">{{ tipoAlta }}</detail-info-field>
         </div>
       }
-    </dl>
+    </div>
   </card>
 }
 @if (internacao(); as internacaoAtual) {

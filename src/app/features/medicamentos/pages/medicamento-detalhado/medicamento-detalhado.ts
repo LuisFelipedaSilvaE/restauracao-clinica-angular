@@ -17,6 +17,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { DialogMovimentacaoMedicamento } from '../../components/dialog-movimentacao-medicamento/dialog-movimentacao-medicamento';
 import { Medicamento } from '../../interfaces/medicamento';
@@ -45,6 +46,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
     DialogMovimentacaoMedicamento,
     RouterLink,
     ConfirmDialog,
+    DetailInfoField,
     SkeletonModule,
   ],
   templateUrl: './medicamento-detalhado.html',

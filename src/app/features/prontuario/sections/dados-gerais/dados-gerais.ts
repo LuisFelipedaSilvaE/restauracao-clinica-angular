@@ -4,10 +4,10 @@ import { ROUTER_OUTLET_DATA } from '@angular/router';
 import { LucideMapPin, LucidePhone, LucideUserRound } from '@lucide/angular';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { CepPipe } from '../../../../shared/pipes/cep-pipe';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
-import { ProntuarioInfoField } from '../../components/prontuario-info-field/prontuario-info-field';
 import { ProntuarioSectionCard } from '../../components/prontuario-section-card/prontuario-section-card';
 import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-content';
 import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
@@ -24,7 +24,7 @@ import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
     CepPipe,
     CpfPipe,
     TelefonePipe,
-    ProntuarioInfoField,
+    DetailInfoField,
     ProntuarioSectionCard,
   ],
   templateUrl: './dados-gerais.html',

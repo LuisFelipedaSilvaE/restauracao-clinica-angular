@@ -94,46 +94,31 @@
   <card class="flex flex-col gap-4">
     <h3 class="text-sm font-semibold text-foreground">Dados cadastrais</h3>
     <div class="grid gap-4 sm:grid-cols-2">
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucideHandCoins class="h-5 w-5"></svg>
+          <svg lucideHandCoins class="h-4 w-4"></svg>
         </div>
-        <div class="min-w-0 space-y-0.5">
-          <p class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Preço unitário
-          </p>
-          <p class="text-sm font-medium text-foreground">
-            {{ medicamento.preco | currency: 'BRL' : 'symbol' : '1.2-2' }}
-          </p>
-        </div>
+        <detail-info-field label="Preço unitário">
+          {{ medicamento.preco | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </detail-info-field>
       </div>
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucidePackage class="h-4.5 w-4.5"></svg>
+          <svg lucidePackage class="h-4 w-4"></svg>
         </div>
-        <div class="min-w-0 space-y-0.5">
-          <p class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Estoque atual
-          </p>
-          <p class="text-sm font-medium text-foreground">
-            {{ medicamento.quantidadeEstoque | number: '1.0-0' }}
-            {{ medicamento.quantidadeEstoque === 1 ? 'unidade' : 'unidades' }}
-          </p>
-        </div>
+        <detail-info-field label="Estoque atual">
+          {{ medicamento.quantidadeEstoque | number: '1.0-0' }}
+          {{ medicamento.quantidadeEstoque === 1 ? 'unidade' : 'unidades' }}
+        </detail-info-field>
       </div>
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucideGauge class="h-4.5 w-4.5"></svg>
+          <svg lucideGauge class="h-4 w-4"></svg>
         </div>
-        <div class="min-w-0 space-y-0.5">
-          <p class="text-xs font-medium uppercase tracking-wide text-content-secondary">
-            Estoque mínimo
-          </p>
-          <p class="text-sm font-medium text-foreground">
-            {{ medicamento.quantidadeMinima | number: '1.0-0' }}
-            {{ medicamento.quantidadeMinima === 1 ? 'unidade' : 'unidades' }}
-          </p>
-        </div>
+        <detail-info-field label="Estoque mínimo">
+          {{ medicamento.quantidadeMinima | number: '1.0-0' }}
+          {{ medicamento.quantidadeMinima === 1 ? 'unidade' : 'unidades' }}
+        </detail-info-field>
       </div>
     </div>
   </card>

@@ -81,54 +81,54 @@
           </div>
 
           <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
               <span
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
                 <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
               </span>
-              <prontuario-info-field label="Data de entrada">
+              <detail-info-field label="Data de entrada">
                 {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
-              </prontuario-info-field>
+              </detail-info-field>
             </div>
 
-            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
               <span
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
                 <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
               </span>
-              <prontuario-info-field label="Previsão de alta">
+              <detail-info-field label="Previsão de alta">
                 {{
                   internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
                 }}
-              </prontuario-info-field>
+              </detail-info-field>
             </div>
 
-            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
               <span
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
                 <svg lucideClock3 class="h-4 w-4" aria-hidden="true"></svg>
               </span>
-              <prontuario-info-field label="Tempo internado">
+              <detail-info-field label="Tempo internado">
                 {{ tempoInternado(internacao) }}
-              </prontuario-info-field>
+              </detail-info-field>
             </div>
 
-            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+            <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
               <span
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
                 <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
               </span>
-              <prontuario-info-field label="Valor da mensalidade">
+              <detail-info-field label="Valor da mensalidade">
                 {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
-              </prontuario-info-field>
+              </detail-info-field>
             </div>
           </div>
         </div>
@@ -197,44 +197,44 @@
                 </div>
               </div>
 
-              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
                 <span
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
                   <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
                 </span>
-                <prontuario-info-field label="Data de entrada">
+                <detail-info-field label="Data de entrada">
                   {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' }}
-                </prontuario-info-field>
+                </detail-info-field>
               </div>
 
-              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
                 <span
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
                   <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
                 </span>
-                <prontuario-info-field label="Data de saída">
+                <detail-info-field label="Data de saída">
                   {{
                     internacao.dataSaida
                       ? (internacao.dataSaida | date: 'dd/MM/yyyy' : 'UTC')
                       : 'Não informada'
                   }}
-                </prontuario-info-field>
+                </detail-info-field>
               </div>
 
-              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5">
+              <div class="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2.5">
                 <span
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
                   <svg lucideCircleCheckBig class="h-4 w-4" aria-hidden="true"></svg>
                 </span>
-                <prontuario-info-field label="Tipo de alta">
+                <detail-info-field label="Tipo de alta">
                   {{ tipoAltaLabel(internacao) }}
-                </prontuario-info-field>
+                </detail-info-field>
               </div>
 
               <p-button

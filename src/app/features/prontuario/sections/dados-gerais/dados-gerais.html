@@ -38,25 +38,25 @@
       [icon]="dadosPessoaisIcon"
     >
       <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        <prontuario-info-field label="Nome completo">
+        <detail-info-field label="Nome completo">
           {{ acolhido.nome }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="Data de nascimento">
+        <detail-info-field label="Data de nascimento">
           {{ acolhido.dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
           ({{ acolhido.idade }} anos)
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="CPF">
+        <detail-info-field label="CPF">
           {{ acolhido.cpf | cpf }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="Situação">
+        <detail-info-field label="Situação">
           <p-tag
             [value]="acolhido.ativo ? 'Ativo' : 'Inativo'"
             [severity]="acolhido.ativo ? 'success' : 'secondary'"
           />
-        </prontuario-info-field>
+        </detail-info-field>
       </div>
     </prontuario-section-card>
 
@@ -66,17 +66,17 @@
       [icon]="contatoIcon"
     >
       <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        <prontuario-info-field label="Telefone">
+        <detail-info-field label="Telefone">
           {{ acolhido.telefone | telefone }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="E-mail">
+        <detail-info-field label="E-mail">
           {{ acolhido.email }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="CEP">
+        <detail-info-field label="CEP">
           {{ acolhido.cep | cep }}
-        </prontuario-info-field>
+        </detail-info-field>
       </div>
     </prontuario-section-card>
 
@@ -86,21 +86,21 @@
       [icon]="enderecoIcon"
     >
       <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-        <prontuario-info-field label="Logradouro">
+        <detail-info-field label="Logradouro">
           {{ acolhido.endereco.logradouro }}, {{ acolhido.endereco.numero }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="Complemento">
+        <detail-info-field label="Complemento">
           {{ acolhido.endereco.complemento || 'Não informado' }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="Bairro">
+        <detail-info-field label="Bairro">
           {{ acolhido.endereco.bairro }}
-        </prontuario-info-field>
+        </detail-info-field>
 
-        <prontuario-info-field label="Cidade/UF">
+        <detail-info-field label="Cidade/UF">
           {{ acolhido.endereco.cidade }}/{{ acolhido.endereco.estado }}
-        </prontuario-info-field>
+        </detail-info-field>
       </div>
     </prontuario-section-card>
   </section>

@@ -22,6 +22,7 @@ import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { localDateToDate } from '../../../../shared/utils/local-date';
@@ -42,6 +43,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     Card,
     CommonModule,
     ConfirmDialog,
+    DetailInfoField,
     CustomTag,
     DialogRegistrarAltaInternacao,
     IconColor,

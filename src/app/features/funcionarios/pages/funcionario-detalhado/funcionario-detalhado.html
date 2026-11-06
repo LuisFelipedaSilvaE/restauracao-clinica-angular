@@ -62,10 +62,7 @@
       >
         <svg lucideUserRound class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">cpf</p>
-        <p class="font-heading text-md font-medium">{{ funcionario()?.cpf | cpf }}</p>
-      </div>
+      <detail-info-field label="CPF">{{ funcionario()?.cpf | cpf }}</detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -74,10 +71,7 @@
       >
         <svg lucideBriefcase class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">cargo</p>
-        <p class="font-heading text-md font-medium">{{ funcionario()?.cargo.nome }}</p>
-      </div>
+      <detail-info-field label="Cargo">{{ funcionario()?.cargo.nome }}</detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -86,12 +80,9 @@
       >
         <svg lucideUserRoundKey class="h-4 w-4"></svg>
       </div>
-      <div class="min-w-0">
-        <p class="uppercase text-content-secondary text-sm">nome de usuário</p>
-        <p class="truncate font-heading text-md font-medium">
-          {{ funcionario()?.user?.username }}
-        </p>
-      </div>
+      <detail-info-field label="Nome de usuário">
+        <span class="block truncate">{{ funcionario()?.user?.username }}</span>
+      </detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -100,10 +91,7 @@
       >
         <svg lucideShieldCheck class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">privilégio</p>
-        <p class="font-heading text-md font-medium">{{ privilegio() }}</p>
-      </div>
+      <detail-info-field label="Privilégio">{{ privilegio() }}</detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -112,10 +100,7 @@
       >
         <svg lucideMail class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">e-mail</p>
-        <p class="font-heading text-md font-medium">{{ funcionario()?.email }}</p>
-      </div>
+      <detail-info-field label="E-mail">{{ funcionario()?.email }}</detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -124,10 +109,9 @@
       >
         <svg lucidePhone class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">telefone</p>
-        <p class="font-heading text-md font-medium">{{ funcionario()?.telefone | telefone }}</p>
-      </div>
+      <detail-info-field label="Telefone">
+        {{ funcionario()?.telefone | telefone }}
+      </detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -136,12 +120,9 @@
       >
         <svg lucideCake class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">nascimento</p>
-        <p class="font-heading text-md font-medium">
-          {{ dataNascimentoNormalizada }}
-        </p>
-      </div>
+      <detail-info-field label="Nascimento">
+        {{ dataNascimentoNormalizada }}
+      </detail-info-field>
     </div>
     <div class="flex gap-2 items-center">
       <div
@@ -150,12 +131,9 @@
       >
         <svg lucideCalendarCheck class="h-4 w-4"></svg>
       </div>
-      <div>
-        <p class="uppercase text-content-secondary text-sm">admissão</p>
-        <p class="font-heading text-md font-medium">
-          {{ funcionario()?.dataAdmissao | date: 'dd/MM/yyyy' }}
-        </p>
-      </div>
+      <detail-info-field label="Admissão">
+        {{ funcionario()?.dataAdmissao | date: 'dd/MM/yyyy' }}
+      </detail-info-field>
     </div>
   </div>
 </div>
@@ -169,12 +147,11 @@
     >
       <svg lucideCalendarCheck class="h-4 w-4"></svg>
     </div>
-    <div>
-      <p class="uppercase text-content-secondary text-sm">endereço completo</p>
-      <p class="font-heading text-md font-medium">
+    <detail-info-field label="Endereço completo">
+      <span>
         {{ `${(funcionario()?.endereco | endereco)} · ${cepFormatado()}` }}
-      </p>
-    </div>
+      </span>
+    </detail-info-field>
   </div>
 </div>
 

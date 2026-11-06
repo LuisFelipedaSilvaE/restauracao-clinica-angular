@@ -128,16 +128,13 @@
         >
           <svg lucideCalendar class="h-4 w-4"></svg>
         </div>
-        <div>
-          <p class="uppercase text-content-secondary text-sm">Data e Horário</p>
-          <p class="font-heading text-md font-medium">
-            {{
-              triagem.dataAgendada
-                ? (triagem.dataAgendada | date: 'dd/MM/yyyy - HH:mm')
-                : 'Sem data definida'
-            }}
-          </p>
-        </div>
+        <detail-info-field label="Data e horário">
+          {{
+            triagem.dataAgendada
+              ? (triagem.dataAgendada | date: 'dd/MM/yyyy - HH:mm')
+              : 'Sem data definida'
+          }}
+        </detail-info-field>
       </div>
       <div class="flex gap-2 items-center">
         <div
@@ -146,12 +143,9 @@
         >
           <svg lucidePhone class="h-4 w-4"></svg>
         </div>
-        <div>
-          <p class="uppercase text-content-secondary text-sm">Telefone</p>
-          <p class="font-heading text-md font-medium">
-            {{ triagem.telefone | telefone }}
-          </p>
-        </div>
+        <detail-info-field label="Telefone">
+          {{ triagem.telefone | telefone }}
+        </detail-info-field>
       </div>
       <div class="flex gap-2 items-center">
         <div
@@ -160,12 +154,9 @@
         >
           <svg lucideHandshake class="h-4 w-4"></svg>
         </div>
-        <div>
-          <p class="uppercase text-content-secondary text-sm">Convênio</p>
-          <p class="font-heading text-md font-medium">
-            {{ triagem.convenio.descricao }}
-          </p>
-        </div>
+        <detail-info-field label="Convênio">
+          {{ triagem.convenio.descricao }}
+        </detail-info-field>
       </div>
       @if (triagem.dataConclusao) {
         <div class="flex gap-2 items-center">
@@ -175,22 +166,18 @@
           >
             <svg lucideCalendarCheck class="h-4 w-4"></svg>
           </div>
-          <div>
-            <p class="uppercase text-content-secondary text-sm">Data de conclusão</p>
-            <p class="font-heading text-md font-medium">
-              {{ triagem.dataConclusao | date: 'dd/MM/yyyy - HH:mm' }}
-            </p>
-          </div>
+          <detail-info-field label="Data de conclusão">
+            {{ triagem.dataConclusao | date: 'dd/MM/yyyy - HH:mm' }}
+          </detail-info-field>
         </div>
       }
     </div>
     <p-divider />
-    <div>
-      <p class="uppercase text-content-secondary text-sm">Observações</p>
-      <p class="font-heading text-md font-medium">
+    <detail-info-field label="Observações">
+      <span>
         {{ triagem.observacaoEntrevista }}
-      </p>
-    </div>
+      </span>
+    </detail-info-field>
   </card>
 }
 

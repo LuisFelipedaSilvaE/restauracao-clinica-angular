@@ -20,6 +20,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { UserRole } from '../../../../core/guards/models/user-role.model';
 import { AuthService } from '../../../../core/services/auth-service';
 import { IconColor } from '../../../../shared/directives/icon-color';
@@ -59,6 +60,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     RouterLink,
     SiglaNomePipe,
     ConfirmDialog,
+    DetailInfoField,
     BackButton,
     CpfPipe,
     TelefonePipe,
