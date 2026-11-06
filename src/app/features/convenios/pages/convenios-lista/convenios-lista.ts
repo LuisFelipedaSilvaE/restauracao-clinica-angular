@@ -19,6 +19,7 @@ import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -32,6 +33,7 @@ type AcaoPendente =
     ButtonModule,
     LucidePlus,
     InfoCard,
+    PageHeader,
     ConvenioCard,
     EmptyList,
     ConfirmDialog,

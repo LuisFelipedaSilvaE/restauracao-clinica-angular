@@ -1,18 +1,14 @@
 <div class="flex flex-col gap-4">
-  <div class="flex flex-col gap-2 md:flex-row md:justify-between">
-    <div>
-      <h4 class="mb-1 text-2xl font-semibold">Internações</h4>
-      <p class="text-sm text-content-secondary">
-        Consulte, acompanhe e gerencie as internações realizadas pela comunidade.
-      </p>
-    </div>
-
+  <page-header
+    title="Internações"
+    description="Consulte, acompanhe e gerencie as internações realizadas pela comunidade."
+  >
     <p-button routerLink="criar" label="Nova internação" class="text-nowrap">
       <ng-template #icon>
         <svg lucideCalendarPlus class="h-5 w-5" aria-hidden="true"></svg>
       </ng-template>
     </p-button>
-  </div>
+  </page-header>
 
   <div class="flex flex-wrap items-center justify-center gap-2.5">
     @for (item of infoInternacoes(); track item.label) {

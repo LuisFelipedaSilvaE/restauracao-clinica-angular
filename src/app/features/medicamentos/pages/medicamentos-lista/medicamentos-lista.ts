@@ -4,6 +4,7 @@ import { LucidePackageOpen, LucidePill, LucidePlus, LucideTriangleAlert } from '
 import { ButtonModule } from 'primeng/button';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { MedicamentoGrid } from '../../components/medicamento-grid/medicamento-grid';
 import { MedicamentosService } from '../../services/medicamentos-service';
@@ -13,7 +14,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
   host: {
     class: 'flex flex-col gap-8',
   },
-  imports: [ButtonModule, MedicamentoGrid, InfoCard, LucidePlus, RouterLink, EmptyList],
+  imports: [ButtonModule, MedicamentoGrid, InfoCard, PageHeader, LucidePlus, RouterLink, EmptyList],
   templateUrl: './medicamentos-lista.html',
   styleUrl: './medicamentos-lista.css',
 })

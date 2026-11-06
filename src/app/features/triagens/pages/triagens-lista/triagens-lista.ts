@@ -25,6 +25,7 @@ import { TabsModule } from 'primeng/tabs';
 import { interval, map, switchMap, timer } from 'rxjs';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { isSameLocalDate } from '../../../../shared/utils/local-date-time';
 import { FilterTriagensCard } from '../../components/filter-triagens-card/filter-triagens-card';
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
@@ -46,6 +47,7 @@ const STATUS_TRIAGEM_VALIDOS: StatusTriagemLista[] = ['AGENDADA', 'ATRASADA', 'C
   imports: [
     TabsModule,
     Card,
+    PageHeader,
     LucideDynamicIcon,
     LucideCalendarPlus,
     RouterLink,
@@ -70,7 +72,9 @@ export class TriagensLista implements OnInit {
     initialValue: new Date(),
   });
   private dataReferenciaAtual = this.agora();
-  protected readonly statusSelecionado = signal<StatusTriagemLista>(this.carregarStatusSelecionado());
+  protected readonly statusSelecionado = signal<StatusTriagemLista>(
+    this.carregarStatusSelecionado(),
+  );
   protected readonly tabs = computed(() => {
     const triagens = this.triagens();
 

@@ -16,6 +16,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { localDateToDate } from '../../../../shared/utils/local-date';
 import { FilterInternacoesCard } from '../../components/filter-internacoes-card/filter-internacoes-card';
@@ -42,6 +43,7 @@ import { InternacoesService } from '../../services/internacoes-service';
     DialogRegistrarAltaInternacao,
     FilterInternacoesCard,
     InfoCard,
+    PageHeader,
     InternacaoCard,
     LucideCalendarPlus,
     LucideFunnelX,

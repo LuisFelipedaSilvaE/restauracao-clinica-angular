@@ -1,17 +1,14 @@
 <div class="flex flex-col gap-4">
-  <div class="flex flex-col md:justify-between md:flex-row gap-2">
-    <div>
-      <h4 class="text-2xl font-semibold mb-1">Acolhidos</h4>
-      <p class="text-sm text-content-secondary">
-        Consulte, filtre e gerencie as pessoas cadastradas na comunidade.
-      </p>
-    </div>
+  <page-header
+    title="Acolhidos"
+    description="Consulte, filtre e gerencie as pessoas cadastradas na comunidade."
+  >
     <p-button routerLink="criar" label="Novo acolhido" class="text-nowrap">
       <ng-template #icon>
         <svg lucideUserRoundPlus class="h-5 w-5"></svg>
       </ng-template>
     </p-button>
-  </div>
+  </page-header>
   <div class="flex justify-center items-center flex-wrap gap-2.5">
     @for (item of infoAcolhidos(); track $index) {
       <info-card [data]="item" />

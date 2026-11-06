@@ -22,6 +22,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
 import { localDateToDate } from '../../../../shared/utils/local-date';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -30,6 +31,7 @@ import { localDateToDate } from '../../../../shared/utils/local-date';
   },
   imports: [
     InfoCard,
+    PageHeader,
     ButtonModule,
     LucideUserRoundPlus,
     DataViewModule,

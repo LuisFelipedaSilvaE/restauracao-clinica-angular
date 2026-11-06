@@ -17,6 +17,7 @@ import { forkJoin } from 'rxjs';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { AcolhidoCard } from '../../components/acolhido-card/acolhido-card';
 import { FilterAcolhidosCard } from '../../components/filter-acolhidos-card/filter-acolhidos-card';
@@ -39,6 +40,7 @@ type AcaoPendente =
     SkeletonModule,
     LucideUserRoundPlus,
     InfoCard,
+    PageHeader,
     FilterAcolhidosCard,
     DataViewModule,
     AcolhidoCard,

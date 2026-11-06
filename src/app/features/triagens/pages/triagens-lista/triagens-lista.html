@@ -1,16 +1,13 @@
-<div class="flex flex-col md:justify-between md:flex-row gap-2">
-  <div>
-    <h4 class="text-2xl font-semibold mb-1">Triagens</h4>
-    <p class="text-sm text-content-secondary">
-      Consulte, filtre e gerencie os agendamentos e acolhimentos iniciais dos candidatos.
-    </p>
-  </div>
+<page-header
+  title="Triagens"
+  description="Consulte, filtre e gerencie os agendamentos e acolhimentos iniciais dos candidatos."
+>
   <p-button label="Nova triagem" routerLink="/triagens/criar">
     <ng-template #icon>
       <svg lucideCalendarPlus class="h-5 w-5"></svg>
     </ng-template>
   </p-button>
-</div>
+</page-header>
 
 <card class="border-0 p-0! overflow-hidden">
   <p-tabs [value]="statusSelecionado()" (valueChange)="selecionarStatus($event)" scrollable>
