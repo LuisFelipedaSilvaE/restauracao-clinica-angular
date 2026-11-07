@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
-import { LucideReceiptText, LucideRotateCcw } from '@lucide/angular';
+import { LucideBanknote, LucideRotateCcw } from '@lucide/angular';
 import { TagModule } from 'primeng/tag';
 import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { IconColor } from '../../../../shared/directives/icon-color';
@@ -15,7 +15,7 @@ import { Pagamento } from '../../interfaces/pagamento';
       'grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-x-3 gap-y-3 rounded-xl border border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_36px] xl:gap-4 xl:p-4',
     '[class]': "pagamento().status === 'ESTORNADO' ? 'border-dashed! bg-surface-subtle!' : ''",
   },
-  imports: [ActionMenu, CommonModule, IconColor, LucideReceiptText, TagModule],
+  imports: [ActionMenu, CommonModule, IconColor, LucideBanknote, TagModule],
   templateUrl: './pagamento-card.html',
   styleUrl: './pagamento-card.css',
 })

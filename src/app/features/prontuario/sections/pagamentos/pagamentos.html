@@ -40,9 +40,9 @@
                 <div class="flex min-w-0 items-center gap-3">
                   <span
                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                    [iconColor]="internacao.convenio.cor"
+                    [iconColor]="'#4a5565'"
                   >
-                    <svg lucideHandCoins class="h-5 w-5" aria-hidden="true"></svg>
+                    <svg lucideWallet class="h-5 w-5" aria-hidden="true"></svg>
                   </span>
 
                   <div class="min-w-0">
@@ -79,70 +79,76 @@
 
             <p-accordion-content>
               <div class="flex min-w-0 flex-col gap-5 pt-1">
-                <div class="flex flex-wrap items-center justify-center gap-2.5">
-                  @for (indicador of indicadores(internacao); track indicador.label) {
-                    <info-card [data]="indicador" />
-                  }
-                </div>
-
                 @if (!internacao.convenio.pagamento) {
                   <p-message severity="warn">
-                    Esta internação possui isenção de pagamento. O histórico permanece disponível
-                    apenas para consulta.
+                    Esta internação possui isenção de pagamento.
                   </p-message>
                 } @else {
-                  <div class="flex justify-end">
-                    <p-button
-                      label="Registrar pagamento"
-                      [disabled]="mutationLoading()"
-                      (onClick)="abrirRegistro(internacao)"
-                    >
-                      <ng-template #icon>
-                        <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
-                      </ng-template>
-                    </p-button>
+                  <div class="flex flex-wrap items-center justify-center gap-2.5">
+                    @for (indicador of indicadores(internacao); track indicador.label) {
+                      <info-card [data]="indicador" />
+                    }
                   </div>
-                }
 
-                @if (pagamentosDaInternacao(internacao.id).length > 0) {
-                  <p-dataview
-                    class="block min-w-0"
-                    [value]="pagamentosDaInternacao(internacao.id)"
-                    [paginator]="pagamentosDaInternacao(internacao.id).length > 10"
-                    [rows]="10"
-                    layout="list"
-                    [pt]="dataviewPt"
-                  >
-                    <ng-template #list let-items>
-                      <div class="flex min-w-0 flex-col gap-3">
-                        <div
-                          class="hidden grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_36px] items-center gap-3 px-4 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid xl:gap-4"
-                        >
-                          <span>Competência</span>
-                          <span class="text-center">Data do pagamento</span>
-                          <span class="text-center">Valor</span>
-                          <span class="text-center">Status</span>
-                          <span class="text-center">Ações</span>
-                        </div>
+                  @if (pagamentosDaInternacao(internacao.id).length > 0) {
+                    <div
+                      class="flex min-w-0 flex-col gap-3 border-t border-border-default pt-6 pb-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <h3 class="text-lg font-semibold text-content-primary">
+                        Pagamentos registrados
+                      </h3>
 
-                        <div class="flex min-w-0 flex-col gap-2">
-                          @for (pagamento of items; track pagamento.id) {
-                            <pagamento-card
-                              [pagamento]="pagamento"
-                              (estornar)="abrirEstorno($event)"
-                            />
-                          }
+                      <p-button
+                        class="w-full sm:w-auto"
+                        styleClass="w-full sm:w-auto"
+                        label="Registrar pagamento"
+                        [disabled]="mutationLoading()"
+                        (onClick)="abrirRegistro(internacao)"
+                      >
+                        <ng-template #icon>
+                          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
+                        </ng-template>
+                      </p-button>
+                    </div>
+
+                    <p-dataview
+                      class="block min-w-0"
+                      [value]="pagamentosDaInternacao(internacao.id)"
+                      [paginator]="pagamentosDaInternacao(internacao.id).length > 10"
+                      [rows]="10"
+                      layout="list"
+                      [pt]="dataviewPt"
+                    >
+                      <ng-template #list let-items>
+                        <div class="flex min-w-0 flex-col gap-3">
+                          <div
+                            class="hidden grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_36px] items-center gap-3 px-4 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid xl:gap-4"
+                          >
+                            <span>Competência</span>
+                            <span class="text-center">Data do pagamento</span>
+                            <span class="text-center">Valor</span>
+                            <span class="text-center">Status</span>
+                            <span class="text-center">Ações</span>
+                          </div>
+
+                          <div class="flex min-w-0 flex-col gap-2">
+                            @for (pagamento of items; track pagamento.id) {
+                              <pagamento-card
+                                [pagamento]="pagamento"
+                                (estornar)="abrirEstorno($event)"
+                              />
+                            }
+                          </div>
                         </div>
-                      </div>
-                    </ng-template>
-                  </p-dataview>
-                } @else {
-                  <empty-list
-                    [icon]="emptyPagamentosIcon"
-                    title="Nenhum pagamento registrado"
-                    description="Esta internação ainda não possui pagamentos em seu histórico."
-                  >
-                    @if (internacao.convenio.pagamento) {
+                      </ng-template>
+                    </p-dataview>
+                  } @else {
+                    <empty-list
+                      class="block [&>div]:py-4!"
+                      [icon]="emptyPagamentosIcon"
+                      title="Nenhum pagamento registrado"
+                      description="Esta internação ainda não possui pagamentos em seu histórico."
+                    >
                       <p-button
                         label="Registrar primeiro pagamento"
                         [disabled]="mutationLoading()"
@@ -152,8 +158,8 @@
                           <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
                         </ng-template>
                       </p-button>
-                    }
-                  </empty-list>
+                    </empty-list>
+                  }
                 }
               </div>
             </p-accordion-content>

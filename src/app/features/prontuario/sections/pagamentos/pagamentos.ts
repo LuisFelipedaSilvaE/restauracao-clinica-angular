@@ -4,8 +4,10 @@ import { ROUTER_OUTLET_DATA } from '@angular/router';
 import {
   LucideBadgeDollarSign,
   LucideCalendarCheck,
+  LucideCircleDollarSign,
   LucideHandCoins,
   LucideReceiptText,
+  LucideWallet,
   LucideWalletCards,
 } from '@lucide/angular';
 import { AccordionModule } from 'primeng/accordion';
@@ -50,6 +52,7 @@ interface ResumoInternacao {
     IconColor,
     InfoCard,
     LucideHandCoins,
+    LucideWallet,
     MessageModule,
     PagamentoCard,
     ProntuarioSectionCard,
@@ -64,7 +67,14 @@ export class Pagamentos implements OnInit {
   private readonly pagamentosService = inject(PagamentosService);
   private accordionInicializado = false;
 
-  protected readonly internacoes = computed(() => this.outletData().internacoes);
+  protected readonly internacoes = computed(() =>
+    [...this.outletData().internacoes].sort((a, b) => {
+      if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
+
+      const dataMaisRecente = b.dataEntrada.localeCompare(a.dataEntrada);
+      return dataMaisRecente !== 0 ? dataMaisRecente : b.id - a.id;
+    }),
+  );
   protected readonly loading = computed(
     () => this.outletData().loading || this.pagamentosService.loading().list,
   );
@@ -161,7 +171,7 @@ export class Pagamentos implements OnInit {
       {
         value: this.formatarMoeda(resumo.totalPago),
         label: 'Total pago',
-        icon: LucideHandCoins,
+        icon: LucideCircleDollarSign,
         color: '#00a63e',
       },
       {
@@ -180,7 +190,7 @@ export class Pagamentos implements OnInit {
         value: this.formatarMoeda(internacao.valorMensalidade),
         label: 'Mensalidade',
         icon: LucideBadgeDollarSign,
-        color: internacao.convenio.cor,
+        color: '#7c3aed',
       },
     ];
   }
