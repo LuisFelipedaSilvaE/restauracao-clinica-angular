@@ -22,6 +22,7 @@ import { MedicamentosLista } from './features/medicamentos/pages/medicamentos-li
 import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
 import { Internacoes as ProntuarioInternacoes } from './features/prontuario/sections/internacoes/internacoes';
+import { Pagamentos as ProntuarioPagamentos } from './features/prontuario/sections/pagamentos/pagamentos';
 import { TriagemDetalhada } from './features/triagens/pages/triagem-detalhada/triagem-detalhada';
 import { TriagemForm } from './features/triagens/pages/triagem-form/triagem-form';
 import { TriagensLista } from './features/triagens/pages/triagens-lista/triagens-lista';
@@ -129,6 +130,10 @@ export const routes: Routes = [
           {
             path: 'dados-pessoais',
             component: DadosGerais,
+          },
+          {
+            path: 'pagamentos',
+            component: ProntuarioPagamentos,
           },
         ],
       },

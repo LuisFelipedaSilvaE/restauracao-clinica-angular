@@ -10,7 +10,12 @@ import { ProntuarioOutletData } from './interfaces/prontuario-outlet-data';
 import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
 import { filter, forkJoin, map } from 'rxjs';
-import { LucideBedSingle, LucideDynamicIcon, LucideUserRound } from '@lucide/angular';
+import {
+  LucideBedSingle,
+  LucideDynamicIcon,
+  LucideUserRound,
+  LucideWalletCards,
+} from '@lucide/angular';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
 
@@ -78,6 +83,11 @@ export class Prontuario implements OnInit {
       label: 'Dados pessoais',
       route: 'dados-pessoais',
       icon: LucideUserRound,
+    },
+    {
+      label: 'Pagamentos',
+      route: 'pagamentos',
+      icon: LucideWalletCards,
     },
   ];
 
