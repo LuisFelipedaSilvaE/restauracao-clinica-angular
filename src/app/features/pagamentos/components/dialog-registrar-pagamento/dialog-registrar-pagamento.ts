@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideWalletCards } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -11,6 +12,7 @@ import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 import { startWith } from 'rxjs';
 import { FormField } from '../../../../shared/components/form-field/form-field';
+import { ContextSummary } from '../../../../shared/components/context-summary/context-summary';
 import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { Internacao } from '../../../internacoes/interfaces/internacao';
 import { Pagamento } from '../../interfaces/pagamento';
@@ -28,6 +30,7 @@ const TAMANHO_MAXIMO_OBSERVACAO = 500;
   imports: [
     ButtonModule,
     CommonModule,
+    ContextSummary,
     DatePickerModule,
     DialogModule,
     FormField,
@@ -53,6 +56,7 @@ export class DialogRegistrarPagamento {
   protected readonly loading = computed(() => this.pagamentosService.loading().mutation);
   protected readonly dataEntrada = computed(() => localDateToDate(this.internacao().dataEntrada));
   protected readonly hoje = new Date();
+  protected readonly contextIcon = LucideWalletCards;
   private readonly formSubmitted = signal(false);
 
   protected readonly form = this.fb.group({

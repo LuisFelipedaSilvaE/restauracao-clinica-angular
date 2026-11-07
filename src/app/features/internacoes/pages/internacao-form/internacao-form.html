@@ -75,8 +75,10 @@
           </form-field>
 
           @if (triagemSelecionada(); as triagem) {
-            <div
-              class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+            <context-summary
+              title="Dados da triagem selecionada"
+              [icon]="triagemContextIcon"
+              color="#be222d"
             >
               <div class="min-w-0">
                 <p class="text-xs text-content-secondary">Candidato</p>
@@ -90,7 +92,7 @@
                 <p class="text-xs text-content-secondary">Convênio sugerido</p>
                 <p class="truncate font-medium">{{ triagem.convenio.descricao }}</p>
               </div>
-            </div>
+            </context-summary>
           }
 
           <div class="grid items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
@@ -156,8 +158,10 @@
 
         <p-divider />
       } @else if (registroAtual(); as internacao) {
-        <div
-          class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+        <context-summary
+          title="Dados da internação"
+          [icon]="internacaoContextIcon"
+          color="#2563eb"
         >
           <div class="min-w-0">
             <p class="text-xs text-content-secondary">Acolhido</p>
@@ -173,7 +177,7 @@
               {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' : 'pt-BR' }}
             </p>
           </div>
-        </div>
+        </context-summary>
 
         <p-divider />
       }

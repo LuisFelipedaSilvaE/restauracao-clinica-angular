@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideBanknoteX } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
 import { FormField } from '../../../../shared/components/form-field/form-field';
+import { ContextSummary } from '../../../../shared/components/context-summary/context-summary';
 import { Pagamento } from '../../interfaces/pagamento';
 import { PagamentosService } from '../../services/pagamentos-service';
 
@@ -19,6 +21,7 @@ const TAMANHO_MAXIMO_MOTIVO = 500;
   imports: [
     ButtonModule,
     CommonModule,
+    ContextSummary,
     DialogModule,
     FormField,
     ReactiveFormsModule,
@@ -37,6 +40,7 @@ export class DialogEstornarPagamento {
   private readonly messageService = inject(MessageService);
 
   protected readonly tamanhoMaximoMotivo = TAMANHO_MAXIMO_MOTIVO;
+  protected readonly contextIcon = LucideBanknoteX;
   protected readonly loading = computed(() => this.pagamentosService.loading().mutation);
   private readonly formSubmitted = signal(false);
 

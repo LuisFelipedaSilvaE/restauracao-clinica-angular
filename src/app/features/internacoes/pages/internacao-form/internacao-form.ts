@@ -9,7 +9,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideBedSingle, LucidePencil, LucideUserPlus } from '@lucide/angular';
+import {
+  LucideBedSingle,
+  LucideClipboardCheck,
+  LucidePencil,
+  LucideUserPlus,
+} from '@lucide/angular';
 import { forkJoin, Observable } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -20,6 +25,7 @@ import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Card } from '../../../../shared/components/card/card';
+import { ContextSummary } from '../../../../shared/components/context-summary/context-summary';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
@@ -70,6 +76,7 @@ const datasInternacaoCoerentes: ValidatorFn = (form: AbstractControl): Validatio
     SelectModule,
     SkeletonModule,
     Card,
+    ContextSummary,
     FormField,
     FormHeader,
     LucideUserPlus,
@@ -97,6 +104,8 @@ export class InternacaoForm implements OnInit {
   protected readonly convenios = this.conveniosService.convenios;
   protected readonly triagens = this.triagensService.triagens;
   protected readonly hoje = new Date();
+  protected readonly triagemContextIcon = LucideClipboardCheck;
+  protected readonly internacaoContextIcon = LucideBedSingle;
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(true);

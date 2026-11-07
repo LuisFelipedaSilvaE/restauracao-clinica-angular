@@ -13,10 +13,12 @@
   </ng-template>
 
   <div class="flex flex-col gap-4">
-    <div
-      class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+    <context-summary
+      title="Contexto do pagamento"
+      [icon]="contextIcon"
+      color="#00a63e"
     >
-      <div class="min-w-0 sm:col-span-2">
+      <div class="min-w-0">
         <p class="text-xs text-content-secondary">Acolhido</p>
         <p class="truncate font-medium">{{ internacao().acolhido.nome }}</p>
       </div>
@@ -26,11 +28,11 @@
           {{ internacao().valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
         </p>
       </div>
-      <div class="min-w-0 sm:col-span-3">
+      <div class="min-w-0">
         <p class="text-xs text-content-secondary">Convênio</p>
         <p class="truncate font-medium">{{ internacao().convenio.descricao }}</p>
       </div>
-    </div>
+    </context-summary>
 
     @if (!internacao().convenio.pagamento) {
       <p-message severity="warn">
