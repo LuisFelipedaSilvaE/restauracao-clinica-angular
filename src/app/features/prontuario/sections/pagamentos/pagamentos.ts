@@ -3,8 +3,8 @@ import { Component, computed, effect, inject, OnInit, Signal, signal } from '@an
 import { ROUTER_OUTLET_DATA } from '@angular/router';
 import {
   LucideBadgeDollarSign,
+  LucideBanknoteCheck,
   LucideCalendarCheck,
-  LucideCircleDollarSign,
   LucideHandCoins,
   LucideReceiptText,
   LucideWallet,
@@ -171,7 +171,7 @@ export class Pagamentos implements OnInit {
       {
         value: this.formatarMoeda(resumo.totalPago),
         label: 'Total pago',
-        icon: LucideCircleDollarSign,
+        icon: LucideBanknoteCheck,
         color: '#00a63e',
       },
       {
@@ -190,7 +190,7 @@ export class Pagamentos implements OnInit {
         value: this.formatarMoeda(internacao.valorMensalidade),
         label: 'Mensalidade',
         icon: LucideBadgeDollarSign,
-        color: '#7c3aed',
+        color: '#be222d',
       },
     ];
   }
