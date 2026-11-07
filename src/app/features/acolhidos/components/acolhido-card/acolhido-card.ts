@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -31,7 +30,6 @@ import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
   },
   imports: [
     TagModule,
-    CommonModule,
     ActionMenu,
     ProfileColor,
     SiglaNomePipe,

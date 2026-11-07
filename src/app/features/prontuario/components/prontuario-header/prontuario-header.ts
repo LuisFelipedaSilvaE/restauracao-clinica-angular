@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -23,7 +22,6 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
     class: 'flex min-w-0 flex-col gap-4',
   },
   imports: [
-    CommonModule,
     RouterLink,
     ButtonModule,
     TagModule,

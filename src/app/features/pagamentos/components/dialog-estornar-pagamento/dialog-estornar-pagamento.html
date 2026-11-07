@@ -15,8 +15,6 @@
     <div class="rounded-lg border border-border-default bg-surface-subtle p-3 text-sm">
       <p class="text-xs text-content-secondary">Pagamento</p>
       <p class="font-medium text-content-primary">
-        P-{{ pagamento().id | number: '3.0-0' }}
-        &middot;
         {{ pagamento().valor | currency: 'BRL' : 'symbol' : '1.2-2' }}
       </p>
     </div>

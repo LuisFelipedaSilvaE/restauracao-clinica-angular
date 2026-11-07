@@ -46,7 +46,7 @@
         </h1>
         <div class="mt-1 flex min-w-0 flex-wrap items-center gap-2">
           <span class="text-xs font-medium text-content-secondary">
-            P-{{ data.id | number: '2.0-0' }} · {{ data.idade }} anos
+            {{ data.idade }} anos
           </span>
           @if (data.internacaoAtual; as internacao) {
             <p-tag [value]="internacao.etapaTratamentoLabel" [severity]="internacao.severity" />
