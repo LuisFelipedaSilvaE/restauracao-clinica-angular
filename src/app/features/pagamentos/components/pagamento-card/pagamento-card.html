@@ -1,0 +1,77 @@
+<div class="col-start-1 row-start-1 flex min-w-0 items-center gap-3">
+  <span
+    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+    [iconColor]="estornado() ? '#6a7282' : '#00a63e'"
+  >
+    <svg lucideReceiptText class="h-5 w-5" aria-hidden="true"></svg>
+  </span>
+
+  <div class="min-w-0">
+    <p class="truncate font-semibold capitalize text-content-primary">
+      {{ dataCompetencia() | date: "MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+    </p>
+    <p class="truncate text-xs text-content-secondary">P-{{ pagamento().id | number: '3.0-0' }}</p>
+  </div>
+</div>
+
+<div
+  class="col-start-1 row-start-2 flex items-center justify-between gap-3 sm:col-auto sm:row-auto sm:block sm:text-center"
+>
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Pagamento
+  </span>
+  <span class="text-sm text-content-secondary">
+    {{ dataPagamento() | date: 'dd/MM/yyyy' : 'UTC' }}
+  </span>
+</div>
+
+<div
+  class="col-start-1 row-start-3 flex items-center justify-between gap-3 sm:col-auto sm:row-auto sm:block sm:text-center"
+>
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Valor
+  </span>
+  <span class="font-semibold text-content-primary">
+    {{ pagamento().valor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+  </span>
+</div>
+
+<div
+  class="col-start-1 row-start-4 flex items-center justify-between gap-3 sm:col-auto sm:row-auto sm:flex sm:justify-center"
+>
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Status
+  </span>
+  <p-tag [value]="status().label" [severity]="status().severity" />
+</div>
+
+<div
+  class="col-start-2 row-start-1 row-span-4 justify-self-end sm:col-auto sm:row-auto sm:justify-self-end"
+>
+  @if (!estornado()) {
+    <action-menu [actions]="acoes()" ariaLabel="Abrir ações do pagamento" />
+  } @else {
+    <span class="block w-9 text-center text-content-secondary" aria-hidden="true">—</span>
+  }
+</div>
+
+@if (pagamento().observacao || pagamento().motivoEstorno) {
+  <div class="col-span-full border-t border-border-default pt-3 text-xs text-content-secondary">
+    @if (pagamento().observacao) {
+      <p>
+        <span class="font-medium text-content-primary">Observação:</span>
+        {{ pagamento().observacao }}
+      </p>
+    }
+
+    @if (pagamento().motivoEstorno) {
+      <p [class.mt-1]="pagamento().observacao">
+        <span class="font-medium text-content-primary">Motivo do estorno:</span>
+        {{ pagamento().motivoEstorno }}
+        @if (pagamento().dataEstorno) {
+          <span>({{ pagamento().dataEstorno | date: 'dd/MM/yyyy HH:mm' }})</span>
+        }
+      </p>
+    }
+  </div>
+}
