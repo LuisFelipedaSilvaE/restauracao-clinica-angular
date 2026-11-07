@@ -1,0 +1,70 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  styleClass="w-lg! max-w-[calc(100vw-2rem)]!"
+  (onHide)="limparFormulario()"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Estornar pagamento</h2>
+  </ng-template>
+
+  <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="estornar()">
+    <div class="rounded-lg border border-border-default bg-surface-subtle p-3 text-sm">
+      <p class="text-xs text-content-secondary">Pagamento</p>
+      <p class="font-medium text-content-primary">
+        P-{{ pagamento().id | number: '3.0-0' }}
+        &middot;
+        {{ pagamento().valor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+      </p>
+    </div>
+
+    <p class="text-sm text-content-secondary">
+      O pagamento continuará no histórico identificado como estornado. Esta ação não poderá ser
+      desfeita.
+    </p>
+
+    <form-field
+      label="Motivo do estorno"
+      inputId="motivoEstorno"
+      required
+      [errorMessage]="getErrorMessage()"
+    >
+      <textarea
+        pInputTextarea
+        id="motivoEstorno"
+        name="motivoEstorno"
+        formControlName="motivo"
+        class="resize-none"
+        rows="4"
+        [maxLength]="tamanhoMaximoMotivo"
+        [invalid]="isInvalid()"
+        [attr.aria-describedby]="isInvalid() ? 'motivoEstorno-erro' : null"
+        placeholder="Explique por que este pagamento está sendo estornado"
+        autocomplete="off"
+        fluid
+      ></textarea>
+    </form-field>
+  </form>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (onClick)="cancelar()"
+    />
+
+    <p-button
+      type="button"
+      label="Estornar pagamento"
+      severity="danger"
+      [loading]="loading()"
+      [disabled]="loading()"
+      (onClick)="estornar()"
+    />
+  </ng-template>
+</p-dialog>

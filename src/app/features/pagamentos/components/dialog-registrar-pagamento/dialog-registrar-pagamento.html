@@ -1,0 +1,166 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [focusOnShow]="false"
+  [closable]="!loading()"
+  [dismissableMask]="!loading()"
+  styleClass="w-lg! max-w-[calc(100vw-2rem)]!"
+  (onShow)="inicializarFormulario()"
+  (onHide)="limparFormulario()"
+>
+  <ng-template #header>
+    <h2 class="text-lg font-semibold">Registrar pagamento</h2>
+  </ng-template>
+
+  <div class="flex flex-col gap-4">
+    <div
+      class="grid gap-3 rounded-lg border border-border-default bg-surface-subtle p-3 text-sm sm:grid-cols-3"
+    >
+      <div class="min-w-0 sm:col-span-2">
+        <p class="text-xs text-content-secondary">Acolhido</p>
+        <p class="truncate font-medium">{{ internacao().acolhido.nome }}</p>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs text-content-secondary">Mensalidade</p>
+        <p class="font-medium">
+          {{ internacao().valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </p>
+      </div>
+      <div class="min-w-0 sm:col-span-3">
+        <p class="text-xs text-content-secondary">Convênio</p>
+        <p class="truncate font-medium">{{ internacao().convenio.descricao }}</p>
+      </div>
+    </div>
+
+    @if (!internacao().convenio.pagamento) {
+      <p-message severity="warn">
+        Esta internação possui isenção de pagamento e não permite novos lançamentos.
+      </p-message>
+    } @else {
+      <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="registrarPagamento()">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <form-field
+            label="Valor"
+            inputId="valorPagamento"
+            required
+            [errorMessage]="getErrorMessage('valor')"
+          >
+            <p-inputnumber
+              inputId="valorPagamento"
+              name="valorPagamento"
+              formControlName="valor"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [min]="0.01"
+              [max]="valorMaximo"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+              [invalid]="isInvalid('valor')"
+              [attr.aria-describedby]="isInvalid('valor') ? 'valorPagamento-erro' : null"
+              placeholder="R$ 0,00"
+              autocomplete="off"
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Data do pagamento"
+            inputId="dataPagamento"
+            required
+            [errorMessage]="getErrorMessage('dataPagamento')"
+          >
+            <p-datepicker
+              inputId="dataPagamento"
+              name="dataPagamento"
+              formControlName="dataPagamento"
+              placeholder="dd/mm/aaaa"
+              dateFormat="dd/mm/yy"
+              [showButtonBar]="true"
+              [readonlyInput]="false"
+              [maxDate]="hoje"
+              [invalid]="isInvalid('dataPagamento')"
+              [attr.aria-describedby]="isInvalid('dataPagamento') ? 'dataPagamento-erro' : null"
+              appendTo="body"
+              autocomplete="off"
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Competência"
+            inputId="competencia"
+            required
+            [errorMessage]="getErrorMessage('competencia')"
+          >
+            <p-datepicker
+              inputId="competencia"
+              name="competencia"
+              formControlName="competencia"
+              view="month"
+              dateFormat="mm/yy"
+              placeholder="mm/aaaa"
+              [readonlyInput]="true"
+              [minDate]="dataEntrada()"
+              [maxDate]="hoje"
+              [invalid]="isInvalid('competencia')"
+              [attr.aria-describedby]="isInvalid('competencia') ? 'competencia-erro' : null"
+              appendTo="body"
+              autocomplete="off"
+              fluid
+            />
+          </form-field>
+        </div>
+
+        @if (observacaoObrigatoria()) {
+          <p-message severity="warn" size="small">
+            O valor informado é superior à mensalidade. Descreva o motivo na observação.
+          </p-message>
+        }
+
+        <form-field
+          label="Observação"
+          inputId="observacaoPagamento"
+          [required]="observacaoObrigatoria()"
+          [errorMessage]="getErrorMessage('observacao')"
+        >
+          <textarea
+            pInputTextarea
+            id="observacaoPagamento"
+            name="observacaoPagamento"
+            formControlName="observacao"
+            class="resize-none"
+            rows="3"
+            [maxLength]="tamanhoMaximoObservacao"
+            [invalid]="isInvalid('observacao')"
+            [attr.aria-describedby]="isInvalid('observacao') ? 'observacaoPagamento-erro' : null"
+            placeholder="Informe detalhes relevantes sobre o pagamento"
+            autocomplete="off"
+            fluid
+          ></textarea>
+        </form-field>
+      </form>
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [disabled]="loading()"
+      (onClick)="cancelar()"
+    />
+
+    @if (internacao().convenio.pagamento) {
+      <p-button
+        type="button"
+        label="Registrar pagamento"
+        severity="success"
+        [loading]="loading()"
+        [disabled]="loading()"
+        (onClick)="registrarPagamento()"
+      />
+    }
+  </ng-template>
+</p-dialog>
