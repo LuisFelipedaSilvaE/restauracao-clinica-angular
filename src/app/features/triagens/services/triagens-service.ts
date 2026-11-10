@@ -111,6 +111,24 @@ export class TriagensService {
     );
   }
 
+  ativarTriagem(id: number): Observable<Triagem> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/ativar`, null).pipe(
+      tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
+  desativarTriagem(id: number): Observable<Triagem> {
+    this.setLoading('mutation', true);
+
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/desativar`, null).pipe(
+      tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
   deleteTriagem(id: number): Observable<void> {
     this.setLoading('mutation', true);
 
@@ -137,6 +155,6 @@ export class TriagensService {
   }
 
   private ordenarPorStatus(triagens: Triagem[]): Triagem[] {
-    return [...triagens].sort((a, b) => Number(b.status) - Number(a.status));
+    return [...triagens].sort((a, b) => Number(b.triagemStatus) - Number(a.triagemStatus));
   }
 }

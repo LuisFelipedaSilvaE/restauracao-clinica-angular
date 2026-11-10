@@ -107,7 +107,7 @@ export class Dashboard implements OnInit {
       }, 0);
     const triagensPendentes = this.triagensService
       .triagens()
-      .filter((triagem) => triagem.status !== StatusTriagem.CONCLUIDA).length;
+      .filter((triagem) => triagem.triagemStatus !== StatusTriagem.CONCLUIDA).length;
     const proximasDaAlta = internacoesAtivas.filter(
       (internacao) => internacao.etapaTratamento === EtapaTratamento.PROXIMO_ALTA,
     ).length;

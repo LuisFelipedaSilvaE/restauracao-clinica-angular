@@ -9,6 +9,8 @@ import {
   LucideHandshake,
   LucidePencil,
   LucidePhone,
+  LucidePower,
+  LucidePowerOff,
   LucideRotateCcwClock,
   LucideTrash2,
 } from '@lucide/angular';
@@ -30,7 +32,7 @@ import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 
-type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
+type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
 
 @Component({
   selector: 'app-triagem-detalhada',
@@ -59,6 +61,8 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
     LucideCalendarClock,
     LucideCircleCheckBig,
     LucideRotateCcwClock,
+    LucidePower,
+    LucidePowerOff,
     BackButton,
     ConfirmDialog,
     DetailInfoField,
@@ -85,14 +89,21 @@ export class TriagemDetalhada {
   protected readonly loading = this.triagensService.loading;
   protected readonly mutationLoading = computed(() => this.loading().mutation);
   protected readonly podeConcluir = computed(() => {
-    const status = this.triagem()?.status;
-    return status === 'AGENDADA' || status === 'ATRASADA';
+    const triagem = this.triagem();
+    return (
+      triagem?.ativo &&
+      (triagem.triagemStatus === 'AGENDADA' || triagem.triagemStatus === 'ATRASADA')
+    );
   });
-  protected readonly podeReabrir = computed(() => this.triagem()?.status === 'CONCLUIDA');
+  protected readonly podeReabrir = computed(
+    () => this.triagem()?.ativo && this.triagem()?.triagemStatus === 'CONCLUIDA',
+  );
   protected readonly confirmTitle = computed(() => {
     const acao = this.acaoPendente();
 
     if (acao === 'reabrir') return 'Reabrir triagem';
+    if (acao === 'ativar') return 'Ativar triagem';
+    if (acao === 'inativar') return 'Inativar triagem';
     if (acao === 'excluir') return 'Excluir triagem';
     return 'Concluir triagem';
   });
@@ -109,18 +120,29 @@ export class TriagemDetalhada {
       return `Deseja reabrir a triagem de ${triagem.nomePossivelAcolhido}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
     }
 
+    if (acao === 'ativar') {
+      return `Deseja ativar a triagem de ${triagem.nomePossivelAcolhido}? As ações da triagem voltarão a ficar disponíveis.`;
+    }
+
+    if (acao === 'inativar') {
+      return `Deseja inativar a triagem de ${triagem.nomePossivelAcolhido}? As ações da triagem ficarão indisponíveis até que ela seja reativada.`;
+    }
+
     return `Deseja excluir a triagem de ${triagem.nomePossivelAcolhido}? Esta ação não poderá ser desfeita.`;
   });
   protected readonly confirmLabel = computed(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'Reabrir';
+    if (acao === 'ativar') return 'Ativar';
+    if (acao === 'inativar') return 'Inativar';
     if (acao === 'excluir') return 'Excluir';
     return 'Concluir';
   });
   protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'primary';
-    if (acao === 'excluir') return 'danger';
+    if (acao === 'ativar') return 'success';
+    if (acao === 'excluir' || acao === 'inativar') return 'danger';
     return 'success';
   });
   protected readonly statusTagSeverity = computed(() => {
@@ -135,7 +157,7 @@ export class TriagemDetalhada {
       concluida: 'success',
     };
 
-    return config[triagem.status.toLowerCase()];
+    return config[triagem.triagemStatus.toLowerCase()];
   });
 
   ngOnInit(): void {
@@ -191,6 +213,14 @@ export class TriagemDetalhada {
     this.dialogConfirmVisible.set(true);
   }
 
+  protected solicitarAlteracaoStatus(): void {
+    const triagem = this.triagem();
+    if (!triagem) return;
+
+    this.acaoPendente.set(triagem.ativo ? 'inativar' : 'ativar');
+    this.dialogConfirmVisible.set(true);
+  }
+
   protected confirmarAcao(): void {
     const triagem = this.triagem();
     const acao = this.acaoPendente();
@@ -207,6 +237,30 @@ export class TriagemDetalhada {
             life: 3000,
           });
           this.router.navigate(['/triagens']);
+        },
+      });
+      return;
+    }
+
+    if (acao === 'ativar' || acao === 'inativar') {
+      const acao$ =
+        acao === 'ativar'
+          ? this.triagensService.ativarTriagem(triagem.id)
+          : this.triagensService.desativarTriagem(triagem.id);
+
+      acao$.subscribe({
+        next: (triagemAtualizada) => {
+          this.triagem.set(triagemAtualizada);
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: acao === 'ativar' ? 'Triagem ativada!' : 'Triagem inativada!',
+            detail:
+              acao === 'ativar'
+                ? 'A triagem foi ativada com sucesso.'
+                : 'A triagem foi inativada com sucesso.',
+            life: 3000,
+          });
         },
       });
       return;

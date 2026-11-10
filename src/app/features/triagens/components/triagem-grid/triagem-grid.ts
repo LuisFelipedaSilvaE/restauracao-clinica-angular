@@ -13,6 +13,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { Triagem } from '../../interfaces/triagem';
+import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 import { TriagemCard } from '../triagem-card/triagem-card';
 
 @Component({
@@ -42,6 +43,7 @@ export class TriagemGrid {
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
   readonly excluirTriagem = output<{ id: number; nome: string }>();
+  readonly statusTriagemChange = output<ToggleTriagemDto>();
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyStatusContent = computed(() => {
     const config = {

@@ -1,6 +1,9 @@
 <card
   class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-4 xl:grid-cols-5 items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5 transition-colors"
-  [ngClass]="agendadaHoje() ? 'border-status-warning-border-strong!' : ''"
+  [ngClass]="[
+    agendadaHoje() ? 'border-status-warning-border-strong!' : '',
+    !triagem().ativo ? 'border-2! border-dashed! border-border-muted! bg-surface-subtle!' : '',
+  ]"
 >
   <div
     class="col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2 flex min-w-0 items-center gap-2.5"

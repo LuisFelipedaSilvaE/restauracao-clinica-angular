@@ -112,7 +112,7 @@ export class GlobalSearchService {
       id: triagem.id,
       tipo: 'triagem',
       titulo: triagem.nomePossivelAcolhido,
-      descricao: `${formatTelefone(triagem.telefone)} · ${triagem.convenio.descricao} · ${STATUS_TRIAGEM_LABELS[triagem.status]}`,
+      descricao: `${formatTelefone(triagem.telefone)} · ${triagem.convenio.descricao} · ${STATUS_TRIAGEM_LABELS[triagem.triagemStatus]}`,
       icon: LucideClipboardList,
       rota: ['/triagens', triagem.id],
     };

@@ -31,9 +31,10 @@ import { FilterTriagensCard } from '../../components/filter-triagens-card/filter
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
 import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 import { Triagem } from '../../interfaces/triagem';
+import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 import { TriagensService } from '../../services/triagens-service';
 
-type AcaoTriagem = 'concluir' | 'reabrir' | 'excluir';
+type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
 type StatusTriagemLista = 'AGENDADA' | 'ATRASADA' | 'CONCLUIDA';
 
 const STATUS_TRIAGEM_STORAGE_KEY = 'triagens-status-selecionado';
@@ -83,19 +84,19 @@ export class TriagensLista implements OnInit {
         label: 'Agendadas',
         status: 'AGENDADA',
         icon: LucideCheck,
-        total: triagens.filter((t) => t.status === 'AGENDADA').length,
+        total: triagens.filter((t) => t.triagemStatus === 'AGENDADA').length,
       },
       {
         label: 'Atrasadas',
         status: 'ATRASADA',
         icon: LucideCalendarX2,
-        total: triagens.filter((t) => t.status === 'ATRASADA').length,
+        total: triagens.filter((t) => t.triagemStatus === 'ATRASADA').length,
       },
       {
         label: 'Concluídas',
         status: 'CONCLUIDA',
         icon: LucideRotateCcwClock,
-        total: triagens.filter((t) => t.status === 'CONCLUIDA').length,
+        total: triagens.filter((t) => t.triagemStatus === 'CONCLUIDA').length,
       },
     ];
   });
@@ -114,13 +115,15 @@ export class TriagensLista implements OnInit {
       this.rangeDataSelecionado() !== 'todos',
   );
   protected readonly temTriagensNoStatus = computed(() =>
-    this.triagens().some((triagem) => triagem.status === this.statusSelecionado()),
+    this.triagens().some((triagem) => triagem.triagemStatus === this.statusSelecionado()),
   );
   protected readonly mutationLoading = computed(() => this.loading().mutation);
   protected readonly confirmTitle = computed(() => {
     const acao = this.acaoPendente();
 
     if (acao === 'reabrir') return 'Reabrir triagem';
+    if (acao === 'ativar') return 'Ativar triagem';
+    if (acao === 'inativar') return 'Inativar triagem';
     if (acao === 'excluir') return 'Excluir triagem';
     return 'Concluir triagem';
   });
@@ -137,18 +140,29 @@ export class TriagensLista implements OnInit {
       return `Deseja reabrir a triagem de ${triagem.nome}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
     }
 
+    if (acao === 'ativar') {
+      return `Deseja ativar a triagem de ${triagem.nome}? As ações da triagem voltarão a ficar disponíveis.`;
+    }
+
+    if (acao === 'inativar') {
+      return `Deseja inativar a triagem de ${triagem.nome}? As ações da triagem ficarão indisponíveis até que ela seja reativada.`;
+    }
+
     return `Deseja excluir a triagem de ${triagem.nome}? Esta ação não poderá ser desfeita.`;
   });
   protected readonly confirmLabel = computed(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'Reabrir';
+    if (acao === 'ativar') return 'Ativar';
+    if (acao === 'inativar') return 'Inativar';
     if (acao === 'excluir') return 'Excluir';
     return 'Concluir';
   });
   protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'primary';
-    if (acao === 'excluir') return 'danger';
+    if (acao === 'ativar') return 'success';
+    if (acao === 'excluir' || acao === 'inativar') return 'danger';
     return 'success';
   });
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
@@ -208,7 +222,7 @@ export class TriagensLista implements OnInit {
         validRangeData = dataTriagem >= inicio && dataTriagem <= fim;
       }
 
-      const validStatus = triagem.status === statusFiltro;
+      const validStatus = triagem.triagemStatus === statusFiltro;
 
       return validBusca && validStatus && convenioValido && validRangeData;
     });
@@ -216,8 +230,10 @@ export class TriagensLista implements OnInit {
     const agora = this.agora();
 
     return triagensFiltradas.sort((a, b) => {
-      const aEhHoje = a.status !== 'CONCLUIDA' && isSameLocalDate(a.dataAgendada, agora);
-      const bEhHoje = b.status !== 'CONCLUIDA' && isSameLocalDate(b.dataAgendada, agora);
+      if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
+
+      const aEhHoje = a.triagemStatus !== 'CONCLUIDA' && isSameLocalDate(a.dataAgendada, agora);
+      const bEhHoje = b.triagemStatus !== 'CONCLUIDA' && isSameLocalDate(b.dataAgendada, agora);
 
       if (aEhHoje !== bEhHoje) return aEhHoje ? -1 : 1;
       if (aEhHoje && bEhHoje) {
@@ -303,6 +319,15 @@ export class TriagensLista implements OnInit {
     this.dialogConfirmVisible.set(true);
   }
 
+  protected solicitarAlteracaoStatus(dto: ToggleTriagemDto): void {
+    const triagem = this.triagens().find((item) => item.id === dto.id);
+    if (!triagem) return;
+
+    this.triagemPendente.set({ id: triagem.id, nome: triagem.nomePossivelAcolhido });
+    this.acaoPendente.set(dto.ativo ? 'ativar' : 'inativar');
+    this.dialogConfirmVisible.set(true);
+  }
+
   protected confirmarAcao(): void {
     const triagem = this.triagemPendente();
     const acao = this.acaoPendente();
@@ -316,6 +341,29 @@ export class TriagensLista implements OnInit {
             severity: 'success',
             summary: 'Triagem excluída!',
             detail: 'A triagem foi excluída com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
+
+    if (acao === 'ativar' || acao === 'inativar') {
+      const acao$ =
+        acao === 'ativar'
+          ? this.triagensService.ativarTriagem(triagem.id)
+          : this.triagensService.desativarTriagem(triagem.id);
+
+      acao$.subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: acao === 'ativar' ? 'Triagem ativada!' : 'Triagem inativada!',
+            detail:
+              acao === 'ativar'
+                ? 'A triagem foi ativada com sucesso.'
+                : 'A triagem foi inativada com sucesso.',
             life: 3000,
           });
         },

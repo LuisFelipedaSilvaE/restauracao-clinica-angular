@@ -163,7 +163,7 @@ export class InternacaoForm implements OnInit {
     this.modo() === 'registro' ? 'Registrar internação' : 'Salvar alterações',
   );
   protected readonly triagensDisponiveis = computed(() =>
-    this.triagens().filter((triagem) => triagem.status === StatusTriagem.CONCLUIDA),
+    this.triagens().filter((triagem) => triagem.triagemStatus === StatusTriagem.CONCLUIDA),
   );
   protected readonly triagemSelecionada = computed(() =>
     this.triagens().find((triagem) => triagem.id === this.triagemSelecionadaId()),
@@ -342,7 +342,7 @@ export class InternacaoForm implements OnInit {
     const acolhido = this.acolhidos().find((item) => item.id === valor.acolhidoId);
     const convenio = this.convenios().find((item) => item.id === valor.convenioId);
 
-    if (!triagem || triagem.status !== StatusTriagem.CONCLUIDA) {
+    if (!triagem || triagem.triagemStatus !== StatusTriagem.CONCLUIDA) {
       this.avisoFormulario('Selecione uma triagem concluída.');
       return;
     }
