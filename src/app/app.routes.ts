@@ -23,6 +23,7 @@ import { Prontuario } from './features/prontuario/prontuario';
 import { DadosGerais } from './features/prontuario/sections/dados-gerais/dados-gerais';
 import { Internacoes as ProntuarioInternacoes } from './features/prontuario/sections/internacoes/internacoes';
 import { Pagamentos as ProntuarioPagamentos } from './features/prontuario/sections/pagamentos/pagamentos';
+import { ResponsavelForm } from './features/responsaveis/pages/responsavel-form/responsavel-form';
 import { TriagemDetalhada } from './features/triagens/pages/triagem-detalhada/triagem-detalhada';
 import { TriagemForm } from './features/triagens/pages/triagem-form/triagem-form';
 import { TriagensLista } from './features/triagens/pages/triagens-lista/triagens-lista';
@@ -107,6 +108,16 @@ export const routes: Routes = [
       {
         path: 'acolhidos/:id/editar',
         component: AcolhidoForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'responsaveis/criar',
+        component: ResponsavelForm,
+        canActivate: [roleGuard('ADMIN')],
+      },
+      {
+        path: 'responsaveis/:id/editar',
+        component: ResponsavelForm,
         canActivate: [roleGuard('ADMIN')],
       },
       {

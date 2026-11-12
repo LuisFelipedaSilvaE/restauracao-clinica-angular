@@ -1,1 +1,315 @@
-<p>responsavel-form works!</p>
+<form-header [data]="headerInfo()" [btnLabel]="voltarLabel()" [btnUrl]="voltarUrl()" />
+
+@if (carregando()) {
+  <card aria-busy="true">
+    <span class="sr-only" role="status">Carregando dados do responsável...</span>
+    <div class="space-y-5" aria-hidden="true">
+      @for (campos of skeletonSecoes; track $index) {
+        <div class="space-y-4">
+          <p-skeleton width="12rem" height="1rem" />
+          <div class="grid gap-4 sm:grid-cols-2">
+            @for (_ of campos; track $index) {
+              <div class="flex min-w-0 flex-col gap-2">
+                <p-skeleton class="h-4! w-40! rounded-md!" />
+                <p-skeleton class="h-10! w-full! rounded-lg!" />
+              </div>
+            }
+          </div>
+        </div>
+        <p-divider />
+      }
+      <div class="flex flex-wrap justify-end gap-2">
+        <p-skeleton width="6rem" height="2.5rem" borderRadius="0.5rem" />
+        <p-skeleton width="11rem" height="2.5rem" borderRadius="0.5rem" />
+      </div>
+    </div>
+  </card>
+} @else {
+  <card>
+    <form
+      [formGroup]="responsavelForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-5"
+      autocomplete="off"
+    >
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Dados pessoais</legend>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <form-field
+            label="Nome completo"
+            inputId="nome"
+            required
+            [errorMessage]="getErrorMessage('nome')"
+          >
+            <input
+              pInputText
+              id="nome"
+              name="nome"
+              formControlName="nome"
+              placeholder="Ex.: Maria da Silva"
+              minlength="3"
+              maxlength="250"
+              [invalid]="isInvalid('nome')"
+              [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+
+          <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
+            <input
+              pInputText
+              id="cpf"
+              name="cpf"
+              formControlName="cpf"
+              placeholder="000.000.000-00"
+              pInputMask="999.999.999-99"
+              inputmode="numeric"
+              [invalid]="isInvalid('cpf')"
+              [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+        </div>
+      </fieldset>
+
+      <p-divider />
+
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Contato</legend>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <form-field
+            label="E-mail"
+            inputId="email"
+            required
+            [errorMessage]="getErrorMessage('email')"
+          >
+            <input
+              pInputText
+              id="email"
+              name="email"
+              type="email"
+              formControlName="email"
+              placeholder="nome@exemplo.com"
+              maxlength="254"
+              [invalid]="isInvalid('email')"
+              [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+
+          <form-field
+            label="Telefone"
+            inputId="telefone"
+            required
+            [errorMessage]="getErrorMessage('telefone')"
+          >
+            <input
+              pInputText
+              id="telefone"
+              name="telefone"
+              formControlName="telefone"
+              placeholder="(00) 00000-0000"
+              pInputMask="(99) 99999-9999"
+              inputmode="tel"
+              [invalid]="isInvalid('telefone')"
+              [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+        </div>
+      </fieldset>
+
+      <p-divider />
+
+      <fieldset class="space-y-4">
+        <legend class="font-semibold">Endereço</legend>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-12">
+          <form-field
+            class="sm:col-span-4"
+            label="CEP"
+            inputId="cep"
+            required
+            [errorMessage]="getErrorMessage('cep')"
+          >
+            <input
+              pInputText
+              id="cep"
+              name="cep"
+              formControlName="cep"
+              placeholder="00000-000"
+              pInputMask="99999-999"
+              inputmode="numeric"
+              [invalid]="isInvalid('cep')"
+              [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
+              fluid
+              autocomplete="off"
+            />
+          </form-field>
+
+          <ng-container formGroupName="endereco">
+            <form-field
+              class="sm:col-span-2"
+              label="Número"
+              inputId="numero"
+              required
+              [errorMessage]="getErrorMessage('endereco.numero')"
+            >
+              <p-inputnumber
+                inputId="numero"
+                name="numero"
+                formControlName="numero"
+                placeholder="Nº"
+                [min]="1"
+                [max]="numeroMaximoEndereco"
+                [maxFractionDigits]="0"
+                [useGrouping]="false"
+                [invalid]="isInvalid('endereco.numero')"
+                [ariaDescribedBy]="isInvalid('endereco.numero') ? 'numero-erro' : undefined"
+                class="block w-full min-w-0"
+                styleClass="w-full min-w-0"
+                inputStyleClass="w-full min-w-0"
+                locale="pt-BR"
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Logradouro"
+              inputId="logradouro"
+              required
+              [errorMessage]="getErrorMessage('endereco.logradouro')"
+            >
+              <input
+                pInputText
+                id="logradouro"
+                name="logradouro"
+                formControlName="logradouro"
+                placeholder="Rua, avenida..."
+                minlength="3"
+                maxlength="250"
+                [invalid]="isInvalid('endereco.logradouro')"
+                [attr.aria-describedby]="
+                  isInvalid('endereco.logradouro') ? 'logradouro-erro' : null
+                "
+                fluid
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Complemento"
+              inputId="complemento"
+              [errorMessage]="getErrorMessage('endereco.complemento')"
+            >
+              <input
+                pInputText
+                id="complemento"
+                name="complemento"
+                formControlName="complemento"
+                placeholder="Casa, apartamento..."
+                minlength="3"
+                maxlength="250"
+                [invalid]="isInvalid('endereco.complemento')"
+                [attr.aria-describedby]="
+                  isInvalid('endereco.complemento') ? 'complemento-erro' : null
+                "
+                fluid
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Bairro"
+              inputId="bairro"
+              required
+              [errorMessage]="getErrorMessage('endereco.bairro')"
+            >
+              <input
+                pInputText
+                id="bairro"
+                name="bairro"
+                formControlName="bairro"
+                placeholder="Bairro"
+                minlength="3"
+                maxlength="250"
+                [invalid]="isInvalid('endereco.bairro')"
+                [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
+                fluid
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Cidade"
+              inputId="cidade"
+              required
+              [errorMessage]="getErrorMessage('endereco.cidade')"
+            >
+              <input
+                pInputText
+                id="cidade"
+                name="cidade"
+                formControlName="cidade"
+                placeholder="Cidade"
+                minlength="3"
+                maxlength="250"
+                [invalid]="isInvalid('endereco.cidade')"
+                [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
+                fluid
+                autocomplete="off"
+              />
+            </form-field>
+
+            <form-field
+              class="sm:col-span-6"
+              label="Estado"
+              inputId="estado"
+              required
+              [errorMessage]="getErrorMessage('endereco.estado')"
+            >
+              <p-select
+                inputId="estado"
+                name="estado"
+                [options]="estados"
+                formControlName="estado"
+                placeholder="Selecione um estado"
+                [invalid]="isInvalid('endereco.estado')"
+                appendTo="body"
+                fluid
+              />
+            </form-field>
+          </ng-container>
+        </div>
+      </fieldset>
+
+      <p-divider />
+
+      <div class="flex flex-wrap justify-end gap-2">
+        <p-button
+          type="button"
+          label="Cancelar"
+          severity="secondary"
+          variant="outlined"
+          [disabled]="loading().mutation"
+          (onClick)="voltarParaOrigem()"
+        />
+        <p-button
+          type="submit"
+          [label]="actionBtnLabel()"
+          severity="primary"
+          [loading]="loading().mutation"
+          [disabled]="loading().mutation"
+        />
+      </div>
+    </form>
+  </card>
+}
