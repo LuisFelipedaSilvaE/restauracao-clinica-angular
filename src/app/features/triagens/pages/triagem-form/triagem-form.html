@@ -39,14 +39,13 @@
         inputId="telefone"
         required
         [errorMessage]="getErrorMessage('telefone')"
-        hint="Formato: (00) 00000-0000."
+        hint="Formatos: (00) 0000-0000 ou (00) 00000-0000."
       >
         <input
           pInputText
           id="telefone"
           formControlName="telefone"
           placeholder="(00) 00000-0000"
-          pInputMask="(99) 99999-9999"
           [invalid]="isInvalid('telefone')"
           fluid
           autocomplete="off"
