@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:a11y": "ng test --watch=false --ts-config tsconfig.a11y-spec.json --include=src/app/shared/components/form-field/form-field.spec.ts --include=src/app/layout/mobile-nav/mobile-nav.spec.ts --include=src/app/core/services/page-title-strategy.spec.ts"
+    "test:a11y": "ng test --watch=false --ts-config tsconfig.a11y-spec.json --include=src/app/shared/components/form-field/form-field.spec.ts --include=src/app/layout/mobile-nav/mobile-nav.spec.ts --include=src/app/core/services/page-title-strategy.spec.ts --include=src/app/features/prontuario/prontuario.spec.ts --include=src/app/layout/layout.spec.ts --include=src/app/shared/components/action-menu/action-menu.spec.ts",
+    "test:triagens": "ng test --watch=false --ts-config tsconfig.triagens-spec.json --include=src/app/features/triagens/services/triagens-service.spec.ts"
   },
   "private": true,
   "packageManager": "npm@11.12.1",

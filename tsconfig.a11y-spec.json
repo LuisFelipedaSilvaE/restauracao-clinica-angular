@@ -3,6 +3,9 @@
   "include": [
     "src/app/shared/components/form-field/form-field.spec.ts",
     "src/app/layout/mobile-nav/mobile-nav.spec.ts",
-    "src/app/core/services/page-title-strategy.spec.ts"
+    "src/app/core/services/page-title-strategy.spec.ts",
+    "src/app/features/prontuario/prontuario.spec.ts",
+    "src/app/layout/layout.spec.ts",
+    "src/app/shared/components/action-menu/action-menu.spec.ts"
   ]
 }
