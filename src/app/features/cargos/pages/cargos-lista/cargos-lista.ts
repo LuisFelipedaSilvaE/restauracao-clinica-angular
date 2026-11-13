@@ -1,8 +1,13 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Card } from '../../../../shared/components/card/card';
-import { LucideBriefcase, LucidePlus } from '@lucide/angular';
+import { FormsModule } from '@angular/forms';
+import {
+  LucideBriefcase,
+  LucideFunnelX,
+  LucidePlus,
+  LucideSearch,
+  LucideSearchX,
+} from '@lucide/angular';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
-import { IconColor } from '../../../../shared/directives/icon-color';
 import { ButtonModule } from 'primeng/button';
 import { CargosService } from '../../services/cargos-service';
 import { CargoCard } from '../../components/cargo-card/cargo-card';
@@ -11,21 +16,32 @@ import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
 import { CargoForm } from '../cargo-form/cargo-form';
 import { Cargo } from '../../interfaces/cargo';
 import { DataViewModule } from 'primeng/dataview';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'cargos-lista',
+  host: {
+    class: 'block min-w-0',
+  },
   imports: [
     ButtonModule,
-    Card,
     CargoCard,
-    LucideBriefcase,
+    LucideFunnelX,
     LucidePlus,
+    LucideSearch,
     EmptyList,
-    IconColor,
     ConfirmDialog,
     CargoForm,
     DataViewModule,
+    FormsModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    SelectModule,
     SkeletonModule,
   ],
   templateUrl: './cargos-lista.html',
@@ -33,12 +49,34 @@ import { SkeletonModule } from 'primeng/skeleton';
 })
 export class CargosLista implements OnInit {
   protected readonly emptyCargosIcon = LucideBriefcase;
+  protected readonly emptySearchIcon = LucideSearchX;
   private readonly cargosService = inject(CargosService);
   protected readonly cargos = this.cargosService.cargos;
   protected readonly loading = this.cargosService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
+  protected readonly busca = signal('');
+  protected readonly situacaoSelecionada = signal<'todos' | 'ativos' | 'inativos'>('todos');
+  protected readonly situacoes = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Ativos', value: 'ativos' },
+    { label: 'Inativos', value: 'inativos' },
+  ];
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<ToggleCargoDto | null>(null);
+  protected readonly cargosFiltrados = computed(() => {
+    const busca = this.normalizarTexto(this.busca());
+    const situacao = this.situacaoSelecionada();
+
+    return this.cargos().filter((cargo) => {
+      const correspondeBusca = !busca || this.normalizarTexto(cargo.nome).includes(busca);
+      const correspondeSituacao =
+        situacao === 'todos' ||
+        (situacao === 'ativos' && !!cargo.ativo) ||
+        (situacao === 'inativos' && !cargo.ativo);
+
+      return correspondeBusca && correspondeSituacao;
+    });
+  });
 
   protected readonly updateDialogVisible = signal<boolean>(false);
   protected readonly cargoToUpdate = signal<Cargo | null>(null);
@@ -105,5 +143,17 @@ export class CargosLista implements OnInit {
   registerCargo(): void {
     this.updateDialogVisible.set(true);
     this.cargoToUpdate.set(null);
+  }
+
+  protected clearFilters(): void {
+    this.busca.set('');
+    this.situacaoSelecionada.set('todos');
+  }
+
+  private normalizarTexto(valor: string): string {
+    return valor
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\W_\u0300-\u036f]/g, '');
   }
 }

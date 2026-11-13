@@ -1,36 +1,48 @@
 <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-  {{ !loading().list ? cargos().length + ' resultados encontrados' : '' }}
+  {{ !loading().list ? cargosFiltrados().length + ' resultados encontrados' : '' }}
 </p>
-<card class="flex flex-col gap-4">
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex min-w-0 items-center gap-2">
-      <div
-        class="flex w-fit shrink-0 items-center justify-center rounded-md p-2.5"
-        [iconColor]="'#be222d'"
-      >
-        <svg lucideBriefcase class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
-      </div>
-      <div class="min-w-0">
-        <h2 class="text-lg font-semibold">Cargos</h2>
-        <p class="text-content-secondary text-xs">
-          Gerencie os cargos disponíveis para vincular aos colaboradores.
-        </p>
-      </div>
-    </div>
-    <div class="w-full shrink-0 sm:w-auto">
-      <p-button
-        label="Novo cargo"
-        severity="secondary"
-        variant="outlined"
-        styleClass="w-full whitespace-nowrap"
-        (onClick)="registerCargo()"
-      >
-        <ng-template #icon>
-          <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
-        </ng-template>
-      </p-button>
-    </div>
+<div class="flex min-w-0 flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-2">
+    <p-iconfield class="min-w-64 basis-full grow sm:basis-[60%]">
+      <p-inputicon
+        ><svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg
+      ></p-inputicon>
+      <input
+        aria-label="Buscar cargos por nome"
+        pInputText
+        [ngModel]="busca()"
+        (ngModelChange)="busca.set($event)"
+        placeholder="Buscar por nome do cargo..."
+        class="w-full placeholder:text-sm"
+        autocomplete="off"
+      />
+    </p-iconfield>
+
+    <p-select
+      ariaLabel="Filtrar cargos por situação"
+      class="min-w-44 grow md:max-w-52"
+      [options]="situacoes"
+      [ngModel]="situacaoSelecionada()"
+      (ngModelChange)="situacaoSelecionada.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Situação"
+    />
+
+    <p-button
+      type="button"
+      label="Novo cargo"
+      severity="secondary"
+      variant="outlined"
+      styleClass="w-full whitespace-nowrap sm:w-auto"
+      (onClick)="registerCargo()"
+    >
+      <ng-template #icon>
+        <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+      </ng-template>
+    </p-button>
   </div>
+
   @if (loading().list) {
     <div aria-busy="true">
       <span class="sr-only" role="status">Carregando cargos...</span>
@@ -58,8 +70,32 @@
         }
       </div>
     </div>
-  } @else if (cargos().length > 0) {
-    <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
+  } @else if (cargos().length === 0) {
+    <empty-list
+      [icon]="emptyCargosIcon"
+      title="Nenhum cargo cadastrado"
+      description="Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo."
+    >
+      <p-button
+        type="button"
+        label="Criar primeiro cargo"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="registerCargo()"
+      >
+        <ng-template #icon>
+          <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+        </ng-template>
+      </p-button>
+    </empty-list>
+  } @else {
+    <p-dataview
+      [value]="cargosFiltrados()"
+      [paginator]="true"
+      [rows]="6"
+      layout="grid"
+      [pt]="dataviewPt"
+    >
       <ng-template #grid let-items>
         <div
           role="list"
@@ -76,26 +112,29 @@
           }
         </div>
       </ng-template>
+
+      <ng-template #emptymessage>
+        <empty-list
+          [icon]="emptySearchIcon"
+          title="Nenhum cargo encontrado"
+          description="Não encontramos resultados para os filtros aplicados. Tente ajustar a busca ou limpar os filtros."
+        >
+          <p-button
+            type="button"
+            label="Limpar filtros"
+            severity="secondary"
+            [text]="true"
+            (onClick)="clearFilters()"
+          >
+            <ng-template #icon>
+              <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+            </ng-template>
+          </p-button>
+        </empty-list>
+      </ng-template>
     </p-dataview>
-  } @else {
-    <empty-list
-      [icon]="emptyCargosIcon"
-      title="Nenhum cargo cadastrado"
-      description="Ainda não há cargos registrados no sistema. Comece adicionando o primeiro cargo."
-    >
-      <p-button
-        label="Criar primeiro cargo"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="registerCargo()"
-      >
-        <ng-template #icon>
-          <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
-        </ng-template>
-      </p-button>
-    </empty-list>
   }
-</card>
+</div>
 
 <confirm-dialog
   [(visible)]="dialogConfirmVisible"

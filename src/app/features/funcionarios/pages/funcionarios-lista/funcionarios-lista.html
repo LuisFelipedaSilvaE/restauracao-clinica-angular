@@ -25,7 +25,45 @@
   </div>
 </div>
 
-<cargos-lista />
+<p-accordion
+  styleClass="block overflow-hidden rounded-xl border border-border-default bg-surface-card"
+  [value]="painelCargos()"
+  (valueChange)="painelCargos.set($event)"
+  aria-label="Gerenciamento de cargos"
+>
+  <p-accordion-panel value="cargos" [pt]="{ root: { class: 'border-0!' } }">
+    <p-accordion-header>
+      <div class="flex min-w-0 flex-1 items-center gap-3 pr-2">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-soft text-brand-primary"
+        >
+          <svg lucideBriefcase class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="font-semibold text-content-primary">Cargos</h2>
+            <span
+              class="rounded-full bg-surface-subtle px-2 py-0.5 text-xs font-medium text-content-secondary"
+            >
+              {{ totalCargos() }}
+              {{ totalCargos() === 1 ? 'cadastrado' : 'cadastrados' }}
+            </span>
+          </div>
+          <p class="truncate text-xs font-normal text-content-secondary">
+            Gerencie os cargos disponíveis para vincular aos colaboradores.
+          </p>
+        </div>
+      </div>
+    </p-accordion-header>
+
+    <p-accordion-content>
+      <div class="pt-1">
+        <cargos-lista />
+      </div>
+    </p-accordion-content>
+  </p-accordion-panel>
+</p-accordion>
 
 <div class="flex flex-col gap-2">
   @if (loading().list || funcionarios().length > 0) {

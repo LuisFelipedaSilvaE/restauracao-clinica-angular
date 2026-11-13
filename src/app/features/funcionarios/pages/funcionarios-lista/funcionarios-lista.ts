@@ -21,8 +21,12 @@ import { RouterLink } from '@angular/router';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
+import { CargosService } from '../../../cargos/services/cargos-service';
 import { localDateToDate } from '../../../../shared/utils/local-date';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { AccordionModule } from 'primeng/accordion';
+
+type AccordionValue = string | number | string[] | number[] | null | undefined;
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -30,9 +34,11 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
     class: 'flex gap-8 flex-col',
   },
   imports: [
+    AccordionModule,
     InfoCard,
     PageHeader,
     ButtonModule,
+    LucideBriefcase,
     LucideUserRoundPlus,
     DataViewModule,
     SkeletonModule,
@@ -51,7 +57,10 @@ export class FuncionariosLista implements OnInit {
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyFuncionariosIcon = LucideUsersRound;
   protected readonly funcionariosService = inject(FuncionariosService);
+  private readonly cargosService = inject(CargosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
+  protected readonly painelCargos = signal<AccordionValue>(null);
+  protected readonly totalCargos = computed(() => this.cargosService.cargos().length);
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
     const busca = (this.busca() || '')
       .toLowerCase()
