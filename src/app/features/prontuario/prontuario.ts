@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProntuarioHeader } from './components/prontuario-header/prontuario-header';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -35,7 +35,7 @@ import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratame
   templateUrl: './prontuario.html',
   styleUrl: './prontuario.css',
 })
-export class Prontuario implements OnInit {
+export class Prontuario {
   readonly acolhidoId = input<string>();
   readonly origem = input<'acolhidos' | 'internacao'>('acolhidos');
   readonly internacaoId = input<string>();
@@ -144,20 +144,26 @@ export class Prontuario implements OnInit {
     this.acolhido()?.ativo ? 'danger' : 'success',
   );
 
-  ngOnInit(): void {
-    const idNumerico = Number(this.acolhidoId());
+  constructor() {
+    effect((onCleanup) => {
+      const idNumerico = Number(this.acolhidoId());
 
-    if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
-      this.voltarParaOrigem();
-      return;
-    }
+      if (!Number.isSafeInteger(idNumerico) || idNumerico <= 0) {
+        this.voltarParaOrigem();
+        return;
+      }
 
-    forkJoin({
-      acolhido: this.acolhidosService.getAcolhidoById(idNumerico),
-      internacoes: this.internacoesService.getAllInternacoes(),
-    }).subscribe({
-      next: ({ acolhido }) => this.acolhido.set(acolhido),
-      error: () => this.voltarParaOrigem(),
+      this.acolhido.set(null);
+
+      const subscription = forkJoin({
+        acolhido: this.acolhidosService.getAcolhidoById(idNumerico),
+        internacoes: this.internacoesService.getAllInternacoes(),
+      }).subscribe({
+        next: ({ acolhido }) => this.acolhido.set(acolhido),
+        error: () => this.voltarParaOrigem(),
+      });
+
+      onCleanup(() => subscription.unsubscribe());
     });
   }
 

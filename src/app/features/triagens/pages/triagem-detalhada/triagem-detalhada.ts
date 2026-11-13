@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideCalendar,
@@ -172,29 +172,33 @@ export class TriagemDetalhada {
     return labels[status] ?? status;
   });
 
-  ngOnInit(): void {
-    this.getTriagem();
-  }
+  constructor() {
+    effect((onCleanup) => {
+      const id = Number(this.id());
 
-  getTriagem(): void {
-    const id = Number(this.id());
-
-    if (Number.isNaN(id)) {
-      this.router.navigate(['/triagens']);
-      return;
-    }
-
-    this.carregando.set(true);
-
-    this.triagensService.getTriagemById(id).subscribe({
-      next: (res) => {
-        this.carregando.set(false);
-        this.triagem.set(res);
-      },
-      error: () => {
-        this.carregando.set(false);
+      if (!Number.isSafeInteger(id) || id <= 0) {
         this.router.navigate(['/triagens']);
-      },
+        return;
+      }
+
+      this.triagem.set(undefined);
+      this.carregando.set(true);
+      this.dialogConfirmVisible.set(false);
+      this.reagendamentoDialogVisible.set(false);
+      this.acaoPendente.set(null);
+
+      const subscription = this.triagensService.getTriagemById(id).subscribe({
+        next: (triagem) => {
+          this.carregando.set(false);
+          this.triagem.set(triagem);
+        },
+        error: () => {
+          this.carregando.set(false);
+          this.router.navigate(['/triagens']);
+        },
+      });
+
+      onCleanup(() => subscription.unsubscribe());
     });
   }
 
