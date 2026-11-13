@@ -1,3 +1,4 @@
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -34,6 +35,7 @@ import { TriagensService } from '../../services/triagens-service';
     class: 'flex flex-col gap-6',
   },
   imports: [
+    AutoFocusError,
     FormHeader,
     Card,
     DividerModule,

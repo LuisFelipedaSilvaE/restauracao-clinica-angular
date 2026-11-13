@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -84,6 +84,7 @@ interface MovimentacaoRecente {
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  private readonly document = inject(DOCUMENT);
   private readonly conveniosService = inject(ConveniosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly triagensService = inject(TriagensService);
@@ -192,6 +193,9 @@ export class Dashboard implements OnInit {
   }));
 
   protected readonly opcoesGrafico: ChartOptions<'bar'> = {
+    animation: this.document.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      ? false
+      : undefined,
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
@@ -240,6 +244,13 @@ export class Dashboard implements OnInit {
   protected readonly possuiMovimentacoes = computed(() =>
     this.mesesMovimentacao().some((mes) => mes.entradas > 0 || mes.saidas > 0),
   );
+
+  protected readonly resumoGrafico = computed(() => {
+    const meses = this.mesesMovimentacao();
+    const entradas = meses.reduce((total, mes) => total + mes.entradas, 0);
+    const saidas = meses.reduce((total, mes) => total + mes.saidas, 0);
+    return `Nos últimos seis meses foram registradas ${entradas} entradas e ${saidas} saídas. Os valores de cada mês estão na tabela a seguir.`;
+  });
 
   protected readonly ocupacaoConvenios = computed<OcupacaoConvenio[]>(() => {
     const internacoesAtivas = this.internacoesService

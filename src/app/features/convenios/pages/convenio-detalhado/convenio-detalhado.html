@@ -1,7 +1,8 @@
 <back-button label="Voltar para convênios" url="/convenios" />
 
 @if (carregando()) {
-  <card class="flex flex-col gap-6 p-6!">
+  <span class="sr-only" role="status">Carregando dados do convênio...</span>
+  <card class="flex flex-col gap-6 p-6!" aria-hidden="true">
     <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex min-w-0 items-center gap-3">
         <p-skeleton class="h-14! w-14! shrink-0! rounded-xl! sm:h-15! sm:w-15!" />
@@ -20,7 +21,7 @@
     </div>
   </card>
 
-  <card class="flex flex-col gap-5 p-6!">
+  <card class="flex flex-col gap-5 p-6!" aria-hidden="true">
     <p-skeleton class="h-5! w-48! rounded-md!" />
     <div class="grid gap-5 sm:grid-cols-2">
       @for (_ of [1, 2, 3, 4, 5]; track $index) {
@@ -41,10 +42,10 @@
         class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-15 sm:w-15"
         [iconColor]="convenio.cor"
       >
-        <svg lucideLayers class="h-6 w-6"></svg>
+        <svg lucideLayers class="h-6 w-6" aria-hidden="true" focusable="false"></svg>
       </span>
       <div class="flex min-w-0 flex-col gap-1">
-        <h3 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h3>
+        <h1 class="truncate text-xl font-semibold">{{ convenio.descricao }}</h1>
         <div class="flex flex-wrap items-center gap-2">
           <p-tag [value]="statusLabel()" [severity]="tagSeverity()" />
           <p-badge
@@ -58,17 +59,17 @@
 
     <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
       @if (convenio.ativo) {
-        <p-button
-          label="Editar"
+        <a
+          pButton
           severity="secondary"
-          variant="outlined"
-          [pt]="actionButtonPt"
+          [outlined]="true"
+          [pButtonPT]="actionButtonPt"
           [routerLink]="['/convenios', convenio.id, 'editar']"
         >
-          <ng-template #icon>
-            <svg lucidePencil class="h-4 w-4"></svg>
-          </ng-template>
-        </p-button>
+          <svg pButtonIcon lucidePencil class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+
+          <span pButtonLabel>Editar</span></a
+        >
       }
       <p-button
         [label]="toggleLabel()"
@@ -80,9 +81,9 @@
       >
         <ng-template #icon>
           @if (convenio.ativo) {
-            <svg lucidePowerOff class="h-4 w-4"></svg>
+            <svg lucidePowerOff class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           } @else {
-            <svg lucidePower class="h-4 w-4"></svg>
+            <svg lucidePower class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           }
         </ng-template>
       </p-button>
@@ -95,7 +96,7 @@
           (onClick)="confirmarExclusao.set(true)"
         >
           <ng-template #icon>
-            <svg lucideTrash2 class="h-4 w-4"></svg>
+            <svg lucideTrash2 class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           </ng-template>
         </p-button>
       }
@@ -103,14 +104,14 @@
   </card>
 
   <card>
-    <p class="font-semibold">Resumo do convênio</p>
+    <h2 class="font-semibold">Resumo do convênio</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <div class="flex items-center gap-2">
         <span
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideSquareDashedText class="h-4 w-4"></svg>
+          <svg lucideSquareDashedText class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Descrição">{{ convenio.descricao }}</detail-info-field>
       </div>
@@ -120,7 +121,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideLayers class="h-4 w-4"></svg>
+          <svg lucideLayers class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="CNPJ">{{ formatarCnpj(convenio.cnpj) }}</detail-info-field>
       </div>
@@ -130,7 +131,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideDoorOpen class="h-4 w-4"></svg>
+          <svg lucideDoorOpen class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Capacidade total">
           {{ convenio.maxVagas }} vagas
@@ -142,7 +143,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideCheck class="h-4 w-4"></svg>
+          <svg lucideCheck class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Acolhidos ativos">
           {{ acolhidosAtivos() }} acolhidos
@@ -154,7 +155,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideDoorOpen class="h-4 w-4"></svg>
+          <svg lucideDoorOpen class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Vagas disponíveis">
           {{ vagasDisponiveis() }} vagas
@@ -166,7 +167,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucideHandCoins class="h-4 w-4"></svg>
+          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Pagamento">{{ pagamentoLabel() }}</detail-info-field>
       </div>
@@ -176,7 +177,7 @@
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
           [iconColor]="'#4a5565'"
         >
-          <svg lucidePaintBucket class="h-4 w-4"></svg>
+          <svg lucidePaintBucket class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </span>
         <detail-info-field label="Cor de identificação">
           <span class="flex items-center gap-2">
@@ -192,9 +193,9 @@
           [iconColor]="'#4a5565'"
         >
           @if (convenio.ativo) {
-            <svg lucidePower class="h-4 w-4"></svg>
+            <svg lucidePower class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           } @else {
-            <svg lucidePowerOff class="h-4 w-4"></svg>
+            <svg lucidePowerOff class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           }
         </span>
         <detail-info-field label="Status">{{ statusLabel() }}</detail-info-field>

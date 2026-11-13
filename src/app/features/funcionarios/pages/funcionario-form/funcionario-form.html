@@ -1,6 +1,6 @@
 <form-header [data]="headerInfo()" btnLabel="Voltar para funcionários" btnUrl="/funcionarios" />
 <card>
-  <form [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="onSubmit()">
+  <form autoFocusError [formGroup]="funcionarioForm" class="space-y-5" (ngSubmit)="onSubmit()">
     <fieldset class="space-y-4">
       <legend class="font-semibold">Dados pessoais</legend>
       <form-field
@@ -16,13 +16,18 @@
           formControlName="nome"
           placeholder="Ex.: Maria da Silva"
           [invalid]="isInvalid('nome')"
-          [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
           fluid
           autocomplete="off"
         />
       </form-field>
       <div class="grid gap-4 sm:grid-cols-2">
-        <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
+        <form-field
+          label="CPF"
+          inputId="cpf"
+          required
+          [errorMessage]="getErrorMessage('cpf')"
+          hint="Formato: 000.000.000-00."
+        >
           <input
             pInputText
             id="cpf"
@@ -31,7 +36,6 @@
             placeholder="000.000.000-00"
             pInputMask="999.999.999-99"
             [invalid]="isInvalid('cpf')"
-            [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
             fluid
             autocomplete="off"
           />
@@ -41,8 +45,10 @@
           inputId="dataNascimento"
           required
           [errorMessage]="getErrorMessage('dataNascimento')"
+          hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
         >
           <p-datepicker
+            autocomplete="off"
             inputId="dataNascimento"
             name="dataNascimento"
             formControlName="dataNascimento"
@@ -65,8 +71,10 @@
         inputId="dataAdmissao"
         required
         [errorMessage]="getErrorMessage('dataAdmissao')"
+        hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
       >
         <p-datepicker
+          autocomplete="off"
           inputId="dataAdmissao"
           name="dataAdmissao"
           formControlName="dataAdmissao"
@@ -109,7 +117,6 @@
             formControlName="email"
             placeholder="nome@clinica.org"
             [invalid]="isInvalid('email')"
-            [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
             fluid
             autocomplete="off"
           />
@@ -119,6 +126,7 @@
           inputId="telefone"
           required
           [errorMessage]="getErrorMessage('telefone')"
+          hint="Formato: (00) 00000-0000."
         >
           <input
             pInputText
@@ -128,7 +136,6 @@
             pInputMask="(99) 99999-9999"
             placeholder="(00) 00000-0000"
             [invalid]="isInvalid('telefone')"
-            [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
             [autoClear]="false"
             fluid
             autocomplete="off"
@@ -146,6 +153,7 @@
           inputId="cep"
           required
           [errorMessage]="getErrorMessage('cep')"
+          hint="Formato: 00000-000."
         >
           <input
             pInputText
@@ -155,7 +163,6 @@
             pInputMask="99999-999"
             placeholder="00000-000"
             [invalid]="isInvalid('cep')"
-            [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
             fluid
             autocomplete="off"
           />
@@ -175,7 +182,6 @@
               formControlName="bairro"
               placeholder="Bairro"
               [invalid]="isInvalid('endereco.bairro')"
-              [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
               [pKeyFilter]="blockslashandhyphen"
               fluid
               autocomplete="off"
@@ -195,7 +201,6 @@
               pKeyFilter="int"
               placeholder="Nº"
               [invalid]="isInvalid('endereco.numero')"
-              [attr.aria-describedby]="isInvalid('endereco.numero') ? 'numero-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -214,7 +219,6 @@
               formControlName="logradouro"
               placeholder="Rua, avenida..."
               [invalid]="isInvalid('endereco.logradouro')"
-              [attr.aria-describedby]="isInvalid('endereco.logradouro') ? 'logradouro-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -232,9 +236,6 @@
               formControlName="complemento"
               placeholder="Casa, apartamento..."
               [invalid]="isInvalid('endereco.complemento')"
-              [attr.aria-describedby]="
-                isInvalid('endereco.complemento') ? 'complemento-erro' : null
-              "
               fluid
               autocomplete="off"
             />
@@ -253,7 +254,6 @@
               formControlName="cidade"
               placeholder="Cidade"
               [invalid]="isInvalid('endereco.cidade')"
-              [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -280,9 +280,7 @@
     </fieldset>
     <p-divider />
     <fieldset class="space-y-4">
-      <div class="flex items-center justify-between">
-        <legend class="font-semibold">Acesso ao sistema</legend>
-      </div>
+      <legend class="font-semibold">Acesso ao sistema</legend>
 
       <div class="grid gap-4 sm:grid-cols-2" formGroupName="user">
         <form-field
@@ -298,7 +296,6 @@
             formControlName="username"
             placeholder="user.do.funcionario"
             [invalid]="isInvalid('user.username')"
-            [attr.aria-describedby]="isInvalid('user.username') ? 'username-erro' : null"
             [pKeyFilter]="blockspace"
             fluid
             autocomplete="off"
@@ -312,6 +309,7 @@
             [errorMessage]="getErrorMessage('user.password')"
           >
             <p-password
+              accessiblePassword
               #passwordInput
               inputId="password"
               name="password"
@@ -323,7 +321,6 @@
               autocomplete="off"
               placeholder="••••••••••"
               [invalid]="isInvalid('user.password')"
-              [attr.aria-describedby]="isInvalid('user.password') ? 'password-erro' : null"
               [pt]="passwordInputPt"
               fluid
             />

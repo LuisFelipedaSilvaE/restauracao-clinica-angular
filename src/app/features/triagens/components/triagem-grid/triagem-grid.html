@@ -1,3 +1,6 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading() ? triagens().length + ' resultados encontrados' : '' }}
+</p>
 @if (loading() || temTriagensNoStatus() || filtrosAtivos()) {
   <p-dataview
     [value]="loading() ? skeletonCards : triagens()"
@@ -19,7 +22,7 @@
           <span class="justify-self-end text-center">Ações</span>
         </div>
 
-        <div class="flex flex-col gap-2">
+        <div role="list" aria-label="Resultados" class="flex flex-col gap-2">
           @if (loading()) {
             <span class="sr-only" role="status">Carregando triagens...</span>
             @for (_ of skeletonCards; track $index) {
@@ -61,6 +64,7 @@
           } @else {
             @for (triagem of items; track $index) {
               <triagem-card
+                role="listitem"
                 [triagem]="triagem"
                 [dataReferencia]="dataReferencia()"
                 (concluirTriagem)="concluirTriagem.emit($event)"
@@ -86,7 +90,7 @@
           (onClick)="limparFiltros.emit()"
           label="Limpar filtros"
         >
-          <svg lucideFunnelX class="h-5 w-5"></svg>
+          <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
         </p-button>
       </empty-list>
     </ng-template>
@@ -98,11 +102,17 @@
     [description]="emptyStatusContent().description"
   >
     @if (statusSelecionado() === 'AGENDADA') {
-      <p-button routerLink="/triagens/criar" label="Agendar primeira triagem">
-        <ng-template #icon>
-          <svg lucideCalendarPlus class="h-5 w-5"></svg>
-        </ng-template>
-      </p-button>
+      <a pButton routerLink="/triagens/criar">
+        <svg
+          pButtonIcon
+          lucideCalendarPlus
+          class="h-5 w-5"
+          aria-hidden="true"
+          focusable="false"
+        ></svg>
+
+        <span pButtonLabel>Agendar primeira triagem</span></a
+      >
     }
   </empty-list>
 }

@@ -1,3 +1,4 @@
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -53,6 +54,7 @@ type ModoForm = 'registro' | 'atualizacao';
     class: 'flex min-w-0 flex-col gap-6',
   },
   imports: [
+    AutoFocusError,
     FormHeader,
     ReactiveFormsModule,
     Card,

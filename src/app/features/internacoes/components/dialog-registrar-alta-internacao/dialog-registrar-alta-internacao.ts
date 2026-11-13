@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -32,6 +34,8 @@ const dataValida: ValidatorFn = (control: AbstractControl): ValidationErrors | n
     class: 'contents',
   },
   imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
     ButtonModule,
     DatePickerModule,
     DialogModule,

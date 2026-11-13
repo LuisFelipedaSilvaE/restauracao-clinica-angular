@@ -1,3 +1,6 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, inject, input, model, OnInit, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -19,6 +22,9 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
 @Component({
   selector: 'dialog-alterar-senha-f',
   imports: [
+    RestoreDialogFocus,
+    AccessiblePassword,
+    AutoFocusError,
     ButtonModule,
     DialogModule,
     PasswordModule,

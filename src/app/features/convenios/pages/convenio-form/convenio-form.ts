@@ -1,3 +1,4 @@
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -32,6 +33,7 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
     class: 'flex flex-col gap-6',
   },
   imports: [
+    AutoFocusError,
     ButtonModule,
     InputTextModule,
     InputMaskModule,

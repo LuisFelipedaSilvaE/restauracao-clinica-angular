@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -18,6 +20,8 @@ import { TriagensService } from '../../services/triagens-service';
 @Component({
   selector: 'triagem-reagendamento-form',
   imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
     ButtonModule,
     DatePickerModule,
     DialogModule,

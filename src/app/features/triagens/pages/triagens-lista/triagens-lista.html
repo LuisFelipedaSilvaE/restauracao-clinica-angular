@@ -2,11 +2,11 @@
   title="Triagens"
   description="Consulte, filtre e gerencie os agendamentos e acolhimentos iniciais dos candidatos."
 >
-  <p-button label="Nova triagem" routerLink="/triagens/criar">
-    <ng-template #icon>
-      <svg lucideCalendarPlus class="h-5 w-5"></svg>
-    </ng-template>
-  </p-button>
+  <a pButton routerLink="/triagens/criar">
+    <svg pButtonIcon lucideCalendarPlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+    <span pButtonLabel>Nova triagem</span></a
+  >
 </page-header>
 
 <card class="border-0 p-0! overflow-hidden">
@@ -14,7 +14,7 @@
     <p-tablist>
       @for (tab of tabs(); track $index) {
         <p-tab [value]="tab.status" class="flex items-center gap-2! text-inherit">
-          <svg [lucideIcon]="tab.icon" class="h-5 w-5"></svg>
+          <svg [lucideIcon]="tab.icon" class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
           <span>{{ tab.label }}</span>
           <p-badge severity="secondary" [value]="tab.total" />
         </p-tab>

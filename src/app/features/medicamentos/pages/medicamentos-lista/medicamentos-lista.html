@@ -3,11 +3,11 @@
     title="Estoque de medicamentos"
     description="Acompanhe o estoque de medicamentos e registre cada movimentação."
   >
-    <p-button label="Novo medicamento" routerLink="criar" class="text-nowrap">
-      <ng-template #icon>
-        <svg lucidePlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar" class="text-nowrap">
+      <svg pButtonIcon lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+      <span pButtonLabel>Novo medicamento</span></a
+    >
   </page-header>
   <div class="flex justify-center items-center flex-wrap gap-2.5">
     @for (item of infomedicamentos(); track $index) {
@@ -24,10 +24,10 @@
     title="Nenhum medicamento cadastrado"
     description="Não há medicamentos cadastrados no momento."
   >
-    <p-button routerLink="criar" label="Cadastrar primeiro medicamento">
-      <ng-template #icon>
-        <svg lucidePlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar">
+      <svg pButtonIcon lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+      <span pButtonLabel>Cadastrar primeiro medicamento</span></a
+    >
   </empty-list>
 }

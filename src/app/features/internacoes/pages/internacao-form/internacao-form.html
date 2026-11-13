@@ -30,7 +30,7 @@
   </card>
 } @else {
   <card>
-    <form [formGroup]="internacaoForm" (ngSubmit)="onSubmit()" class="space-y-5">
+    <form autoFocusError [formGroup]="internacaoForm" (ngSubmit)="onSubmit()" class="space-y-5">
       @if (modo() === 'registro') {
         <fieldset class="space-y-4">
           <legend class="font-semibold">Origem e vínculo</legend>
@@ -79,6 +79,7 @@
               title="Dados da triagem selecionada"
               [icon]="triagemContextIcon"
               color="#be222d"
+              [headingLevel]="2"
             >
               <div class="min-w-0">
                 <p class="text-xs text-content-secondary">Candidato</p>
@@ -143,7 +144,7 @@
               (onClick)="cadastrarNovoAcolhido()"
             >
               <ng-template #icon>
-                <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
+                <svg lucideUserPlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
               </ng-template>
             </p-button>
           </div>
@@ -162,6 +163,7 @@
           title="Dados da internação"
           [icon]="internacaoContextIcon"
           color="#2563eb"
+          [headingLevel]="2"
         >
           <div class="min-w-0">
             <p class="text-xs text-content-secondary">Acolhido</p>
@@ -173,9 +175,9 @@
           </div>
           <div class="min-w-0">
             <p class="text-xs text-content-secondary">Data de entrada</p>
-            <p class="font-medium">
+            <time class="font-medium" [attr.datetime]="internacao.dataEntrada">
               {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' : 'pt-BR' }}
-            </p>
+            </time>
           </div>
         </context-summary>
 
@@ -218,6 +220,7 @@
               inputId="dataEntrada"
               required
               [errorMessage]="getErrorMessage('dataEntrada')"
+              hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
             >
               <p-datepicker
                 inputId="dataEntrada"
@@ -240,6 +243,7 @@
               inputId="dataSaidaPrevista"
               required
               [errorMessage]="getErrorMessage('dataSaidaPrevista')"
+              hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
             >
               <p-datepicker
                 inputId="dataSaidaPrevista"

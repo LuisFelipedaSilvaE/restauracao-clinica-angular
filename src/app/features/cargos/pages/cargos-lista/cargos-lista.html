@@ -1,3 +1,6 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading().list ? cargos().length + ' resultados encontrados' : '' }}
+</p>
 <card class="flex flex-col gap-4">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex min-w-0 items-center gap-2">
@@ -5,10 +8,10 @@
         class="flex w-fit shrink-0 items-center justify-center rounded-md p-2.5"
         [iconColor]="'#be222d'"
       >
-        <svg lucideBriefcase class="h-5 w-5"></svg>
+        <svg lucideBriefcase class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
       </div>
       <div class="min-w-0">
-        <h6 class="text-lg font-semibold">Cargos</h6>
+        <h2 class="text-lg font-semibold">Cargos</h2>
         <p class="text-content-secondary text-xs">
           Gerencie os cargos disponíveis para vincular aos colaboradores.
         </p>
@@ -23,7 +26,7 @@
         (onClick)="registerCargo()"
       >
         <ng-template #icon>
-          <svg lucidePlus class="h-5 w-5"></svg>
+          <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
         </ng-template>
       </p-button>
     </div>
@@ -59,10 +62,13 @@
     <p-dataview [value]="cargos()" [paginator]="true" [rows]="6" layout="grid" [pt]="dataviewPt">
       <ng-template #grid let-items>
         <div
+          role="list"
+          aria-label="Resultados"
           class="grid grid-cols-1 items-center gap-2 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"
         >
           @for (cargo of items; track cargo.id) {
             <cargo-card
+              role="listitem"
               [cargo]="cargo"
               (statusCargoChange)="toggleCargo($event)"
               (onEditCargo)="editCargo($event)"
@@ -84,7 +90,7 @@
         (onClick)="registerCargo()"
       >
         <ng-template #icon>
-          <svg lucidePlus class="h-5 w-5"></svg>
+          <svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
         </ng-template>
       </p-button>
     </empty-list>

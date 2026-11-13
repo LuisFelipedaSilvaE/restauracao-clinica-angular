@@ -42,7 +42,7 @@
                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
                     [iconColor]="'#4a5565'"
                   >
-                    <svg lucideWallet class="h-5 w-5" aria-hidden="true"></svg>
+                    <svg lucideWallet class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
                   </span>
 
                   <div class="min-w-0">
@@ -106,7 +106,12 @@
                         (onClick)="abrirRegistro(internacao)"
                       >
                         <ng-template #icon>
-                          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
+                          <svg
+                            lucideHandCoins
+                            class="h-4 w-4"
+                            aria-hidden="true"
+                            focusable="false"
+                          ></svg>
                         </ng-template>
                       </p-button>
                     </div>
@@ -131,9 +136,14 @@
                             <span class="text-center">Ações</span>
                           </div>
 
-                          <div class="flex min-w-0 flex-col gap-2">
+                          <div
+                            role="list"
+                            aria-label="Pagamentos registrados"
+                            class="flex min-w-0 flex-col gap-2"
+                          >
                             @for (pagamento of items; track pagamento.id) {
                               <pagamento-card
+                                role="listitem"
                                 [pagamento]="pagamento"
                                 (estornar)="abrirEstorno($event)"
                               />
@@ -155,7 +165,12 @@
                         (onClick)="abrirRegistro(internacao)"
                       >
                         <ng-template #icon>
-                          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
+                          <svg
+                            lucideHandCoins
+                            class="h-4 w-4"
+                            aria-hidden="true"
+                            focusable="false"
+                          ></svg>
                         </ng-template>
                       </p-button>
                     </empty-list>

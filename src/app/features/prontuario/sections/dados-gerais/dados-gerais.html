@@ -43,7 +43,9 @@
         </detail-info-field>
 
         <detail-info-field label="Data de nascimento">
-          {{ acolhido.dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+          <time [attr.datetime]="acolhido.dataNascimento | date: 'yyyy-MM-dd' : 'UTC'">{{
+            acolhido.dataNascimento | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
+          }}</time>
           ({{ acolhido.idade }} anos)
         </detail-info-field>
 

@@ -1,13 +1,22 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading() ? internacoesCardsFiltradas().length + ' resultados encontrados' : '' }}
+</p>
 <div class="flex flex-col gap-4">
   <page-header
     title="Internações"
     description="Consulte, acompanhe e gerencie as internações realizadas pela comunidade."
   >
-    <p-button routerLink="criar" label="Nova internação" class="text-nowrap">
-      <ng-template #icon>
-        <svg lucideCalendarPlus class="h-5 w-5" aria-hidden="true"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar" class="text-nowrap">
+      <svg
+        pButtonIcon
+        lucideCalendarPlus
+        class="h-5 w-5"
+        aria-hidden="true"
+        focusable="false"
+      ></svg>
+
+      <span pButtonLabel>Nova internação</span></a
+    >
   </page-header>
 
   <div class="flex flex-wrap items-center justify-center gap-2.5">
@@ -52,7 +61,7 @@
                 <span class="justify-self-end text-center">Ações</span>
               </div>
 
-              <div class="flex min-w-0 flex-col gap-2">
+              <div role="list" aria-label="Resultados" class="flex min-w-0 flex-col gap-2">
                 @if (loading()) {
                   <span class="sr-only" role="status">Carregando internações...</span>
                   @for (_ of skeletonCards; track $index) {
@@ -98,6 +107,7 @@
                 } @else {
                   @for (internacao of items; track internacao.id) {
                     <internacao-card
+                      role="listitem"
                       [internacao]="internacao"
                       (registrarAlta)="abrirRegistrarAlta($event)"
                       (excluirInternacao)="solicitarExclusao($event)"
@@ -121,7 +131,7 @@
               (onClick)="clearFilters()"
               label="Limpar filtros"
             >
-              <svg lucideFunnelX class="h-5 w-5" aria-hidden="true"></svg>
+              <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
             </p-button>
           </empty-list>
         </ng-template>
@@ -133,11 +143,17 @@
       title="Nenhuma internação encontrada"
       description="Não há internações cadastradas no momento."
     >
-      <p-button routerLink="criar" label="Registrar primeira internação">
-        <ng-template #icon>
-          <svg lucideCalendarPlus class="h-5 w-5" aria-hidden="true"></svg>
-        </ng-template>
-      </p-button>
+      <a pButton routerLink="criar">
+        <svg
+          pButtonIcon
+          lucideCalendarPlus
+          class="h-5 w-5"
+          aria-hidden="true"
+          focusable="false"
+        ></svg>
+
+        <span pButtonLabel>Registrar primeira internação</span></a
+      >
     </empty-list>
   }
 </div>

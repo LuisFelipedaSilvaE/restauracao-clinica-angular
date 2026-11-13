@@ -1,14 +1,17 @@
+import { RestoreDialogFocus } from '../../directives/restore-dialog-focus';
 import { Component, input, output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'confirm-dialog',
-  imports: [DialogModule, ButtonModule],
+  imports: [RestoreDialogFocus, DialogModule, ButtonModule],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',
 })
 export class ConfirmDialog {
+  private static nextId = 0;
+  protected readonly descriptionId = `confirmacao-descricao-${ConfirmDialog.nextId++}`;
   readonly title = input.required<string>();
   readonly message = input.required<string>();
   readonly confirmLabel = input<string>('Confirmar');

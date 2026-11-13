@@ -8,9 +8,9 @@
   ,
 >
   <div>
-    <p class="text-sm font-semibold">
+    <h3 class="text-sm font-semibold">
       {{ cargo().nome }}
-    </p>
+    </h3>
     <div class="flex gap-1">
       <p-tag [value]="tagConfig().label" class="text-xs!" [severity]="tagConfig().severity" />
       <p-tag [value]="totalColaboradores()" class="text-xs!" severity="info" />
@@ -24,9 +24,10 @@
         (onClick)="onEditCargo.emit(cargo())"
         pTooltip="Editar cargo"
         tooltipPosition="top"
+        [ariaLabel]="'Editar cargo' + ': ' + cargo().nome"
       >
         <ng-template #icon>
-          <svg lucidePencil class="h-4 w-4"></svg>
+          <svg lucidePencil class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </ng-template>
       </p-button>
     }
@@ -36,9 +37,15 @@
       (onClick)="toggleCargo()"
       [pTooltip]="buttonConfig().tooltipValue"
       tooltipPosition="top"
+      [ariaLabel]="buttonConfig().tooltipValue + ': ' + cargo().nome"
     >
       <ng-template #icon>
-        <svg [lucideIcon]="buttonConfig().icon" class="h-4 w-4"></svg>
+        <svg
+          [lucideIcon]="buttonConfig().icon"
+          class="h-4 w-4"
+          aria-hidden="true"
+          focusable="false"
+        ></svg>
       </ng-template>
     </p-button>
   </div>

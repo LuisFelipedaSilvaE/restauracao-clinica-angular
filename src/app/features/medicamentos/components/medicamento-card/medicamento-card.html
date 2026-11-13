@@ -6,9 +6,9 @@
       class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
       iconColor="#be222d"
     >
-      <svg lucidePill class="h-5 w-5"></svg>
+      <svg lucidePill class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
     </span>
-    <p class="truncate text-sm font-semibold text-foreground">{{ medicamento().nome }}</p>
+    <h2 class="truncate text-sm font-semibold text-foreground">{{ medicamento().nome }}</h2>
   </div>
   <p-tag
     [value]="statusMedicamento().tag.label"
@@ -26,6 +26,10 @@
 
     <div class="flex w-full min-w-0 items-center gap-2 -mt-1 sm:mt-0">
       <p-progressbar
+        [attr.aria-label]="'Estoque de ' + medicamento().nome"
+        [attr.aria-valuetext]="
+          medicamento().quantidadeEstoque + ' unidades; mínimo de ' + medicamento().quantidadeMinima
+        "
         class="h-2! min-w-0 flex-1"
         [value]="porcentagemEstoque()"
         showValue="false"
@@ -50,6 +54,9 @@
   <div
     class="col-start-3 row-span-3 flex justify-center items-center sm:col-start-4 sm:row-span-1 sm:justify-end"
   >
-    <action-menu [actions]="acoes" ariaLabel="Abrir ações do medicamento" />
+    <action-menu
+      [actions]="acoes"
+      [ariaLabel]="'Abrir ações do medicamento: ' + medicamento().nome"
+    />
   </div>
 </card>

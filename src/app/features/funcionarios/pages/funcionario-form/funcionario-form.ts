@@ -1,3 +1,5 @@
+import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,6 +39,8 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     class: 'flex flex-col gap-6',
   },
   imports: [
+    AccessiblePassword,
+    AutoFocusError,
     FormHeader,
     ButtonModule,
     InputTextModule,

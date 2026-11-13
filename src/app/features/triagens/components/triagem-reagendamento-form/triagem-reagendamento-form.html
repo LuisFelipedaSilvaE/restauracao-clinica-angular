@@ -1,18 +1,21 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [visible]="visible()"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   (visibleChange)="visibleChange.emit($event)"
   (onHide)="hidden.emit()"
   styleClass="w-md!"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">Reagendar triagem</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">Reagendar triagem</h2>
   </ng-template>
 
   <form
+    autoFocusError
+    #formFocus="autoFocusError"
     id="triagemReagendamentoForm"
     [formGroup]="reagendamentoForm"
     class="space-y-5"
@@ -24,8 +27,10 @@
         inputId="novaDataAgendada"
         required
         [errorMessage]="getErrorMessage('dataAgendada')"
+        hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
       >
         <p-datepicker
+          autocomplete="off"
           inputId="novaDataAgendada"
           formControlName="dataAgendada"
           placeholder="dd/mm/aaaa"
@@ -43,8 +48,10 @@
         inputId="novoHorarioAgendado"
         required
         [errorMessage]="getErrorMessage('horaAgendada')"
+        hint="Formato: 00:00. Use as setas para navegar no calendário ou horário."
       >
         <p-datepicker
+          autocomplete="off"
           inputId="novoHorarioAgendado"
           formControlName="horaAgendada"
           placeholder="hh:mm"
@@ -82,7 +89,7 @@
       label="Reagendar"
       [loading]="loading()"
       [disabled]="loading()"
-      (onClick)="reagendar()"
+      (onClick)="reagendar(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

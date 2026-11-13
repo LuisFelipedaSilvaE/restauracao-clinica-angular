@@ -9,15 +9,17 @@
     class="col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2 flex min-w-0 items-center gap-2.5"
   >
     <span
+      aria-hidden="true"
       class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
       [profileColor]="'#be222d'"
     >
       {{ triagem().nomePossivelAcolhido | siglaNome }}
     </span>
 
-    <p class="truncate text-sm sm:text-base font-semibold text-foreground">
+    <h2 class="truncate text-sm sm:text-base font-semibold text-foreground">
       {{ triagem().nomePossivelAcolhido }}
-    </p>
+      <span class="sr-only"> — {{ triagem().ativo ? 'Ativo' : 'Inativo' }}</span>
+    </h2>
   </div>
 
   <div
@@ -42,13 +44,19 @@
     <p-tag [value]="triagem().convenio.descricao" [customTag]="triagem().convenio.cor" />
   </div>
 
-  <p class="hidden xl:block xl:col-start-3 row-start-1 text-sm text-content-secondary text-center">
+  <time
+    class="hidden xl:block xl:col-start-3 row-start-1 text-sm text-content-secondary text-center"
+    [attr.datetime]="triagem().dataAgendada"
+  >
     {{ triagem().dataAgendada | date: 'dd/MM/yyyy' : '' : 'pt-BR' }}
-  </p>
+  </time>
 
   <div
     class="col-start-3 row-span-2 sm:row-span-1 sm:col-start-4 xl:col-start-5 justify-self-end self-center flex items-center"
   >
-    <action-menu [actions]="acoes()" ariaLabel="Abrir ações da triagem" />
+    <action-menu
+      [actions]="acoes()"
+      [ariaLabel]="'Abrir ações da triagem: ' + triagem().nomePossivelAcolhido"
+    />
   </div>
 </card>

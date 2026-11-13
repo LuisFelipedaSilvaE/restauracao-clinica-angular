@@ -1,3 +1,4 @@
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,6 +27,7 @@ import { MedicamentosService } from '../../services/medicamentos-service';
     class: 'flex flex-col gap-4',
   },
   imports: [
+    AutoFocusError,
     ButtonModule,
     InputTextModule,
     IconFieldModule,

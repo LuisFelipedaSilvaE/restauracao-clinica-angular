@@ -1,23 +1,20 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [(visible)]="visible"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   styleClass="w-lg! max-w-[calc(100vw-2rem)]!"
   (onShow)="inicializarFormulario()"
   (onHide)="limparFormulario()"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">Registrar pagamento</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">Registrar pagamento</h2>
   </ng-template>
 
   <div class="flex flex-col gap-4">
-    <context-summary
-      title="Contexto do pagamento"
-      [icon]="contextIcon"
-      color="#00a63e"
-    >
+    <context-summary title="Contexto do pagamento" [icon]="contextIcon" color="#00a63e">
       <div class="min-w-0">
         <p class="text-xs text-content-secondary">Acolhido</p>
         <p class="truncate font-medium">{{ internacao().acolhido.nome }}</p>
@@ -39,7 +36,13 @@
         Esta internação possui isenção de pagamento e não permite novos lançamentos.
       </p-message>
     } @else {
-      <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="registrarPagamento()">
+      <form
+        autoFocusError
+        #formFocus="autoFocusError"
+        [formGroup]="form"
+        class="flex flex-col gap-4"
+        (ngSubmit)="registrarPagamento()"
+      >
         <div class="grid gap-4 sm:grid-cols-2">
           <form-field
             label="Valor"
@@ -59,7 +62,6 @@
               [minFractionDigits]="2"
               [maxFractionDigits]="2"
               [invalid]="isInvalid('valor')"
-              [attr.aria-describedby]="isInvalid('valor') ? 'valorPagamento-erro' : null"
               placeholder="R$ 0,00"
               autocomplete="off"
               fluid
@@ -71,6 +73,7 @@
             inputId="dataPagamento"
             required
             [errorMessage]="getErrorMessage('dataPagamento')"
+            hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
           >
             <p-datepicker
               inputId="dataPagamento"
@@ -82,7 +85,6 @@
               [readonlyInput]="false"
               [maxDate]="hoje"
               [invalid]="isInvalid('dataPagamento')"
-              [attr.aria-describedby]="isInvalid('dataPagamento') ? 'dataPagamento-erro' : null"
               appendTo="body"
               autocomplete="off"
               fluid
@@ -106,7 +108,6 @@
               [minDate]="dataEntrada()"
               [maxDate]="hoje"
               [invalid]="isInvalid('competencia')"
-              [attr.aria-describedby]="isInvalid('competencia') ? 'competencia-erro' : null"
               appendTo="body"
               autocomplete="off"
               fluid
@@ -135,7 +136,6 @@
             rows="3"
             [maxLength]="tamanhoMaximoObservacao"
             [invalid]="isInvalid('observacao')"
-            [attr.aria-describedby]="isInvalid('observacao') ? 'observacaoPagamento-erro' : null"
             placeholder="Informe detalhes relevantes sobre o pagamento"
             autocomplete="off"
             fluid
@@ -161,7 +161,7 @@
         severity="success"
         [loading]="loading()"
         [disabled]="loading()"
-        (onClick)="registrarPagamento()"
+        (onClick)="registrarPagamento(); formFocus.focusInvalidControl()"
       />
     }
   </ng-template>

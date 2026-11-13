@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:a11y": "ng test --watch=false --ts-config tsconfig.a11y-spec.json --include=src/app/shared/components/form-field/form-field.spec.ts --include=src/app/layout/mobile-nav/mobile-nav.spec.ts --include=src/app/core/services/page-title-strategy.spec.ts"
   },
   "private": true,
   "packageManager": "npm@11.12.1",

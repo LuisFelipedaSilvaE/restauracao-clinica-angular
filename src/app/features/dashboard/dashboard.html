@@ -69,9 +69,10 @@
       </div>
 
       @if (carregando()) {
-        <p-skeleton class="min-h-64 flex-1 rounded-lg!" />
+        <p-skeleton class="min-h-64 flex-1 rounded-lg!" aria-hidden="true" />
       } @else if (possuiMovimentacoes()) {
-        <div class="h-64 min-w-0 flex-1 sm:h-72">
+        <figure class="h-64 min-w-0 flex-1 sm:h-72">
+          <figcaption class="sr-only">Entradas e saídas nos últimos seis meses</figcaption>
           <p-chart
             type="bar"
             [data]="dadosGrafico()"
@@ -79,8 +80,9 @@
             height="100%"
             class="block h-full w-full"
             ariaLabel="Gráfico de entradas e saídas dos últimos seis meses"
+            [pt]="{ canvas: { 'aria-describedby': 'resumo-movimentacoes' } }"
           />
-        </div>
+        </figure>
       } @else {
         <div
           class="flex min-h-64 flex-1 items-center justify-center rounded-lg border border-dashed border-border-muted bg-surface-subtle p-6 text-center"
@@ -93,6 +95,30 @@
           </div>
         </div>
       }
+      @if (!carregando()) {
+        <p id="resumo-movimentacoes" class="sr-only">{{ resumoGrafico() }}</p>
+        <table class="sr-only">
+          <caption>
+            Dados de entradas e saídas por mês
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Mês</th>
+              <th scope="col">Entradas</th>
+              <th scope="col">Saídas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (mes of mesesMovimentacao(); track mes.chave) {
+              <tr>
+                <th scope="row">{{ mes.chave }}</th>
+                <td>{{ mes.entradas }}</td>
+                <td>{{ mes.saidas }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </card>
 
@@ -104,35 +130,41 @@
       </div>
 
       <div class="flex flex-col gap-3">
-        <p-button routerLink="/acolhidos/criar" label="Novo acolhido" fluid>
-          <ng-template #icon>
-            <svg lucideUserRoundPlus class="h-5 w-5" aria-hidden="true"></svg>
-          </ng-template>
-        </p-button>
+        <a pButton routerLink="/acolhidos/criar" fluid>
+          <svg
+            pButtonIcon
+            lucideUserRoundPlus
+            class="h-5 w-5"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
 
-        <p-button
-          routerLink="/triagens/criar"
-          label="Nova triagem"
-          severity="secondary"
-          variant="outlined"
-          fluid
+          <span pButtonLabel>Novo acolhido</span></a
         >
-          <ng-template #icon>
-            <svg lucideCalendarPlus class="h-5 w-5" aria-hidden="true"></svg>
-          </ng-template>
-        </p-button>
 
-        <p-button
-          routerLink="/internacoes/criar"
-          label="Nova internação"
-          severity="secondary"
-          variant="outlined"
-          fluid
+        <a pButton routerLink="/triagens/criar" severity="secondary" [outlined]="true" fluid>
+          <svg
+            pButtonIcon
+            lucideCalendarPlus
+            class="h-5 w-5"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
+
+          <span pButtonLabel>Nova triagem</span></a
         >
-          <ng-template #icon>
-            <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
-          </ng-template>
-        </p-button>
+
+        <a pButton routerLink="/internacoes/criar" severity="secondary" [outlined]="true" fluid>
+          <svg
+            pButtonIcon
+            lucideBedSingle
+            class="h-5 w-5"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
+
+          <span pButtonLabel>Nova internação</span></a
+        >
       </div>
 
       <div class="mt-auto rounded-lg bg-surface-subtle p-3 text-xs text-content-secondary">
@@ -152,17 +184,23 @@
             Internações ativas em relação ao limite cadastrado
           </p>
         </div>
-        <p-button
+        <a
+          pButton
           routerLink="/convenios"
-          ariaLabel="Ver convênios"
+          aria-label="Ver convênios"
           severity="secondary"
-          variant="text"
+          [text]="true"
           [rounded]="true"
+          class="p-button-icon-only"
         >
-          <ng-template #icon>
-            <svg lucideArrowRight class="h-5 w-5" aria-hidden="true"></svg>
-          </ng-template>
-        </p-button>
+          <svg
+            pButtonIcon
+            lucideArrowRight
+            class="h-5 w-5"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
+        </a>
       </div>
 
       @if (carregando()) {
@@ -217,17 +255,23 @@
           <h2 class="font-semibold">Movimentações recentes</h2>
           <p class="text-xs text-content-secondary">Últimas entradas e saídas registradas</p>
         </div>
-        <p-button
+        <a
+          pButton
           routerLink="/internacoes"
-          ariaLabel="Ver internações"
+          aria-label="Ver internações"
           severity="secondary"
-          variant="text"
+          [text]="true"
           [rounded]="true"
+          class="p-button-icon-only"
         >
-          <ng-template #icon>
-            <svg lucideArrowRight class="h-5 w-5" aria-hidden="true"></svg>
-          </ng-template>
-        </p-button>
+          <svg
+            pButtonIcon
+            lucideArrowRight
+            class="h-5 w-5"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
+        </a>
       </div>
 
       @if (carregando()) {
@@ -251,7 +295,12 @@
               <span
                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-subtle text-content-secondary group-hover:text-content-primary"
               >
-                <svg [lucideIcon]="movimento.icon" class="h-5 w-5" aria-hidden="true"></svg>
+                <svg
+                  [lucideIcon]="movimento.icon"
+                  class="h-5 w-5"
+                  aria-hidden="true"
+                  focusable="false"
+                ></svg>
               </span>
               <span class="min-w-0 flex-1">
                 <span class="block truncate font-medium">

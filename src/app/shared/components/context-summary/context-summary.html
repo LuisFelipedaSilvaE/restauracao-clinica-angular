@@ -7,9 +7,13 @@
       class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
       [iconColor]="color()"
     >
-      <svg [lucideIcon]="icon()" class="h-4 w-4" aria-hidden="true"></svg>
+      <svg [lucideIcon]="icon()" class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
     </span>
-    <h3 class="text-sm font-semibold text-content-primary">{{ title() }}</h3>
+    @if (headingLevel() === 2) {
+      <h2 class="text-sm font-semibold text-content-primary">{{ title() }}</h2>
+    } @else {
+      <h3 class="text-sm font-semibold text-content-primary">{{ title() }}</h3>
+    }
   </div>
 
   <div

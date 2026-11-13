@@ -1,18 +1,26 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [visible]="visible()"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   (visibleChange)="visibleChange.emit($event)"
   (onHide)="hidden.emit($event)"
   styleClass="w-md!"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">{{ currentState().title }}</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">{{ currentState().title }}</h2>
   </ng-template>
 
-  <form id="cargoForm" [formGroup]="cargoForm" class="space-y-5" (ngSubmit)="salvarAlteracoes()">
+  <form
+    autoFocusError
+    #formFocus="autoFocusError"
+    id="cargoForm"
+    [formGroup]="cargoForm"
+    class="space-y-5"
+    (ngSubmit)="salvarAlteracoes()"
+  >
     <form-field
       label="Nome do cargo"
       inputId="nome"
@@ -26,7 +34,6 @@
         formControlName="nome"
         placeholder="Ex.: Maria da Silva"
         [invalid]="isInvalid('nome')"
-        [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
         fluid
         autocomplete="off"
       />
@@ -49,7 +56,7 @@
       severity="primary"
       [loading]="loading()"
       [disabled]="loading()"
-      (click)="salvarAlteracoes()"
+      (click)="salvarAlteracoes(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

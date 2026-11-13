@@ -13,6 +13,10 @@
 
   <ng-content />
 
+  @if (hint()) {
+    <span class="sr-only" [id]="inputId() + '-dica'">{{ hint() }}</span>
+  }
+
   @if (errorMessage(); as message) {
     <form-error [message]="message" [errorId]="resolvedErrorId()" />
   }

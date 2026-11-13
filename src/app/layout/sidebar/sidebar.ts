@@ -28,14 +28,17 @@ export class Sidebar {
     { initialValue: this.router.url },
   );
   protected readonly routes = signal(navigationRoutesForRole(this.authService.getUserRole()));
-  protected readonly navButtonPt = {
-    root: {
-      class: 'justify-start!',
-    },
-    label: {
-      class: 'text-md',
-    },
-  };
+  protected navButtonPt(active: boolean) {
+    return {
+      root: {
+        class: 'justify-start!',
+        'aria-current': active ? 'page' : null,
+      },
+      label: {
+        class: 'text-md',
+      },
+    };
+  }
   protected readonly logoutBtnPt = {
     root: {
       class: 'justify-start!',

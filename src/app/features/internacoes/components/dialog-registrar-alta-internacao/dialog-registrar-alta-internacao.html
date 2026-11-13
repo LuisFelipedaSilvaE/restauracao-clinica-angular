@@ -1,17 +1,24 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [(visible)]="visible"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   styleClass="w-sm!"
   (onHide)="limparFormulario()"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">Registrar alta</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">Registrar alta</h2>
   </ng-template>
 
-  <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="registrarAlta()">
+  <form
+    autoFocusError
+    #formFocus="autoFocusError"
+    [formGroup]="form"
+    class="flex flex-col gap-4"
+    (ngSubmit)="registrarAlta()"
+  >
     <form-field
       label="Tipo de alta"
       inputId="tipoAlta"
@@ -38,6 +45,7 @@
       inputId="dataSaida"
       [errorMessage]="getErrorMessage('dataSaida')"
       required
+      hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
     >
       <p-datepicker
         inputId="dataSaida"
@@ -72,7 +80,7 @@
       severity="success"
       [loading]="loading()"
       [disabled]="loading()"
-      (onClick)="registrarAlta()"
+      (onClick)="registrarAlta(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

@@ -1,3 +1,6 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading() ? medicamentos().length + ' resultados encontrados' : '' }}
+</p>
 <p-dataview
   [value]="loading() ? skeletonCards : medicamentos()"
   [paginator]="!loading()"
@@ -17,7 +20,7 @@
         <span class="justify-self-end text-center">Ações</span>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div role="list" aria-label="Medicamentos" class="flex flex-col gap-2">
         @if (loading()) {
           <span class="sr-only" role="status">Carregando medicamentos...</span>
           @for (_ of skeletonCards; track $index) {
@@ -64,6 +67,7 @@
         } @else {
           @for (medicamento of items; track $index) {
             <medicamento-card
+              role="listitem"
               [medicamento]="medicamento"
               (onEntrada)="aumentarQuantidadeEstoque($event)"
               (onSaida)="reduzirQuantidadeEstoque($event)"

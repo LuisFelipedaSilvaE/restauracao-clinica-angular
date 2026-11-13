@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,6 +21,8 @@ const TAMANHO_MAXIMO_MOTIVO = 500;
     class: 'contents',
   },
   imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
     ButtonModule,
     CommonModule,
     ContextSummary,

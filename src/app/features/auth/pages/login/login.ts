@@ -1,3 +1,5 @@
+import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
@@ -34,6 +36,8 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
   selector: 'app-login',
   providers: [],
   imports: [
+    AccessiblePassword,
+    AutoFocusError,
     ReactiveFormsModule,
     InputTextModule,
     PasswordModule,

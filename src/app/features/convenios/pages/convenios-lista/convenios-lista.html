@@ -3,11 +3,11 @@
     title="Convênios"
     description="Gerencie os convênios de acolhimento e a disponibilidade de vagas de cada um."
   >
-    <p-button routerLink="criar" label="Novo convênio" class="text-nowrap">
-      <ng-template #icon>
-        <svg lucidePlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar" class="text-nowrap">
+      <svg pButtonIcon lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+      <span pButtonLabel>Novo convênio</span></a
+    >
   </page-header>
   <div class="flex justify-center items-center flex-wrap gap-2.5">
     @for (item of infoConvenios(); track $index) {
@@ -15,10 +15,16 @@
     }
   </div>
 </div>
-<div class="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(384px,1fr))]">
+<div
+  [attr.role]="!loading().list && convenios().length ? 'list' : null"
+  aria-label="Convênios"
+  [attr.aria-busy]="loading().list"
+  class="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(384px,1fr))]"
+>
   @if (loading().list) {
+    <span class="sr-only" role="status">Carregando convênios...</span>
     @for (_ of skeletonCards; track $index) {
-      <div class="rounded-xl border border-border-default bg-surface-card p-4">
+      <div aria-hidden="true" class="rounded-xl border border-border-default bg-surface-card p-4">
         <div class="mb-3 flex items-center justify-between gap-4">
           <div class="flex items-center gap-2.5">
             <p-skeleton class="h-10! w-10! rounded-lg!" />
@@ -58,6 +64,7 @@
   } @else {
     @for (item of convenios(); track $index) {
       <convenio-card
+        role="listitem"
         (statusConvenioChange)="toggleConvenio($event)"
         (excluirConvenio)="solicitarExclusao($event)"
         [convenio]="item"
@@ -68,11 +75,11 @@
         title="Nenhum convênio encontrado"
         description="Não há convênios de acolhimento cadastrados no momento."
       >
-        <p-button routerLink="criar" label="Cadastrar primeiro convênio">
-          <ng-template #icon>
-            <svg lucidePlus class="h-5 w-5"></svg>
-          </ng-template>
-        </p-button>
+        <a pButton routerLink="criar">
+          <svg pButtonIcon lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+          <span pButtonLabel>Cadastrar primeiro convênio</span></a
+        >
       </empty-list>
     }
   }

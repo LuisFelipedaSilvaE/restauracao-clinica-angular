@@ -1,16 +1,17 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [(visible)]="visible"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   styleClass="w-sm!"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">Alterar senha</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">Alterar senha</h2>
   </ng-template>
 
-  <form [formGroup]="form" class="flex flex-col gap-4">
+  <form autoFocusError #formFocus="autoFocusError" [formGroup]="form" class="flex flex-col gap-4">
     <form-field
       label="Nova senha"
       inputId="novaSenha"
@@ -18,6 +19,7 @@
       required
     >
       <p-password
+        accessiblePassword
         #passwordInput1
         inputId="novaSenha"
         name="novaSenha"
@@ -29,7 +31,6 @@
         autocomplete="off"
         placeholder="••••••••••"
         [invalid]="isInvalid('novaSenha')"
-        [attr.aria-describedby]="isInvalid('novaSenha') ? 'password-erro' : null"
         [pt]="passwordInputPt"
         fluid
       />
@@ -41,6 +42,7 @@
       required
     >
       <p-password
+        accessiblePassword
         #passwordInput
         inputId="confirmarNovaSenha"
         name="confirmarNovaSenha"
@@ -52,7 +54,6 @@
         autocomplete="off"
         placeholder="••••••••••"
         [invalid]="isInvalid('confirmarNovaSenha')"
-        [attr.aria-describedby]="isInvalid('confirmarNovaSenha') ? 'password-erro' : null"
         [pt]="passwordInputPt"
         fluid
       />
@@ -72,7 +73,7 @@
       label="Confirmar"
       [loading]="loading()"
       [disabled]="loading()"
-      (click)="alterarSenha()"
+      (click)="alterarSenha(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

@@ -1,17 +1,24 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [(visible)]="visible"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   styleClass="w-lg! max-w-[calc(100vw-2rem)]!"
   (onHide)="limparFormulario()"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">Estornar pagamento</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">Estornar pagamento</h2>
   </ng-template>
 
-  <form [formGroup]="form" class="flex flex-col gap-4" (ngSubmit)="estornar()">
+  <form
+    autoFocusError
+    #formFocus="autoFocusError"
+    [formGroup]="form"
+    class="flex flex-col gap-4"
+    (ngSubmit)="estornar()"
+  >
     <context-summary title="Pagamento selecionado" [icon]="contextIcon" color="#be222d">
       <div class="min-w-0">
         <p class="text-xs text-content-secondary">Pagamento</p>
@@ -41,7 +48,6 @@
         rows="4"
         [maxLength]="tamanhoMaximoMotivo"
         [invalid]="isInvalid()"
-        [attr.aria-describedby]="isInvalid() ? 'motivoEstorno-erro' : null"
         placeholder="Explique por que este pagamento está sendo estornado"
         autocomplete="off"
         fluid
@@ -64,7 +70,7 @@
       severity="danger"
       [loading]="loading()"
       [disabled]="loading()"
-      (onClick)="estornar()"
+      (onClick)="estornar(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

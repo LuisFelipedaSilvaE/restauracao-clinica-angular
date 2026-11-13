@@ -1,17 +1,20 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
+  role="alertdialog"
+  [pt]="{ root: { 'aria-describedby': descriptionId } }"
   [visible]="visible()"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!loading()"
   [dismissableMask]="!loading()"
   (visibleChange)="visibleChange.emit($event)"
   (onHide)="hidden.emit()"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">{{ title() }}</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">{{ title() }}</h2>
   </ng-template>
 
-  <p class="text-sm text-content-secondary">
+  <p [id]="descriptionId" class="text-sm text-content-secondary">
     {{ message() }}
   </p>
 
@@ -19,6 +22,7 @@
     <p-button
       type="button"
       label="Cancelar"
+      [autofocus]="true"
       severity="secondary"
       [disabled]="loading()"
       (click)="visibleChange.emit(false)"

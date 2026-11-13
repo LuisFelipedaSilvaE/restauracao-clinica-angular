@@ -15,4 +15,5 @@ export class ContextSummary {
   readonly title = input.required<string>();
   readonly icon = input.required<LucideIcon>();
   readonly color = input('#4a5565');
+  readonly headingLevel = input<2 | 3>(3);
 }

@@ -3,26 +3,30 @@
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
     [iconColor]="internacao().convenio.cor"
   >
-    <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+    <svg lucideBedSingle class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
   </span>
 
   <div class="min-w-0">
-    <p class="truncate font-semibold text-foreground">
+    <h2 class="truncate font-semibold text-foreground">
       {{ internacao().acolhido.nome }}
-    </p>
-    <p class="truncate text-xs text-content-secondary">
-      CPF {{ internacao().acolhido.cpf | cpf }}
-    </p>
+    </h2>
+    <p class="truncate text-xs text-content-secondary">CPF {{ internacao().acolhido.cpf | cpf }}</p>
   </div>
 </div>
 
-<p class="hidden text-center text-sm text-content-secondary md:block">
+<time
+  class="hidden text-center text-sm text-content-secondary md:block"
+  [attr.datetime]="dataEntrada()"
+>
   {{ dataEntrada() | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
-</p>
+</time>
 
-<p class="hidden text-center text-sm text-content-secondary md:block">
+<time
+  class="hidden text-center text-sm text-content-secondary md:block"
+  [attr.datetime]="dataSaidaExibida()"
+>
   {{ dataSaidaExibida() | date: 'dd MMM yyyy' : '' : 'pt-BR' }}
-</p>
+</time>
 
 <p class="hidden text-center text-sm text-content-secondary md:block">
   {{ internacao().tempoInternado }}
@@ -37,5 +41,8 @@
 <div
   class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-span-1 sm:justify-self-end"
 >
-  <action-menu [actions]="acoes()" ariaLabel="Abrir ações da internação" />
+  <action-menu
+    [actions]="acoes()"
+    [ariaLabel]="'Abrir ações da internação: ' + internacao().acolhido.nome"
+  />
 </div>

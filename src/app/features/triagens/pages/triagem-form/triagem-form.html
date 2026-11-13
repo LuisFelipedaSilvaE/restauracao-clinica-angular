@@ -16,7 +16,7 @@
   </card>
 } @else {
   <card>
-    <form class="space-y-5" [formGroup]="triagemForm" (ngSubmit)="onSubmit()">
+    <form autoFocusError class="space-y-5" [formGroup]="triagemForm" (ngSubmit)="onSubmit()">
       <form-field
         label="Nome do candidato"
         inputId="nomePossivelAcolhido"
@@ -39,6 +39,7 @@
         inputId="telefone"
         required
         [errorMessage]="getErrorMessage('telefone')"
+        hint="Formato: (00) 00000-0000."
       >
         <input
           pInputText
@@ -58,8 +59,10 @@
           inputId="dataAgendada"
           required
           [errorMessage]="getErrorMessage('dataAgendada')"
+          hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
         >
           <p-datepicker
+            autocomplete="off"
             inputId="dataAgendada"
             name="dataAgendada"
             formControlName="dataAgendada"
@@ -76,8 +79,10 @@
           inputId="horaAgendada"
           required
           [errorMessage]="getErrorMessage('horaAgendada')"
+          hint="Formato: 00:00. Use as setas para navegar no calendário ou horário."
         >
           <p-datepicker
+            autocomplete="off"
             inputId="horaAgendada"
             name="horaAgendada"
             formControlName="horaAgendada"

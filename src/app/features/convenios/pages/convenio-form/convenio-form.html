@@ -1,7 +1,8 @@
 <form-header [data]="headerInfo()" btnLabel="Voltar para convênios" btnUrl="/convenios" />
 
 @if (carregando()) {
-  <card class="flex flex-col gap-5 p-6!">
+  <span class="sr-only" role="status">Carregando dados do convênio...</span>
+  <card class="flex flex-col gap-5 p-6!" aria-hidden="true">
     @for (campo of skeletonCampos; track $index) {
       <div class="flex flex-col gap-2">
         <p-skeleton class="h-4! w-40! rounded-md!" />
@@ -10,7 +11,7 @@
     }
   </card>
 } @else {
-  <form [formGroup]="convenioForm" (ngSubmit)="onSubmit()">
+  <form autoFocusError [formGroup]="convenioForm" (ngSubmit)="onSubmit()">
     <card class="flex flex-col gap-6 p-6!">
       <div class="flex flex-col gap-5">
         <form-field
@@ -26,13 +27,17 @@
             id="descricao"
             name="descricao"
             [invalid]="isInvalid('descricao')"
-            [attr.aria-describedby]="isInvalid('descricao') ? 'descricao-erro' : null"
             placeholder="Ex.: Particular, Convênio, Bolsa social..."
             autocomplete="off"
           />
         </form-field>
 
-        <form-field label="CNPJ" inputId="cnpj" [errorMessage]="getErrorMessage('cnpj')">
+        <form-field
+          label="CNPJ"
+          inputId="cnpj"
+          [errorMessage]="getErrorMessage('cnpj')"
+          hint="Formato: AA.AAA.AAA/AAAA-00. As posições A aceitam letras ou números."
+        >
           <input
             pInputText
             fluid
@@ -42,7 +47,6 @@
             name="cnpj"
             class="uppercase"
             [invalid]="isInvalid('cnpj')"
-            [attr.aria-describedby]="isInvalid('cnpj') ? 'cnpj-erro' : null"
             placeholder="AA.AAA.AAA/AAAA-00"
             autocomplete="off"
           />
@@ -77,6 +81,7 @@
           [errorMessage]="getErrorMessage('pagamento')"
         >
           <p-selectbutton
+            id="pagamento"
             [options]="pagamentoOptions"
             formControlName="pagamento"
             optionLabel="label"
@@ -93,14 +98,19 @@
           required
           [errorMessage]="getErrorMessage('cor')"
         >
-          <p-colorpicker formControlName="cor" inputId="cor" appendTo="body" />
+          <p-colorpicker
+            [pt]="{ preview: { autocomplete: 'off' } }"
+            formControlName="cor"
+            inputId="cor"
+            appendTo="body"
+          />
         </form-field>
         <div class="flex flex-col gap-2">
           <p class="text-xs font-semibold text-content-secondary">Pré-visualização</p>
           @if (convenioForm.valid) {
             <convenio-card [convenio]="convenioPreview()!" [showActions]="false" />
           } @else {
-            <div class="rounded-xl border border-border-default bg-surface-card p-4">
+            <div class="rounded-xl border border-border-default bg-surface-card p-4" aria-hidden="true">
               <div class="mb-3 flex items-center justify-between gap-4">
                 <div class="flex items-center gap-2.5">
                   <p-skeleton class="h-10! w-10! rounded-lg!" />

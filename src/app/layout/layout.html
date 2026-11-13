@@ -1,9 +1,16 @@
+<a
+  href="#conteudo-principal"
+  class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-surface-card focus:p-3 focus:text-content-primary"
+  >Ir para o conteúdo principal</a
+>
 <div class="flex">
   <app-sidebar></app-sidebar>
-  <main class="min-w-0 grow py-4 pt-0 px-4 lg:pl-0">
+  <div class="min-w-0 grow py-4 pt-0 px-4 lg:pl-0">
     <div class="mx-auto flex w-full min-w-0 max-w-5xl flex-col gap-6">
       <app-header></app-header>
-      <router-outlet></router-outlet>
+      <main id="conteudo-principal" tabindex="-1" class="flex min-w-0 flex-col gap-6">
+        <router-outlet></router-outlet>
+      </main>
     </div>
-  </main>
+  </div>
 </div>

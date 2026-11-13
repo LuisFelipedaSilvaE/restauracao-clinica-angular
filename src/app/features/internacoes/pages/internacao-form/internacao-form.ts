@@ -1,3 +1,4 @@
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import {
@@ -66,6 +67,7 @@ const datasInternacaoCoerentes: ValidatorFn = (form: AbstractControl): Validatio
     class: 'flex min-w-0 flex-col gap-6',
   },
   imports: [
+    AutoFocusError,
     CommonModule,
     ReactiveFormsModule,
     ButtonModule,

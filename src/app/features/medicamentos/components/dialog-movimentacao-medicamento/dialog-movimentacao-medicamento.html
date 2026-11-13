@@ -1,13 +1,14 @@
 <p-dialog
+  [restoreDialogFocus]="visible()"
   [modal]="true"
   [(visible)]="visible"
-  [focusOnShow]="false"
+  [focusOnShow]="true"
   [closable]="!medicamentosService.loading().mutation"
   [dismissableMask]="!medicamentosService.loading().mutation"
   styleClass="w-md!"
 >
-  <ng-template #header>
-    <h2 class="text-lg font-semibold">{{ config().title }}</h2>
+  <ng-template #header let-titleId="ariaLabelledBy">
+    <h2 [id]="titleId" class="text-lg font-semibold">{{ config().title }}</h2>
   </ng-template>
 
   @if (type()) {
@@ -18,7 +19,12 @@
             class="flex justify-center items-center w-10 h-10 p-2 rounded-md"
             [class]="type() === 'entrada' ? 'bg-green-200' : 'bg-yellow-200'"
           >
-            <svg [lucideIcon]="config().msgIcon" class="h-5 w-5"></svg>
+            <svg
+              [lucideIcon]="config().msgIcon"
+              class="h-5 w-5"
+              aria-hidden="true"
+              focusable="false"
+            ></svg>
           </span>
           <div>
             <p class="font-bold">
@@ -32,7 +38,12 @@
         </div>
       </p-message>
 
-      <form [formGroup]="form" class="flex flex-col gap-4">
+      <form
+        autoFocusError
+        #formFocus="autoFocusError"
+        [formGroup]="form"
+        class="flex flex-col gap-4"
+      >
         <form-field
           label="Quantidade"
           inputId="quantidade"
@@ -40,6 +51,7 @@
           required
         >
           <p-inputNumber
+            autocomplete="off"
             inputId="quantidade"
             formControlName="quantidade"
             [invalid]="isInvalid('quantidade')"
@@ -70,7 +82,7 @@
       [severity]="config().severity"
       [loading]="medicamentosService.loading().mutation"
       [disabled]="medicamentosService.loading().mutation"
-      (onClick)="atualizarQuantidadeEstoque()"
+      (onClick)="atualizarQuantidadeEstoque(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

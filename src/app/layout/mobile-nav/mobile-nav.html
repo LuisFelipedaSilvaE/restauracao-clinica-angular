@@ -1,34 +1,57 @@
 @if (isOpen()) {
-  <div class="fixed inset-0 mt-18 bg-surface-app lg:hidden" (click)="onBackdropClick()"></div>
+  <div
+    aria-hidden="true"
+    class="fixed inset-0 mt-18 bg-surface-app lg:hidden"
+    (click)="onBackdropClick()"
+  ></div>
 
   <div
+    id="menu-movel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu principal"
+    pFocusTrap
+    (keydown.escape)="closeMenu.emit(); $event.stopPropagation()"
     class="mobile-nav-menu relative z-40 mt-2 flex flex-col h-[calc(100dvh-118px)] overflow-y-auto rounded-lg border-2 border-border-default bg-surface-card/95 p-2 backdrop-blur-md shadow-2xl lg:hidden"
   >
-    <div class="flex flex-col grow gap-1 p-1">
-      <h3 class="ml-3 my-1.5 text-xs font-semibold uppercase tracking-wider text-content-secondary">
+    <nav aria-label="Navegação principal" class="flex flex-col grow gap-1 p-1">
+      <p class="ml-3 my-1.5 text-xs font-semibold uppercase tracking-wider text-content-secondary">
         Navegação
-      </h3>
-      @for (route of routes(); track $index) {
-        <p-button
-          [routerLink]="[route.route]"
-          routerLinkActive
-          #rla="routerLinkActive"
-          [severity]="isRouteActive(route.route, rla.isActive) ? null : 'secondary'"
-          [text]="!isRouteActive(route.route, rla.isActive)"
-          [label]="route.label"
-          [pt]="navButtonPt"
-          fluid
-          (click)="onNavigate()"
-        >
-          <ng-template #icon>
-            <svg [lucideIcon]="route.icon" class="h-4.5 w-4.5"></svg>
-          </ng-template>
-        </p-button>
-      }
-    </div>
+      </p>
+      <ul class="flex shrink-0 flex-col gap-1" role="list">
+        @for (route of routes(); track $index) {
+          <li class="flex">
+            <a
+              pButton
+              [routerLink]="[route.route]"
+              [attr.aria-current]="isRouteActive(route.route, rla.isActive) ? 'page' : null"
+              routerLinkActive
+              #rla="routerLinkActive"
+              [severity]="isRouteActive(route.route, rla.isActive) ? null : 'secondary'"
+              [text]="!isRouteActive(route.route, rla.isActive)"
+              [pButtonPT]="navButtonPt"
+              fluid
+              (click)="onNavigate()"
+              class="justify-start!"
+            >
+              <svg
+                pButtonIcon
+                [lucideIcon]="route.icon"
+                class="h-4.5 w-4.5"
+                aria-hidden="true"
+                focusable="false"
+              ></svg>
+
+              <span pButtonLabel class="text-md">{{ route.label }}</span></a
+            >
+          </li>
+        }
+      </ul>
+    </nav>
     <div class="pt-4 flex items-center justify-between border-t-2 border-border-default p-2">
       <div class="flex items-center gap-3 rounded-md px-2 py-1">
         <span
+          aria-hidden="true"
           class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
           [profileColor]="'#be222d'"
         >
@@ -41,9 +64,14 @@
           <p class="text-xs text-content-secondary">{{ userRole }}</p>
         </div>
       </div>
-      <p-button [text]="true" severity="secondary" (click)="onLogoutClick()">
+      <p-button
+        ariaLabel="Sair do sistema"
+        [text]="true"
+        severity="secondary"
+        (click)="onLogoutClick()"
+      >
         <ng-template #icon>
-          <svg lucideLogOut class="h-4.5 w-4.5"></svg>
+          <svg lucideLogOut class="h-4.5 w-4.5" aria-hidden="true" focusable="false"></svg>
         </ng-template>
       </p-button>
     </div>

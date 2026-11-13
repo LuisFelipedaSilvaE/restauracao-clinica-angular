@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +13,15 @@ import { CargoRequest } from '../../interfaces/cargo-request';
 
 @Component({
   selector: 'cargo-form',
-  imports: [DialogModule, ButtonModule, InputTextModule, ReactiveFormsModule, FormField],
+  imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    FormField,
+  ],
   templateUrl: './cargo-form.html',
   styleUrl: './cargo-form.css',
 })

@@ -1,8 +1,11 @@
 <div class="flex min-w-0 flex-col gap-4">
   <div class="flex flex-wrap items-center gap-2">
     <p-iconfield class="min-w-64 basis-full grow md:basis-[60%]">
-      <p-inputicon><svg lucideSearch class="h-4 w-4" aria-hidden="true"></svg></p-inputicon>
+      <p-inputicon
+        ><svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg
+      ></p-inputicon>
       <input
+        aria-label="Buscar responsáveis por nome, CPF, e-mail, telefone ou cidade"
         pInputText
         [ngModel]="busca()"
         (ngModelChange)="busca.set($event)"
@@ -13,6 +16,7 @@
     </p-iconfield>
 
     <p-select
+      ariaLabel="Filtrar responsáveis por situação"
       class="min-w-44 grow md:max-w-52"
       [options]="situacoes"
       [ngModel]="situacaoSelecionada()"
@@ -30,7 +34,9 @@
       styleClass="w-full whitespace-nowrap sm:w-auto"
       (onClick)="novoResponsavel()"
     >
-      <ng-template #icon><svg lucidePlus class="h-5 w-5" aria-hidden="true"></svg></ng-template>
+      <ng-template #icon
+        ><svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg
+      ></ng-template>
     </p-button>
   </div>
 
@@ -69,7 +75,9 @@
         variant="outlined"
         (onClick)="novoResponsavel()"
       >
-        <ng-template #icon><svg lucidePlus class="h-5 w-5" aria-hidden="true"></svg></ng-template>
+        <ng-template #icon
+          ><svg lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg
+        ></ng-template>
       </p-button>
     </empty-list>
   } @else {
@@ -90,24 +98,26 @@
             <span class="text-center">Ações</span>
           </div>
 
-          <div class="flex flex-col gap-2">
+          <div role="list" aria-label="Responsáveis" class="flex flex-col gap-2">
             @for (responsavel of items; track responsavel.id) {
               <article
+                role="listitem"
                 class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-3 rounded-xl border border-border-default bg-surface-card p-3 transition-colors md:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(130px,.8fr)_100px_36px]"
                 [class.border-dashed]="!responsavel.ativo"
                 [class.bg-surface-subtle]="!responsavel.ativo"
               >
                 <div class="flex min-w-0 items-center gap-3">
                   <span
+                    aria-hidden="true"
                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
                     [profileColor]="'#be222d'"
                   >
                     {{ responsavel.nome | siglaNome }}
                   </span>
                   <div class="min-w-0">
-                    <p class="truncate font-semibold text-content-primary">
+                    <h3 class="truncate font-semibold text-content-primary">
                       {{ responsavel.nome }}
-                    </p>
+                    </h3>
                     <p class="truncate text-xs text-content-secondary">
                       CPF {{ responsavel.cpf | cpf }}
                     </p>
@@ -153,7 +163,7 @@
             (onClick)="clearFilters()"
           >
             <ng-template #icon
-              ><svg lucideFunnelX class="h-5 w-5" aria-hidden="true"></svg
+              ><svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg
             ></ng-template>
           </p-button>
         </empty-list>

@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -28,6 +30,8 @@ const TAMANHO_MAXIMO_OBSERVACAO = 500;
     class: 'contents',
   },
   imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
     ButtonModule,
     CommonModule,
     ContextSummary,

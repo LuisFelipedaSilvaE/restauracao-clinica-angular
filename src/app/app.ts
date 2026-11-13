@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { PageTitleStrategy } from './core/services/page-title-strategy';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 
@@ -9,5 +10,6 @@ import { ToastModule } from 'primeng/toast';
   styleUrl: './app.css',
 })
 export class App {
+  protected readonly pageTitle = inject(PageTitleStrategy);
   protected readonly title = signal('clinica-restauracao-angular');
 }

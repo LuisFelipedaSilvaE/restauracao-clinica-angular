@@ -48,7 +48,7 @@
                 class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                 [iconColor]="internacao.convenio.cor"
               >
-                <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+                <svg lucideBedSingle class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
               </span>
 
               <div class="min-w-0">
@@ -68,16 +68,16 @@
               </div>
             </div>
 
-            <p-button
-              label="Ver internação"
+            <a
+              pButton
               severity="secondary"
-              variant="outlined"
+              [outlined]="true"
               [routerLink]="['/internacoes', internacao.id]"
             >
-              <ng-template #icon>
-                <svg lucideEye class="h-4 w-4" aria-hidden="true"></svg>
-              </ng-template>
-            </p-button>
+              <svg pButtonIcon lucideEye class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+
+              <span pButtonLabel>Ver internação</span></a
+            >
           </div>
 
           <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -86,10 +86,12 @@
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
-                <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
+                <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
               </span>
               <detail-info-field label="Data de entrada">
-                {{ internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+                <time [attr.datetime]="internacao.dataEntrada | date: 'yyyy-MM-dd' : 'UTC'">{{
+                  internacao.dataEntrada | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
+                }}</time>
               </detail-info-field>
             </div>
 
@@ -98,12 +100,12 @@
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
-                <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true"></svg>
+                <svg lucideCalendarCheck class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
               </span>
               <detail-info-field label="Previsão de alta">
-                {{
+                <time [attr.datetime]="internacao.dataSaidaPrevista | date: 'yyyy-MM-dd' : 'UTC'">{{
                   internacao.dataSaidaPrevista | date: "dd 'de' MMMM 'de' yyyy" : 'UTC' : 'pt-BR'
-                }}
+                }}</time>
               </detail-info-field>
             </div>
 
@@ -112,7 +114,7 @@
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
-                <svg lucideClock3 class="h-4 w-4" aria-hidden="true"></svg>
+                <svg lucideClock3 class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
               </span>
               <detail-info-field label="Tempo internado">
                 {{ tempoInternado(internacao) }}
@@ -124,7 +126,7 @@
                 class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                 [iconColor]="'#4a5565'"
               >
-                <svg lucideHandCoins class="h-4 w-4" aria-hidden="true"></svg>
+                <svg lucideHandCoins class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
               </span>
               <detail-info-field label="Valor da mensalidade">
                 {{ internacao.valorMensalidade | currency: 'BRL' : 'symbol' : '1.2-2' }}
@@ -138,7 +140,7 @@
             <span
               class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-subtle text-content-secondary"
             >
-              <svg lucideBedSingle class="h-5 w-5" aria-hidden="true"></svg>
+              <svg lucideBedSingle class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
             </span>
             <div>
               <p class="font-semibold text-content-primary">Nenhuma internação atual</p>
@@ -149,15 +151,21 @@
           </div>
 
           @if (acolhido.ativo) {
-            <p-button
-              label="Internar"
+            <a
+              pButton
               [routerLink]="['/internacoes/criar']"
               [queryParams]="{ acolhidoId: acolhido.id }"
             >
-              <ng-template #icon>
-                <svg lucideBedSingle class="h-4 w-4" aria-hidden="true"></svg>
-              </ng-template>
-            </p-button>
+              <svg
+                pButtonIcon
+                lucideBedSingle
+                class="h-4 w-4"
+                aria-hidden="true"
+                focusable="false"
+              ></svg>
+
+              <span pButtonLabel>Internar</span></a
+            >
           }
         </div>
       }
@@ -169,9 +177,10 @@
       [icon]="historicoIcon"
     >
       @if (historico().length > 0) {
-        <div class="flex min-w-0 flex-col gap-2">
+        <div role="list" aria-label="Histórico de internações" class="flex min-w-0 flex-col gap-2">
           @for (internacao of historico(); track internacao.id) {
             <article
+              role="listitem"
               class="grid min-w-0 gap-4 rounded-xl border border-border-default p-4 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_auto] lg:items-center"
             >
               <div class="flex min-w-0 items-center gap-3">
@@ -179,7 +188,12 @@
                   class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
                   [iconColor]="internacao.convenio.cor"
                 >
-                  <svg lucideBedSingle class="h-4.5 w-4.5" aria-hidden="true"></svg>
+                  <svg
+                    lucideBedSingle
+                    class="h-4.5 w-4.5"
+                    aria-hidden="true"
+                    focusable="false"
+                  ></svg>
                 </span>
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-2">
@@ -202,10 +216,17 @@
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
-                  <svg lucideCalendarDays class="h-4 w-4" aria-hidden="true"></svg>
+                  <svg
+                    lucideCalendarDays
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                    focusable="false"
+                  ></svg>
                 </span>
                 <detail-info-field label="Data de entrada">
-                  {{ internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC' }}
+                  <time [attr.datetime]="internacao.dataEntrada | date: 'yyyy-MM-dd' : 'UTC'">{{
+                    internacao.dataEntrada | date: 'dd/MM/yyyy' : 'UTC'
+                  }}</time>
                 </detail-info-field>
               </div>
 
@@ -214,14 +235,16 @@
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
-                  <svg lucideLogOut class="h-4 w-4" aria-hidden="true"></svg>
+                  <svg lucideLogOut class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
                 </span>
                 <detail-info-field label="Data de saída">
-                  {{
-                    internacao.dataSaida
-                      ? (internacao.dataSaida | date: 'dd/MM/yyyy' : 'UTC')
-                      : 'Não informada'
-                  }}
+                  @if (internacao.dataSaida) {
+                    <time [attr.datetime]="internacao.dataSaida | date: 'yyyy-MM-dd' : 'UTC'">{{
+                      internacao.dataSaida | date: 'dd/MM/yyyy' : 'UTC'
+                    }}</time>
+                  } @else {
+                    Não informada
+                  }
                 </detail-info-field>
               </div>
 
@@ -230,23 +253,34 @@
                   class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md"
                   [iconColor]="'#4a5565'"
                 >
-                  <svg lucideCircleCheckBig class="h-4 w-4" aria-hidden="true"></svg>
+                  <svg
+                    lucideCircleCheckBig
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                    focusable="false"
+                  ></svg>
                 </span>
                 <detail-info-field label="Tipo de alta">
                   {{ tipoAltaLabel(internacao) }}
                 </detail-info-field>
               </div>
 
-              <p-button
-                ariaLabel="Ver internação"
+              <a
+                pButton
+                aria-label="Ver internação"
                 severity="secondary"
-                variant="outlined"
+                [outlined]="true"
                 [routerLink]="['/internacoes', internacao.id]"
+                class="p-button-icon-only"
               >
-                <ng-template #icon>
-                  <svg lucideEye class="h-4 w-4" aria-hidden="true"></svg>
-                </ng-template>
-              </p-button>
+                <svg
+                  pButtonIcon
+                  lucideEye
+                  class="h-4 w-4"
+                  aria-hidden="true"
+                  focusable="false"
+                ></svg>
+              </a>
             </article>
           }
         </div>
@@ -255,7 +289,7 @@
           <span
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-content-secondary"
           >
-            <svg lucideHistory class="h-4.5 w-4.5" aria-hidden="true"></svg>
+            <svg lucideHistory class="h-4.5 w-4.5" aria-hidden="true" focusable="false"></svg>
           </span>
           <div>
             <p class="font-semibold text-content-primary">Nenhuma internação anterior</p>

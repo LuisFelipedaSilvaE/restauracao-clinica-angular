@@ -20,7 +20,7 @@
   </card>
 } @else {
   <card>
-    <form class="space-y-4" [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
+    <form autoFocusError class="space-y-4" [formGroup]="medicamentoForm" (ngSubmit)="onSubmit()">
       <form-field
         label="Nome do medicamento"
         inputId="nome"

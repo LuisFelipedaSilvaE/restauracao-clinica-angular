@@ -1,14 +1,14 @@
-<div class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
+<div role="status" class="flex flex-col items-center justify-center gap-4 px-4 py-10 text-center">
   <span
     class="flex h-15 w-15 items-center justify-center rounded-full bg-surface-subtle"
     [iconColor]="'#4a5565'"
   >
-    <svg [lucideIcon]="icon()" class="h-7.5 w-7.5"></svg>
+    <svg [lucideIcon]="icon()" class="h-7.5 w-7.5" aria-hidden="true" focusable="false"></svg>
   </span>
   <div>
-    <h3 class="font-heading text-base font-semibold text-content-primary">
+    <h2 class="font-heading text-base font-semibold text-content-primary">
       {{ title() }}
-    </h3>
+    </h2>
     <p class="mx-auto mt-2 max-w-sm text-sm/relaxed text-content-secondary">
       {{ description() }}
     </p>

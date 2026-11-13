@@ -1,3 +1,5 @@
+import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
+import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +17,8 @@ import { MedicamentosService } from '../../services/medicamentos-service';
 @Component({
   selector: 'dialog-movimentacao-medicamento',
   imports: [
+    RestoreDialogFocus,
+    AutoFocusError,
     ButtonModule,
     DialogModule,
     MessageModule,

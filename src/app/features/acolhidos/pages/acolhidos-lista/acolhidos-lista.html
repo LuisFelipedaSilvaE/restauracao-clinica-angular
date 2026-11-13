@@ -1,13 +1,22 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading() ? acolhidosCardsFiltrados().length + ' resultados encontrados' : '' }}
+</p>
 <div class="flex flex-col gap-4">
   <page-header
     title="Acolhidos"
     description="Consulte, filtre e gerencie as pessoas cadastradas na comunidade."
   >
-    <p-button routerLink="criar" label="Novo acolhido" class="text-nowrap">
-      <ng-template #icon>
-        <svg lucideUserRoundPlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar" class="text-nowrap">
+      <svg
+        pButtonIcon
+        lucideUserRoundPlus
+        class="h-5 w-5"
+        aria-hidden="true"
+        focusable="false"
+      ></svg>
+
+      <span pButtonLabel>Novo acolhido</span></a
+    >
   </page-header>
   <div class="flex justify-center items-center flex-wrap gap-2.5">
     @for (item of infoAcolhidos(); track $index) {
@@ -27,7 +36,7 @@
         <span
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-soft text-brand-primary"
         >
-          <svg lucideUsersRound class="h-5 w-5" aria-hidden="true"></svg>
+          <svg lucideUsersRound class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
         </span>
 
         <div class="min-w-0 flex-1">
@@ -87,7 +96,7 @@
                 <span class="justify-self-end text-center">Ações</span>
               </div>
 
-              <div class="flex flex-col gap-2">
+              <div role="list" aria-label="Resultados" class="flex flex-col gap-2">
                 @if (loading()) {
                   <span class="sr-only" role="status">Carregando acolhidos...</span>
                   @for (_ of skeletonCards; track $index) {
@@ -128,6 +137,7 @@
                 } @else {
                   @for (acolhido of items; track acolhido.id) {
                     <acolhido-card
+                      role="listitem"
                       (statusAcolhidoChange)="toggleAcolhido($event)"
                       (excluirAcolhido)="solicitarExclusao($event)"
                       [acolhido]="acolhido"
@@ -150,7 +160,7 @@
               (onClick)="clearFilters()"
               label="Limpar filtros"
             >
-              <svg lucideFunnelX class="h-5 w-5"></svg>
+              <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
             </p-button>
           </empty-list>
         </ng-template>
@@ -162,11 +172,11 @@
       title="Nenhum acolhido encontrado"
       description="Não há acolhidos cadastrados no momento."
     >
-      <p-button routerLink="criar" label="Cadastrar primeiro acolhido">
-        <ng-template #icon>
-          <svg lucidePlus class="h-5 w-5"></svg>
-        </ng-template>
-      </p-button>
+      <a pButton routerLink="criar">
+        <svg pButtonIcon lucidePlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+
+        <span pButtonLabel>Cadastrar primeiro acolhido</span></a
+      >
     </empty-list>
   }
 </div>

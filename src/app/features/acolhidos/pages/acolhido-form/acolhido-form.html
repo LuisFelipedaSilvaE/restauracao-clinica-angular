@@ -26,7 +26,13 @@
   </card>
 } @else {
   <card>
-    <form [formGroup]="acolhidoForm" (ngSubmit)="onSubmit()" class="space-y-5" autocomplete="off">
+    <form
+      autoFocusError
+      [formGroup]="acolhidoForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-5"
+      autocomplete="off"
+    >
       <fieldset class="space-y-4">
         <legend class="font-semibold">Dados pessoais</legend>
 
@@ -45,14 +51,19 @@
             minlength="3"
             maxlength="250"
             [invalid]="isInvalid('nome')"
-            [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
             fluid
             autocomplete="off"
           />
         </form-field>
 
         <div class="grid gap-4 sm:grid-cols-2">
-          <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
+          <form-field
+            label="CPF"
+            inputId="cpf"
+            required
+            [errorMessage]="getErrorMessage('cpf')"
+            hint="Formato: 000.000.000-00."
+          >
             <input
               pInputText
               id="cpf"
@@ -60,7 +71,6 @@
               formControlName="cpf"
               placeholder="000.000.000-00"
               [invalid]="isInvalid('cpf')"
-              [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
               fluid
               pInputMask="999.999.999-99"
               inputmode="numeric"
@@ -73,8 +83,10 @@
             inputId="dataNascimento"
             required
             [errorMessage]="getErrorMessage('dataNascimento')"
+            hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
           >
             <p-datepicker
+              autocomplete="off"
               inputId="dataNascimento"
               name="dataNascimento"
               formControlName="dataNascimento"
@@ -145,7 +157,7 @@
             (onClick)="cadastrarNovoResponsavel()"
           >
             <ng-template #icon>
-              <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
+              <svg lucideUserPlus class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
             </ng-template>
           </p-button>
         </div>
@@ -169,7 +181,6 @@
               formControlName="email"
               placeholder="nome@exemplo.com"
               [invalid]="isInvalid('email')"
-              [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
               fluid
               type="email"
               maxlength="254"
@@ -182,6 +193,7 @@
             inputId="telefone"
             required
             [errorMessage]="getErrorMessage('telefone')"
+            hint="Formato: (00) 00000-0000."
           >
             <input
               pInputText
@@ -190,7 +202,6 @@
               formControlName="telefone"
               placeholder="(00) 00000-0000"
               [invalid]="isInvalid('telefone')"
-              [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
               fluid
               pInputMask="(99) 99999-9999"
               inputmode="tel"
@@ -211,6 +222,7 @@
             inputId="cep"
             required
             [errorMessage]="getErrorMessage('cep')"
+            hint="Formato: 00000-000."
           >
             <input
               pInputText
@@ -219,7 +231,6 @@
               formControlName="cep"
               placeholder="00000-000"
               [invalid]="isInvalid('cep')"
-              [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
               fluid
               pInputMask="99999-999"
               inputmode="numeric"
@@ -270,9 +281,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.logradouro')"
-                [attr.aria-describedby]="
-                  isInvalid('endereco.logradouro') ? 'logradouro-erro' : null
-                "
                 fluid
                 autocomplete="off"
               />
@@ -293,9 +301,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.complemento')"
-                [attr.aria-describedby]="
-                  isInvalid('endereco.complemento') ? 'complemento-erro' : null
-                "
                 fluid
                 autocomplete="off"
               />
@@ -317,7 +322,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.bairro')"
-                [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
                 fluid
                 autocomplete="off"
               />
@@ -339,7 +343,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.cidade')"
-                [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
                 fluid
                 autocomplete="off"
               />

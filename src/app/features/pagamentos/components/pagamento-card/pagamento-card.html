@@ -3,13 +3,16 @@
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
     [iconColor]="'#4a5565'"
   >
-    <svg lucideBanknote class="h-5 w-5" aria-hidden="true"></svg>
+    <svg lucideBanknote class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
   </span>
 
   <div class="min-w-0">
-    <p class="truncate font-semibold capitalize text-content-primary">
+    <time
+      class="truncate font-semibold capitalize text-content-primary"
+      [attr.datetime]="dataCompetencia()"
+    >
       {{ dataCompetencia() | date: "MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
-    </p>
+    </time>
   </div>
 </div>
 
@@ -19,9 +22,9 @@
   <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
     Pagamento
   </span>
-  <span class="text-sm text-content-secondary">
+  <time class="text-sm text-content-secondary" [attr.datetime]="dataPagamento()">
     {{ dataPagamento() | date: 'dd/MM/yyyy' : 'UTC' }}
-  </span>
+  </time>
 </div>
 
 <div
@@ -48,7 +51,7 @@
   class="col-start-2 row-start-1 row-span-4 justify-self-end sm:col-auto sm:row-auto sm:justify-self-end"
 >
   @if (!estornado()) {
-    <action-menu [actions]="acoes()" ariaLabel="Abrir ações do pagamento" />
+    <action-menu [actions]="acoes()" [ariaLabel]="'Abrir ações do pagamento ' + pagamento().id" />
   } @else {
     <span class="block w-9 text-center text-content-secondary" aria-hidden="true">—</span>
   }

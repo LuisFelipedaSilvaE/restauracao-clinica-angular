@@ -1,7 +1,20 @@
-<p-menu #menu [model]="actions()" [popup]="true" appendTo="body">
+<p-menu
+  #menu
+  [id]="menuId"
+  (onShow)="expanded.set(true)"
+  (onHide)="expanded.set(false)"
+  [model]="actions()"
+  [popup]="true"
+  appendTo="body"
+>
   <ng-template #item let-item>
     <div class="flex cursor-pointer items-center gap-2 px-3 py-2">
-      <svg [lucideIcon]="item.lucideIcon" [class]="item.iconClass" aria-hidden="true"></svg>
+      <svg
+        [lucideIcon]="item.lucideIcon"
+        [class]="item.iconClass"
+        aria-hidden="true"
+        focusable="false"
+      ></svg>
       <span>{{ item.label }}</span>
     </div>
   </ng-template>
@@ -12,7 +25,9 @@
   class="inline-flex h-9 w-9 items-center justify-center rounded-md text-content-secondary transition-colors hover:bg-surface-subtle"
   [attr.aria-label]="ariaLabel()"
   aria-haspopup="menu"
+  [attr.aria-expanded]="expanded()"
+  [attr.aria-controls]="expanded() ? menuId : null"
   (click)="menu.toggle($event)"
 >
-  <svg lucideEllipsisVertical class="h-5 w-5" aria-hidden="true"></svg>
+  <svg lucideEllipsisVertical class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
 </button>

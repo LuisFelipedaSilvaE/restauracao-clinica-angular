@@ -1,11 +1,15 @@
 <div
+  role="search"
+  aria-label="Filtros da listagem"
   class="flex flex-wrap items-center gap-2 rounded-xl border border-border-default bg-surface-card p-4"
 >
   <p-iconfield class="min-w-70 basis-full grow md:basis-[65%]">
     <p-inputicon>
-      <svg lucideSearch class="h-4 w-4"></svg>
+      <svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
     </p-inputicon>
     <input
+      aria-label="Buscar por nome, CPF, e-mail, telefone ou cidade..."
+      autocomplete="off"
       pInputText
       [ngModel]="busca()"
       (ngModelChange)="buscaChange.emit($event)"
@@ -16,9 +20,10 @@
 
   <p-iconfield class="min-w-70 basis-70 grow">
     <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
-      <svg lucideLayers class="h-4.5 w-4.5"></svg>
+      <svg lucideLayers class="h-4.5 w-4.5" aria-hidden="true" focusable="false"></svg>
     </p-inputicon>
     <p-select
+      ariaLabel="Selecione um convênio"
       [options]="convenios()"
       [ngModel]="convenioSelecionado()"
       (ngModelChange)="convenioSelecionadoChange.emit($event)"
@@ -37,9 +42,10 @@
 
   <p-iconfield class="min-w-45 basis-45 grow">
     <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
-      <svg lucideSlidersHorizontal class="h-5 w-5"></svg>
+      <svg lucideSlidersHorizontal class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
     </p-inputicon>
     <p-select
+      ariaLabel="Selecione a situação"
       [options]="situacoes"
       [ngModel]="situacaoSelecionada()"
       (ngModelChange)="situacaoSelecionadaChange.emit($event)"

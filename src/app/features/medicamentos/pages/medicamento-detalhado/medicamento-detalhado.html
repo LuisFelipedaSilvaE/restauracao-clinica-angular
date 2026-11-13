@@ -19,7 +19,7 @@
     </div>
   </card>
 
-  <card class="flex flex-col gap-4">
+  <card class="flex flex-col gap-4" aria-hidden="true">
     <p-skeleton class="h-4! w-32! rounded-md!" />
     <div class="grid gap-4 sm:grid-cols-2">
       @for (_ of [1, 2, 3]; track $index) {
@@ -38,12 +38,12 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center gap-3">
         <div class="flex h-14 w-14 items-center justify-center rounded-xl" iconColor="#be222d">
-          <svg lucidePill class="h-6 w-6"></svg>
+          <svg lucidePill class="h-6 w-6" aria-hidden="true" focusable="false"></svg>
         </div>
         <div class="space-y-1.5">
-          <h2 class="text-xl font-semibold text-foreground text-balance">
+          <h1 class="text-xl font-semibold text-foreground text-balance">
             {{ medicamento.nome }}
-          </h2>
+          </h1>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -54,7 +54,7 @@
           (onClick)="aumentarQuantidadeEstoque()"
         >
           <ng-template #icon>
-            <svg lucideArrowDownToLine class="h-4 w-4"></svg>
+            <svg lucideArrowDownToLine class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           </ng-template>
         </p-button>
         <p-button
@@ -64,19 +64,19 @@
           (onClick)="reduzirQuantidadeEstoque()"
         >
           <ng-template #icon>
-            <svg lucideArrowUpFromLine class="h-4 w-4"></svg>
+            <svg lucideArrowUpFromLine class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           </ng-template>
         </p-button>
-        <p-button
-          label="Editar"
-          variant="outlined"
+        <a
+          pButton
+          [outlined]="true"
           severity="secondary"
           [routerLink]="['/medicamentos', medicamento.id, 'editar']"
         >
-          <ng-template #icon>
-            <svg lucidePencil class="h-4 w-4"></svg>
-          </ng-template>
-        </p-button>
+          <svg pButtonIcon lucidePencil class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+
+          <span pButtonLabel>Editar</span></a
+        >
         @if (isAdmin) {
           <p-button
             label="Excluir"
@@ -85,7 +85,7 @@
             (onClick)="confirmarExclusaoMedicamento()"
           >
             <ng-template #icon>
-              <svg lucideTrash2 class="h-4 w-4"></svg>
+              <svg lucideTrash2 class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
             </ng-template>
           </p-button>
         }
@@ -94,11 +94,11 @@
   </card>
 
   <card class="flex flex-col gap-4">
-    <h3 class="text-sm font-semibold text-foreground">Dados cadastrais</h3>
+    <h2 class="text-sm font-semibold text-foreground">Dados cadastrais</h2>
     <div class="grid gap-4 sm:grid-cols-2">
       <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucideHandCoins class="h-4 w-4"></svg>
+          <svg lucideHandCoins class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </div>
         <detail-info-field label="Preço unitário">
           {{ medicamento.preco | currency: 'BRL' : 'symbol' : '1.2-2' }}
@@ -106,7 +106,7 @@
       </div>
       <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucidePackage class="h-4 w-4"></svg>
+          <svg lucidePackage class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </div>
         <detail-info-field label="Estoque atual">
           {{ medicamento.quantidadeEstoque | number: '1.0-0' }}
@@ -115,7 +115,7 @@
       </div>
       <div class="flex items-center gap-2">
         <div class="h-8 w-8 flex items-center justify-center rounded-md" iconColor="#4a5565">
-          <svg lucideGauge class="h-4 w-4"></svg>
+          <svg lucideGauge class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
         </div>
         <detail-info-field label="Estoque mínimo">
           {{ medicamento.quantidadeMinima | number: '1.0-0' }}

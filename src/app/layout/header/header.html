@@ -10,22 +10,45 @@
         severity="secondary"
         class="lg:hidden flex"
         (click)="toggleMobileNav()"
+        [ariaLabel]="isMobileNavOpen() ? 'Fechar menu principal' : 'Abrir menu principal'"
+        [buttonProps]="{
+          'aria-expanded': isMobileNavOpen(),
+          'aria-controls': isMobileNavOpen() ? 'menu-movel' : null,
+          'aria-haspopup': 'dialog',
+        }"
       >
         <ng-template #icon>
           @if (isMobileNavOpen()) {
-            <svg lucideX class="w-6 h-6 text-content-secondary"></svg>
+            <svg
+              lucideX
+              class="w-6 h-6 text-content-secondary"
+              aria-hidden="true"
+              focusable="false"
+            ></svg>
           } @else {
-            <svg lucideMenu class="w-6 h-6 text-content-secondary"></svg>
+            <svg
+              lucideMenu
+              class="w-6 h-6 text-content-secondary"
+              aria-hidden="true"
+              focusable="false"
+            ></svg>
           }
         </ng-template>
       </p-button>
     </div>
-    <div class="flex min-w-0 grow justify-center md:justify-start">
+    <div
+      role="search"
+      aria-label="Busca global"
+      class="flex min-w-0 grow justify-center md:justify-start"
+    >
       <p-iconfield class="min-w-0 basis-120">
         <p-inputicon>
-          <svg lucideSearch class="w-4 h-4"></svg>
+          <svg lucideSearch class="w-4 h-4" aria-hidden="true" focusable="false"></svg>
         </p-inputicon>
         <p-autocomplete
+          inputId="busca-global"
+          ariaLabel="Buscar acolhidos e triagens"
+          autocomplete="off"
           class="w-full"
           inputStyleClass="w-full"
           panelStyleClass="min-w-80"
@@ -59,7 +82,12 @@
               <span
                 class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-subtle text-content-secondary"
               >
-                <svg [lucideIcon]="result.icon" class="h-4.5 w-4.5"></svg>
+                <svg
+                  [lucideIcon]="result.icon"
+                  class="h-4.5 w-4.5"
+                  aria-hidden="true"
+                  focusable="false"
+                ></svg>
               </span>
               <span class="min-w-0">
                 <span class="block truncate text-sm font-medium text-content-primary">
@@ -76,8 +104,10 @@
     </div>
     <div class="flex items-center gap-2 text-content-secondary">
       <div class="md:flex hidden gap-2 items-center">
-        <svg lucideCalendar class="w-4 h-4"></svg>
-        <p class="text-sm">{{ dataFormatada() }}</p>
+        <svg lucideCalendar class="w-4 h-4" aria-hidden="true" focusable="false"></svg>
+        <time class="text-sm" [attr.datetime]="dataAtual() | date: 'yyyy-MM-dd'">{{
+          dataFormatada()
+        }}</time>
       </div>
     </div>
   </div>

@@ -2,17 +2,17 @@
   class="flex min-w-0 items-center gap-2 rounded-lg text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40 2xl:gap-3"
 >
   <span
+    aria-hidden="true"
     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
     [profileColor]="'#be222d'"
     >{{ funcionario().nome | siglaNome }}
   </span>
   <div class="min-w-0">
-    <p class="truncate font-semibold text-content-primary">
+    <h2 class="truncate font-semibold text-content-primary">
       {{ funcionario().nome }}
-    </p>
-    <p class="truncate text-xs text-content-secondary">
-      CPF {{ funcionario().cpf | cpf }}
-    </p>
+      <span class="sr-only"> — {{ funcionario().ativo ? 'Ativo' : 'Inativo' }}</span>
+    </h2>
+    <p class="truncate text-xs text-content-secondary">CPF {{ funcionario().cpf | cpf }}</p>
   </div>
 </div>
 
@@ -23,7 +23,9 @@
   </div>
 
   <div class="hidden min-w-0 text-center text-sm text-content-secondary xl:block">
-    <p class="truncate">{{ funcionario().dataNascimento | date: 'dd/MM/yyyy' }}</p>
+    <time class="truncate" [attr.datetime]="funcionario().dataNascimento">{{
+      funcionario().dataNascimento | date: 'dd/MM/yyyy'
+    }}</time>
     <p class="truncate text-xs">{{ idade() }} anos</p>
   </div>
 
@@ -35,6 +37,9 @@
   <div
     class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-span-1 sm:justify-self-end"
   >
-    <action-menu [actions]="acoes()" ariaLabel="Abrir ações do funcionário" />
+    <action-menu
+      [actions]="acoes()"
+      [ariaLabel]="'Abrir ações do funcionário: ' + funcionario().nome"
+    />
   </div>
 </div>

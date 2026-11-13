@@ -1,13 +1,22 @@
+<p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+  {{ !loading().list ? funcionariosCardsFiltrados().length + ' resultados encontrados' : '' }}
+</p>
 <div class="flex flex-col gap-4">
   <page-header
     title="Funcionários"
     description="Consulte, filtre e gerencie todos os funcionários atualmente vinculados à comunidade."
   >
-    <p-button label="Novo funcionário" routerLink="criar" class="text-nowrap">
-      <ng-template #icon>
-        <svg lucideUserRoundPlus class="h-5 w-5"></svg>
-      </ng-template>
-    </p-button>
+    <a pButton routerLink="criar" class="text-nowrap">
+      <svg
+        pButtonIcon
+        lucideUserRoundPlus
+        class="h-5 w-5"
+        aria-hidden="true"
+        focusable="false"
+      ></svg>
+
+      <span pButtonLabel>Novo funcionário</span></a
+    >
   </page-header>
   <div class="flex justify-center items-center flex-wrap gap-2.5">
     @for (item of infoFuncionarios(); track $index) {
@@ -87,9 +96,10 @@
         [pt]="dataviewPt"
       >
         <ng-template #list let-items>
-          <div class="flex min-w-0 flex-col gap-2 pb-2">
+          <div role="list" aria-label="Resultados" class="flex min-w-0 flex-col gap-2 pb-2">
             @for (funcionario of items; track funcionario.id) {
               <funcionario-card
+                role="listitem"
                 [funcionario]="funcionario"
                 (statusFuncionarioChange)="toggleFuncionario($event)"
               />
@@ -108,7 +118,7 @@
               (onClick)="clearFilters()"
               label="Limpar filtros"
             >
-              <svg lucideFunnelX class="h-5 w-5"></svg>
+              <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
             </p-button>
           </empty-list>
         </ng-template>
@@ -120,11 +130,17 @@
       title="Nenhum funcionário cadastrado"
       description="Não há funcionários cadastrados no momento."
     >
-      <p-button routerLink="criar" label="Cadastrar primeiro funcionário">
-        <ng-template #icon>
-          <svg lucideUserRoundPlus class="h-5 w-5"></svg>
-        </ng-template>
-      </p-button>
+      <a pButton routerLink="criar">
+        <svg
+          pButtonIcon
+          lucideUserRoundPlus
+          class="h-5 w-5"
+          aria-hidden="true"
+          focusable="false"
+        ></svg>
+
+        <span pButtonLabel>Cadastrar primeiro funcionário</span></a
+      >
     </empty-list>
   }
 </div>

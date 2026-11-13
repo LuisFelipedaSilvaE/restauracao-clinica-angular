@@ -27,6 +27,7 @@
 } @else {
   <card>
     <form
+      autoFocusError
       [formGroup]="responsavelForm"
       (ngSubmit)="onSubmit()"
       class="space-y-5"
@@ -51,13 +52,18 @@
               minlength="3"
               maxlength="250"
               [invalid]="isInvalid('nome')"
-              [attr.aria-describedby]="isInvalid('nome') ? 'nome-erro' : null"
               fluid
               autocomplete="off"
             />
           </form-field>
 
-          <form-field label="CPF" inputId="cpf" required [errorMessage]="getErrorMessage('cpf')">
+          <form-field
+            label="CPF"
+            inputId="cpf"
+            required
+            [errorMessage]="getErrorMessage('cpf')"
+            hint="Formato: 000.000.000-00."
+          >
             <input
               pInputText
               id="cpf"
@@ -67,7 +73,6 @@
               pInputMask="999.999.999-99"
               inputmode="numeric"
               [invalid]="isInvalid('cpf')"
-              [attr.aria-describedby]="isInvalid('cpf') ? 'cpf-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -95,7 +100,6 @@
               placeholder="nome@exemplo.com"
               maxlength="254"
               [invalid]="isInvalid('email')"
-              [attr.aria-describedby]="isInvalid('email') ? 'email-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -106,6 +110,7 @@
             inputId="telefone"
             required
             [errorMessage]="getErrorMessage('telefone')"
+            hint="Formato: (00) 00000-0000."
           >
             <input
               pInputText
@@ -116,7 +121,6 @@
               pInputMask="(99) 99999-9999"
               inputmode="tel"
               [invalid]="isInvalid('telefone')"
-              [attr.aria-describedby]="isInvalid('telefone') ? 'telefone-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -135,6 +139,7 @@
             inputId="cep"
             required
             [errorMessage]="getErrorMessage('cep')"
+            hint="Formato: 00000-000."
           >
             <input
               pInputText
@@ -145,7 +150,6 @@
               pInputMask="99999-999"
               inputmode="numeric"
               [invalid]="isInvalid('cep')"
-              [attr.aria-describedby]="isInvalid('cep') ? 'cep-erro' : null"
               fluid
               autocomplete="off"
             />
@@ -194,9 +198,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.logradouro')"
-                [attr.aria-describedby]="
-                  isInvalid('endereco.logradouro') ? 'logradouro-erro' : null
-                "
                 fluid
                 autocomplete="off"
               />
@@ -217,9 +218,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.complemento')"
-                [attr.aria-describedby]="
-                  isInvalid('endereco.complemento') ? 'complemento-erro' : null
-                "
                 fluid
                 autocomplete="off"
               />
@@ -241,7 +239,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.bairro')"
-                [attr.aria-describedby]="isInvalid('endereco.bairro') ? 'bairro-erro' : null"
                 fluid
                 autocomplete="off"
               />
@@ -263,7 +260,6 @@
                 minlength="3"
                 maxlength="250"
                 [invalid]="isInvalid('endereco.cidade')"
-                [attr.aria-describedby]="isInvalid('endereco.cidade') ? 'cidade-erro' : null"
                 fluid
                 autocomplete="off"
               />
