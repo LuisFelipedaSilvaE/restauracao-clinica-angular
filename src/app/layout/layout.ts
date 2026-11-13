@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, inject } from '@angular/core';
 import { Sidebar } from './sidebar/sidebar';
 import { Header } from './header/header';
 import { RouterOutlet } from '@angular/router';
@@ -9,4 +9,12 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
-export class Layout {}
+export class Layout {
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  protected skipToContent(event: MouseEvent): void {
+    // A fragment-only URL otherwise resolves against <base href="/"> in a SPA.
+    event.preventDefault();
+    this.element.nativeElement.querySelector<HTMLElement>('#conteudo-principal')?.focus();
+  }
+}

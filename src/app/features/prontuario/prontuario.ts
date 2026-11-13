@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProntuarioHeader } from './components/prontuario-header/prontuario-header';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Acolhido } from '../acolhidos/interfaces/acolhido';
 import { AcolhidosService } from '../acolhidos/services/acolhidos-service';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
@@ -25,14 +25,7 @@ import { AuthService } from '../../core/services/auth-service';
   host: {
     class: 'flex min-w-0 flex-col gap-4',
   },
-  imports: [
-    ProntuarioHeader,
-    ConfirmDialog,
-    TabsModule,
-    RouterLink,
-    RouterOutlet,
-    LucideDynamicIcon,
-  ],
+  imports: [ProntuarioHeader, ConfirmDialog, TabsModule, RouterOutlet, LucideDynamicIcon],
   templateUrl: './prontuario.html',
   styleUrl: './prontuario.css',
 })
@@ -41,6 +34,7 @@ export class Prontuario {
   readonly origem = input<'acolhidos' | 'internacao'>('acolhidos');
   readonly internacaoId = input<string>();
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   protected readonly acolhido = signal<Acolhido | null>(null);
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
@@ -98,6 +92,14 @@ export class Prontuario {
     const path = this.currentUrl().split('?')[0].split('/').at(-1);
     return this.abas.some((aba) => aba.route === path) ? path : 'internacoes';
   });
+
+  protected navegarParaAba(value: string | number | undefined): void {
+    if (!this.abas.some((aba) => aba.route === value) || value === this.abaAtiva()) return;
+    this.router.navigate([value], {
+      relativeTo: this.route,
+      queryParamsHandling: 'preserve',
+    });
+  }
 
   protected readonly headerData = computed<ProntuarioHeaderContent | null>(() => {
     const acolhido = this.acolhido();

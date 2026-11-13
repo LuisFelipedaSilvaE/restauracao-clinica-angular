@@ -7,10 +7,10 @@
   (deleteRequest)="confirmarExclusao.set(true)"
 />
 
-<p-tabs [value]="abaAtiva()" scrollable>
-  <p-tablist>
+<p-tabs #abasProntuario [value]="abaAtiva()" (valueChange)="navegarParaAba($event)" scrollable>
+  <p-tablist [pt]="{ tabList: { 'aria-label': 'Seções do prontuário' } }">
     @for (aba of abas; track aba.route) {
-      <p-tab [value]="aba.route" [routerLink]="aba.route" queryParamsHandling="preserve">
+      <p-tab [value]="aba.route">
         <div class="flex items-center gap-2 whitespace-nowrap">
           <svg [lucideIcon]="aba.icon" class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           <span>{{ aba.label }}</span>
@@ -20,7 +20,25 @@
   </p-tablist>
 </p-tabs>
 
-<router-outlet [routerOutletData]="outletData()" />
+@for (aba of abas; track aba.route) {
+  @if (aba.route !== abaAtiva()) {
+    <div
+      hidden
+      role="tabpanel"
+      [id]="abasProntuario.id() + '_tabpanel_' + aba.route"
+      [attr.aria-labelledby]="abasProntuario.id() + '_tab_' + aba.route"
+    ></div>
+  }
+}
+<div
+  class="block min-w-0"
+  role="tabpanel"
+  tabindex="0"
+  [id]="abasProntuario.id() + '_tabpanel_' + abaAtiva()"
+  [attr.aria-labelledby]="abasProntuario.id() + '_tab_' + abaAtiva()"
+>
+  <router-outlet [routerOutletData]="outletData()" />
+</div>
 
 <confirm-dialog
   [(visible)]="confirmarAlteracao"
