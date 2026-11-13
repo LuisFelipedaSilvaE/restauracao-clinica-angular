@@ -26,11 +26,12 @@
 </div>
 
 <p-accordion
+  styleClass="block overflow-hidden rounded-xl border border-border-default bg-surface-card"
   [value]="painelResponsaveis()"
   (valueChange)="painelResponsaveis.set($event)"
   aria-label="Gerenciamento de responsáveis"
 >
-  <p-accordion-panel value="responsaveis">
+  <p-accordion-panel value="responsaveis" [pt]="{ root: { class: 'border-0!' } }">
     <p-accordion-header>
       <div class="flex min-w-0 flex-1 items-center gap-3 pr-2">
         <span
