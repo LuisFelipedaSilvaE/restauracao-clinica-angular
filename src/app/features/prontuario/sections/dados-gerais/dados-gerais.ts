@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, Signal } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
-import { LucideMapPin, LucidePhone, LucideUserRound } from '@lucide/angular';
+import { LucideMapPin, LucidePhone, LucideUserRound, LucideUsersRound } from '@lucide/angular';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
@@ -40,9 +40,11 @@ export class DadosGerais {
     Array.from({ length: 4 }),
     Array.from({ length: 3 }),
     Array.from({ length: 4 }),
+    Array.from({ length: 6 }),
   ];
 
   protected readonly dadosPessoaisIcon = LucideUserRound;
   protected readonly contatoIcon = LucidePhone;
   protected readonly enderecoIcon = LucideMapPin;
+  protected readonly responsavelIcon = LucideUsersRound;
 }
