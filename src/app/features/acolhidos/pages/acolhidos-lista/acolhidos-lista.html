@@ -16,6 +16,45 @@
   </div>
 </div>
 
+<p-accordion
+  [value]="painelResponsaveis()"
+  (valueChange)="painelResponsaveis.set($event)"
+  aria-label="Gerenciamento de responsáveis"
+>
+  <p-accordion-panel value="responsaveis">
+    <p-accordion-header>
+      <div class="flex min-w-0 flex-1 items-center gap-3 pr-2">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-soft text-brand-primary"
+        >
+          <svg lucideUsersRound class="h-5 w-5" aria-hidden="true"></svg>
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="font-semibold text-content-primary">Responsáveis</h2>
+            <span
+              class="rounded-full bg-surface-subtle px-2 py-0.5 text-xs font-medium text-content-secondary"
+            >
+              {{ totalResponsaveis() }}
+              {{ totalResponsaveis() === 1 ? 'cadastrado' : 'cadastrados' }}
+            </span>
+          </div>
+          <p class="truncate text-xs font-normal text-content-secondary">
+            Gerencie os responsáveis vinculados aos acolhidos.
+          </p>
+        </div>
+      </div>
+    </p-accordion-header>
+
+    <p-accordion-content>
+      <div class="pt-1">
+        <responsaveis-lista />
+      </div>
+    </p-accordion-content>
+  </p-accordion-panel>
+</p-accordion>
+
 <div class="flex flex-col gap-8">
   @if (loading() || acolhidos().length > 0) {
     <filter-acolhidos-card

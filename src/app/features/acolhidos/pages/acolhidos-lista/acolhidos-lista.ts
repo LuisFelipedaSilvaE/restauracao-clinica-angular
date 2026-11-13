@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideFunnelX,
@@ -10,6 +10,7 @@ import {
   LucideUsersRound,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { AccordionModule } from 'primeng/accordion';
 import { DataViewModule } from 'primeng/dataview';
 import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -26,6 +27,10 @@ import { FilterOption } from '../../interfaces/filter-option';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
 import { AcolhidosService } from '../../services/acolhidos-service';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
+import { ResponsaveisLista } from '../../../responsaveis/pages/responsaveis-lista/responsaveis-lista';
+import { ResponsaveisService } from '../../../responsaveis/services/responsaveis-service';
+
+type AccordionValue = string | number | string[] | number[] | null | undefined;
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleAcolhidoDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -36,6 +41,7 @@ type AcaoPendente =
     class: 'flex min-w-0 flex-col gap-8',
   },
   imports: [
+    AccordionModule,
     ButtonModule,
     SkeletonModule,
     LucideUserRoundPlus,
@@ -49,16 +55,20 @@ type AcaoPendente =
     LucidePlus,
     EmptyList,
     LucideFunnelX,
+    LucideUsersRound,
+    ResponsaveisLista,
   ],
   templateUrl: './acolhidos-lista.html',
   styleUrl: './acolhidos-lista.css',
 })
 export class AcolhidosLista implements OnInit {
+  readonly painel = input<string>();
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyAcolhidosIcon = LucideUserRoundX;
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
+  private readonly responsaveisService = inject(ResponsaveisService);
   protected readonly acolhidos = this.acolhidosService.acolhidos;
   protected readonly loading = computed(
     () => this.acolhidosService.loading().list || this.internacoesService.loading().list,
@@ -70,6 +80,10 @@ export class AcolhidosLista implements OnInit {
   protected readonly convenioSelecionado = signal('todos');
   protected readonly situacaoSelecionada = signal('todos');
   protected readonly dialogConfirmVisible = signal(false);
+  protected readonly painelResponsaveis = signal<AccordionValue>(null);
+  protected readonly totalResponsaveis = computed(
+    () => this.responsaveisService.responsaveis().length,
+  );
 
   protected readonly convenios = computed<FilterOption[]>(() => {
     const conveniosUnicos = new Map(
@@ -245,6 +259,8 @@ export class AcolhidosLista implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.painel() === 'responsaveis') this.painelResponsaveis.set('responsaveis');
+
     forkJoin({
       acolhidos: this.acolhidosService.getAllAcolhidos(),
       internacoes: this.internacoesService.getAllInternacoes(),

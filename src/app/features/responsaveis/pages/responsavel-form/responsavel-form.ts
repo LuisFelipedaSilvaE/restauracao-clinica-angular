@@ -115,8 +115,14 @@ export class ResponsavelForm implements OnInit {
     return returnUrl?.startsWith('/acolhidos') ? returnUrl : '/acolhidos';
   });
   protected readonly voltarLabel = computed(() =>
-    this.voltarUrl() === '/acolhidos' ? 'Voltar para acolhidos' : 'Voltar para acolhido',
+    this.voltarUrl() === '/acolhidos' || this.voltarUrl().startsWith('/acolhidos?')
+      ? 'Voltar para acolhidos'
+      : 'Voltar para acolhido',
   );
+  private readonly retornandoParaFormularioAcolhido = computed(() => {
+    const caminho = this.voltarUrl().split('?')[0];
+    return caminho === '/acolhidos/criar' || /^\/acolhidos\/\d+\/editar$/.test(caminho);
+  });
   protected readonly headerInfo = computed<InfoCardContent>(() => ({
     value: this.modo() === 'registro' ? 'Novo responsável' : 'Editar responsável',
     label:
@@ -232,7 +238,7 @@ export class ResponsavelForm implements OnInit {
           life: 3000,
         });
 
-        if (id === undefined && this.voltarUrl() !== '/acolhidos') {
+        if (id === undefined && this.retornandoParaFormularioAcolhido()) {
           const destino = this.router.parseUrl(this.voltarUrl());
           destino.queryParams = {
             ...destino.queryParams,
