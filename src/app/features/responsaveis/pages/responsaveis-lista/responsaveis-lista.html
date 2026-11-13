@@ -1,0 +1,174 @@
+<div class="flex min-w-0 flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-2">
+    <p-iconfield class="min-w-64 basis-full grow md:basis-[60%]">
+      <p-inputicon><svg lucideSearch class="h-4 w-4" aria-hidden="true"></svg></p-inputicon>
+      <input
+        pInputText
+        [ngModel]="busca()"
+        (ngModelChange)="busca.set($event)"
+        placeholder="Buscar por nome, CPF, e-mail, telefone ou cidade..."
+        class="w-full placeholder:text-sm"
+        autocomplete="off"
+      />
+    </p-iconfield>
+
+    <p-select
+      class="min-w-44 grow md:max-w-52"
+      [options]="situacoes"
+      [ngModel]="situacaoSelecionada()"
+      (ngModelChange)="situacaoSelecionada.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Situação"
+    />
+
+    <p-button
+      type="button"
+      label="Novo responsável"
+      severity="secondary"
+      variant="outlined"
+      styleClass="w-full whitespace-nowrap sm:w-auto"
+      (onClick)="novoResponsavel()"
+    >
+      <ng-template #icon><svg lucidePlus class="h-5 w-5" aria-hidden="true"></svg></ng-template>
+    </p-button>
+  </div>
+
+  @if (loading().list) {
+    <div class="flex flex-col gap-2" aria-busy="true">
+      <span class="sr-only" role="status">Carregando responsáveis...</span>
+      @for (_ of skeletonCards; track $index) {
+        <div
+          aria-hidden="true"
+          class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-3 rounded-xl border border-border-default bg-surface-card p-3 md:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(130px,.8fr)_100px_36px]"
+        >
+          <div class="flex min-w-0 items-center gap-3">
+            <p-skeleton shape="circle" size="2.5rem" />
+            <div class="flex min-w-0 flex-1 flex-col gap-2">
+              <p-skeleton width="75%" height="1rem" />
+              <p-skeleton width="60%" height="0.75rem" />
+            </div>
+          </div>
+          <p-skeleton width="80%" height="1rem" class="hidden md:block" />
+          <p-skeleton width="75%" height="1rem" class="hidden md:block" />
+          <p-skeleton width="4rem" height="1.75rem" class="hidden justify-self-center md:block" />
+          <p-skeleton size="2.25rem" class="justify-self-end" />
+        </div>
+      }
+    </div>
+  } @else if (responsaveis().length === 0) {
+    <empty-list
+      [icon]="emptyResponsaveisIcon"
+      title="Nenhum responsável cadastrado"
+      description="Ainda não há responsáveis registrados no sistema. Comece adicionando o primeiro responsável."
+    >
+      <p-button
+        type="button"
+        label="Cadastrar primeiro responsável"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="novoResponsavel()"
+      >
+        <ng-template #icon><svg lucidePlus class="h-5 w-5" aria-hidden="true"></svg></ng-template>
+      </p-button>
+    </empty-list>
+  } @else {
+    <p-dataview
+      [value]="responsaveisFiltrados()"
+      [paginator]="true"
+      [rows]="6"
+      layout="list"
+      [pt]="dataviewPt"
+    >
+      <ng-template #list let-items>
+        <div class="flex min-w-0 flex-col gap-3 pb-2">
+          <div
+            class="hidden grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(130px,.8fr)_100px_36px] items-center gap-3 px-3 text-xs font-semibold uppercase tracking-wide text-content-secondary md:grid"
+          >
+            <span>Nome</span><span class="text-center">Contato</span>
+            <span class="text-center">Cidade/UF</span><span class="text-center">Situação</span>
+            <span class="text-center">Ações</span>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            @for (responsavel of items; track responsavel.id) {
+              <article
+                class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-3 rounded-xl border border-border-default bg-surface-card p-3 transition-colors md:grid-cols-[minmax(220px,1.4fr)_minmax(180px,1fr)_minmax(130px,.8fr)_100px_36px]"
+                [class.border-dashed]="!responsavel.ativo"
+                [class.bg-surface-subtle]="!responsavel.ativo"
+              >
+                <div class="flex min-w-0 items-center gap-3">
+                  <span
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+                    [profileColor]="'#be222d'"
+                  >
+                    {{ responsavel.nome | siglaNome }}
+                  </span>
+                  <div class="min-w-0">
+                    <p class="truncate font-semibold text-content-primary">
+                      {{ responsavel.nome }}
+                    </p>
+                    <p class="truncate text-xs text-content-secondary">
+                      CPF {{ responsavel.cpf | cpf }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="hidden min-w-0 text-center md:block">
+                  <p class="truncate text-sm text-content-primary">
+                    {{ responsavel.telefone | telefone }}
+                  </p>
+                  <p class="truncate text-xs text-content-secondary">{{ responsavel.email }}</p>
+                </div>
+                <p class="hidden truncate text-center text-sm text-content-secondary md:block">
+                  {{ responsavel.endereco.cidade }}/{{ responsavel.endereco.estado }}
+                </p>
+                <p-tag
+                  class="col-start-1 row-start-2 w-fit md:col-auto md:row-auto md:justify-self-center"
+                  [value]="responsavel.ativo ? 'Ativo' : 'Inativo'"
+                  [severity]="responsavel.ativo ? 'success' : 'secondary'"
+                />
+                <action-menu
+                  class="col-start-2 row-span-2 row-start-1 justify-self-end md:col-auto md:row-auto"
+                  [actions]="acoes(responsavel)"
+                  [ariaLabel]="'Abrir ações de ' + responsavel.nome"
+                />
+              </article>
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <empty-list
+          [icon]="emptySearchIcon"
+          title="Nenhum responsável encontrado"
+          description="Não encontramos resultados para os filtros aplicados. Tente ajustar a busca ou limpar os filtros."
+        >
+          <p-button
+            type="button"
+            label="Limpar filtros"
+            severity="secondary"
+            [text]="true"
+            (onClick)="clearFilters()"
+          >
+            <ng-template #icon
+              ><svg lucideFunnelX class="h-5 w-5" aria-hidden="true"></svg
+            ></ng-template>
+          </p-button>
+        </empty-list>
+      </ng-template>
+    </p-dataview>
+  }
+</div>
+
+<confirm-dialog
+  [(visible)]="dialogConfirmVisible"
+  [title]="confirmTitle()"
+  [message]="confirmMessage()"
+  [confirmLabel]="confirmLabel()"
+  [severity]="confirmSeverity()"
+  [loading]="loading().mutation"
+  (hidden)="acaoPendente.set(null)"
+  (onConfirm)="confirmarAcao()"
+/>
