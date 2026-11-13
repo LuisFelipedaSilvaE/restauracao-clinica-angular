@@ -247,6 +247,10 @@
     scrollbar-gutter: stable;
   }
 
+  html:has(.p-dialog-mask) {
+    scrollbar-gutter: auto;
+  }
+
   body {
     background-color: var(--color-surface-app);
     color: var(--color-content-primary);
