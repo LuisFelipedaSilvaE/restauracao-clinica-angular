@@ -233,9 +233,12 @@ export class ResponsavelForm implements OnInit {
         });
 
         if (id === undefined && this.voltarUrl() !== '/acolhidos') {
-          this.router.navigate([this.voltarUrl()], {
-            queryParams: { responsavelId: responsavelSalvo.id },
-          });
+          const destino = this.router.parseUrl(this.voltarUrl());
+          destino.queryParams = {
+            ...destino.queryParams,
+            responsavelId: responsavelSalvo.id,
+          };
+          this.router.navigateByUrl(destino);
           return;
         }
 

@@ -16,6 +16,8 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
+import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
+import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { formatCep } from '../../../../shared/utils/cep-formatter';
 import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
@@ -36,9 +38,11 @@ import {
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
 import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
+import { ResponsaveisService } from '../../../responsaveis/services/responsaveis-service';
 import { TriagensService } from '../../../triagens/services/triagens-service';
 import { Acolhido } from '../../interfaces/acolhido';
 import { AcolhidoRequest } from '../../interfaces/acolhido-request';
+import { AcolhidoFormStateService } from '../../services/acolhido-form-state-service';
 import { AcolhidosService } from '../../services/acolhidos-service';
 
 type ModoForm = 'registro' | 'atualizacao';
@@ -61,6 +65,9 @@ type ModoForm = 'registro' | 'atualizacao';
     DividerModule,
     SkeletonModule,
     FormField,
+    CpfPipe,
+    TelefonePipe,
+    LucideUserPlus,
   ],
   templateUrl: './acolhido-form.html',
   styleUrl: './acolhido-form.css',
@@ -69,24 +76,32 @@ export class AcolhidoForm implements OnInit {
   readonly id = input<string>();
   readonly triagemId = input<string>();
   readonly returnUrl = input<string>();
+  readonly responsavelId = input<string>();
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly triagensService = inject(TriagensService);
+  private readonly responsaveisService = inject(ResponsaveisService);
+  private readonly formStateService = inject(AcolhidoFormStateService);
   protected readonly formSubmitted = signal(false);
   protected readonly salvando = signal(false);
   protected readonly carregando = signal(false);
   protected readonly skeletonSecoes = [
     Array.from({ length: 3 }),
+    Array.from({ length: 1 }),
     Array.from({ length: 3 }),
     Array.from({ length: 6 }),
   ];
   protected readonly hoje = new Date();
   protected readonly dataMinimaNascimento = new Date(1900, 0, 1);
   protected readonly dataMaximaNascimento = calcularDataLimiteIdade(18, this.hoje);
+  protected readonly responsaveisDisponiveis = computed(() =>
+    this.responsaveisService.responsaveis().filter((responsavel) => responsavel.ativo),
+  );
 
   protected readonly acolhidoForm = this.fb.group({
+    responsavelId: this.fb.control<number | null>(null, [Validators.required]),
     nome: this.fb.nonNullable.control('', [Validators.required, comprimentoTextoValidator(3, 250)]),
     cpf: this.fb.nonNullable.control('', [Validators.required, cpfValidator]),
     dataNascimento: this.fb.control<Date | null>(null, [
@@ -120,6 +135,7 @@ export class AcolhidoForm implements OnInit {
   protected readonly estados = ESTADOS_BRASIL;
 
   private readonly labels: Record<string, string> = {
+    responsavelId: 'Responsável',
     nome: 'Nome completo',
     cpf: 'CPF',
     dataNascimento: 'Data de nascimento',
@@ -157,7 +173,14 @@ export class AcolhidoForm implements OnInit {
   ngOnInit(): void {
     const id = this.id();
     if (id === undefined) {
-      this.preencherDadosDaTriagem();
+      this.carregando.set(true);
+      this.responsaveisService.getAllResponsaveis().subscribe({
+        next: () => {
+          this.inicializarCriacao();
+          this.carregando.set(false);
+        },
+        error: () => this.carregando.set(false),
+      });
       return;
     }
 
@@ -168,20 +191,26 @@ export class AcolhidoForm implements OnInit {
     }
 
     this.carregando.set(true);
-    this.acolhidosService.getAcolhidoById(idNumerico).subscribe({
-      next: (acolhido) => {
-        this.preencherFormulario(acolhido);
-        this.carregando.set(false);
-      },
-      error: () => {
-        this.carregando.set(false);
-        this.voltarParaLista();
-      },
+    this.responsaveisService.getAllResponsaveis().subscribe({
+      next: () =>
+        this.acolhidosService.getAcolhidoById(idNumerico).subscribe({
+          next: (acolhido) => {
+            this.preencherFormulario(acolhido);
+            this.restaurarRascunhoESelecao();
+            this.carregando.set(false);
+          },
+          error: () => {
+            this.carregando.set(false);
+            this.voltarParaLista();
+          },
+        }),
+      error: () => this.carregando.set(false),
     });
   }
 
   private preencherFormulario(acolhido: Acolhido): void {
     this.acolhidoForm.patchValue({
+      responsavelId: acolhido.responsavel.id,
       nome: acolhido.nome,
       cpf: formatCpf(acolhido.cpf),
       email: acolhido.email,
@@ -244,6 +273,23 @@ export class AcolhidoForm implements OnInit {
     this.router.navigateByUrl(this.voltarUrl());
   }
 
+  protected cadastrarNovoResponsavel(): void {
+    this.formStateService.salvarRascunho(this.acolhidoForm.getRawValue());
+
+    const caminhoRetorno =
+      this.modo() === 'atualizacao' ? `/acolhidos/${this.id()}/editar` : '/acolhidos/criar';
+    const returnUrl = this.router.serializeUrl(
+      this.router.createUrlTree([caminhoRetorno], {
+        queryParams: {
+          triagemId: this.triagemId(),
+          returnUrl: this.returnUrl(),
+        },
+      }),
+    );
+
+    this.router.navigate(['/responsaveis/criar'], { queryParams: { returnUrl } });
+  }
+
   protected onSubmit(): void {
     if (this.salvando()) return;
     this.formSubmitted.set(true);
@@ -253,6 +299,7 @@ export class AcolhidoForm implements OnInit {
     const valor = this.acolhidoForm.getRawValue();
     const id = this.id();
     const dados: AcolhidoRequest = {
+      responsavelId: valor.responsavelId!,
       nome: valor.nome.trim(),
       email: normalizeEmail(valor.email),
       cpf: valor.cpf,
@@ -313,6 +360,27 @@ export class AcolhidoForm implements OnInit {
         telefone: formatTelefone(triagem.telefone),
       });
     });
+  }
+
+  private inicializarCriacao(): void {
+    const restaurouRascunho = this.restaurarRascunhoESelecao();
+    if (!restaurouRascunho) this.preencherDadosDaTriagem();
+  }
+
+  private restaurarRascunhoESelecao(): boolean {
+    const rascunho = this.formStateService.consumirRascunho();
+    if (rascunho) this.acolhidoForm.patchValue(rascunho);
+
+    const responsavelId = Number(this.responsavelId() ?? rascunho?.responsavelId);
+    const responsavelEstaDisponivel = this.responsaveisDisponiveis().some(
+      (responsavel) => responsavel.id === responsavelId,
+    );
+
+    if (Number.isSafeInteger(responsavelId) && responsavelId > 0 && responsavelEstaDisponivel) {
+      this.acolhidoForm.patchValue({ responsavelId });
+    }
+
+    return rascunho !== null;
   }
 
   private registroNaoEncontrado(): void {

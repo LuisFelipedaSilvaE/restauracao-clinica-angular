@@ -1,4 +1,5 @@
 import { Endereco } from '../../../shared/interfaces/endereco';
+import { Responsavel } from '../../responsaveis/interfaces/responsavel';
 
 export interface Acolhido {
   id: number;
@@ -10,4 +11,5 @@ export interface Acolhido {
   telefone: string;
   dataNascimento: string;
   ativo: boolean;
+  responsavel: Responsavel;
 }

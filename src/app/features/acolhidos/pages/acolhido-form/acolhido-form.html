@@ -95,6 +95,65 @@
       <p-divider />
 
       <fieldset class="space-y-4">
+        <legend class="font-semibold">Responsável</legend>
+
+        <div class="grid items-start gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <form-field
+            label="Responsável"
+            inputId="responsavelId"
+            required
+            [errorMessage]="getErrorMessage('responsavelId')"
+          >
+            <p-select
+              inputId="responsavelId"
+              name="responsavelId"
+              formControlName="responsavelId"
+              [options]="responsaveisDisponiveis()"
+              optionLabel="nome"
+              optionValue="id"
+              [filter]="true"
+              filterBy="nome,cpf,telefone"
+              filterPlaceholder="Buscar por nome, CPF ou telefone"
+              placeholder="Selecione um responsável"
+              emptyMessage="Nenhum responsável ativo disponível"
+              emptyFilterMessage="Nenhum resultado encontrado"
+              [invalid]="isInvalid('responsavelId')"
+              appendTo="body"
+              autocomplete="off"
+              fluid
+            >
+              <ng-template #selectedItem let-responsavel>
+                <span>{{ responsavel.nome }} · CPF {{ responsavel.cpf | cpf }}</span>
+              </ng-template>
+              <ng-template #item let-responsavel>
+                <div class="flex min-w-0 flex-col">
+                  <span class="truncate font-medium">{{ responsavel.nome }}</span>
+                  <span class="truncate text-xs text-content-secondary">
+                    CPF {{ responsavel.cpf | cpf }} · {{ responsavel.telefone | telefone }}
+                  </span>
+                </div>
+              </ng-template>
+            </p-select>
+          </form-field>
+
+          <p-button
+            type="button"
+            label="Cadastrar responsável"
+            severity="secondary"
+            variant="outlined"
+            class="w-full sm:mt-6 sm:w-auto"
+            (onClick)="cadastrarNovoResponsavel()"
+          >
+            <ng-template #icon>
+              <svg lucideUserPlus class="h-5 w-5" aria-hidden="true"></svg>
+            </ng-template>
+          </p-button>
+        </div>
+      </fieldset>
+
+      <p-divider />
+
+      <fieldset class="space-y-4">
         <legend class="font-semibold">Contato</legend>
         <div class="grid gap-4 sm:grid-cols-2">
           <form-field
