@@ -12,6 +12,7 @@ import {
   LucideTrash2,
 } from '@lucide/angular';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomTag } from '../../../../shared/directives/custom-tag';
@@ -38,6 +39,8 @@ export class TriagemCard {
   readonly excluirTriagem = output<{ id: number; nome: string }>();
   readonly statusTriagemChange = output<ToggleTriagemDto>();
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly agendadaHoje = computed(
     () =>
       this.triagem().triagemStatus !== StatusTriagem.CONCLUIDA &&
@@ -108,6 +111,7 @@ export class TriagemCard {
       },
       {
         label: 'Excluir',
+        visible: this.isAdmin,
         lucideIcon: LucideTrash2,
         iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
         command: () =>

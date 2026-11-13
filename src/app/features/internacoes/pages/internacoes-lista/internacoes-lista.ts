@@ -27,6 +27,7 @@ import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-confi
 import { InternacaoCardContent } from '../../interfaces/internacao-card-content';
 import { Internacao } from '../../interfaces/internacao';
 import { InternacoesService } from '../../services/internacoes-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'app-internacoes-lista',
@@ -54,6 +55,8 @@ import { InternacoesService } from '../../services/internacoes-service';
 export class InternacoesLista implements OnInit {
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly internacoes = this.internacoesService.internacoes;
   protected readonly loading = computed(() => this.internacoesService.loading().list);
   protected readonly mutationLoading = computed(() => this.internacoesService.loading().mutation);
@@ -198,18 +201,22 @@ export class InternacoesLista implements OnInit {
   }
 
   protected abrirRegistrarAlta(internacao: Internacao): void {
+    if (!this.isAdmin) return;
+
     this.internacaoSelecionada.set(internacao);
     this.registrarAltaVisible.set(true);
   }
 
   protected solicitarExclusao(internacao: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
     this.internacaoParaExclusao.set(internacao);
     this.excluirInternacaoVisible.set(true);
   }
 
   protected excluirInternacao(): void {
     const internacao = this.internacaoParaExclusao();
-    if (!internacao) return;
+    if (!internacao || !this.isAdmin) return;
 
     this.internacoesService.deleteInternacao(internacao.id).subscribe({
       next: () => {

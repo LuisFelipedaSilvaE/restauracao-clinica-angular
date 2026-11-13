@@ -21,6 +21,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
@@ -69,6 +70,8 @@ export class ResponsaveisLista implements OnInit {
   private readonly responsaveisService = inject(ResponsaveisService);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
   protected readonly responsaveis = this.responsaveisService.responsaveis;
   protected readonly loading = this.responsaveisService.loading;
@@ -165,6 +168,7 @@ export class ResponsaveisLista implements OnInit {
       },
       {
         label: 'Excluir',
+        visible: this.isAdmin,
         lucideIcon: LucideTrash2,
         iconClass: 'h-4 w-4 text-action-destructive',
         command: () => this.solicitarExclusao(responsavel),
@@ -189,6 +193,8 @@ export class ResponsaveisLista implements OnInit {
   }
 
   protected solicitarExclusao(responsavel: Responsavel): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'exclusao', responsavel });
     this.dialogConfirmVisible.set(true);
   }
@@ -198,6 +204,8 @@ export class ResponsaveisLista implements OnInit {
     if (!acao) return;
 
     if (acao.tipo === 'exclusao') {
+      if (!this.isAdmin) return;
+
       this.responsaveisService.deleteResponsavel(acao.responsavel.id).subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);

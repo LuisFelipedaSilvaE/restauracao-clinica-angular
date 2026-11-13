@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideDynamicIcon,
@@ -15,6 +15,7 @@ import { Card } from '../../../../shared/components/card/card';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-content';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'prontuario-header',
@@ -38,6 +39,9 @@ import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-cont
   styleUrl: './prontuario-header.css',
 })
 export class ProntuarioHeader {
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
+
   readonly data = input<ProntuarioHeaderContent | null>(null);
   readonly loading = input(false);
   readonly backLabel = input('Voltar para lista de acolhidos');

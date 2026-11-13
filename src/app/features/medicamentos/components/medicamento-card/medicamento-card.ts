@@ -11,6 +11,7 @@ import {
 } from '@lucide/angular';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { Card } from '../../../../shared/components/card/card';
 import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
@@ -47,6 +48,8 @@ export class MedicamentoCard {
     return Math.min(Math.ceil(porcentagem), 100);
   });
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   readonly onEntrada = output<Medicamento>();
   readonly onSaida = output<Medicamento>();
   readonly onDelete = output<Medicamento>();
@@ -95,6 +98,7 @@ export class MedicamentoCard {
     },
     {
       label: 'Excluir',
+      visible: this.isAdmin,
       lucideIcon: LucideTrash2,
       iconClass: 'h-4 w-4 text-action-destructive',
       command: () => this.onDelete.emit(this.medicamento()),

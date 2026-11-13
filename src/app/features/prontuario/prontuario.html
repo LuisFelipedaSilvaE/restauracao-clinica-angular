@@ -32,16 +32,18 @@
   (onConfirm)="alterarStatus()"
 />
 
-<confirm-dialog
-  [(visible)]="confirmarExclusao"
-  title="Excluir acolhido"
-  [message]="
-    'Deseja excluir ' +
-    (acolhido()?.nome ?? 'este acolhido') +
-    '? Esta ação não poderá ser desfeita.'
-  "
-  confirmLabel="Excluir"
-  severity="danger"
-  [loading]="mutationLoading()"
-  (onConfirm)="excluirAcolhido()"
-/>
+@if (isAdmin) {
+  <confirm-dialog
+    [(visible)]="confirmarExclusao"
+    title="Excluir acolhido"
+    [message]="
+      'Deseja excluir ' +
+      (acolhido()?.nome ?? 'este acolhido') +
+      '? Esta ação não poderá ser desfeita.'
+    "
+    confirmLabel="Excluir"
+    severity="danger"
+    [loading]="mutationLoading()"
+    (onConfirm)="excluirAcolhido()"
+  />
+}

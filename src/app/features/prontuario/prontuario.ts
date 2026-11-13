@@ -18,6 +18,7 @@ import {
 } from '@lucide/angular';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
+import { AuthService } from '../../core/services/auth-service';
 
 @Component({
   selector: 'app-prontuario',
@@ -44,6 +45,8 @@ export class Prontuario {
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -190,7 +193,7 @@ export class Prontuario {
 
   protected excluirAcolhido(): void {
     const acolhido = this.acolhido();
-    if (!acolhido) return;
+    if (!acolhido || !this.isAdmin) return;
 
     this.acolhidosService.deleteAcolhido(acolhido.id).subscribe({
       next: () => {

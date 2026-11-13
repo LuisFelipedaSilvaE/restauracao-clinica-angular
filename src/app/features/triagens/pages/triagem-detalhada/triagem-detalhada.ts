@@ -31,6 +31,7 @@ import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
 
@@ -80,6 +81,8 @@ export class TriagemDetalhada {
   protected readonly id = input<string>();
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly triagem = signal<Triagem | undefined>(undefined);
   protected readonly carregando = signal(false);
   protected readonly dialogConfirmVisible = signal(false);
@@ -223,7 +226,7 @@ export class TriagemDetalhada {
   }
 
   protected solicitarExclusao(): void {
-    if (!this.triagem()) return;
+    if (!this.triagem() || !this.isAdmin) return;
 
     this.acaoPendente.set('excluir');
     this.dialogConfirmVisible.set(true);
@@ -243,6 +246,8 @@ export class TriagemDetalhada {
     if (!triagem || !acao) return;
 
     if (acao === 'excluir') {
+      if (!this.isAdmin) return;
+
       this.triagensService.deleteTriagem(triagem.id).subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);

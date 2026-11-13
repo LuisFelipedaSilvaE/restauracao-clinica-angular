@@ -33,6 +33,7 @@ import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento
 import { Triagem } from '../../interfaces/triagem';
 import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 import { TriagensService } from '../../services/triagens-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
 type StatusTriagemLista = 'AGENDADA' | 'ATRASADA' | 'CONCLUIDA';
@@ -67,6 +68,8 @@ export class TriagensLista implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly triagens = this.triagensService.triagens;
   protected readonly loading = this.triagensService.loading;
   protected readonly agora = toSignal(interval(60_000).pipe(map(() => new Date())), {
@@ -314,6 +317,8 @@ export class TriagensLista implements OnInit {
   }
 
   protected solicitarExclusao(triagem: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
     this.triagemPendente.set(triagem);
     this.acaoPendente.set('excluir');
     this.dialogConfirmVisible.set(true);
@@ -334,6 +339,8 @@ export class TriagensLista implements OnInit {
     if (!triagem || !acao) return;
 
     if (acao === 'excluir') {
+      if (!this.isAdmin) return;
+
       this.triagensService.deleteTriagem(triagem.id).subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);

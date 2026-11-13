@@ -31,6 +31,7 @@ import { DialogRegistrarAltaInternacao } from '../../components/dialog-registrar
 import { ETAPA_TRATAMENTO_CONFIG } from '../../interfaces/etapa-tratamento-config';
 import { Internacao } from '../../interfaces/internacao';
 import { InternacoesService } from '../../services/internacoes-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'app-internacao-detalhada',
@@ -72,6 +73,8 @@ export class InternacaoDetalhada implements OnInit {
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
   protected readonly internacao = signal<Internacao | null>(null);
   protected readonly registrarAltaVisible = signal(false);
@@ -138,7 +141,7 @@ export class InternacaoDetalhada implements OnInit {
 
   protected excluirInternacao(): void {
     const internacao = this.internacao();
-    if (!internacao) return;
+    if (!internacao || !this.isAdmin) return;
 
     this.internacoesService.deleteInternacao(internacao.id).subscribe({
       next: () => {

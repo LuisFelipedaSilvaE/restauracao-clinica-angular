@@ -129,17 +129,19 @@
           }
         </ng-template>
       </p-button>
-      <p-button
-        label="Excluir"
-        severity="danger"
-        variant="outlined"
-        [pt]="actionButtonPt"
-        (onClick)="solicitarExclusao()"
-      >
-        <ng-template #icon>
-          <svg lucideTrash2 class="h-5 w-5"></svg>
-        </ng-template>
-      </p-button>
+      @if (isAdmin) {
+        <p-button
+          label="Excluir"
+          severity="danger"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="solicitarExclusao()"
+        >
+          <ng-template #icon>
+            <svg lucideTrash2 class="h-5 w-5"></svg>
+          </ng-template>
+        </p-button>
+      }
     </div>
   </card>
   <card>

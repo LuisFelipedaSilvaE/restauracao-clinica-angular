@@ -27,6 +27,7 @@ import { BadgeModule } from 'primeng/badge';
 import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
+import { AuthService } from '../../../../core/services/auth-service';
 
 const ACOLHIDOS_ATIVOS_MOCK = 10;
 
@@ -72,6 +73,8 @@ export class ConvenioDetalhado implements OnInit {
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly conveniosService = inject(ConveniosService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
   protected readonly convenio = signal<Convenio | null>(null);
   protected readonly carregando = signal(false);
@@ -164,7 +167,7 @@ export class ConvenioDetalhado implements OnInit {
 
   protected excluirConvenio(): void {
     const convenio = this.convenio();
-    if (!convenio) return;
+    if (!convenio || !this.isAdmin) return;
 
     this.conveniosService.deleteConvenio(convenio.id).subscribe({
       next: () => {

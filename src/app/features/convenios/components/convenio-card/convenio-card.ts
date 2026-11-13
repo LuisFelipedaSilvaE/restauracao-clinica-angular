@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideDoorOpen,
@@ -23,6 +23,7 @@ import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
 import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
 import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { TooltipModule } from 'primeng/tooltip';
+import { AuthService } from '../../../../core/services/auth-service';
 
 interface ToggleConvenioButton {
   tooltipValue: string;
@@ -58,6 +59,9 @@ interface ToggleConvenioButton {
   styleUrl: './convenio-card.css',
 })
 export class ConvenioCard {
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
+
   readonly convenio = input.required<ConvenioCardContent>();
   readonly showActions = input(true);
   readonly statusConvenioChange = output<ToggleConvenioDto>();
@@ -104,6 +108,8 @@ export class ConvenioCard {
   }
 
   solicitarExclusao(): void {
+    if (!this.isAdmin) return;
+
     this.excluirConvenio.emit({
       id: this.convenio().id,
       nome: this.convenio().descricao,

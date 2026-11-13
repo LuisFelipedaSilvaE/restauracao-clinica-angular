@@ -20,6 +20,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { AuthService } from '../../../../core/services/auth-service';
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -47,6 +48,8 @@ export class ConveniosLista implements OnInit {
   protected readonly emptyConveniosIcon = LucideFolderX;
   private readonly conveniosService = inject(ConveniosService);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
   protected readonly convenios = computed<ConvenioCardContent[]>(() => {
     return this.conveniosService.convenios().map((convenio) => {
@@ -125,6 +128,8 @@ export class ConveniosLista implements OnInit {
     if (!acao) return;
 
     if (acao.tipo === 'exclusao') {
+      if (!this.isAdmin) return;
+
       this.conveniosService.deleteConvenio(acao.id).subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);
@@ -154,6 +159,8 @@ export class ConveniosLista implements OnInit {
   }
 
   solicitarExclusao(convenio: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'exclusao', ...convenio });
     this.dialogConfirmVisible.set(true);
   }

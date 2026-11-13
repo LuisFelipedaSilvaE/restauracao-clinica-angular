@@ -77,16 +77,18 @@
             <svg lucidePencil class="h-4 w-4"></svg>
           </ng-template>
         </p-button>
-        <p-button
-          label="Excluir"
-          variant="outlined"
-          severity="danger"
-          (onClick)="confirmarExclusaoMedicamento()"
-        >
-          <ng-template #icon>
-            <svg lucideTrash2 class="h-4 w-4"></svg>
-          </ng-template>
-        </p-button>
+        @if (isAdmin) {
+          <p-button
+            label="Excluir"
+            variant="outlined"
+            severity="danger"
+            (onClick)="confirmarExclusaoMedicamento()"
+          >
+            <ng-template #icon>
+              <svg lucideTrash2 class="h-4 w-4"></svg>
+            </ng-template>
+          </p-button>
+        }
       </div>
     </div>
   </card>
@@ -131,16 +133,18 @@
   (onSucess)="this.medicamento.set($event)"
 />
 
-<confirm-dialog
-  [(visible)]="confirmarExclusao"
-  title="Excluir medicamento"
-  [message]="
-    'Deseja excluir ' +
-    (medicamento()?.nome ?? 'este medicamento') +
-    '? Esta ação não poderá ser desfeita.'
-  "
-  confirmLabel="Excluir"
-  severity="danger"
-  [loading]="loading().mutation"
-  (onConfirm)="excluirMedicamento()"
-/>
+@if (isAdmin) {
+  <confirm-dialog
+    [(visible)]="confirmarExclusao"
+    title="Excluir medicamento"
+    [message]="
+      'Deseja excluir ' +
+      (medicamento()?.nome ?? 'este medicamento') +
+      '? Esta ação não poderá ser desfeita.'
+    "
+    confirmLabel="Excluir"
+    severity="danger"
+    [loading]="loading().mutation"
+    (onConfirm)="excluirMedicamento()"
+  />
+}

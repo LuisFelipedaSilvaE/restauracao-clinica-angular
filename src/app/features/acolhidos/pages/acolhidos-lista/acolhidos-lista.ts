@@ -29,6 +29,7 @@ import { AcolhidosService } from '../../services/acolhidos-service';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 import { ResponsaveisLista } from '../../../responsaveis/pages/responsaveis-lista/responsaveis-lista';
 import { ResponsaveisService } from '../../../responsaveis/services/responsaveis-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 type AccordionValue = string | number | string[] | number[] | null | undefined;
 
@@ -69,6 +70,8 @@ export class AcolhidosLista implements OnInit {
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
   private readonly responsaveisService = inject(ResponsaveisService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly acolhidos = this.acolhidosService.acolhidos;
   protected readonly loading = computed(
     () => this.acolhidosService.loading().list || this.internacoesService.loading().list,
@@ -225,6 +228,8 @@ export class AcolhidosLista implements OnInit {
     if (!acao) return;
 
     if (acao.tipo === 'exclusao') {
+      if (!this.isAdmin) return;
+
       this.acolhidosService.deleteAcolhido(acao.id).subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);
@@ -254,6 +259,8 @@ export class AcolhidosLista implements OnInit {
   }
 
   protected solicitarExclusao(acolhido: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'exclusao', ...acolhido });
     this.dialogConfirmVisible.set(true);
   }

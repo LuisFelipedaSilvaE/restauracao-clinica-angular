@@ -90,16 +90,18 @@
   [medicamento]="medicamentoMovimentacao()"
 />
 
-<confirm-dialog
-  [(visible)]="confirmarExclusao"
-  title="Excluir medicamento"
-  [message]="
-    'Deseja excluir ' +
-    (medicamentoMovimentacao()?.nome ?? 'este medicamento') +
-    '? Esta ação não poderá ser desfeita.'
-  "
-  confirmLabel="Excluir"
-  severity="danger"
-  [loading]="loading()"
-  (onConfirm)="excluirMedicamento()"
-/>
+@if (isAdmin) {
+  <confirm-dialog
+    [(visible)]="confirmarExclusao"
+    title="Excluir medicamento"
+    [message]="
+      'Deseja excluir ' +
+      (medicamentoMovimentacao()?.nome ?? 'este medicamento') +
+      '? Esta ação não poderá ser desfeita.'
+    "
+    confirmLabel="Excluir"
+    severity="danger"
+    [loading]="loading()"
+    (onConfirm)="excluirMedicamento()"
+  />
+}

@@ -9,6 +9,7 @@ import {
   LucideTrash2,
 } from '@lucide/angular';
 import { TagModule } from 'primeng/tag';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
@@ -32,6 +33,8 @@ import { InternacaoCardContent } from '../../interfaces/internacao-card-content'
 })
 export class InternacaoCard {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   readonly internacao = input.required<InternacaoCardContent>();
   readonly registrarAlta = output<InternacaoCardContent>();
   readonly excluirInternacao = output<{ id: number; nome: string }>();
@@ -59,6 +62,7 @@ export class InternacaoCard {
     },
     {
       label: 'Excluir',
+      visible: this.isAdmin,
       lucideIcon: LucideTrash2,
       iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
       command: () =>
@@ -69,7 +73,7 @@ export class InternacaoCard {
     },
     {
       label: 'Registrar alta',
-      visible: this.internacao().ativo,
+      visible: this.isAdmin && this.internacao().ativo,
       lucideIcon: LucideLogOut,
       iconClass: 'h-4 w-4 text-action-success',
       command: () => this.registrarAlta.emit(this.internacao()),

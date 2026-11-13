@@ -22,6 +22,7 @@ import { IconColor } from '../../../../shared/directives/icon-color';
 import { DialogMovimentacaoMedicamento } from '../../components/dialog-movimentacao-medicamento/dialog-movimentacao-medicamento';
 import { Medicamento } from '../../interfaces/medicamento';
 import { MedicamentosService } from '../../services/medicamentos-service';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'app-medicamento-detalhado',
@@ -57,6 +58,8 @@ export class MedicamentoDetalhado implements OnInit {
   private readonly medicamentosService = inject(MedicamentosService);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly dialogVisible = signal<boolean>(false);
   protected readonly typeMovimentacao = signal<'entrada' | 'saida' | null>(null);
   protected readonly medicamento = signal<Medicamento | null>(null);
@@ -100,12 +103,13 @@ export class MedicamentoDetalhado implements OnInit {
   }
 
   confirmarExclusaoMedicamento(): void {
+    if (!this.isAdmin) return;
     this.confirmarExclusao.set(true);
   }
 
   excluirMedicamento(): void {
     const medicamento = this.medicamento();
-    if (!medicamento) return;
+    if (!medicamento || !this.isAdmin) return;
 
     this.medicamentosService.deleteMedicamento(medicamento.id).subscribe({
       next: () => {

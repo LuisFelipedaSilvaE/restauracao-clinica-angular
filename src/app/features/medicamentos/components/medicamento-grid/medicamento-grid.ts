@@ -9,6 +9,7 @@ import { Medicamento } from '../../interfaces/medicamento';
 import { MedicamentosService } from '../../services/medicamentos-service';
 import { DialogMovimentacaoMedicamento } from '../dialog-movimentacao-medicamento/dialog-movimentacao-medicamento';
 import { MedicamentoCard } from '../medicamento-card/medicamento-card';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'medicamento-grid',
@@ -27,6 +28,8 @@ export class MedicamentoGrid {
   readonly medicamentos = input.required<Medicamento[]>();
   readonly medicamentosService = inject(MedicamentosService);
   readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   readonly loading = input(false);
   readonly limparFiltros = output<void>();
   protected readonly dialogVisible = signal<boolean>(false);
@@ -58,13 +61,15 @@ export class MedicamentoGrid {
   }
 
   enableConfirmDialog(medicamento: Medicamento): void {
+    if (!this.isAdmin) return;
+
     this.medicamentoMovimentacao.set(medicamento);
     this.confirmarExclusao.set(true);
   }
 
   excluirMedicamento(): void {
     const medicamento = this.medicamentoMovimentacao();
-    if (!medicamento) return;
+    if (!medicamento || !this.isAdmin) return;
 
     this.medicamentosService.deleteMedicamento(medicamento.id).subscribe({
       next: () => {
