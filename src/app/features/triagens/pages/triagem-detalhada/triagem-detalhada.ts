@@ -159,6 +159,18 @@ export class TriagemDetalhada {
 
     return config[triagem.triagemStatus.toLowerCase()];
   });
+  protected readonly statusTagLabel = computed(() => {
+    const status = this.triagem()?.triagemStatus;
+    if (!status) return '';
+
+    const labels: Record<string, string> = {
+      AGENDADA: 'Agendada',
+      ATRASADA: 'Atrasada',
+      CONCLUIDA: 'Concluída',
+    };
+
+    return labels[status] ?? status;
+  });
 
   ngOnInit(): void {
     this.getTriagem();
