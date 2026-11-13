@@ -7,6 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { DetailInfoField } from '../../../../shared/components/detail-info-field/detail-info-field';
 import { CepPipe } from '../../../../shared/pipes/cep-pipe';
 import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
+import { EnderecoPipe } from '../../../../shared/pipes/endereco-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { ProntuarioSectionCard } from '../../components/prontuario-section-card/prontuario-section-card';
 import { ProntuarioHeaderContent } from '../../interfaces/prontuario-header-content';
@@ -23,6 +24,7 @@ import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
     SkeletonModule,
     CepPipe,
     CpfPipe,
+    EnderecoPipe,
     TelefonePipe,
     DetailInfoField,
     ProntuarioSectionCard,

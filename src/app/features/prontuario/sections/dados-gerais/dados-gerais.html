@@ -131,13 +131,7 @@
         </detail-info-field>
 
         <detail-info-field label="Endereço completo" class="sm:col-span-2">
-          {{ acolhido.responsavel.endereco.logradouro }},
-          {{ acolhido.responsavel.endereco.numero }}
-          @if (acolhido.responsavel.endereco.complemento) {
-            · {{ acolhido.responsavel.endereco.complemento }}
-          }
-          · {{ acolhido.responsavel.endereco.bairro }} ·
-          {{ acolhido.responsavel.endereco.cidade }}/{{ acolhido.responsavel.endereco.estado }}
+          {{ acolhido.responsavel.endereco | endereco }}
         </detail-info-field>
       </div>
     </prontuario-section-card>
