@@ -13,7 +13,6 @@ import { DataViewModule } from 'primeng/dataview';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { Triagem } from '../../interfaces/triagem';
-import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 import { TriagemCard } from '../triagem-card/triagem-card';
 
 @Component({
@@ -42,8 +41,9 @@ export class TriagemGrid {
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
+  readonly cancelarTriagem = output<{ id: number; nome: string }>();
+  readonly descancelarTriagem = output<{ id: number; nome: string }>();
   readonly excluirTriagem = output<{ id: number; nome: string }>();
-  readonly statusTriagemChange = output<ToggleTriagemDto>();
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly emptyStatusContent = computed(() => {
     const config = {
@@ -61,6 +61,11 @@ export class TriagemGrid {
         icon: LucideCircleCheckBig,
         title: 'Nenhuma triagem concluída',
         description: 'Não há triagens concluídas no momento.',
+      },
+      CANCELADA: {
+        icon: LucideCalendarX2,
+        title: 'Nenhuma triagem cancelada',
+        description: 'Não há triagens canceladas no momento.',
       },
     };
 

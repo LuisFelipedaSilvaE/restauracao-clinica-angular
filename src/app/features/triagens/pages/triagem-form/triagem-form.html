@@ -139,7 +139,12 @@
           label="Cancelar"
           (onClick)="limparForm()"
         />
-        <p-button type="submit" label="Agendar triagem" />
+        <p-button
+          type="submit"
+          [label]="id() ? 'Salvar alterações' : 'Agendar triagem'"
+          [loading]="triagensService.loading().mutation"
+          [disabled]="triagensService.loading().mutation"
+        />
       </div>
     </form>
   </card>

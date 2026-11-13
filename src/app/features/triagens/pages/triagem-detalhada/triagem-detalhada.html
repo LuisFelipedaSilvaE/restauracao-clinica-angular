@@ -41,12 +41,7 @@
     </div>
   </card>
 } @else if (triagem(); as triagem) {
-  <card
-    class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-    [ngClass]="
-      !triagem.ativo ? 'border-2! border-dashed! border-border-muted! bg-surface-subtle!' : ''
-    "
-  >
+  <card class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <div class="flex min-w-0 items-center gap-3">
       <span
         aria-hidden="true"
@@ -59,15 +54,11 @@
         <div class="flex flex-wrap gap-2">
           <p-tag [value]="triagem.convenio.descricao" [customTag]="triagem.convenio.cor" />
           <p-tag [severity]="statusTagSeverity()" [value]="statusTagLabel()" />
-          <p-tag
-            [severity]="triagem.ativo ? 'success' : 'secondary'"
-            [value]="triagem.ativo ? 'Ativa' : 'Inativa'"
-          />
         </div>
       </div>
     </div>
     <div class="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap lg:justify-end">
-      @if (podeConcluir()) {
+      @if (podeAlterar()) {
         <p-button
           label="Reagendar"
           severity="secondary"
@@ -79,6 +70,8 @@
             <svg lucideCalendarClock class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
           </ng-template>
         </p-button>
+      }
+      @if (podeConcluir()) {
         <p-button
           label="Concluir"
           severity="success"
@@ -104,7 +97,7 @@
           </ng-template>
         </p-button>
       }
-      @if (triagem.ativo && triagem.triagemStatus !== 'CONCLUIDA') {
+      @if (podeAlterar()) {
         <a
           pButton
           severity="secondary"
@@ -115,22 +108,31 @@
           <svg lucidePencil class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
           <span pButtonLabel>Editar</span></a
         >
+        <p-button
+          label="Cancelar"
+          severity="danger"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="solicitarCancelamento()"
+        >
+          <ng-template #icon>
+            <svg lucideCalendarX2 class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+          </ng-template>
+        </p-button>
       }
-      <p-button
-        [label]="triagem.ativo ? 'Inativar' : 'Ativar'"
-        [severity]="triagem.ativo ? 'warn' : 'success'"
-        variant="outlined"
-        [pt]="actionButtonPt"
-        (onClick)="solicitarAlteracaoStatus()"
-      >
-        <ng-template #icon>
-          @if (triagem.ativo) {
-            <svg lucidePowerOff class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
-          } @else {
-            <svg lucidePower class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
-          }
-        </ng-template>
-      </p-button>
+      @if (podeDescancelar()) {
+        <p-button
+          label="Descancelar"
+          severity="warn"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="solicitarDescancelamento()"
+        >
+          <ng-template #icon>
+            <svg lucideRotateCcwClock class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+          </ng-template>
+        </p-button>
+      }
       @if (isAdmin) {
         <p-button
           label="Excluir"

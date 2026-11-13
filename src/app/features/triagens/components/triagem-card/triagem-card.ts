@@ -3,11 +3,10 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideCalendarClock,
+  LucideCalendarX2,
   LucideCircleCheckBig,
   LucideEye,
   LucidePencil,
-  LucidePower,
-  LucidePowerOff,
   LucideRotateCcwClock,
   LucideTrash2,
 } from '@lucide/angular';
@@ -22,7 +21,6 @@ import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { isSameLocalDate } from '../../../../shared/utils/local-date-time';
 import { Triagem } from '../../interfaces/triagem';
 import { StatusTriagem } from '../../enums/status-triagem';
-import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 
 @Component({
   selector: 'triagem-card',
@@ -36,17 +34,24 @@ export class TriagemCard {
   readonly concluirTriagem = output<{ id: number; nome: string }>();
   readonly reabrirTriagem = output<{ id: number; nome: string }>();
   readonly reagendarTriagem = output<Triagem>();
+  readonly cancelarTriagem = output<{ id: number; nome: string }>();
+  readonly descancelarTriagem = output<{ id: number; nome: string }>();
   readonly excluirTriagem = output<{ id: number; nome: string }>();
-  readonly statusTriagemChange = output<ToggleTriagemDto>();
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly agendadaHoje = computed(
     () =>
-      this.triagem().triagemStatus !== StatusTriagem.CONCLUIDA &&
-      this.triagem().ativo &&
+      this.triagem().status === StatusTriagem.AGENDADA &&
       isSameLocalDate(this.triagem().dataAgendada, this.dataReferencia()),
   );
+  protected readonly podeConcluir = computed(() => {
+    const triagem = this.triagem();
+    const situacaoPermite =
+      triagem.status === StatusTriagem.AGENDADA || triagem.status === StatusTriagem.ATRASADA;
+
+    return situacaoPermite && new Date(triagem.dataAgendada) <= this.dataReferencia();
+  });
   protected readonly acoes = computed<AcaoMenu[]>(() => {
     return [
       {
@@ -57,7 +62,9 @@ export class TriagemCard {
       },
       {
         label: 'Editar dados',
-        visible: this.triagem().ativo && this.triagem().triagemStatus !== StatusTriagem.CONCLUIDA,
+        visible:
+          this.triagem().status === StatusTriagem.AGENDADA ||
+          this.triagem().status === StatusTriagem.ATRASADA,
         lucideIcon: LucidePencil,
         iconClass: 'h-4 w-4 text-action-secondary-text',
         command: () => this.router.navigate(['/triagens', this.triagem().id, 'editar']),
@@ -65,19 +72,15 @@ export class TriagemCard {
       {
         label: 'Reagendar triagem',
         visible:
-          this.triagem().ativo &&
-          (this.triagem().triagemStatus === StatusTriagem.AGENDADA ||
-            this.triagem().triagemStatus === StatusTriagem.ATRASADA),
+          this.triagem().status === StatusTriagem.AGENDADA ||
+          this.triagem().status === StatusTriagem.ATRASADA,
         lucideIcon: LucideCalendarClock,
         iconClass: 'h-4 w-4 text-action-info',
         command: () => this.reagendarTriagem.emit(this.triagem()),
       },
       {
         label: 'Concluir triagem',
-        visible:
-          this.triagem().ativo &&
-          (this.triagem().triagemStatus === StatusTriagem.AGENDADA ||
-            this.triagem().triagemStatus === StatusTriagem.ATRASADA),
+        visible: this.podeConcluir(),
         lucideIcon: LucideCircleCheckBig,
         iconClass: 'h-4 w-4 text-action-success',
         command: () =>
@@ -88,7 +91,7 @@ export class TriagemCard {
       },
       {
         label: 'Reabrir triagem',
-        visible: this.triagem().ativo && this.triagem().triagemStatus === StatusTriagem.CONCLUIDA,
+        visible: this.triagem().status === StatusTriagem.CONCLUIDA,
         lucideIcon: LucideRotateCcwClock,
         iconClass: 'h-4 w-4 text-action-warning',
         command: () =>
@@ -98,15 +101,27 @@ export class TriagemCard {
           }),
       },
       {
-        label: this.triagem().ativo ? 'Inativar' : 'Ativar',
-        lucideIcon: this.triagem().ativo ? LucidePowerOff : LucidePower,
-        iconClass: this.triagem().ativo
-          ? 'h-4 w-4 text-action-warning'
-          : 'h-4 w-4 text-action-success',
+        label: 'Cancelar triagem',
+        visible:
+          this.triagem().status === StatusTriagem.AGENDADA ||
+          this.triagem().status === StatusTriagem.ATRASADA,
+        lucideIcon: LucideCalendarX2,
+        iconClass: 'h-4 w-4 text-action-destructive',
         command: () =>
-          this.statusTriagemChange.emit({
+          this.cancelarTriagem.emit({
             id: this.triagem().id,
-            ativo: !this.triagem().ativo,
+            nome: this.triagem().nomePossivelAcolhido,
+          }),
+      },
+      {
+        label: 'Descancelar triagem',
+        visible: this.triagem().status === StatusTriagem.CANCELADA,
+        lucideIcon: LucideRotateCcwClock,
+        iconClass: 'h-4 w-4 text-action-warning',
+        command: () =>
+          this.descancelarTriagem.emit({
+            id: this.triagem().id,
+            nome: this.triagem().nomePossivelAcolhido,
           }),
       },
       {

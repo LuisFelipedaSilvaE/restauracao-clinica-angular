@@ -3,5 +3,5 @@ export interface TriagemRequest {
   nomePossivelAcolhido: string;
   telefone: string;
   dataAgendada: string;
-  observacaoEntrevista: string;
+  observacaoEntrevista: string | null;
 }

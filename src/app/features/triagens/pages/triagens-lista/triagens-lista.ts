@@ -31,15 +31,19 @@ import { FilterTriagensCard } from '../../components/filter-triagens-card/filter
 import { TriagemGrid } from '../../components/triagem-grid/triagem-grid';
 import { TriagemReagendamentoForm } from '../../components/triagem-reagendamento-form/triagem-reagendamento-form';
 import { Triagem } from '../../interfaces/triagem';
-import { ToggleTriagemDto } from '../../interfaces/toggle-triagem-dto';
 import { TriagensService } from '../../services/triagens-service';
 import { AuthService } from '../../../../core/services/auth-service';
 
-type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
-type StatusTriagemLista = 'AGENDADA' | 'ATRASADA' | 'CONCLUIDA';
+type AcaoTriagem = 'concluir' | 'reabrir' | 'cancelar' | 'descancelar' | 'excluir';
+type StatusTriagemLista = 'AGENDADA' | 'ATRASADA' | 'CONCLUIDA' | 'CANCELADA';
 
 const STATUS_TRIAGEM_STORAGE_KEY = 'triagens-status-selecionado';
-const STATUS_TRIAGEM_VALIDOS: StatusTriagemLista[] = ['AGENDADA', 'ATRASADA', 'CONCLUIDA'];
+const STATUS_TRIAGEM_VALIDOS: StatusTriagemLista[] = [
+  'AGENDADA',
+  'ATRASADA',
+  'CONCLUIDA',
+  'CANCELADA',
+];
 
 @Component({
   selector: 'app-triagens-lista',
@@ -87,19 +91,25 @@ export class TriagensLista implements OnInit {
         label: 'Agendadas',
         status: 'AGENDADA',
         icon: LucideCheck,
-        total: triagens.filter((t) => t.triagemStatus === 'AGENDADA').length,
+        total: triagens.filter((t) => t.status === 'AGENDADA').length,
       },
       {
         label: 'Atrasadas',
         status: 'ATRASADA',
         icon: LucideCalendarX2,
-        total: triagens.filter((t) => t.triagemStatus === 'ATRASADA').length,
+        total: triagens.filter((t) => t.status === 'ATRASADA').length,
       },
       {
         label: 'Concluídas',
         status: 'CONCLUIDA',
         icon: LucideRotateCcwClock,
-        total: triagens.filter((t) => t.triagemStatus === 'CONCLUIDA').length,
+        total: triagens.filter((t) => t.status === 'CONCLUIDA').length,
+      },
+      {
+        label: 'Canceladas',
+        status: 'CANCELADA',
+        icon: LucideCalendarX2,
+        total: triagens.filter((t) => t.status === 'CANCELADA').length,
       },
     ];
   });
@@ -118,15 +128,15 @@ export class TriagensLista implements OnInit {
       this.rangeDataSelecionado() !== 'todos',
   );
   protected readonly temTriagensNoStatus = computed(() =>
-    this.triagens().some((triagem) => triagem.triagemStatus === this.statusSelecionado()),
+    this.triagens().some((triagem) => triagem.status === this.statusSelecionado()),
   );
   protected readonly mutationLoading = computed(() => this.loading().mutation);
   protected readonly confirmTitle = computed(() => {
     const acao = this.acaoPendente();
 
     if (acao === 'reabrir') return 'Reabrir triagem';
-    if (acao === 'ativar') return 'Ativar triagem';
-    if (acao === 'inativar') return 'Inativar triagem';
+    if (acao === 'cancelar') return 'Cancelar triagem';
+    if (acao === 'descancelar') return 'Descancelar triagem';
     if (acao === 'excluir') return 'Excluir triagem';
     return 'Concluir triagem';
   });
@@ -143,12 +153,12 @@ export class TriagensLista implements OnInit {
       return `Deseja reabrir a triagem de ${triagem.nome}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
     }
 
-    if (acao === 'ativar') {
-      return `Deseja ativar a triagem de ${triagem.nome}? As ações da triagem voltarão a ficar disponíveis.`;
+    if (acao === 'cancelar') {
+      return `Deseja cancelar a triagem de ${triagem.nome}? Ela poderá ser descancelada posteriormente.`;
     }
 
-    if (acao === 'inativar') {
-      return `Deseja inativar a triagem de ${triagem.nome}? As ações da triagem ficarão indisponíveis até que ela seja reativada.`;
+    if (acao === 'descancelar') {
+      return `Deseja descancelar a triagem de ${triagem.nome}? A situação será recalculada conforme a data agendada.`;
     }
 
     return `Deseja excluir a triagem de ${triagem.nome}? Esta ação não poderá ser desfeita.`;
@@ -156,16 +166,16 @@ export class TriagensLista implements OnInit {
   protected readonly confirmLabel = computed(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'Reabrir';
-    if (acao === 'ativar') return 'Ativar';
-    if (acao === 'inativar') return 'Inativar';
+    if (acao === 'cancelar') return 'Cancelar';
+    if (acao === 'descancelar') return 'Descancelar';
     if (acao === 'excluir') return 'Excluir';
     return 'Concluir';
   });
   protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'primary';
-    if (acao === 'ativar') return 'success';
-    if (acao === 'excluir' || acao === 'inativar') return 'danger';
+    if (acao === 'descancelar') return 'primary';
+    if (acao === 'excluir' || acao === 'cancelar') return 'danger';
     return 'success';
   });
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
@@ -225,7 +235,7 @@ export class TriagensLista implements OnInit {
         validRangeData = dataTriagem >= inicio && dataTriagem <= fim;
       }
 
-      const validStatus = triagem.triagemStatus === statusFiltro;
+      const validStatus = triagem.status === statusFiltro;
 
       return validBusca && validStatus && convenioValido && validRangeData;
     });
@@ -233,10 +243,8 @@ export class TriagensLista implements OnInit {
     const agora = this.agora();
 
     return triagensFiltradas.sort((a, b) => {
-      if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
-
-      const aEhHoje = a.triagemStatus !== 'CONCLUIDA' && isSameLocalDate(a.dataAgendada, agora);
-      const bEhHoje = b.triagemStatus !== 'CONCLUIDA' && isSameLocalDate(b.dataAgendada, agora);
+      const aEhHoje = a.status === 'AGENDADA' && isSameLocalDate(a.dataAgendada, agora);
+      const bEhHoje = b.status === 'AGENDADA' && isSameLocalDate(b.dataAgendada, agora);
 
       if (aEhHoje !== bEhHoje) return aEhHoje ? -1 : 1;
       if (aEhHoje && bEhHoje) {
@@ -324,12 +332,15 @@ export class TriagensLista implements OnInit {
     this.dialogConfirmVisible.set(true);
   }
 
-  protected solicitarAlteracaoStatus(dto: ToggleTriagemDto): void {
-    const triagem = this.triagens().find((item) => item.id === dto.id);
-    if (!triagem) return;
+  protected solicitarCancelamento(triagem: { id: number; nome: string }): void {
+    this.triagemPendente.set(triagem);
+    this.acaoPendente.set('cancelar');
+    this.dialogConfirmVisible.set(true);
+  }
 
-    this.triagemPendente.set({ id: triagem.id, nome: triagem.nomePossivelAcolhido });
-    this.acaoPendente.set(dto.ativo ? 'ativar' : 'inativar');
+  protected solicitarDescancelamento(triagem: { id: number; nome: string }): void {
+    this.triagemPendente.set(triagem);
+    this.acaoPendente.set('descancelar');
     this.dialogConfirmVisible.set(true);
   }
 
@@ -355,22 +366,22 @@ export class TriagensLista implements OnInit {
       return;
     }
 
-    if (acao === 'ativar' || acao === 'inativar') {
+    if (acao === 'cancelar' || acao === 'descancelar') {
       const acao$ =
-        acao === 'ativar'
-          ? this.triagensService.ativarTriagem(triagem.id)
-          : this.triagensService.desativarTriagem(triagem.id);
+        acao === 'cancelar'
+          ? this.triagensService.cancelarTriagem(triagem.id)
+          : this.triagensService.descancelarTriagem(triagem.id);
 
       acao$.subscribe({
         next: () => {
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
-            summary: acao === 'ativar' ? 'Triagem ativada!' : 'Triagem inativada!',
+            summary: acao === 'cancelar' ? 'Triagem cancelada!' : 'Triagem descancelada!',
             detail:
-              acao === 'ativar'
-                ? 'A triagem foi ativada com sucesso.'
-                : 'A triagem foi inativada com sucesso.',
+              acao === 'cancelar'
+                ? 'A triagem foi cancelada com sucesso.'
+                : 'A triagem foi descancelada com sucesso.',
             life: 3000,
           });
         },

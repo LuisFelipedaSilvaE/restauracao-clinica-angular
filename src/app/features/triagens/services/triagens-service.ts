@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
@@ -7,6 +7,8 @@ import { ConveniosService } from '../../convenios/services/convenios-service';
 import { Triagem } from '../interfaces/triagem';
 import { TriagemReagendamentoRequest } from '../interfaces/triagem-reagendamento-request';
 import { TriagemRequest } from '../interfaces/triagem-request';
+import { StatusTriagem } from '../enums/status-triagem';
+import { AuthService } from '../../../core/services/auth-service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +17,7 @@ export class TriagensService {
   private readonly baseAPIUrl = `${environment.apiUrl}/triagens`;
   private readonly http = inject(HttpClient);
   private readonly conveniosService = inject(ConveniosService);
+  private readonly authService = inject(AuthService);
   private readonly internalTriagens = signal<Triagem[]>([]);
   readonly triagens = computed(() => {
     const conveniosPorId = new Map(
@@ -33,6 +36,15 @@ export class TriagensService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalTriagens.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   createTriagem(triagem: TriagemRequest): Observable<Triagem> {
     this.setLoading('mutation', true);
@@ -111,19 +123,19 @@ export class TriagensService {
     );
   }
 
-  ativarTriagem(id: number): Observable<Triagem> {
+  cancelarTriagem(id: number): Observable<Triagem> {
     this.setLoading('mutation', true);
 
-    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/ativar`, null).pipe(
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/cancelar`, null).pipe(
       tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
 
-  desativarTriagem(id: number): Observable<Triagem> {
+  descancelarTriagem(id: number): Observable<Triagem> {
     this.setLoading('mutation', true);
 
-    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/desativar`, null).pipe(
+    return this.http.patch<Triagem>(`${this.baseAPIUrl}/${id}/descancelar`, null).pipe(
       tap((triagemAtualizada) => this.substituirTriagemNaLista(triagemAtualizada)),
       finalize(() => this.setLoading('mutation', false)),
     );
@@ -155,6 +167,13 @@ export class TriagensService {
   }
 
   private ordenarPorStatus(triagens: Triagem[]): Triagem[] {
-    return [...triagens].sort((a, b) => Number(b.triagemStatus) - Number(a.triagemStatus));
+    const ordem: Record<StatusTriagem, number> = {
+      [StatusTriagem.ATRASADA]: 0,
+      [StatusTriagem.AGENDADA]: 1,
+      [StatusTriagem.CONCLUIDA]: 2,
+      [StatusTriagem.CANCELADA]: 3,
+    };
+
+    return [...triagens].sort((a, b) => ordem[a.status] - ordem[b.status]);
   }
 }

@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideCalendar,
   LucideCalendarCheck,
   LucideCalendarClock,
+  LucideCalendarX2,
   LucideCircleCheckBig,
   LucideHandshake,
   LucidePencil,
   LucidePhone,
-  LucidePower,
-  LucidePowerOff,
   LucideRotateCcwClock,
   LucideTrash2,
 } from '@lucide/angular';
@@ -19,6 +19,7 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
+import { interval, map } from 'rxjs';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { Card } from '../../../../shared/components/card/card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -33,7 +34,7 @@ import { Triagem } from '../../interfaces/triagem';
 import { TriagensService } from '../../services/triagens-service';
 import { AuthService } from '../../../../core/services/auth-service';
 
-type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
+type AcaoTriagem = 'concluir' | 'reabrir' | 'cancelar' | 'descancelar' | 'excluir';
 
 @Component({
   selector: 'app-triagem-detalhada',
@@ -60,10 +61,9 @@ type AcaoTriagem = 'concluir' | 'reabrir' | 'ativar' | 'inativar' | 'excluir';
     LucideCalendar,
     LucideCalendarCheck,
     LucideCalendarClock,
+    LucideCalendarX2,
     LucideCircleCheckBig,
     LucideRotateCcwClock,
-    LucidePower,
-    LucidePowerOff,
     BackButton,
     ConfirmDialog,
     DetailInfoField,
@@ -90,23 +90,26 @@ export class TriagemDetalhada {
   protected readonly reagendamentoDialogVisible = signal(false);
   private readonly triagensService = inject(TriagensService);
   protected readonly loading = this.triagensService.loading;
+  protected readonly agora = toSignal(interval(60_000).pipe(map(() => new Date())), {
+    initialValue: new Date(),
+  });
   protected readonly mutationLoading = computed(() => this.loading().mutation);
+  protected readonly podeAlterar = computed(() => {
+    const status = this.triagem()?.status;
+    return status === 'AGENDADA' || status === 'ATRASADA';
+  });
   protected readonly podeConcluir = computed(() => {
     const triagem = this.triagem();
-    return (
-      triagem?.ativo &&
-      (triagem.triagemStatus === 'AGENDADA' || triagem.triagemStatus === 'ATRASADA')
-    );
+    return !!triagem && this.podeAlterar() && new Date(triagem.dataAgendada) <= this.agora();
   });
-  protected readonly podeReabrir = computed(
-    () => this.triagem()?.ativo && this.triagem()?.triagemStatus === 'CONCLUIDA',
-  );
+  protected readonly podeReabrir = computed(() => this.triagem()?.status === 'CONCLUIDA');
+  protected readonly podeDescancelar = computed(() => this.triagem()?.status === 'CANCELADA');
   protected readonly confirmTitle = computed(() => {
     const acao = this.acaoPendente();
 
     if (acao === 'reabrir') return 'Reabrir triagem';
-    if (acao === 'ativar') return 'Ativar triagem';
-    if (acao === 'inativar') return 'Inativar triagem';
+    if (acao === 'cancelar') return 'Cancelar triagem';
+    if (acao === 'descancelar') return 'Descancelar triagem';
     if (acao === 'excluir') return 'Excluir triagem';
     return 'Concluir triagem';
   });
@@ -123,12 +126,12 @@ export class TriagemDetalhada {
       return `Deseja reabrir a triagem de ${triagem.nomePossivelAcolhido}? Ela voltará para agendada ou atrasada conforme a data do agendamento.`;
     }
 
-    if (acao === 'ativar') {
-      return `Deseja ativar a triagem de ${triagem.nomePossivelAcolhido}? As ações da triagem voltarão a ficar disponíveis.`;
+    if (acao === 'cancelar') {
+      return `Deseja cancelar a triagem de ${triagem.nomePossivelAcolhido}? Ela poderá ser descancelada posteriormente.`;
     }
 
-    if (acao === 'inativar') {
-      return `Deseja inativar a triagem de ${triagem.nomePossivelAcolhido}? As ações da triagem ficarão indisponíveis até que ela seja reativada.`;
+    if (acao === 'descancelar') {
+      return `Deseja descancelar a triagem de ${triagem.nomePossivelAcolhido}? A situação será recalculada conforme a data agendada.`;
     }
 
     return `Deseja excluir a triagem de ${triagem.nomePossivelAcolhido}? Esta ação não poderá ser desfeita.`;
@@ -136,16 +139,16 @@ export class TriagemDetalhada {
   protected readonly confirmLabel = computed(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'Reabrir';
-    if (acao === 'ativar') return 'Ativar';
-    if (acao === 'inativar') return 'Inativar';
+    if (acao === 'cancelar') return 'Cancelar';
+    if (acao === 'descancelar') return 'Descancelar';
     if (acao === 'excluir') return 'Excluir';
     return 'Concluir';
   });
   protected readonly confirmSeverity = computed<'success' | 'primary' | 'danger'>(() => {
     const acao = this.acaoPendente();
     if (acao === 'reabrir') return 'primary';
-    if (acao === 'ativar') return 'success';
-    if (acao === 'excluir' || acao === 'inativar') return 'danger';
+    if (acao === 'descancelar') return 'primary';
+    if (acao === 'excluir' || acao === 'cancelar') return 'danger';
     return 'success';
   });
   protected readonly statusTagSeverity = computed(() => {
@@ -158,18 +161,20 @@ export class TriagemDetalhada {
       pendente: 'warn',
       atrasada: 'error',
       concluida: 'success',
+      cancelada: 'secondary',
     };
 
-    return config[triagem.triagemStatus.toLowerCase()];
+    return config[triagem.status.toLowerCase()];
   });
   protected readonly statusTagLabel = computed(() => {
-    const status = this.triagem()?.triagemStatus;
+    const status = this.triagem()?.status;
     if (!status) return '';
 
     const labels: Record<string, string> = {
       AGENDADA: 'Agendada',
       ATRASADA: 'Atrasada',
       CONCLUIDA: 'Concluída',
+      CANCELADA: 'Cancelada',
     };
 
     return labels[status] ?? status;
@@ -220,7 +225,7 @@ export class TriagemDetalhada {
   }
 
   protected solicitarReagendamento(): void {
-    if (!this.podeConcluir()) return;
+    if (!this.podeAlterar()) return;
 
     this.reagendamentoDialogVisible.set(true);
   }
@@ -232,11 +237,15 @@ export class TriagemDetalhada {
     this.dialogConfirmVisible.set(true);
   }
 
-  protected solicitarAlteracaoStatus(): void {
-    const triagem = this.triagem();
-    if (!triagem) return;
+  protected solicitarCancelamento(): void {
+    if (!this.podeAlterar()) return;
+    this.acaoPendente.set('cancelar');
+    this.dialogConfirmVisible.set(true);
+  }
 
-    this.acaoPendente.set(triagem.ativo ? 'inativar' : 'ativar');
+  protected solicitarDescancelamento(): void {
+    if (!this.podeDescancelar()) return;
+    this.acaoPendente.set('descancelar');
     this.dialogConfirmVisible.set(true);
   }
 
@@ -263,11 +272,11 @@ export class TriagemDetalhada {
       return;
     }
 
-    if (acao === 'ativar' || acao === 'inativar') {
+    if (acao === 'cancelar' || acao === 'descancelar') {
       const acao$ =
-        acao === 'ativar'
-          ? this.triagensService.ativarTriagem(triagem.id)
-          : this.triagensService.desativarTriagem(triagem.id);
+        acao === 'cancelar'
+          ? this.triagensService.cancelarTriagem(triagem.id)
+          : this.triagensService.descancelarTriagem(triagem.id);
 
       acao$.subscribe({
         next: (triagemAtualizada) => {
@@ -275,11 +284,11 @@ export class TriagemDetalhada {
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
-            summary: acao === 'ativar' ? 'Triagem ativada!' : 'Triagem inativada!',
+            summary: acao === 'cancelar' ? 'Triagem cancelada!' : 'Triagem descancelada!',
             detail:
-              acao === 'ativar'
-                ? 'A triagem foi ativada com sucesso.'
-                : 'A triagem foi inativada com sucesso.',
+              acao === 'cancelar'
+                ? 'A triagem foi cancelada com sucesso.'
+                : 'A triagem foi descancelada com sucesso.',
             life: 3000,
           });
         },

@@ -203,6 +203,8 @@ export class TriagemForm implements OnInit {
   }
 
   protected onSubmit(): void {
+    if (this.triagensService.loading().mutation) return;
+
     this.formSubmitted.set(true);
 
     if (this.triagemForm.invalid) {
@@ -238,7 +240,7 @@ export class TriagemForm implements OnInit {
     return {
       ...formData,
       nomePossivelAcolhido: formData.nomePossivelAcolhido.trim(),
-      observacaoEntrevista: formData.observacaoEntrevista.trim(),
+      observacaoEntrevista: formData.observacaoEntrevista?.trim() || null,
       convenioId: convenio!,
       dataAgendada: dateAndTimeToLocalDateTime(dataAgendada, horaAgendada),
     };
@@ -251,14 +253,14 @@ export class TriagemForm implements OnInit {
       telefone: formatTelefone(triagem.telefone),
       dataAgendada: new Date(triagem.dataAgendada),
       horaAgendada: new Date(triagem.dataAgendada),
-      observacaoEntrevista: triagem.observacaoEntrevista,
+      observacaoEntrevista: triagem.observacaoEntrevista ?? '',
     });
   }
 
   private triagemNaoEncontrada(): void {
     this.messageService.add({
       severity: 'warn',
-      summary: 'Funcionário não encontrado',
+      summary: 'Triagem não encontrada',
       detail: 'O registro solicitado não existe ou foi removido.',
       life: 4000,
     });

@@ -17,6 +17,7 @@ const STATUS_TRIAGEM_LABELS: Record<StatusTriagem, string> = {
   [StatusTriagem.AGENDADA]: 'Agendada',
   [StatusTriagem.ATRASADA]: 'Atrasada',
   [StatusTriagem.CONCLUIDA]: 'Concluída',
+  [StatusTriagem.CANCELADA]: 'Cancelada',
 };
 
 @Injectable({
@@ -113,7 +114,7 @@ export class GlobalSearchService {
       id: triagem.id,
       tipo: 'triagem',
       titulo: triagem.nomePossivelAcolhido,
-      descricao: `${formatTelefone(triagem.telefone)} · ${triagem.convenio.descricao} · ${STATUS_TRIAGEM_LABELS[triagem.triagemStatus]}`,
+      descricao: `${formatTelefone(triagem.telefone)} · ${triagem.convenio.descricao} · ${STATUS_TRIAGEM_LABELS[triagem.status]}`,
       icon: LucideClipboardList,
       rota: ['/triagens', triagem.id],
     };
