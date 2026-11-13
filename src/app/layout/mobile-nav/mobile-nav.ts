@@ -15,7 +15,7 @@ import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../core/services/auth-service';
 import { ProfileColor } from '../../shared/directives/profile-color';
-import { isNavigationRouteActive, NAVIGATION_ROUTES } from '../navigation-routes';
+import { isNavigationRouteActive, navigationRoutesForRole } from '../navigation-routes';
 
 @Component({
   selector: 'app-mobile-nav',
@@ -42,7 +42,7 @@ export class MobileNav {
   isOpen = input<boolean>(false);
   closeMenu = output<void>();
 
-  protected readonly routes = signal(NAVIGATION_ROUTES);
+  protected readonly routes = signal(navigationRoutesForRole(this.authService.getUserRole()));
   private readonly currentUrl = signal(this.router.url);
 
   protected readonly navButtonPt = {

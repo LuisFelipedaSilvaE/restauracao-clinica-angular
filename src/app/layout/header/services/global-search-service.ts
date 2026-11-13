@@ -34,7 +34,8 @@ export class GlobalSearchService {
       return of([]);
     }
 
-    const podeBuscarTriagens = this.authService.hasRole('ADMIN');
+    const podeBuscarTriagens =
+      this.authService.hasRole('ADMIN') || this.authService.hasRole('USER');
 
     return forkJoin({
       acolhidos: this.acolhidosService.getAllAcolhidos(),

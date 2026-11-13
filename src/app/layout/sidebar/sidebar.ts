@@ -7,7 +7,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/services/auth-service';
 import { ProfileColor } from '../../shared/directives/profile-color';
-import { isNavigationRouteActive, NAVIGATION_ROUTES } from '../navigation-routes';
+import { isNavigationRouteActive, navigationRoutesForRole } from '../navigation-routes';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,7 +27,7 @@ export class Sidebar {
     ),
     { initialValue: this.router.url },
   );
-  protected readonly routes = signal(NAVIGATION_ROUTES);
+  protected readonly routes = signal(navigationRoutesForRole(this.authService.getUserRole()));
   protected readonly navButtonPt = {
     root: {
       class: 'justify-start!',

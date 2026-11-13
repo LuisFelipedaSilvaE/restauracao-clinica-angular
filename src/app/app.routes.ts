@@ -53,47 +53,47 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: Dashboard,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'convenios',
         component: ConveniosLista,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'convenios/criar',
         component: ConvenioForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'convenios/:id/editar',
         component: ConvenioForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'convenios/:id',
         component: ConvenioDetalhado,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'internacoes',
         component: InternacoesLista,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'internacoes/criar',
         component: InternacaoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'internacoes/:id/editar',
         component: InternacaoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'internacoes/:id',
         component: InternacaoDetalhada,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'acolhidos',
@@ -103,22 +103,22 @@ export const routes: Routes = [
       {
         path: 'acolhidos/criar',
         component: AcolhidoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'acolhidos/:id/editar',
         component: AcolhidoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'responsaveis/criar',
         component: ResponsavelForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'responsaveis/:id/editar',
         component: ResponsavelForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'acolhidos/:id/prontuario',
@@ -127,7 +127,7 @@ export const routes: Routes = [
       {
         path: 'prontuarios/:acolhidoId',
         component: Prontuario,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
         children: [
           {
             path: '',
@@ -171,42 +171,42 @@ export const routes: Routes = [
       {
         path: 'triagens/criar',
         component: TriagemForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'triagens',
         component: TriagensLista,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'triagens/:id',
         component: TriagemDetalhada,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'triagens/:id/editar',
         component: TriagemForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'medicamentos/criar',
         component: MedicamentoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'medicamentos',
         component: MedicamentosLista,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'medicamentos/:id',
         component: MedicamentoDetalhado,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
       {
         path: 'medicamentos/:id/editar',
         component: MedicamentoForm,
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [roleGuard('ADMIN', 'USER')],
       },
     ],
   },
