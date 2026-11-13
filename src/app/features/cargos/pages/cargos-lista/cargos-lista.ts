@@ -6,6 +6,7 @@ import {
   LucidePlus,
   LucideSearch,
   LucideSearchX,
+  LucideSlidersHorizontal,
 } from '@lucide/angular';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ButtonModule } from 'primeng/button';
@@ -33,6 +34,7 @@ import { SkeletonModule } from 'primeng/skeleton';
     LucideFunnelX,
     LucidePlus,
     LucideSearch,
+    LucideSlidersHorizontal,
     EmptyList,
     ConfirmDialog,
     CargoForm,
@@ -57,9 +59,9 @@ export class CargosLista implements OnInit {
   protected readonly busca = signal('');
   protected readonly situacaoSelecionada = signal<'todos' | 'ativos' | 'inativos'>('todos');
   protected readonly situacoes = [
-    { label: 'Todos', value: 'todos' },
-    { label: 'Ativos', value: 'ativos' },
-    { label: 'Inativos', value: 'inativos' },
+    { name: 'Todas as situações', code: 'todos' },
+    { name: 'Ativos', code: 'ativos' },
+    { name: 'Inativos', code: 'inativos' },
   ];
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<ToggleCargoDto | null>(null);

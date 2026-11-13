@@ -9,6 +9,7 @@ import {
   LucidePowerOff,
   LucideSearch,
   LucideSearchX,
+  LucideSlidersHorizontal,
   LucideTrash2,
   LucideUsersRound,
 } from '@lucide/angular';
@@ -56,6 +57,7 @@ type AcaoPendente =
     LucideFunnelX,
     LucidePlus,
     LucideSearch,
+    LucideSlidersHorizontal,
     ProfileColor,
     SelectModule,
     SiglaNomePipe,
@@ -83,9 +85,9 @@ export class ResponsaveisLista implements OnInit {
   protected readonly emptyResponsaveisIcon = LucideUsersRound;
   protected readonly emptySearchIcon = LucideSearchX;
   protected readonly situacoes = [
-    { label: 'Todos', value: 'todos' },
-    { label: 'Ativos', value: 'ativos' },
-    { label: 'Inativos', value: 'inativos' },
+    { name: 'Todas as situações', code: 'todos' },
+    { name: 'Ativos', code: 'ativos' },
+    { name: 'Inativos', code: 'inativos' },
   ];
 
   protected readonly responsaveisFiltrados = computed(() => {

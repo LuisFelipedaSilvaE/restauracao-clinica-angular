@@ -39,7 +39,7 @@ export class FilterFuncionariosCard {
     { name: 'Monitor', code: 'Monitor' },
   ];
   readonly status = [
-    { name: 'Todos', code: 'todos' },
+    { name: 'Todas as situações', code: 'todos' },
     { name: 'Ativo', code: 'ativo' },
     { name: 'Inativo', code: 'inativo' },
   ];

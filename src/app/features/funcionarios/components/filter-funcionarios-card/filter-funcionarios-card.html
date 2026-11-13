@@ -45,18 +45,18 @@
       <svg lucideSlidersHorizontal class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
     </p-inputicon>
     <p-select
-      ariaLabel="Selecione o status"
+      ariaLabel="Selecione a situação"
       [options]="status"
       [ngModel]="statusSelecionado()"
       (ngModelChange)="this.statusSelecionadoChange.emit($event)"
       optionLabel="name"
       optionValue="code"
-      placeholder="Selecione o status"
+      placeholder="Selecione a situação"
       class="w-full pl-7.5"
     >
       <ng-template #selectedItem let-selectedOption>
-        <p class="text-sm">
-          Status: <span>{{ selectedOption.name }}</span>
+        <p class="truncate text-sm">
+          Situação: <span>{{ selectedOption.name }}</span>
         </p>
       </ng-template>
     </p-select>

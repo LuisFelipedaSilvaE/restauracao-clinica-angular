@@ -1,8 +1,8 @@
 <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-  {{ !loading().list ? cargosFiltrados().length + ' resultados encontrados' : '' }}
+  {{ !loading().list ? cargosFiltrados().length + ' cargos encontrados' : '' }}
 </p>
 <div class="flex min-w-0 flex-col gap-4">
-  <div class="flex flex-wrap items-center gap-2">
+  <div role="search" aria-label="Filtros de cargos" class="flex flex-wrap items-center gap-2">
     <p-iconfield class="min-w-64 basis-full grow sm:basis-[60%]">
       <p-inputicon
         ><svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg
@@ -18,16 +18,27 @@
       />
     </p-iconfield>
 
-    <p-select
-      ariaLabel="Filtrar cargos por situação"
-      class="min-w-44 grow md:max-w-52"
-      [options]="situacoes"
-      [ngModel]="situacaoSelecionada()"
-      (ngModelChange)="situacaoSelecionada.set($event)"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Situação"
-    />
+    <p-iconfield class="min-w-45 basis-45 grow">
+      <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+        <svg lucideSlidersHorizontal class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+      </p-inputicon>
+      <p-select
+        ariaLabel="Filtrar cargos por situação"
+        class="w-full pl-7.5"
+        [options]="situacoes"
+        [ngModel]="situacaoSelecionada()"
+        (ngModelChange)="situacaoSelecionada.set($event)"
+        optionLabel="name"
+        optionValue="code"
+        placeholder="Selecione a situação"
+      >
+        <ng-template #selectedItem let-selectedOption>
+          <p class="truncate text-sm">
+            Situação: <span>{{ selectedOption.name }}</span>
+          </p>
+        </ng-template>
+      </p-select>
+    </p-iconfield>
 
     <p-button
       type="button"
