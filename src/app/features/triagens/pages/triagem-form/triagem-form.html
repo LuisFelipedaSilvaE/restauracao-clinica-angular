@@ -44,9 +44,12 @@
         <input
           pInputText
           id="telefone"
+          name="telefone"
           formControlName="telefone"
           placeholder="(00) 00000-0000"
+          pInputMask="(99) 99999-9999"
           [invalid]="isInvalid('telefone')"
+          inputmode="tel"
           fluid
           autocomplete="off"
         />
