@@ -49,7 +49,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'acolhidos',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
       {
