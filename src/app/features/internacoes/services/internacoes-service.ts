@@ -63,6 +63,10 @@ export class InternacoesService {
       .pipe(finalize(() => this.setLoading('detail', false)));
   }
 
+  countInternacoesAtivasByConvenio(convenioId: number): Observable<number> {
+    return this.http.get<number>(`${this.baseAPIUrl}/count/${convenioId}`);
+  }
+
   createInternacao(internacao: InternacaoCreateRequest): Observable<Internacao> {
     this.setLoading('mutation', true);
 

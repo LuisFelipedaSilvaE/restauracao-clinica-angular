@@ -2,7 +2,7 @@ import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map, startWith } from 'rxjs';
+import { forkJoin, map, startWith } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { LucideLayers } from '@lucide/angular';
@@ -26,6 +26,7 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { FormField } from '../../../../shared/components/form-field/form-field';
+import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 
 @Component({
   selector: 'app-convenio-form',
@@ -57,9 +58,11 @@ export class ConvenioForm implements OnInit {
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly conveniosService = inject(ConveniosService);
+  private readonly internacoesService = inject(InternacoesService);
 
   protected readonly loading = this.conveniosService.loading;
   protected readonly carregando = signal(false);
+  private readonly acolhidosAtivos = signal(0);
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
   protected readonly maximoVagas = 2_147_483_647;
@@ -128,7 +131,7 @@ export class ConvenioForm implements OnInit {
           ativo: true,
           pagamento: formValue.pagamento ?? true,
           cor: formValue.cor ?? '',
-          acolhidosAtivos: this.modo() === 'registro' ? Math.floor(maxVagas / 2) : 0,
+          acolhidosAtivos: this.acolhidosAtivos(),
         };
       }),
     ),
@@ -147,25 +150,28 @@ export class ConvenioForm implements OnInit {
 
     this.carregando.set(true);
 
-    this.conveniosService
-      .getAllConvenios()
-      .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico)))
-      .subscribe({
-        next: (convenio) => {
-          this.carregando.set(false);
+    forkJoin({
+      convenio: this.conveniosService
+        .getAllConvenios()
+        .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico))),
+      acolhidosAtivos: this.internacoesService.countInternacoesAtivasByConvenio(idNumerico),
+    }).subscribe({
+      next: ({ convenio, acolhidosAtivos }) => {
+        this.carregando.set(false);
 
-          if (!convenio) {
-            this.convenioNaoEncontrado();
-            return;
-          }
+        if (!convenio) {
+          this.convenioNaoEncontrado();
+          return;
+        }
 
-          this.preencherFormulario(convenio);
-        },
-        error: () => {
-          this.carregando.set(false);
-          this.voltarParaLista();
-        },
-      });
+        this.acolhidosAtivos.set(acolhidosAtivos);
+        this.preencherFormulario(convenio);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.voltarParaLista();
+      },
+    });
   }
 
   private preencherFormulario(convenio: Convenio): void {

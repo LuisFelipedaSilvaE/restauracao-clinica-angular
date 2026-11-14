@@ -21,6 +21,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { AuthService } from '../../../../core/services/auth-service';
+import { InternacoesService } from '../../../internacoes/services/internacoes-service';
+import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -47,13 +49,19 @@ type AcaoPendente =
 export class ConveniosLista implements OnInit {
   protected readonly emptyConveniosIcon = LucideFolderX;
   private readonly conveniosService = inject(ConveniosService);
+  private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
   private readonly authService = inject(AuthService);
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
+  private readonly acolhidosAtivosPorConvenio = signal<Record<number, number>>({});
+  private readonly carregandoContagens = signal(false);
 
   protected readonly convenios = computed<ConvenioCardContent[]>(() => {
     return this.conveniosService.convenios().map((convenio) => {
-      return { ...convenio, acolhidosAtivos: Math.min(10, convenio.maxVagas) };
+      return {
+        ...convenio,
+        acolhidosAtivos: this.acolhidosAtivosPorConvenio()[convenio.id] ?? 0,
+      };
     });
   });
 
@@ -93,6 +101,7 @@ export class ConveniosLista implements OnInit {
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly loading = this.conveniosService.loading;
+  protected readonly carregando = computed(() => this.loading().list || this.carregandoContagens());
   protected readonly skeletonCards = Array.from({ length: 6 });
 
   protected readonly confirmTitle = computed(() => {
@@ -166,6 +175,28 @@ export class ConveniosLista implements OnInit {
   }
 
   ngOnInit(): void {
-    this.conveniosService.getAllConvenios().subscribe();
+    this.carregandoContagens.set(true);
+
+    this.conveniosService
+      .getAllConvenios()
+      .pipe(
+        switchMap((convenios) => {
+          if (convenios.length === 0) return of([] as [number, number][]);
+
+          return forkJoin(
+            convenios.map((convenio) =>
+              this.internacoesService
+                .countInternacoesAtivasByConvenio(convenio.id)
+                .pipe(map((quantidade) => [convenio.id, quantidade] as [number, number])),
+            ),
+          );
+        }),
+        finalize(() => this.carregandoContagens.set(false)),
+      )
+      .subscribe({
+        next: (contagens) => {
+          this.acolhidosAtivosPorConvenio.set(Object.fromEntries(contagens));
+        },
+      });
   }
 }

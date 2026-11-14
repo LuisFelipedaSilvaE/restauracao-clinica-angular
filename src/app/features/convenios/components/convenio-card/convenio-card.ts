@@ -74,7 +74,7 @@ export class ConvenioCard {
       color: '#4a5565',
     };
     const card2 = {
-      value: this.convenio().maxVagas - this.convenio().acolhidosAtivos,
+      value: Math.max(0, this.convenio().maxVagas - this.convenio().acolhidosAtivos),
       label: 'Vagas disponíveis',
       icon: LucideDoorOpen,
       color: '#00a63e',
@@ -82,8 +82,9 @@ export class ConvenioCard {
     return [card1, card2];
   });
   readonly computedOcupacao = computed<number>(() => {
+    if (this.convenio().maxVagas <= 0) return 0;
     if (this.convenio().acolhidosAtivos <= 0) return 0;
-    if (this.convenio().acolhidosAtivos == this.convenio().maxVagas) return 100;
+    if (this.convenio().acolhidosAtivos >= this.convenio().maxVagas) return 100;
 
     const porcentagem = (this.convenio().acolhidosAtivos / this.convenio().maxVagas) * 100;
     return Math.ceil(porcentagem);

@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import {
   LucideCheck,
   LucideDoorOpen,
@@ -28,8 +28,7 @@ import { CustomBadge } from '../../../../shared/directives/custom-badge';
 import { TagModule } from 'primeng/tag';
 import { BackButton } from '../../../../shared/components/back-button/back-button';
 import { AuthService } from '../../../../core/services/auth-service';
-
-const ACOLHIDOS_ATIVOS_MOCK = 10;
+import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 
 @Component({
   selector: 'app-convenio-detalhado',
@@ -73,10 +72,12 @@ export class ConvenioDetalhado implements OnInit {
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly conveniosService = inject(ConveniosService);
+  private readonly internacoesService = inject(InternacoesService);
   private readonly authService = inject(AuthService);
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
   protected readonly convenio = signal<Convenio | null>(null);
+  protected readonly acolhidosAtivos = signal(0);
   protected readonly carregando = signal(false);
   protected readonly confirmarAlteracao = signal(false);
   protected readonly confirmarExclusao = signal(false);
@@ -98,10 +99,6 @@ export class ConvenioDetalhado implements OnInit {
       ? 'Deseja inativar este convênio? Ele deixará de ficar disponível.'
       : 'Deseja ativar este convênio? Ele voltará a ficar disponível.',
   );
-  protected readonly acolhidosAtivos = computed(() => {
-    const maxVagas = this.convenio()?.maxVagas ?? 0;
-    return Math.min(ACOLHIDOS_ATIVOS_MOCK, maxVagas);
-  });
   protected readonly vagasDisponiveis = computed(() =>
     Math.max(0, (this.convenio()?.maxVagas ?? 0) - this.acolhidosAtivos()),
   );
@@ -116,32 +113,35 @@ export class ConvenioDetalhado implements OnInit {
 
     this.carregando.set(true);
 
-    this.conveniosService
-      .getAllConvenios()
-      .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico)))
-      .subscribe({
-        next: (convenio) => {
-          this.carregando.set(false);
+    forkJoin({
+      convenio: this.conveniosService
+        .getAllConvenios()
+        .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico))),
+      acolhidosAtivos: this.internacoesService.countInternacoesAtivasByConvenio(idNumerico),
+    }).subscribe({
+      next: ({ convenio, acolhidosAtivos }) => {
+        this.carregando.set(false);
 
-          if (!convenio) {
-            this.messageService.add({
-              severity: 'warn',
-              summary: 'Convênio não encontrado',
-              detail: 'O registro solicitado não existe ou foi removido.',
-              life: 4000,
-            });
+        if (!convenio) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Convênio não encontrado',
+            detail: 'O registro solicitado não existe ou foi removido.',
+            life: 4000,
+          });
 
-            this.voltarParaLista();
-            return;
-          }
-
-          this.convenio.set(convenio);
-        },
-        error: () => {
-          this.carregando.set(false);
           this.voltarParaLista();
-        },
-      });
+          return;
+        }
+
+        this.convenio.set(convenio);
+        this.acolhidosAtivos.set(acolhidosAtivos);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.voltarParaLista();
+      },
+    });
   }
 
   protected voltarParaLista(): void {

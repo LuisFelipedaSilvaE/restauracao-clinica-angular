@@ -16,12 +16,12 @@
   </div>
 </div>
 <div
-  [attr.role]="!loading().list && convenios().length ? 'list' : null"
+  [attr.role]="!carregando() && convenios().length ? 'list' : null"
   aria-label="Convênios"
-  [attr.aria-busy]="loading().list"
+  [attr.aria-busy]="carregando()"
   class="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(384px,1fr))]"
 >
-  @if (loading().list) {
+  @if (carregando()) {
     <span class="sr-only" role="status">Carregando convênios...</span>
     @for (_ of skeletonCards; track $index) {
       <div aria-hidden="true" class="rounded-xl border border-border-default bg-surface-card p-4">
