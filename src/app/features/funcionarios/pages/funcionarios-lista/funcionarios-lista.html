@@ -140,6 +140,7 @@
                 role="listitem"
                 [funcionario]="funcionario"
                 (statusFuncionarioChange)="toggleFuncionario($event)"
+                (excluirFuncionario)="solicitarExclusao($event)"
               />
             }
           </div>
@@ -190,5 +191,5 @@
   [severity]="confirmSeverity()"
   [loading]="loading().mutation"
   (hidden)="limparAcaoPendente()"
-  (onConfirm)="confirmarAlteracaoStatus()"
+  (onConfirm)="confirmarAcao()"
 />

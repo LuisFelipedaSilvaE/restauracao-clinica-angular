@@ -112,6 +112,19 @@ export class FuncionariosService {
       );
   }
 
+  deleteFuncionario(id: number): Observable<void> {
+    this.setLoading('mutation', true);
+
+    return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
+      tap(() =>
+        this.internalFuncionarios.update((funcionarios) =>
+          funcionarios.filter((funcionario) => funcionario.id !== id),
+        ),
+      ),
+      finalize(() => this.setLoading('mutation', false)),
+    );
+  }
+
   private setLoading(type: LoadingType, value: boolean): void {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
   }

@@ -12,9 +12,11 @@ import {
   LucidePower,
   LucidePowerOff,
   LucideShieldCheck,
+  LucideTrash2,
   LucideUserRound,
   LucideUserRoundKey,
 } from '@lucide/angular';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
@@ -65,6 +67,7 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     CpfPipe,
     TelefonePipe,
     EnderecoPipe,
+    LucideTrash2,
     LucideUserRoundKey,
     DialogAlterarSenhaF,
   ],
@@ -89,9 +92,11 @@ export class FuncionarioDetalhado implements OnInit {
   });
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly authService = inject(AuthService);
+  private readonly messageService = inject(MessageService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly datePipe = inject(DatePipe);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly loading = this.funcionariosService.loading;
   protected readonly privilegio = computed(() => {
     const role = this.funcionario()?.user.role;
@@ -104,6 +109,7 @@ export class FuncionarioDetalhado implements OnInit {
     return role ? labels[role] : 'Não informado';
   });
   protected readonly confirmarAlteracao = signal(false);
+  protected readonly confirmarExclusao = signal(false);
   protected readonly dialogSenha = signal(false);
   protected readonly alterandoPropriaSenha = computed(
     () => this.funcionario()?.user.username === this.authService.getUsername(),
@@ -149,6 +155,24 @@ export class FuncionarioDetalhado implements OnInit {
           atual ? { ...atual, ativo: proximoStatus } : undefined,
         );
         this.confirmarAlteracao.set(false);
+      },
+    });
+  }
+
+  protected excluirFuncionario(): void {
+    const funcionario = this.funcionario();
+    if (!funcionario || !this.isAdmin) return;
+
+    this.funcionariosService.deleteFuncionario(funcionario.id).subscribe({
+      next: () => {
+        this.confirmarExclusao.set(false);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Funcionário excluído!',
+          detail: 'O funcionário foi excluído com sucesso.',
+          life: 3000,
+        });
+        this.router.navigate(['/funcionarios']);
       },
     });
   }

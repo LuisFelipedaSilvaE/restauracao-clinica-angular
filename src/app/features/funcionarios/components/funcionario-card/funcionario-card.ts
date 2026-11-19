@@ -2,7 +2,14 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
-import { LucideEye, LucidePencil, LucidePower, LucidePowerOff } from '@lucide/angular';
+import {
+  LucideEye,
+  LucidePencil,
+  LucidePower,
+  LucidePowerOff,
+  LucideTrash2,
+} from '@lucide/angular';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ProfileColor } from '../../../../shared/directives/profile-color';
 import { SiglaNomePipe } from '../../../../shared/pipes/sigla-nome-pipe';
 import { Router } from '@angular/router';
@@ -35,8 +42,11 @@ import { ActionMenu } from '../../../../shared/components/action-menu/action-men
 })
 export class FuncionarioCard {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   readonly funcionario = input.required<FuncionarioCardContent>();
   readonly statusFuncionarioChange = output<ToggleFuncionarioDto>();
+  readonly excluirFuncionario = output<{ id: number; nome: string }>();
   protected readonly idade = computed(() => {
     const hoje = new Date();
     const nascimento = localDateToDate(this.funcionario().dataNascimento);
@@ -71,6 +81,17 @@ export class FuncionarioCard {
         lucideIcon: estaAtivo ? LucidePowerOff : LucidePower,
         iconClass: estaAtivo ? 'h-4 w-4 text-action-warning' : 'h-4 w-4 text-action-success',
         command: () => this.toggleFuncionario(),
+      },
+      {
+        label: 'Excluir',
+        visible: this.isAdmin,
+        lucideIcon: LucideTrash2,
+        iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
+        command: () =>
+          this.excluirFuncionario.emit({
+            id: this.funcionario().id,
+            nome: this.funcionario().nome,
+          }),
       },
     ];
   });

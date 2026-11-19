@@ -18,6 +18,8 @@ import { FilterFuncionariosCard } from '../../components/filter-funcionarios-car
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { FuncionariosService } from '../../services/funcionarios-service';
 import { RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../../../core/services/auth-service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleFuncionarioDto } from '../../interfaces/toggle-funcionario-dto';
 import { CargosLista } from '../../../cargos/pages/cargos-lista/cargos-lista';
@@ -27,6 +29,10 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { AccordionModule } from 'primeng/accordion';
 
 type AccordionValue = string | number | string[] | number[] | null | undefined;
+
+type AcaoPendente =
+  | { tipo: 'status'; dados: ToggleFuncionarioDto }
+  | { tipo: 'exclusao'; id: number; nome: string };
 
 @Component({
   selector: 'app-funcionarios-lista',
@@ -58,6 +64,9 @@ export class FuncionariosLista implements OnInit {
   protected readonly emptyFuncionariosIcon = LucideUsersRound;
   protected readonly funcionariosService = inject(FuncionariosService);
   private readonly cargosService = inject(CargosService);
+  private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly painelCargos = signal<AccordionValue>(null);
   protected readonly totalCargos = computed(() => this.cargosService.cargos().length);
@@ -142,7 +151,7 @@ export class FuncionariosLista implements OnInit {
   protected readonly statusSelecionado = signal('todos');
   protected readonly mesSelecionado = signal('todos');
   protected readonly dialogConfirmVisible = signal<boolean>(false);
-  protected readonly acaoPendente = signal<ToggleFuncionarioDto | null>(null);
+  protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly loading = this.funcionariosService.loading;
   protected readonly skeletonCards = Array.from({ length: 10 });
 
@@ -155,36 +164,69 @@ export class FuncionariosLista implements OnInit {
   }
 
   toggleFuncionario(dto: ToggleFuncionarioDto): void {
-    this.acaoPendente.set(dto);
+    this.acaoPendente.set({ tipo: 'status', dados: dto });
+    this.dialogConfirmVisible.set(true);
+  }
+
+  solicitarExclusao(funcionario: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
+    this.acaoPendente.set({ tipo: 'exclusao', ...funcionario });
     this.dialogConfirmVisible.set(true);
   }
 
   protected readonly confirmTitle = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar funcionário' : 'Desativar funcionário';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir funcionário';
+    return acao?.dados.ativo ? 'Ativar funcionário' : 'Desativar funcionário';
   });
 
   protected readonly confirmMessage = computed(() => {
-    return this.acaoPendente()?.ativo
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') {
+      return `Deseja excluir ${acao.nome}? Esta ação não poderá ser desfeita.`;
+    }
+    return acao?.dados.ativo
       ? 'Deseja ativar este funcionário? Ele voltará a ficar disponível.'
       : 'Deseja desativar este funcionário? Ele deixará de ficar disponível.';
   });
 
   protected readonly confirmLabel = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar' : 'Desativar';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir';
+    return acao?.dados.ativo ? 'Ativar' : 'Desativar';
   });
 
   protected readonly confirmSeverity = computed<'success' | 'danger'>(() => {
-    return this.acaoPendente()?.ativo ? 'success' : 'danger';
+    const acao = this.acaoPendente();
+    return acao?.tipo === 'status' && acao.dados.ativo ? 'success' : 'danger';
   });
 
-  confirmarAlteracaoStatus(): void {
-    const dto = this.acaoPendente();
+  confirmarAcao(): void {
+    const acao = this.acaoPendente();
 
-    if (!dto) return;
+    if (!acao) return;
 
-    const acao$ = dto.ativo
-      ? this.funcionariosService.activateFuncionario(dto.id)
-      : this.funcionariosService.deactivateFuncionario(dto.id);
+    if (acao.tipo === 'exclusao') {
+      if (!this.isAdmin) return;
+
+      this.funcionariosService.deleteFuncionario(acao.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Funcionário excluído!',
+            detail: 'O funcionário foi excluído com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
+
+    const acao$ = acao.dados.ativo
+      ? this.funcionariosService.activateFuncionario(acao.dados.id)
+      : this.funcionariosService.deactivateFuncionario(acao.dados.id);
 
     acao$.subscribe({
       next: () => this.dialogConfirmVisible.set(false),
