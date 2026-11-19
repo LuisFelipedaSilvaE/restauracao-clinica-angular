@@ -10,18 +10,24 @@ import {
 } from '@lucide/angular';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
 import { CargosService } from '../../services/cargos-service';
 import { CargoCard } from '../../components/cargo-card/cargo-card';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
 import { CargoForm } from '../cargo-form/cargo-form';
 import { Cargo } from '../../interfaces/cargo';
+import { AuthService } from '../../../../core/services/auth-service';
 import { DataViewModule } from 'primeng/dataview';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
+
+type AcaoPendente =
+  | { tipo: 'status'; dados: ToggleCargoDto }
+  | { tipo: 'exclusao'; id: number; nome: string };
 
 @Component({
   selector: 'cargos-lista',
@@ -53,6 +59,9 @@ export class CargosLista implements OnInit {
   protected readonly emptyCargosIcon = LucideBriefcase;
   protected readonly emptySearchIcon = LucideSearchX;
   private readonly cargosService = inject(CargosService);
+  private readonly messageService = inject(MessageService);
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly cargos = this.cargosService.cargos;
   protected readonly loading = this.cargosService.loading;
   protected readonly skeletonCards = Array.from({ length: 6 });
@@ -64,7 +73,7 @@ export class CargosLista implements OnInit {
     { name: 'Inativos', code: 'inativos' },
   ];
   protected readonly dialogConfirmVisible = signal<boolean>(false);
-  protected readonly acaoPendente = signal<ToggleCargoDto | null>(null);
+  protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly cargosFiltrados = computed(() => {
     const busca = this.normalizarTexto(this.busca());
     const situacao = this.situacaoSelecionada();
@@ -97,35 +106,61 @@ export class CargosLista implements OnInit {
   };
 
   protected readonly confirmTitle = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar cargo' : 'Desativar cargo';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir cargo';
+    return acao?.dados.ativo ? 'Ativar cargo' : 'Desativar cargo';
   });
 
   protected readonly confirmMessage = computed(() => {
-    return this.acaoPendente()?.ativo
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') {
+      return `Deseja excluir ${acao.nome}? Esta ação não poderá ser desfeita.`;
+    }
+    return acao?.dados.ativo
       ? 'Deseja ativar este cargo? Ele voltará a ficar disponível.'
       : 'Deseja desativar este cargo? Ele deixará de ficar disponível.';
   });
 
   protected readonly confirmLabel = computed(() => {
-    return this.acaoPendente()?.ativo ? 'Ativar' : 'Desativar';
+    const acao = this.acaoPendente();
+    if (acao?.tipo === 'exclusao') return 'Excluir';
+    return acao?.dados.ativo ? 'Ativar' : 'Desativar';
   });
 
   protected readonly confirmSeverity = computed<'success' | 'danger'>(() => {
-    return this.acaoPendente()?.ativo ? 'success' : 'danger';
+    const acao = this.acaoPendente();
+    return acao?.tipo === 'status' && acao.dados.ativo ? 'success' : 'danger';
   });
 
   ngOnInit(): void {
     this.cargosService.getAllCargos().subscribe();
   }
 
-  confirmarAlteracaoStatus(): void {
-    const dto = this.acaoPendente();
+  confirmarAcao(): void {
+    const acao = this.acaoPendente();
 
-    if (!dto) return;
+    if (!acao) return;
 
-    const acao$ = dto.ativo
-      ? this.cargosService.activateCargo(dto.id)
-      : this.cargosService.deactivateCargo(dto.id);
+    if (acao.tipo === 'exclusao') {
+      if (!this.isAdmin) return;
+
+      this.cargosService.deleteCargo(acao.id).subscribe({
+        next: () => {
+          this.dialogConfirmVisible.set(false);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Cargo excluído!',
+            detail: 'O cargo foi excluído com sucesso.',
+            life: 3000,
+          });
+        },
+      });
+      return;
+    }
+
+    const acao$ = acao.dados.ativo
+      ? this.cargosService.activateCargo(acao.dados.id)
+      : this.cargosService.deactivateCargo(acao.dados.id);
 
     acao$.subscribe({
       next: () => this.dialogConfirmVisible.set(false),
@@ -133,7 +168,14 @@ export class CargosLista implements OnInit {
   }
 
   toggleCargo(dto: ToggleCargoDto): void {
-    this.acaoPendente.set(dto);
+    this.acaoPendente.set({ tipo: 'status', dados: dto });
+    this.dialogConfirmVisible.set(true);
+  }
+
+  solicitarExclusao(cargo: { id: number; nome: string }): void {
+    if (!this.isAdmin) return;
+
+    this.acaoPendente.set({ tipo: 'exclusao', ...cargo });
     this.dialogConfirmVisible.set(true);
   }
 

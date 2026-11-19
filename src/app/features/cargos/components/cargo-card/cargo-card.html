@@ -48,5 +48,19 @@
         ></svg>
       </ng-template>
     </p-button>
+    @if (isAdmin) {
+      <p-button
+        (onClick)="solicitarExclusao()"
+        severity="danger"
+        pTooltip="Excluir cargo"
+        tooltipPosition="top"
+        [text]="true"
+        [ariaLabel]="'Excluir cargo' + ': ' + cargo().nome"
+      >
+        <ng-template #icon>
+          <svg lucideTrash2 class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+        </ng-template>
+      </p-button>
+    }
   </div>
 </card>

@@ -1,23 +1,41 @@
 import { Component, computed, inject, input, OnInit, output } from '@angular/core';
 import { Card } from '../../../../shared/components/card/card';
-import { LucideDynamicIcon, LucidePencil, LucidePower, LucidePowerOff } from '@lucide/angular';
+import {
+  LucideDynamicIcon,
+  LucidePencil,
+  LucidePower,
+  LucidePowerOff,
+  LucideTrash2,
+} from '@lucide/angular';
 import { Cargo } from '../../interfaces/cargo';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { FuncionariosService } from '../../../funcionarios/services/funcionarios-service';
 import { ToggleCargoDto } from '../../interfaces/toggle-cargo-dto';
+import { AuthService } from '../../../../core/services/auth-service';
 
 @Component({
   selector: 'cargo-card',
-  imports: [ButtonModule, Card, TagModule, TooltipModule, LucideDynamicIcon, LucidePencil],
+  imports: [
+    ButtonModule,
+    Card,
+    TagModule,
+    TooltipModule,
+    LucideDynamicIcon,
+    LucidePencil,
+    LucideTrash2,
+  ],
   templateUrl: './cargo-card.html',
   styleUrl: './cargo-card.css',
 })
 export class CargoCard {
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.hasRole('ADMIN');
   protected readonly cargo = input.required<Cargo>();
   protected readonly statusCargoChange = output<ToggleCargoDto>();
   protected readonly onEditCargo = output<Cargo>();
+  readonly excluirCargo = output<{ id: number; nome: string }>();
   private readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly totalColaboradores = computed(() => {
@@ -45,5 +63,14 @@ export class CargoCard {
     };
 
     this.statusCargoChange.emit(dto);
+  }
+
+  solicitarExclusao(): void {
+    if (!this.isAdmin) return;
+
+    this.excluirCargo.emit({
+      id: this.cargo().id,
+      nome: this.cargo().nome,
+    });
   }
 }

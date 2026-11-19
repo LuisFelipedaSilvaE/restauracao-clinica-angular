@@ -118,6 +118,7 @@
               role="listitem"
               [cargo]="cargo"
               (statusCargoChange)="toggleCargo($event)"
+              (excluirCargo)="solicitarExclusao($event)"
               (onEditCargo)="editCargo($event)"
             />
           }
@@ -155,7 +156,7 @@
   [severity]="confirmSeverity()"
   [loading]="loading().mutation"
   (hidden)="this.acaoPendente.set(null)"
-  (onConfirm)="confirmarAlteracaoStatus()"
+  (onConfirm)="confirmarAcao()"
 />
 
 <cargo-form
