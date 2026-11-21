@@ -98,22 +98,24 @@
                         Pagamentos registrados
                       </h3>
 
-                      <p-button
-                        class="w-full sm:w-auto"
-                        styleClass="w-full sm:w-auto"
-                        label="Registrar pagamento"
-                        [disabled]="mutationLoading()"
-                        (onClick)="abrirRegistro(internacao)"
-                      >
-                        <ng-template #icon>
-                          <svg
-                            lucideHandCoins
-                            class="h-4 w-4"
-                            aria-hidden="true"
-                            focusable="false"
-                          ></svg>
-                        </ng-template>
-                      </p-button>
+                      @if (internacao.ativo) {
+                        <p-button
+                          class="w-full sm:w-auto"
+                          styleClass="w-full sm:w-auto"
+                          label="Registrar pagamento"
+                          [disabled]="mutationLoading()"
+                          (onClick)="abrirRegistro(internacao)"
+                        >
+                          <ng-template #icon>
+                            <svg
+                              lucideHandCoins
+                              class="h-4 w-4"
+                              aria-hidden="true"
+                              focusable="false"
+                            ></svg>
+                          </ng-template>
+                        </p-button>
+                      }
                     </div>
 
                     <p-dataview
@@ -157,22 +159,28 @@
                       class="block [&>div]:py-4!"
                       [icon]="emptyPagamentosIcon"
                       title="Nenhum pagamento registrado"
-                      description="Esta internação ainda não possui pagamentos em seu histórico."
+                      [description]="
+                        internacao.ativo
+                          ? 'Esta internação ainda não possui pagamentos em seu histórico.'
+                          : 'Esta internação foi encerrada sem pagamentos registrados.'
+                      "
                     >
-                      <p-button
-                        label="Registrar primeiro pagamento"
-                        [disabled]="mutationLoading()"
-                        (onClick)="abrirRegistro(internacao)"
-                      >
-                        <ng-template #icon>
-                          <svg
-                            lucideHandCoins
-                            class="h-4 w-4"
-                            aria-hidden="true"
-                            focusable="false"
-                          ></svg>
-                        </ng-template>
-                      </p-button>
+                      @if (internacao.ativo) {
+                        <p-button
+                          label="Registrar primeiro pagamento"
+                          [disabled]="mutationLoading()"
+                          (onClick)="abrirRegistro(internacao)"
+                        >
+                          <ng-template #icon>
+                            <svg
+                              lucideHandCoins
+                              class="h-4 w-4"
+                              aria-hidden="true"
+                              focusable="false"
+                            ></svg>
+                          </ng-template>
+                        </p-button>
+                      }
                     </empty-list>
                   }
                 }
@@ -192,9 +200,17 @@
 }
 
 @if (internacaoSelecionada(); as internacao) {
-  <dialog-registrar-pagamento [internacao]="internacao" [(visible)]="registrarPagamentoVisible" />
+  <dialog-registrar-pagamento
+    [internacao]="internacao"
+    [(visible)]="registrarPagamentoVisible"
+    (pagamentoRegistrado)="atualizarResumo($event.internacaoId)"
+  />
 }
 
 @if (pagamentoSelecionado(); as pagamento) {
-  <dialog-estornar-pagamento [pagamento]="pagamento" [(visible)]="estornarPagamentoVisible" />
+  <dialog-estornar-pagamento
+    [pagamento]="pagamento"
+    [(visible)]="estornarPagamentoVisible"
+    (pagamentoEstornado)="atualizarResumo($event.internacaoId)"
+  />
 }

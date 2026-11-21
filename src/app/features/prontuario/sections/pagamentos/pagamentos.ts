@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal, signal } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
 import {
   LucideBadgeDollarSign,
@@ -16,6 +16,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
+import { finalize, forkJoin } from 'rxjs';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { IconColor } from '../../../../shared/directives/icon-color';
@@ -24,6 +25,7 @@ import { localDateToDate } from '../../../../shared/utils/local-date';
 import { DialogEstornarPagamento } from '../../../pagamentos/components/dialog-estornar-pagamento/dialog-estornar-pagamento';
 import { DialogRegistrarPagamento } from '../../../pagamentos/components/dialog-registrar-pagamento/dialog-registrar-pagamento';
 import { PagamentoCard } from '../../../pagamentos/components/pagamento-card/pagamento-card';
+import { StatusPagamento } from '../../../pagamentos/enums/status-pagamento';
 import { Pagamento } from '../../../pagamentos/interfaces/pagamento';
 import { PagamentosService } from '../../../pagamentos/services/pagamentos-service';
 import { Internacao } from '../../../internacoes/interfaces/internacao';
@@ -32,7 +34,7 @@ import { ProntuarioOutletData } from '../../interfaces/prontuario-outlet-data';
 
 interface ResumoInternacao {
   totalPago: number;
-  confirmados: number;
+  ativos: number;
   ultimoPagamento: string | null;
 }
 
@@ -62,10 +64,9 @@ interface ResumoInternacao {
   templateUrl: './pagamentos.html',
   styleUrl: './pagamentos.css',
 })
-export class Pagamentos implements OnInit {
+export class Pagamentos {
   private readonly outletData = inject(ROUTER_OUTLET_DATA) as Signal<ProntuarioOutletData>;
   private readonly pagamentosService = inject(PagamentosService);
-  private accordionInicializado = false;
 
   protected readonly internacoes = computed(() =>
     [...this.outletData().internacoes].sort((a, b) => {
@@ -75,15 +76,26 @@ export class Pagamentos implements OnInit {
       return dataMaisRecente !== 0 ? dataMaisRecente : b.id - a.id;
     }),
   );
-  protected readonly loading = computed(
-    () => this.outletData().loading || this.pagamentosService.loading().list,
+  private readonly internacaoIdsChave = computed(() =>
+    this.internacoes()
+      .map((internacao) => internacao.id)
+      .join(','),
   );
+  private readonly carregandoPagamentos = signal(false);
+  private readonly chaveCarregada = signal<string | null>(null);
+  private ultimaChaveAccordion: string | null = null;
+
+  protected readonly loading = computed(() => {
+    if (this.outletData().loading) return true;
+    const chave = this.internacaoIdsChave();
+    if (!chave) return false;
+    return this.carregandoPagamentos() || this.chaveCarregada() !== chave;
+  });
   protected readonly mutationLoading = computed(() => this.pagamentosService.loading().mutation);
   protected readonly pagamentosIcon = LucideWalletCards;
   protected readonly emptyInternacoesIcon = LucideReceiptText;
   protected readonly emptyPagamentosIcon = LucideHandCoins;
   protected readonly skeletonPaineis = Array.from({ length: 2 });
-  protected readonly skeletonPagamentos = Array.from({ length: 3 });
   protected readonly internacaoAberta = signal<number | null>(null);
   protected readonly registrarPagamentoVisible = signal(false);
   protected readonly estornarPagamentoVisible = signal(false);
@@ -119,17 +131,23 @@ export class Pagamentos implements OnInit {
   });
 
   private readonly resumos = computed(() => {
+    const resumosBackend = this.pagamentosService.resumos();
     const resumos = new Map<number, ResumoInternacao>();
 
     for (const internacao of this.internacoes()) {
-      const confirmados = (this.pagamentosPorInternacao().get(internacao.id) ?? []).filter(
-        (pagamento) => pagamento.status === 'CONFIRMADO',
+      const ativos = (this.pagamentosPorInternacao().get(internacao.id) ?? []).filter(
+        (pagamento) => pagamento.status === StatusPagamento.ATIVO,
       );
+      const totalPagoLocal = ativos.reduce(
+        (total, pagamento) => total + Number(pagamento.valor),
+        0,
+      );
+      const totalPago = resumosBackend[internacao.id]?.totalPago ?? totalPagoLocal;
 
       resumos.set(internacao.id, {
-        totalPago: confirmados.reduce((total, pagamento) => total + pagamento.valor, 0),
-        confirmados: confirmados.length,
-        ultimoPagamento: confirmados[0]?.dataPagamento ?? null,
+        totalPago,
+        ativos: ativos.length,
+        ultimoPagamento: ativos[0]?.dataPagamento ?? null,
       });
     }
 
@@ -139,17 +157,50 @@ export class Pagamentos implements OnInit {
   constructor() {
     effect(() => {
       const internacoes = this.internacoes();
-      if (this.accordionInicializado || internacoes.length === 0) return;
+      const chave = this.internacaoIdsChave();
+      if (chave === this.ultimaChaveAccordion) return;
+
+      this.ultimaChaveAccordion = chave;
+      if (internacoes.length === 0) {
+        this.internacaoAberta.set(null);
+        return;
+      }
 
       this.internacaoAberta.set(
         internacoes.find((internacao) => internacao.ativo)?.id ?? internacoes[0].id,
       );
-      this.accordionInicializado = true;
     });
-  }
 
-  ngOnInit(): void {
-    this.pagamentosService.getAllPagamentos().subscribe();
+    effect((onCleanup) => {
+      if (this.outletData().loading) return;
+
+      const chave = this.internacaoIdsChave();
+      const ids = chave ? chave.split(',').map(Number) : [];
+
+      if (ids.length === 0) {
+        this.chaveCarregada.set('');
+        this.carregandoPagamentos.set(false);
+        return;
+      }
+
+      this.carregandoPagamentos.set(true);
+
+      const requisicoes = ids.flatMap((internacaoId) => [
+        this.pagamentosService.getPagamentosByInternacaoId(internacaoId),
+        this.pagamentosService.getResumoByInternacaoId(internacaoId),
+      ]);
+
+      const subscription = forkJoin(requisicoes)
+        .pipe(
+          finalize(() => {
+            this.chaveCarregada.set(chave);
+            this.carregandoPagamentos.set(false);
+          }),
+        )
+        .subscribe({ error: () => {} });
+
+      onCleanup(() => subscription.unsubscribe());
+    });
   }
 
   protected pagamentosDaInternacao(internacaoId: number): Pagamento[] {
@@ -163,7 +214,7 @@ export class Pagamentos implements OnInit {
   protected indicadores(internacao: Internacao): InfoCardContent[] {
     const resumo = this.resumos().get(internacao.id) ?? {
       totalPago: 0,
-      confirmados: 0,
+      ativos: 0,
       ultimoPagamento: null,
     };
 
@@ -175,8 +226,8 @@ export class Pagamentos implements OnInit {
         color: '#00a63e',
       },
       {
-        value: resumo.confirmados,
-        label: 'Pagamentos confirmados',
+        value: resumo.ativos,
+        label: 'Pagamentos ativos',
         icon: LucideReceiptText,
         color: '#155dfc',
       },
@@ -196,7 +247,7 @@ export class Pagamentos implements OnInit {
   }
 
   protected abrirRegistro(internacao: Internacao): void {
-    if (!internacao.convenio.pagamento || this.mutationLoading()) return;
+    if (!internacao.convenio.pagamento || !internacao.ativo || this.mutationLoading()) return;
 
     this.internacaoSelecionada.set(internacao);
     this.registrarPagamentoVisible.set(true);
@@ -207,6 +258,10 @@ export class Pagamentos implements OnInit {
 
     this.pagamentoSelecionado.set(pagamento);
     this.estornarPagamentoVisible.set(true);
+  }
+
+  protected atualizarResumo(internacaoId: number): void {
+    this.pagamentosService.getResumoByInternacaoId(internacaoId).subscribe({ error: () => {} });
   }
 
   private formatarMoeda(valor: number): string {
