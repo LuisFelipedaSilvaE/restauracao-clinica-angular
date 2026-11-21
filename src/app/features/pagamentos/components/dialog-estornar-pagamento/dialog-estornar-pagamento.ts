@@ -2,7 +2,14 @@ import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { LucideBanknoteX } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -10,10 +17,17 @@ import { DialogModule } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { ContextSummary } from '../../../../shared/components/context-summary/context-summary';
+import { StatusPagamento } from '../../enums/status-pagamento';
 import { Pagamento } from '../../interfaces/pagamento';
 import { PagamentosService } from '../../services/pagamentos-service';
 
 const TAMANHO_MAXIMO_MOTIVO = 500;
+
+const textoObrigatorio: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  return typeof control.value === 'string' && control.value.trim().length > 0
+    ? null
+    : { required: true };
+};
 
 @Component({
   selector: 'dialog-estornar-pagamento',
@@ -49,7 +63,7 @@ export class DialogEstornarPagamento {
   private readonly formSubmitted = signal(false);
 
   protected readonly form = this.fb.nonNullable.group({
-    motivo: ['', [Validators.required, Validators.maxLength(TAMANHO_MAXIMO_MOTIVO)]],
+    motivo: ['', [textoObrigatorio, Validators.maxLength(TAMANHO_MAXIMO_MOTIVO)]],
   });
 
   protected isInvalid(): boolean {
@@ -77,7 +91,7 @@ export class DialogEstornarPagamento {
   }
 
   protected estornar(): void {
-    if (this.loading()) return;
+    if (this.loading() || this.pagamento().status === StatusPagamento.ESTORNADO) return;
 
     const motivoControl = this.form.controls.motivo;
     motivoControl.setValue(motivoControl.value.trim());
@@ -97,14 +111,6 @@ export class DialogEstornarPagamento {
             summary: 'Pagamento estornado!',
             detail: 'O estorno foi registrado no histórico da internação.',
             life: 3000,
-          });
-        },
-        error: (error: Error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Não foi possível estornar o pagamento',
-            detail: error.message,
-            life: 5000,
           });
         },
       });

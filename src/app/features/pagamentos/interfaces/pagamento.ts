@@ -1,4 +1,6 @@
-export type StatusPagamento = 'CONFIRMADO' | 'ESTORNADO';
+import { StatusPagamento } from '../enums/status-pagamento';
+
+export { StatusPagamento } from '../enums/status-pagamento';
 
 export interface Pagamento {
   id: number;

@@ -35,6 +35,10 @@
       <p-message severity="warn">
         Esta internação possui isenção de pagamento e não permite novos lançamentos.
       </p-message>
+    } @else if (!internacao().ativo) {
+      <p-message severity="warn">
+        Não é possível registrar pagamentos em uma internação encerrada.
+      </p-message>
     } @else {
       <form
         autoFocusError
@@ -73,7 +77,7 @@
             inputId="dataPagamento"
             required
             [errorMessage]="getErrorMessage('dataPagamento')"
-            hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário ou horário."
+            hint="Formato: dd/mm/aaaa. Use as setas para navegar no calendário."
           >
             <p-datepicker
               inputId="dataPagamento"
@@ -83,7 +87,8 @@
               dateFormat="dd/mm/yy"
               [showButtonBar]="true"
               [readonlyInput]="false"
-              [maxDate]="hoje"
+              [minDate]="dataEntrada()"
+              [maxDate]="dataMaximaPagamento()"
               [invalid]="isInvalid('dataPagamento')"
               appendTo="body"
               autocomplete="off"
@@ -105,8 +110,6 @@
               dateFormat="mm/yy"
               placeholder="mm/aaaa"
               [readonlyInput]="true"
-              [minDate]="dataEntrada()"
-              [maxDate]="hoje"
               [invalid]="isInvalid('competencia')"
               appendTo="body"
               autocomplete="off"
@@ -115,9 +118,16 @@
           </form-field>
         </div>
 
+        @if (competenciaDuplicada()) {
+          <p-message severity="warn" size="small">
+            Já existe um pagamento ativo para esta competência nesta internação. Selecione outra
+            competência.
+          </p-message>
+        }
+
         @if (observacaoObrigatoria()) {
           <p-message severity="warn" size="small">
-            O valor informado é superior à mensalidade. Descreva o motivo na observação.
+            O valor informado é diferente da mensalidade. Descreva o motivo na observação.
           </p-message>
         }
 
@@ -154,7 +164,7 @@
       (onClick)="cancelar()"
     />
 
-    @if (internacao().convenio.pagamento) {
+    @if (internacao().convenio.pagamento && internacao().ativo) {
       <p-button
         type="button"
         label="Registrar pagamento"

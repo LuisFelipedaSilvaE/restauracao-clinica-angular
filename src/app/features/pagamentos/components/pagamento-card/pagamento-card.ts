@@ -6,6 +6,7 @@ import { ActionMenu } from '../../../../shared/components/action-menu/action-men
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
 import { localDateToDate } from '../../../../shared/utils/local-date';
+import { StatusPagamento } from '../../enums/status-pagamento';
 import { Pagamento } from '../../interfaces/pagamento';
 
 @Component({
@@ -13,7 +14,7 @@ import { Pagamento } from '../../interfaces/pagamento';
   host: {
     class:
       'grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-x-3 gap-y-3 rounded-xl border border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_36px] xl:gap-4 xl:p-4',
-    '[class]': "pagamento().status === 'ESTORNADO' ? 'border-dashed! bg-surface-subtle!' : ''",
+    '[class]': "estornado() ? 'border-dashed! bg-surface-subtle!' : ''",
   },
   imports: [ActionMenu, CommonModule, IconColor, LucideBanknote, TagModule],
   templateUrl: './pagamento-card.html',
@@ -29,9 +30,11 @@ export class PagamentoCard {
   protected readonly dataPagamento = computed(() =>
     localDateToDate(this.pagamento().dataPagamento),
   );
-  protected readonly estornado = computed(() => this.pagamento().status === 'ESTORNADO');
+  protected readonly estornado = computed(
+    () => this.pagamento().status === StatusPagamento.ESTORNADO,
+  );
   protected readonly status = computed(() => ({
-    label: this.estornado() ? 'Estornado' : 'Confirmado',
+    label: this.estornado() ? 'Estornado' : 'Ativo',
     severity: this.estornado() ? ('danger' as const) : ('success' as const),
   }));
 

@@ -9,9 +9,9 @@
   <div class="min-w-0">
     <time
       class="truncate font-semibold capitalize text-content-primary"
-      [attr.datetime]="dataCompetencia()"
+      [attr.datetime]="pagamento().competencia"
     >
-      {{ dataCompetencia() | date: "MMMM 'de' yyyy" : 'UTC' : 'pt-BR' }}
+      {{ dataCompetencia() | date: "MMMM 'de' yyyy" : '' : 'pt-BR' }}
     </time>
   </div>
 </div>
@@ -22,8 +22,8 @@
   <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
     Pagamento
   </span>
-  <time class="text-sm text-content-secondary" [attr.datetime]="dataPagamento()">
-    {{ dataPagamento() | date: 'dd/MM/yyyy' : 'UTC' }}
+  <time class="text-sm text-content-secondary" [attr.datetime]="pagamento().dataPagamento">
+    {{ dataPagamento() | date: 'dd/MM/yyyy' }}
   </time>
 </div>
 
