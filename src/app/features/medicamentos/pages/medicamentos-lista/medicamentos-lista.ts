@@ -30,9 +30,10 @@ export class MedicamentosLista implements OnInit {
       (total, medicamento) => total + (Number(medicamento.quantidadeEstoque) || 0),
       0,
     );
-    const precisamDeAtencao = medicamentos.filter(
-      (medicamento) =>
-        Number(medicamento.quantidadeEstoque) <= Number(medicamento.quantidadeMinima),
+    const precisamDeAtencao = medicamentos.filter((medicamento) =>
+      medicamento.status
+        ? medicamento.status === 'ALERTA: ESTOQUE BAIXO'
+        : Number(medicamento.quantidadeEstoque) <= Number(medicamento.quantidadeMinima),
     ).length;
 
     return [

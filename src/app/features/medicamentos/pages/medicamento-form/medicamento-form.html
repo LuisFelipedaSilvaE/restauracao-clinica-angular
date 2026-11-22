@@ -62,10 +62,15 @@
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
         <form-field
-          label="Estoque inicial"
+          [label]="modo() === 'registro' ? 'Estoque inicial' : 'Estoque atual'"
           inputId="quantidadeEstoque"
           [errorMessage]="getErrorMessage('quantidadeEstoque')"
-          required
+          [required]="modo() === 'registro'"
+          [hint]="
+            modo() === 'registro'
+              ? 'Define o saldo inicial. Após o cadastro, alterações são feitas por Entrada e Saída.'
+              : 'Para alterar o saldo, utilize as ações de Entrada e Saída.'
+          "
         >
           <p-inputnumber
             inputId="quantidadeEstoque"
@@ -105,12 +110,19 @@
       <p-divider />
       <div class="flex justify-end gap-2">
         <p-button
+          type="button"
           label="Cancelar"
           severity="secondary"
           variant="outlined"
+          [disabled]="loading().mutation"
           (onClick)="limparForm()"
         />
-        <p-button type="submit" [label]="btnLabel()" />
+        <p-button
+          type="submit"
+          [label]="btnLabel()"
+          [loading]="loading().mutation"
+          [disabled]="loading().mutation"
+        />
       </div>
     </form>
   </card>

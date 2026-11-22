@@ -88,11 +88,13 @@
   </ng-template>
 </p-dataview>
 
-<dialog-movimentacao-medicamento
-  [(visible)]="dialogVisible"
-  [type]="typeMovimentacao()"
-  [medicamento]="medicamentoMovimentacao()"
-/>
+@if (medicamentoMovimentacao(); as medicamento) {
+  <dialog-movimentacao-medicamento
+    [(visible)]="dialogVisible"
+    [type]="typeMovimentacao()"
+    [medicamento]="medicamento"
+  />
+}
 
 @if (isAdmin) {
   <confirm-dialog
@@ -101,11 +103,11 @@
     [message]="
       'Deseja excluir ' +
       (medicamentoMovimentacao()?.nome ?? 'este medicamento') +
-      '? Esta ação não poderá ser desfeita.'
+      '? Medicamentos com histórico de movimentações não podem ser excluídos e esta ação não poderá ser desfeita.'
     "
     confirmLabel="Excluir"
     severity="danger"
-    [loading]="loading()"
+    [loading]="medicamentosService.loading().mutation"
     (onConfirm)="excluirMedicamento()"
   />
 }

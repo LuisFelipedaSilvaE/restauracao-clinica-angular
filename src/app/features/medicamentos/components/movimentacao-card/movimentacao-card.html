@@ -1,0 +1,61 @@
+<div class="flex min-w-0 items-center gap-3">
+  <span
+    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+    [iconColor]="tipoConfig().iconColor"
+  >
+    <svg
+      [lucideIcon]="tipoConfig().icon"
+      class="h-5 w-5"
+      aria-hidden="true"
+      focusable="false"
+    ></svg>
+  </span>
+
+  <div class="min-w-0">
+    <p-tag [value]="tipoConfig().label" [severity]="tipoConfig().severity" />
+  </div>
+</div>
+
+<div class="flex items-center justify-between gap-3 sm:block sm:text-center">
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Data e hora
+  </span>
+  <time class="text-sm text-content-secondary" [attr.datetime]="movimentacao().dataMovimentacao">
+    {{ movimentacao().dataMovimentacao | date: 'dd/MM/yyyy HH:mm' }}
+  </time>
+</div>
+
+<div class="flex items-center justify-between gap-3 sm:block sm:text-center">
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Quantidade
+  </span>
+  <span class="font-semibold" [class]="tipoConfig().quantidadeClass">
+    {{ tipoConfig().sinal }}{{ movimentacao().quantidade | number: '1.0-0' }}
+  </span>
+</div>
+
+<div class="flex items-center justify-between gap-3 sm:block sm:text-center">
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Saldo
+  </span>
+  <span class="text-sm text-content-primary">
+    {{ movimentacao().saldoAnterior | number: '1.0-0' }} →
+    <strong>{{ movimentacao().saldoPosterior | number: '1.0-0' }}</strong>
+  </span>
+</div>
+
+<div class="flex items-center justify-between gap-3 sm:block sm:text-center">
+  <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
+    Responsável
+  </span>
+  <span class="truncate text-sm text-content-secondary">
+    {{ movimentacao().usuarioResponsavel }}
+  </span>
+</div>
+
+<div class="col-span-full border-t border-border-default pt-3 text-xs text-content-secondary">
+  <p>
+    <span class="font-medium text-content-primary">Justificativa:</span>
+    {{ movimentacao().justificativa }}
+  </p>
+</div>

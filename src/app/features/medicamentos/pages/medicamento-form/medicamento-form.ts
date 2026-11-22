@@ -14,6 +14,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Card } from '../../../../shared/components/card/card';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import { FormState } from '../../../../shared/types/form-state';
 import {
   MEDICAMENTO_NOME_MAX_LENGTH,
   MEDICAMENTO_PRECO_MAXIMO,
@@ -81,6 +82,7 @@ export class MedicamentoForm implements OnInit {
     ]),
   });
   protected readonly formSubmitted = signal<boolean>(false);
+  protected readonly loading = this.medicamentosService.loading;
   protected readonly modo = computed<FormState>(() => (this.id() ? 'atualizacao' : 'registro'));
   protected readonly btnLabel = computed(() => {
     return this.modo() === 'registro' ? 'Cadastrar medicamento' : 'Salvar alterações';
@@ -109,6 +111,7 @@ export class MedicamentoForm implements OnInit {
 
   ngOnInit(): void {
     if (this.id()) {
+      this.medicamentoForm.controls.quantidadeEstoque.disable();
       this.getMedicamento();
     }
   }
@@ -138,9 +141,12 @@ export class MedicamentoForm implements OnInit {
           this.router.navigate(['/medicamentos']);
           return;
         }
-        const { id, ...medicamentoFormData } = medicamento;
-
-        this.medicamentoForm.patchValue(medicamentoFormData);
+        this.medicamentoForm.patchValue({
+          nome: medicamento.nome,
+          preco: medicamento.preco,
+          quantidadeEstoque: medicamento.quantidadeEstoque,
+          quantidadeMinima: medicamento.quantidadeMinima,
+        });
       },
       error: () => {
         this.carregando.set(false);
@@ -203,6 +209,8 @@ export class MedicamentoForm implements OnInit {
   }
 
   protected onSubmit(): void {
+    if (this.loading().mutation) return;
+
     this.formSubmitted.set(true);
 
     if (this.medicamentoForm.invalid) {
@@ -213,6 +221,7 @@ export class MedicamentoForm implements OnInit {
     const rawForm = this.medicamentoForm.getRawValue();
     const medicamento = {
       ...rawForm,
+      nome: rawForm.nome.trim(),
       preco: rawForm.preco!,
       quantidadeEstoque: rawForm.quantidadeEstoque!,
       quantidadeMinima: rawForm.quantidadeMinima!,

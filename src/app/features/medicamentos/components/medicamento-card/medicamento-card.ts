@@ -57,7 +57,9 @@ export class MedicamentoCard {
     const medicamento = this.medicamento();
     const estoque = Number(medicamento.quantidadeEstoque) || 0;
     const minimo = Number(medicamento.quantidadeMinima) || 0;
-    const estoqueBaixo = estoque <= minimo;
+    const estoqueBaixo = medicamento.status
+      ? medicamento.status === 'ALERTA: ESTOQUE BAIXO'
+      : estoque <= minimo;
 
     return {
       pb: {
@@ -71,7 +73,7 @@ export class MedicamentoCard {
     };
   });
 
-  protected readonly acoes: AcaoMenu[] = [
+  protected readonly acoes = computed<AcaoMenu[]>(() => [
     {
       label: 'Ver medicamento',
       lucideIcon: LucideEye,
@@ -92,6 +94,7 @@ export class MedicamentoCard {
     },
     {
       label: 'Registrar saída',
+      visible: this.medicamento().quantidadeEstoque > 0,
       lucideIcon: LucideArrowUpFromLine,
       iconClass: 'h-4 w-4 text-action-secondary-text',
       command: () => this.onSaida.emit(this.medicamento()),
@@ -103,5 +106,5 @@ export class MedicamentoCard {
       iconClass: 'h-4 w-4 text-action-destructive',
       command: () => this.onDelete.emit(this.medicamento()),
     },
-  ];
+  ]);
 }

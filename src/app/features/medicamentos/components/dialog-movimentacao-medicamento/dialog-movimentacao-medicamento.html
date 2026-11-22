@@ -5,18 +5,19 @@
   [focusOnShow]="true"
   [closable]="!medicamentosService.loading().mutation"
   [dismissableMask]="!medicamentosService.loading().mutation"
-  styleClass="w-md!"
+  (onHide)="resetarFormulario()"
+  styleClass="w-md! max-w-[calc(100vw-2rem)]!"
 >
   <ng-template #header let-titleId="ariaLabelledBy">
     <h2 [id]="titleId" class="text-lg font-semibold">{{ config().title }}</h2>
   </ng-template>
 
   @if (type()) {
-    <div class="flex flex-col gap-5 mt-0.5">
-      <p-message [severity]="config().severity" (ngSubmit)="atualizarQuantidadeEstoque()">
-        <div class="flex justify-center items-center gap-2">
+    <div class="mt-0.5 flex flex-col gap-5">
+      <p-message [severity]="config().severity">
+        <div class="flex items-center gap-3">
           <span
-            class="flex justify-center items-center w-10 h-10 p-2 rounded-md"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md p-2"
             [class]="type() === 'entrada' ? 'bg-green-200' : 'bg-yellow-200'"
           >
             <svg
@@ -26,45 +27,80 @@
               focusable="false"
             ></svg>
           </span>
-          <div>
-            <p class="font-bold">
+          <div class="min-w-0">
+            <p class="truncate font-bold">
               {{ medicamento().nome }}
             </p>
             <p class="font-normal">
               Saldo atual:
               <strong>{{ medicamento().quantidadeEstoque | number: '1.0-0' }}</strong>
+              @if (saldoAposMovimentacao(); as novoSaldo) {
+                <span>
+                  → Após movimentação:
+                  <strong>{{ novoSaldo | number: '1.0-0' }}</strong>
+                </span>
+              }
             </p>
           </div>
         </div>
       </p-message>
 
-      <form
-        autoFocusError
-        #formFocus="autoFocusError"
-        [formGroup]="form"
-        class="flex flex-col gap-4"
-      >
-        <form-field
-          label="Quantidade"
-          inputId="quantidade"
-          [errorMessage]="getErrorMessage('quantidade')"
-          required
+      @if (semSaldoParaSaida()) {
+        <p-message severity="warn">
+          Não há unidades disponíveis em estoque para registrar uma saída.
+        </p-message>
+      } @else {
+        <form
+          autoFocusError
+          [formGroup]="form"
+          class="flex flex-col gap-4"
+          (ngSubmit)="atualizarQuantidadeEstoque()"
         >
-          <p-inputNumber
-            autocomplete="off"
-            inputId="quantidade"
-            formControlName="quantidade"
-            [invalid]="isInvalid('quantidade')"
-            placeholder="0"
-            [min]="1"
-            [max]="quantidadeMaxima"
-            [maxFractionDigits]="0"
-            locale="pt-BR"
-            [useGrouping]="true"
-            fluid
-          />
-        </form-field>
-      </form>
+          <form-field
+            label="Quantidade"
+            inputId="quantidadeMovimentacao"
+            [errorMessage]="getErrorMessage('quantidade')"
+            required
+          >
+            <p-inputNumber
+              autocomplete="off"
+              inputId="quantidadeMovimentacao"
+              name="quantidadeMovimentacao"
+              formControlName="quantidade"
+              [invalid]="isInvalid('quantidade')"
+              placeholder="0"
+              [min]="1"
+              [max]="quantidadeMaximaPermitida()"
+              [maxFractionDigits]="0"
+              locale="pt-BR"
+              [useGrouping]="true"
+              fluid
+            />
+          </form-field>
+
+          <form-field
+            label="Justificativa"
+            inputId="justificativaMovimentacao"
+            [errorMessage]="getErrorMessage('justificativa')"
+            [hint]="justificativaLength() + '/' + justificativaMaxLength + ' caracteres'"
+            required
+          >
+            <textarea
+              pInputTextarea
+              id="justificativaMovimentacao"
+              name="justificativaMovimentacao"
+              formControlName="justificativa"
+              class="resize-none"
+              rows="3"
+              [maxLength]="justificativaMaxLength"
+              [invalid]="isInvalid('justificativa')"
+              placeholder="Informe o motivo da entrada ou saída no estoque"
+              autocomplete="off"
+              fluid
+            ></textarea>
+          </form-field>
+        </form>
+      }
     </div>
   }
 
@@ -74,15 +110,18 @@
       label="Cancelar"
       severity="secondary"
       [disabled]="medicamentosService.loading().mutation"
-      (click)="limparFormulario()"
+      (onClick)="cancelar()"
     />
 
-    <p-button
-      [label]="config().btnLabel"
-      [severity]="config().severity"
-      [loading]="medicamentosService.loading().mutation"
-      [disabled]="medicamentosService.loading().mutation"
-      (onClick)="atualizarQuantidadeEstoque(); formFocus.focusInvalidControl()"
-    />
+    @if (!semSaldoParaSaida()) {
+      <p-button
+        type="button"
+        [label]="config().btnLabel"
+        [severity]="config().severity"
+        [loading]="medicamentosService.loading().mutation"
+        [disabled]="medicamentosService.loading().mutation"
+        (onClick)="atualizarQuantidadeEstoque()"
+      />
+    }
   </ng-template>
 </p-dialog>
