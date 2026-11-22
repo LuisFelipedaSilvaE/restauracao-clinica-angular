@@ -27,7 +27,6 @@ import { Card } from '../../shared/components/card/card';
 import { InfoCard } from '../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../shared/interfaces/info-card-content';
 import { ConveniosService } from '../convenios/services/convenios-service';
-import { EtapaTratamento } from '../internacoes/enums/etapa-tratamento';
 import { Internacao } from '../internacoes/interfaces/internacao';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { StatusTriagem } from '../triagens/enums/status-triagem';
@@ -56,6 +55,17 @@ interface MovimentacaoRecente {
   data: string;
   internacao: Internacao;
   icon: LucideIcon;
+}
+
+interface EtapaConvenioResumo {
+  convenioId: number;
+  descricao: string;
+  cor: string;
+  emTratamento: number;
+  proximoAlta: number;
+  altaVencida: number;
+  altaConcedida: number;
+  total: number;
 }
 
 @Component({
@@ -93,17 +103,29 @@ export class Dashboard implements OnInit {
   protected readonly falhaCarregamento = signal(false);
   protected readonly skeletonIndicadores = Array.from({ length: 5 });
 
+  private readonly ativasPorConvenioMap = computed(
+    () =>
+      new Map(
+        this.internacoesService
+          .relatorioAtivasPorConvenio()
+          .map((item) => [item.convenioId, Number(item.quantidadeAtivas) || 0]),
+      ),
+  );
+
   protected readonly indicadores = computed<InfoCardContent[]>(() => {
-    const internacoesAtivas = this.internacoesService
-      .internacoes()
-      .filter((internacao) => internacao.ativo);
+    const relatorioAtivas = this.internacoesService.relatorioAtivasPorConvenio();
+    const relatorioEtapas = this.internacoesService.relatorioEtapasPorConvenio();
+    const ativasPorConvenio = this.ativasPorConvenioMap();
+
+    const totalInternacoesAtivas = relatorioAtivas.reduce(
+      (total, item) => total + (Number(item.quantidadeAtivas) || 0),
+      0,
+    );
     const vagasDisponiveis = this.conveniosService
       .convenios()
       .filter((convenio) => convenio.ativo)
       .reduce((total, convenio) => {
-        const ocupadas = internacoesAtivas.filter(
-          (internacao) => internacao.convenio.id === convenio.id,
-        ).length;
+        const ocupadas = ativasPorConvenio.get(convenio.id) ?? 0;
         return total + Math.max(0, convenio.maxVagas - ocupadas);
       }, 0);
     const triagensPendentes = this.triagensService
@@ -112,16 +134,18 @@ export class Dashboard implements OnInit {
         (triagem) =>
           triagem.status === StatusTriagem.AGENDADA || triagem.status === StatusTriagem.ATRASADA,
       ).length;
-    const proximasDaAlta = internacoesAtivas.filter(
-      (internacao) => internacao.etapaTratamento === EtapaTratamento.PROXIMO_ALTA,
-    ).length;
-    const altasVencidas = internacoesAtivas.filter(
-      (internacao) => internacao.etapaTratamento === EtapaTratamento.ALTA_VENCIDA,
-    ).length;
+    const proximasDaAlta = relatorioEtapas.reduce(
+      (total, item) => total + (Number(item.quantidadeProximoAlta) || 0),
+      0,
+    );
+    const altasVencidas = relatorioEtapas.reduce(
+      (total, item) => total + (Number(item.quantidadeAltaVencida) || 0),
+      0,
+    );
 
     return [
       {
-        value: internacoesAtivas.length,
+        value: totalInternacoesAtivas,
         label: 'Internações ativas',
         icon: LucideBedSingle,
         color: '#be222d',
@@ -256,17 +280,13 @@ export class Dashboard implements OnInit {
   });
 
   protected readonly ocupacaoConvenios = computed<OcupacaoConvenio[]>(() => {
-    const internacoesAtivas = this.internacoesService
-      .internacoes()
-      .filter((internacao) => internacao.ativo);
+    const ativasPorConvenio = this.ativasPorConvenioMap();
 
     return this.conveniosService
       .convenios()
       .filter((convenio) => convenio.ativo)
       .map((convenio) => {
-        const ocupadas = internacoesAtivas.filter(
-          (internacao) => internacao.convenio.id === convenio.id,
-        ).length;
+        const ocupadas = ativasPorConvenio.get(convenio.id) ?? 0;
 
         return {
           id: convenio.id,
@@ -284,6 +304,26 @@ export class Dashboard implements OnInit {
       .sort(
         (a, b) => b.percentual - a.percentual || a.descricao.localeCompare(b.descricao, 'pt-BR'),
       );
+  });
+
+  protected readonly etapasPorConvenio = computed<EtapaConvenioResumo[]>(() => {
+    const conveniosPorId = new Map(
+      this.conveniosService.convenios().map((convenio) => [convenio.id, convenio]),
+    );
+
+    return this.internacoesService
+      .relatorioEtapasPorConvenio()
+      .map((item) => ({
+        convenioId: item.convenioId,
+        descricao: item.descricao,
+        cor: conveniosPorId.get(item.convenioId)?.cor ?? '#94a3b8',
+        emTratamento: Number(item.quantidadeEmTratamento) || 0,
+        proximoAlta: Number(item.quantidadeProximoAlta) || 0,
+        altaVencida: Number(item.quantidadeAltaVencida) || 0,
+        altaConcedida: Number(item.quantidadeAltaConcedida) || 0,
+        total: Number(item.total) || 0,
+      }))
+      .sort((a, b) => b.total - a.total || a.descricao.localeCompare(b.descricao, 'pt-BR'));
   });
 
   protected readonly movimentacoesRecentes = computed<MovimentacaoRecente[]>(() =>
@@ -328,6 +368,8 @@ export class Dashboard implements OnInit {
       convenios: this.conveniosService.getAllConvenios(forcarAtualizacao),
       internacoes: this.internacoesService.getAllInternacoes(forcarAtualizacao),
       triagens: this.triagensService.getAllTriagens(forcarAtualizacao),
+      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
+      etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
     }).subscribe({
       next: () => this.carregando.set(false),
       error: () => {
