@@ -162,6 +162,7 @@ export class ResponsaveisLista implements OnInit {
       },
       {
         label: responsavel.ativo ? 'Inativar' : 'Ativar',
+        visible: this.isAdmin,
         lucideIcon: responsavel.ativo ? LucidePowerOff : LucidePower,
         iconClass: responsavel.ativo
           ? 'h-4 w-4 text-action-warning'
@@ -190,6 +191,8 @@ export class ResponsaveisLista implements OnInit {
   }
 
   protected solicitarAlteracaoStatus(responsavel: Responsavel): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'status', responsavel, novoStatus: !responsavel.ativo });
     this.dialogConfirmVisible.set(true);
   }
@@ -221,6 +224,8 @@ export class ResponsaveisLista implements OnInit {
       });
       return;
     }
+
+    if (!this.isAdmin) return;
 
     const acao$ = acao.novoStatus
       ? this.responsaveisService.activateResponsavel(acao.responsavel.id)
