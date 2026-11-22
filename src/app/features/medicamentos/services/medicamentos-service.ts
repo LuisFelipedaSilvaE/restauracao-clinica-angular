@@ -18,6 +18,8 @@ export class MedicamentosService {
   private readonly internalMedicamentos = signal<Medicamento[]>([]);
 
   readonly medicamentos = this.internalMedicamentos.asReadonly();
+  private readonly internalMedicamentosEmAlerta = signal<Medicamento[]>([]);
+  readonly medicamentosEmAlerta = this.internalMedicamentosEmAlerta.asReadonly();
   private readonly listaCarregada = signal(false);
   private readonly loadingCounters: Record<LoadingType, number> = {
     list: 0,
@@ -37,6 +39,7 @@ export class MedicamentosService {
     return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
       tap((novoMedicamento) => {
         this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
+        this.sincronizarAlertaLocal(novoMedicamento);
       }),
       finalize(() => this.setLoading('mutation', false)),
     );
@@ -46,7 +49,10 @@ export class MedicamentosService {
     this.setLoading('mutation', true);
 
     return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}`, medicamento).pipe(
-      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+      tap((medicamentoAtualizado) => {
+        this.substituirMedicamentoNaLista(medicamentoAtualizado);
+        this.sincronizarAlertaLocal(medicamentoAtualizado);
+      }),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
@@ -55,9 +61,10 @@ export class MedicamentosService {
     this.setLoading('mutation', true);
 
     return this.http.delete<void>(`${this.baseAPIUrl}/${id}`).pipe(
-      tap(() =>
-        this.internalMedicamentos.update((medicamentos) => medicamentos.filter((m) => m.id !== id)),
-      ),
+      tap(() => {
+        this.internalMedicamentos.update((medicamentos) => medicamentos.filter((m) => m.id !== id));
+        this.internalMedicamentosEmAlerta.update((alertas) => alertas.filter((m) => m.id !== id));
+      }),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
@@ -89,6 +96,12 @@ export class MedicamentosService {
     return this.http
       .get<MovimentacaoEstoque[]>(`${this.baseAPIUrl}/${id}/movimentacoes`)
       .pipe(finalize(() => this.setLoading('detail', false)));
+  }
+
+  getMedicamentosEmAlerta(): Observable<Medicamento[]> {
+    return this.http
+      .get<Medicamento[]>(`${this.baseAPIUrl}/alertas`)
+      .pipe(tap((alertas) => this.internalMedicamentosEmAlerta.set(alertas)));
   }
 
   getAllMedicamentos(forceRefresh = false): Observable<Medicamento[]> {
@@ -136,11 +149,13 @@ export class MedicamentosService {
   }
 
   private atualizarSaldoNaLista(movimentacao: MovimentacaoEstoque): void {
+    let medicamentoAtualizado: Medicamento | undefined;
+
     this.internalMedicamentos.update((medicamentos) =>
       medicamentos.map((medicamento) => {
         if (medicamento.id !== movimentacao.medicamentoId) return medicamento;
 
-        return {
+        medicamentoAtualizado = {
           ...medicamento,
           quantidadeEstoque: movimentacao.saldoPosterior,
           status:
@@ -148,7 +163,24 @@ export class MedicamentosService {
               ? 'ALERTA: ESTOQUE BAIXO'
               : 'ESTOQUE OK',
         };
+
+        return medicamentoAtualizado;
       }),
     );
+
+    if (medicamentoAtualizado) {
+      this.sincronizarAlertaLocal(medicamentoAtualizado);
+    }
+  }
+
+  private sincronizarAlertaLocal(medicamento: Medicamento): void {
+    const emAlerta = medicamento.status
+      ? medicamento.status === 'ALERTA: ESTOQUE BAIXO'
+      : medicamento.quantidadeEstoque <= medicamento.quantidadeMinima;
+
+    this.internalMedicamentosEmAlerta.update((alertas) => {
+      const semAtual = alertas.filter((item) => item.id !== medicamento.id);
+      return emAlerta ? [...semAtual, medicamento] : semAtual;
+    });
   }
 }

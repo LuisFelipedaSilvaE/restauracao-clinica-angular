@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucidePackageOpen, LucidePill, LucidePlus, LucideTriangleAlert } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { forkJoin } from 'rxjs';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -30,11 +31,7 @@ export class MedicamentosLista implements OnInit {
       (total, medicamento) => total + (Number(medicamento.quantidadeEstoque) || 0),
       0,
     );
-    const precisamDeAtencao = medicamentos.filter((medicamento) =>
-      medicamento.status
-        ? medicamento.status === 'ALERTA: ESTOQUE BAIXO'
-        : Number(medicamento.quantidadeEstoque) <= Number(medicamento.quantidadeMinima),
-    ).length;
+    const precisamDeAtencao = this.medicamentosService.medicamentosEmAlerta().length;
 
     return [
       {
@@ -59,6 +56,9 @@ export class MedicamentosLista implements OnInit {
   });
 
   ngOnInit(): void {
-    this.medicamentosService.getAllMedicamentos().subscribe();
+    forkJoin({
+      medicamentos: this.medicamentosService.getAllMedicamentos(),
+      alertas: this.medicamentosService.getMedicamentosEmAlerta(),
+    }).subscribe();
   }
 }
