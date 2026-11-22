@@ -40,17 +40,17 @@
   <router-outlet [routerOutletData]="outletData()" />
 </div>
 
-<confirm-dialog
-  [(visible)]="confirmarAlteracao"
-  [title]="toggleLabel() + ' acolhido'"
-  [message]="toggleMessage()"
-  [confirmLabel]="toggleLabel()"
-  [severity]="toggleSeverity()"
-  [loading]="mutationLoading()"
-  (onConfirm)="alterarStatus()"
-/>
-
 @if (isAdmin) {
+  <confirm-dialog
+    [(visible)]="confirmarAlteracao"
+    [title]="toggleLabel() + ' acolhido'"
+    [message]="toggleMessage()"
+    [confirmLabel]="toggleLabel()"
+    [severity]="toggleSeverity()"
+    [loading]="mutationLoading()"
+    (onConfirm)="alterarStatus()"
+  />
+
   <confirm-dialog
     [(visible)]="confirmarExclusao"
     title="Excluir acolhido"

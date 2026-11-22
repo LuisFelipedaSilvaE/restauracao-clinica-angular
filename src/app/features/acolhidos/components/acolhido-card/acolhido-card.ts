@@ -95,6 +95,7 @@ export class AcolhidoCard {
       },
       {
         label: estaAtivo ? 'Inativar' : 'Ativar',
+        visible: this.isAdmin,
         lucideIcon: estaAtivo ? LucidePowerOff : LucidePower,
         iconClass: estaAtivo ? 'h-4 w-4 text-action-warning' : 'h-4 w-4 text-action-success',
         command: () => this.toggleAcolhido(),
@@ -114,6 +115,8 @@ export class AcolhidoCard {
   });
 
   toggleAcolhido(): void {
+    if (!this.isAdmin) return;
+
     const dto: ToggleAcolhidoDto = {
       id: this.acolhido().id,
       ativo: !this.acolhido().ativo,

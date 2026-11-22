@@ -232,6 +232,7 @@ export class AcolhidosLista implements OnInit {
 
       this.acolhidosService.deleteAcolhido(acao.id).subscribe({
         next: () => {
+          this.responsaveisService.getAllResponsaveis(true).subscribe();
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
@@ -244,16 +245,23 @@ export class AcolhidosLista implements OnInit {
       return;
     }
 
+    if (!this.isAdmin) return;
+
     const acao$ = acao.dados.ativo
       ? this.acolhidosService.activateAcolhido(acao.dados.id)
       : this.acolhidosService.deactivateAcolhido(acao.dados.id);
 
     acao$.subscribe({
-      next: () => this.dialogConfirmVisible.set(false),
+      next: () => {
+        this.responsaveisService.getAllResponsaveis(true).subscribe();
+        this.dialogConfirmVisible.set(false);
+      },
     });
   }
 
   protected toggleAcolhido(dto: ToggleAcolhidoDto): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'status', dados: dto });
     this.dialogConfirmVisible.set(true);
   }

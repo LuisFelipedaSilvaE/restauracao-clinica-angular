@@ -73,24 +73,24 @@
         >
       }
 
-      <p-button
-        [label]="toggleConfig().label"
-        [severity]="toggleConfig().severity"
-        variant="outlined"
-        [pt]="actionButtonPt"
-        (onClick)="statusChange.emit()"
-      >
-        <ng-template #icon>
-          <svg
-            [lucideIcon]="toggleConfig().icon"
-            class="h-4 w-4"
-            aria-hidden="true"
-            focusable="false"
-          ></svg>
-        </ng-template>
-      </p-button>
-
       @if (isAdmin) {
+        <p-button
+          [label]="toggleConfig().label"
+          [severity]="toggleConfig().severity"
+          variant="outlined"
+          [pt]="actionButtonPt"
+          (onClick)="statusChange.emit()"
+        >
+          <ng-template #icon>
+            <svg
+              [lucideIcon]="toggleConfig().icon"
+              class="h-4 w-4"
+              aria-hidden="true"
+              focusable="false"
+            ></svg>
+          </ng-template>
+        </p-button>
+
         <p-button
           label="Excluir"
           severity="danger"

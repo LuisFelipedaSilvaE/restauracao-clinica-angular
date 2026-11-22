@@ -18,6 +18,7 @@ import {
 } from '@lucide/angular';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
+import { ResponsaveisService } from '../responsaveis/services/responsaveis-service';
 import { AuthService } from '../../core/services/auth-service';
 
 @Component({
@@ -38,6 +39,7 @@ export class Prontuario {
   protected readonly acolhido = signal<Acolhido | null>(null);
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
+  private readonly responsaveisService = inject(ResponsaveisService);
   private readonly messageService = inject(MessageService);
   private readonly authService = inject(AuthService);
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
@@ -178,7 +180,7 @@ export class Prontuario {
 
   protected alterarStatus(): void {
     const acolhido = this.acolhido();
-    if (!acolhido) return;
+    if (!acolhido || !this.isAdmin) return;
 
     const novoStatus = !acolhido.ativo;
     const acao$ = novoStatus
@@ -188,6 +190,7 @@ export class Prontuario {
     acao$.subscribe({
       next: () => {
         this.acolhido.update((atual) => (atual ? { ...atual, ativo: novoStatus } : null));
+        this.responsaveisService.getAllResponsaveis(true).subscribe();
         this.confirmarAlteracao.set(false);
       },
     });
@@ -199,6 +202,7 @@ export class Prontuario {
 
     this.acolhidosService.deleteAcolhido(acolhido.id).subscribe({
       next: () => {
+        this.responsaveisService.getAllResponsaveis(true).subscribe();
         this.confirmarExclusao.set(false);
         this.messageService.add({
           severity: 'success',
