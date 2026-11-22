@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { AuthService } from '../../../../core/services/auth-service';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
-import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -181,25 +181,21 @@ export class ConveniosLista implements OnInit {
   ngOnInit(): void {
     this.carregandoContagens.set(true);
 
-    this.conveniosService
-      .getAllConvenios()
-      .pipe(
-        switchMap((convenios) => {
-          if (convenios.length === 0) return of([] as [number, number][]);
-
-          return forkJoin(
-            convenios.map((convenio) =>
-              this.internacoesService
-                .countInternacoesAtivasByConvenio(convenio.id)
-                .pipe(map((quantidade) => [convenio.id, quantidade] as [number, number])),
+    forkJoin({
+      convenios: this.conveniosService.getAllConvenios(),
+      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
+    })
+      .pipe(finalize(() => this.carregandoContagens.set(false)))
+      .subscribe({
+        next: ({ ativasPorConvenio }) => {
+          this.acolhidosAtivosPorConvenio.set(
+            Object.fromEntries(
+              ativasPorConvenio.map((item) => [
+                item.convenioId,
+                Number(item.quantidadeAtivas) || 0,
+              ]),
             ),
           );
-        }),
-        finalize(() => this.carregandoContagens.set(false)),
-      )
-      .subscribe({
-        next: (contagens) => {
-          this.acolhidosAtivosPorConvenio.set(Object.fromEntries(contagens));
         },
       });
   }
