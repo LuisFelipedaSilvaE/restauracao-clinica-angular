@@ -71,22 +71,24 @@
           <span pButtonLabel>Editar</span></a
         >
       }
-      <p-button
-        [label]="toggleLabel()"
-        [severity]="convenio.ativo ? 'warn' : 'success'"
-        [outlined]="true"
-        [disabled]="loading().mutation"
-        [pt]="actionButtonPt"
-        (onClick)="this.confirmarAlteracao.set(true)"
-      >
-        <ng-template #icon>
-          @if (convenio.ativo) {
-            <svg lucidePowerOff class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
-          } @else {
-            <svg lucidePower class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
-          }
-        </ng-template>
-      </p-button>
+      @if (isAdmin) {
+        <p-button
+          [label]="toggleLabel()"
+          [severity]="convenio.ativo ? 'warn' : 'success'"
+          [outlined]="true"
+          [disabled]="loading().mutation"
+          [pt]="actionButtonPt"
+          (onClick)="this.confirmarAlteracao.set(true)"
+        >
+          <ng-template #icon>
+            @if (convenio.ativo) {
+              <svg lucidePowerOff class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+            } @else {
+              <svg lucidePower class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+            }
+          </ng-template>
+        </p-button>
+      }
       @if (isAdmin) {
         <p-button
           label="Excluir"
@@ -204,17 +206,17 @@
   </card>
 }
 
-<confirm-dialog
-  [(visible)]="confirmarAlteracao"
-  [title]="toggleLabel() + ' convênio'"
-  [message]="toggleMessage()"
-  [confirmLabel]="toggleLabel()"
-  [severity]="toggleSeverity()"
-  [loading]="loading().mutation"
-  (onConfirm)="alterarStatus()"
-/>
-
 @if (isAdmin) {
+  <confirm-dialog
+    [(visible)]="confirmarAlteracao"
+    [title]="toggleLabel() + ' convênio'"
+    [message]="toggleMessage()"
+    [confirmLabel]="toggleLabel()"
+    [severity]="toggleSeverity()"
+    [loading]="loading().mutation"
+    (onConfirm)="alterarStatus()"
+  />
+
   <confirm-dialog
     [(visible)]="confirmarExclusao"
     title="Excluir convênio"

@@ -153,6 +153,8 @@ export class ConveniosLista implements OnInit {
       return;
     }
 
+    if (!this.isAdmin) return;
+
     const acao$ = acao.dados.ativo
       ? this.conveniosService.activateConvenio(acao.dados.id)
       : this.conveniosService.deactivateConvenio(acao.dados.id);
@@ -163,6 +165,8 @@ export class ConveniosLista implements OnInit {
   }
 
   toggleConvenio(dto: ToggleConvenioDto): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'status', dados: dto });
     this.dialogConfirmVisible.set(true);
   }

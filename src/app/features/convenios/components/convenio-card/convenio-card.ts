@@ -100,6 +100,8 @@ export class ConvenioCard {
   });
 
   toggleConvenio(): void {
+    if (!this.isAdmin) return;
+
     const dto: ToggleConvenioDto = {
       id: this.convenio().id,
       ativo: !this.convenio().ativo,

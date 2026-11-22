@@ -150,7 +150,7 @@ export class ConvenioDetalhado implements OnInit {
 
   protected alterarStatus(): void {
     const convenio = this.convenio();
-    if (!convenio) return;
+    if (!convenio || !this.isAdmin) return;
 
     const proximoStatus = !convenio.ativo;
     const acao$ = proximoStatus
