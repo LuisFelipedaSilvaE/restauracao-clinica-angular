@@ -23,6 +23,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         : '';
       const backendMessage =
         validationMessages ||
+        (typeof error.error === 'string' ? error.error.trim() : '') ||
         (typeof error.error?.message === 'string' ? error.error.message.trim() : '') ||
         (typeof error.error?.mensagem === 'string' ? error.error.mensagem.trim() : '');
       let summary = 'Erro ao tentar concluir a operação';
