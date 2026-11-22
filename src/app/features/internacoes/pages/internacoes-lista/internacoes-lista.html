@@ -163,6 +163,7 @@
     <dialog-registrar-alta-internacao
       [internacao]="internacao"
       [(visible)]="registrarAltaVisible"
+      (altaRegistrada)="recarregarRelatorios()"
     />
   }
 }

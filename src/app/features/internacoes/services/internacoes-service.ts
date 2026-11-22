@@ -5,10 +5,12 @@ import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
 import { ConveniosService } from '../../convenios/services/convenios-service';
+import { EtapasTratamentoPorConvenio } from '../interfaces/etapas-tratamento-por-convenio';
 import { Internacao } from '../interfaces/internacao';
 import { InternacaoCreateRequest } from '../interfaces/internacao-create-request';
 import { InternacaoEndRequest } from '../interfaces/internacao-end-request';
 import { InternacaoUpdateRequest } from '../interfaces/internacao-update-request';
+import { InternacoesAtivasPorConvenio } from '../interfaces/internacoes-ativas-por-convenio';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,12 @@ export class InternacoesService {
   });
 
   private readonly listaCarregada = signal(false);
+
+  private readonly internalRelatorioAtivasPorConvenio = signal<InternacoesAtivasPorConvenio[]>([]);
+  readonly relatorioAtivasPorConvenio = this.internalRelatorioAtivasPorConvenio.asReadonly();
+
+  private readonly internalRelatorioEtapasPorConvenio = signal<EtapasTratamentoPorConvenio[]>([]);
+  readonly relatorioEtapasPorConvenio = this.internalRelatorioEtapasPorConvenio.asReadonly();
 
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
@@ -65,6 +73,18 @@ export class InternacoesService {
 
   countInternacoesAtivasByConvenio(convenioId: number): Observable<number> {
     return this.http.get<number>(`${this.baseAPIUrl}/count/${convenioId}`);
+  }
+
+  getRelatorioAtivasPorConvenio(): Observable<InternacoesAtivasPorConvenio[]> {
+    return this.http
+      .get<InternacoesAtivasPorConvenio[]>(`${this.baseAPIUrl}/relatorios/ativas-por-convenio`)
+      .pipe(tap((dados) => this.internalRelatorioAtivasPorConvenio.set(dados)));
+  }
+
+  getRelatorioEtapasPorConvenio(): Observable<EtapasTratamentoPorConvenio[]> {
+    return this.http
+      .get<EtapasTratamentoPorConvenio[]>(`${this.baseAPIUrl}/relatorios/etapas-por-convenio`)
+      .pipe(tap((dados) => this.internalRelatorioEtapasPorConvenio.set(dados)));
   }
 
   createInternacao(internacao: InternacaoCreateRequest): Observable<Internacao> {

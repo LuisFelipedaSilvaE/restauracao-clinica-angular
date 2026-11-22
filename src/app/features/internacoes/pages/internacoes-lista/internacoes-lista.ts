@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
+import { forkJoin } from 'rxjs';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
@@ -79,35 +80,44 @@ export class InternacoesLista implements OnInit {
   };
 
   protected readonly infoInternacoes = computed<InfoCardContent[]>(() => {
-    const internacoes = this.internacoes();
+    const relatorioAtivas = this.internacoesService.relatorioAtivasPorConvenio();
+    const relatorioEtapas = this.internacoesService.relatorioEtapasPorConvenio();
+
+    const totais = relatorioEtapas.reduce((acc, item) => acc + (Number(item.total) || 0), 0);
+    const ativas = relatorioAtivas.reduce(
+      (acc, item) => acc + (Number(item.quantidadeAtivas) || 0),
+      0,
+    );
+    const proximasDaAlta = relatorioEtapas.reduce(
+      (acc, item) => acc + (Number(item.quantidadeProximoAlta) || 0),
+      0,
+    );
+    const altasVencidas = relatorioEtapas.reduce(
+      (acc, item) => acc + (Number(item.quantidadeAltaVencida) || 0),
+      0,
+    );
 
     return [
       {
-        value: internacoes.length,
+        value: totais,
         label: 'Internações totais',
         icon: LucideClipboardList,
         color: '#155dfc',
       },
       {
-        value: internacoes.filter((internacao) => internacao.ativo).length,
+        value: ativas,
         label: 'Internações ativas',
         icon: LucideBedSingle,
         color: '#00a63e',
       },
       {
-        value: internacoes.filter(
-          (internacao) =>
-            internacao.ativo && internacao.etapaTratamento === EtapaTratamento.PROXIMO_ALTA,
-        ).length,
+        value: proximasDaAlta,
         label: 'Próximas da alta',
         icon: LucideBellRing,
         color: '#e17100',
       },
       {
-        value: internacoes.filter(
-          (internacao) =>
-            internacao.ativo && internacao.etapaTratamento === EtapaTratamento.ALTA_VENCIDA,
-        ).length,
+        value: altasVencidas,
         label: 'Altas vencidas',
         icon: LucideTriangleAlert,
         color: '#e7000b',
@@ -220,6 +230,7 @@ export class InternacoesLista implements OnInit {
 
     this.internacoesService.deleteInternacao(internacao.id).subscribe({
       next: () => {
+        this.recarregarRelatorios();
         this.excluirInternacaoVisible.set(false);
         this.messageService.add({
           severity: 'success',
@@ -231,8 +242,19 @@ export class InternacoesLista implements OnInit {
     });
   }
 
+  protected recarregarRelatorios(): void {
+    forkJoin({
+      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
+      etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
+    }).subscribe();
+  }
+
   ngOnInit(): void {
-    this.internacoesService.getAllInternacoes().subscribe();
+    forkJoin({
+      internacoes: this.internacoesService.getAllInternacoes(),
+      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
+      etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
+    }).subscribe();
   }
 
   private normalizarTexto(valor: string): string {
