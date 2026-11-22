@@ -1,1 +1,1 @@
-type FormState = 'registro' | 'atualizacao';
+export type FormState = 'registro' | 'atualizacao';

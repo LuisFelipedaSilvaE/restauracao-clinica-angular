@@ -26,6 +26,7 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { cnpjValidator } from '../../../../shared/validators/cnpj-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { FormField } from '../../../../shared/components/form-field/form-field';
+import { FormState } from '../../../../shared/types/form-state';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 
 @Component({

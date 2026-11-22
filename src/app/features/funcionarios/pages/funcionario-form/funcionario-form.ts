@@ -20,6 +20,7 @@ import { AuthService } from '../../../../core/services/auth-service';
 import { UsersService } from '../../../../core/services/users-service';
 import { FormField } from '../../../../shared/components/form-field/form-field';
 import { FormHeader } from '../../../../shared/components/form-header/form-header';
+import { FormState } from '../../../../shared/types/form-state';
 import { ESTADOS_BRASIL } from '../../../../shared/data/estados-brasil';
 import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
 import { formatCep } from '../../../../shared/utils/cep-formatter';
