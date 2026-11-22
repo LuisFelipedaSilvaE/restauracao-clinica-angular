@@ -5,6 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { Medicamento } from '../interfaces/medicamento';
 import { MedicamentoRequest } from '../interfaces/medicamento-request';
+import { MovimentacaoEstoque } from '../interfaces/movimentacao-estoque';
+import { MovimentacaoEstoqueRequest } from '../interfaces/movimentacao-estoque-request';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +19,11 @@ export class MedicamentosService {
 
   readonly medicamentos = this.internalMedicamentos.asReadonly();
   private readonly listaCarregada = signal(false);
+  private readonly loadingCounters: Record<LoadingType, number> = {
+    list: 0,
+    detail: 0,
+    mutation: 0,
+  };
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
     detail: false,
@@ -55,28 +62,33 @@ export class MedicamentosService {
     );
   }
 
-  updateMedicamentoAumentarQuantidadeEstoque(
+  registrarEntrada(
     id: number,
-    quantidade: number,
-  ): Observable<Medicamento> {
+    request: MovimentacaoEstoqueRequest,
+  ): Observable<MovimentacaoEstoque> {
     this.setLoading('mutation', true);
 
-    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}/adicionar`, { quantidade }).pipe(
-      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+    return this.http.put<MovimentacaoEstoque>(`${this.baseAPIUrl}/${id}/adicionar`, request).pipe(
+      tap((movimentacao) => this.atualizarSaldoNaLista(movimentacao)),
       finalize(() => this.setLoading('mutation', false)),
     );
   }
 
-  updateMedicamentoReduzirQuantidadeEstoque(
-    id: number,
-    quantidade: number,
-  ): Observable<Medicamento> {
+  registrarSaida(id: number, request: MovimentacaoEstoqueRequest): Observable<MovimentacaoEstoque> {
     this.setLoading('mutation', true);
 
-    return this.http.put<Medicamento>(`${this.baseAPIUrl}/${id}/baixar`, { quantidade }).pipe(
-      tap((medicamentoAtualizado) => this.substituirMedicamentoNaLista(medicamentoAtualizado)),
+    return this.http.put<MovimentacaoEstoque>(`${this.baseAPIUrl}/${id}/baixar`, request).pipe(
+      tap((movimentacao) => this.atualizarSaldoNaLista(movimentacao)),
       finalize(() => this.setLoading('mutation', false)),
     );
+  }
+
+  getMovimentacoesByMedicamentoId(id: number): Observable<MovimentacaoEstoque[]> {
+    this.setLoading('detail', true);
+
+    return this.http
+      .get<MovimentacaoEstoque[]>(`${this.baseAPIUrl}/${id}/movimentacoes`)
+      .pipe(finalize(() => this.setLoading('detail', false)));
   }
 
   getAllMedicamentos(forceRefresh = false): Observable<Medicamento[]> {
@@ -107,8 +119,12 @@ export class MedicamentosService {
     );
   }
 
-  private setLoading(type: LoadingType, value: boolean): void {
-    this.internalLoading.update((loading) => ({ ...loading, [type]: value }));
+  private setLoading(type: LoadingType, ativo: boolean): void {
+    this.loadingCounters[type] = Math.max(0, this.loadingCounters[type] + (ativo ? 1 : -1));
+    this.internalLoading.update((loading) => ({
+      ...loading,
+      [type]: this.loadingCounters[type] > 0,
+    }));
   }
 
   private substituirMedicamentoNaLista(medicamentoAtualizado: Medicamento): void {
@@ -116,6 +132,23 @@ export class MedicamentosService {
       medicamentos.map((medicamento) =>
         medicamento.id === medicamentoAtualizado.id ? medicamentoAtualizado : medicamento,
       ),
+    );
+  }
+
+  private atualizarSaldoNaLista(movimentacao: MovimentacaoEstoque): void {
+    this.internalMedicamentos.update((medicamentos) =>
+      medicamentos.map((medicamento) => {
+        if (medicamento.id !== movimentacao.medicamentoId) return medicamento;
+
+        return {
+          ...medicamento,
+          quantidadeEstoque: movimentacao.saldoPosterior,
+          status:
+            movimentacao.saldoPosterior <= medicamento.quantidadeMinima
+              ? 'ALERTA: ESTOQUE BAIXO'
+              : 'ESTOQUE OK',
+        };
+      }),
     );
   }
 }

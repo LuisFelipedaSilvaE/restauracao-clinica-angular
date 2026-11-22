@@ -4,4 +4,5 @@ export interface Medicamento {
   preco: number;
   quantidadeEstoque: number;
   quantidadeMinima: number;
+  status: string;
 }
