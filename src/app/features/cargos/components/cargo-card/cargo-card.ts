@@ -57,6 +57,8 @@ export class CargoCard {
   });
 
   toggleCargo(): void {
+    if (!this.isAdmin) return;
+
     const dto: ToggleCargoDto = {
       id: this.cargo().id,
       ativo: !this.cargo().ativo,

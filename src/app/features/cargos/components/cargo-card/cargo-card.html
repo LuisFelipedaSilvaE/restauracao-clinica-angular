@@ -31,24 +31,24 @@
         </ng-template>
       </p-button>
     }
-    <p-button
-      [severity]="buttonConfig().severity"
-      [text]="true"
-      (onClick)="toggleCargo()"
-      [pTooltip]="buttonConfig().tooltipValue"
-      tooltipPosition="top"
-      [ariaLabel]="buttonConfig().tooltipValue + ': ' + cargo().nome"
-    >
-      <ng-template #icon>
-        <svg
-          [lucideIcon]="buttonConfig().icon"
-          class="h-4 w-4"
-          aria-hidden="true"
-          focusable="false"
-        ></svg>
-      </ng-template>
-    </p-button>
     @if (isAdmin) {
+      <p-button
+        [severity]="buttonConfig().severity"
+        [text]="true"
+        (onClick)="toggleCargo()"
+        [pTooltip]="buttonConfig().tooltipValue"
+        tooltipPosition="top"
+        [ariaLabel]="buttonConfig().tooltipValue + ': ' + cargo().nome"
+      >
+        <ng-template #icon>
+          <svg
+            [lucideIcon]="buttonConfig().icon"
+            class="h-4 w-4"
+            aria-hidden="true"
+            focusable="false"
+          ></svg>
+        </ng-template>
+      </p-button>
       <p-button
         (onClick)="solicitarExclusao()"
         severity="danger"

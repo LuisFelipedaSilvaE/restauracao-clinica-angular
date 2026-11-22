@@ -158,6 +158,8 @@ export class CargosLista implements OnInit {
       return;
     }
 
+    if (!this.isAdmin) return;
+
     const acao$ = acao.dados.ativo
       ? this.cargosService.activateCargo(acao.dados.id)
       : this.cargosService.deactivateCargo(acao.dados.id);
@@ -168,6 +170,8 @@ export class CargosLista implements OnInit {
   }
 
   toggleCargo(dto: ToggleCargoDto): void {
+    if (!this.isAdmin) return;
+
     this.acaoPendente.set({ tipo: 'status', dados: dto });
     this.dialogConfirmVisible.set(true);
   }
