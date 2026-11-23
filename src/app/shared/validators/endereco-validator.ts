@@ -1,7 +1,7 @@
 import { ValidatorFn } from '@angular/forms';
 import { comprimentoTextoValidator } from './texto-validator';
 
-export const NUMERO_MAXIMO_ENDERECO = 2_147_483_647;
+export const NUMERO_MAXIMO_ENDERECO = 10_000;
 export const COMPRIMENTO_MINIMO_ENDERECO = 3;
 export const COMPRIMENTO_MAXIMO_ENDERECO = 250;
 

@@ -20,7 +20,10 @@ import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
 import { emailValidator, normalizeEmail } from '../../../../shared/validators/email-validator';
-import { comprimentoEnderecoValidator } from '../../../../shared/validators/endereco-validator';
+import {
+  comprimentoEnderecoValidator,
+  NUMERO_MAXIMO_ENDERECO,
+} from '../../../../shared/validators/endereco-validator';
 import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
 import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
@@ -62,7 +65,7 @@ export class ResponsavelForm implements OnInit {
 
   protected readonly formSubmitted = signal(false);
   protected readonly carregando = signal(false);
-  protected readonly numeroMaximoEndereco = 10_000;
+  protected readonly numeroMaximoEndereco = NUMERO_MAXIMO_ENDERECO;
   protected readonly estados = ESTADOS_BRASIL;
   protected readonly loading = this.responsaveisService.loading;
   protected readonly skeletonSecoes = [
