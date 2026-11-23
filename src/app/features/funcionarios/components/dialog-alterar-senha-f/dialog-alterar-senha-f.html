@@ -11,7 +11,13 @@
     <h2 [id]="titleId" class="text-lg font-semibold">Alterar senha</h2>
   </ng-template>
 
-  <form autoFocusError #formFocus="autoFocusError" [formGroup]="form" class="flex flex-col gap-4">
+  <form
+    autoFocusError
+    #formFocus="autoFocusError"
+    [formGroup]="form"
+    class="flex flex-col gap-4"
+    (ngSubmit)="alterarSenha()"
+  >
     <form-field
       label="Nova senha"
       inputId="novaSenha"
@@ -70,10 +76,11 @@
     />
 
     <p-button
+      type="button"
       label="Confirmar"
       [loading]="loading()"
       [disabled]="loading()"
-      (click)="alterarSenha(); formFocus.focusInvalidControl()"
+      (onClick)="alterarSenha(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

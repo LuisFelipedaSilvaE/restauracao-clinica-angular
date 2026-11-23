@@ -1,7 +1,15 @@
 import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideUsersRound } from '@lucide/angular';
 import { MessageService, SelectItem } from 'primeng/api';
@@ -9,6 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DividerModule } from 'primeng/divider';
 import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { PasswordModule } from 'primeng/password';
@@ -28,11 +37,61 @@ import { formatCpf } from '../../../../shared/utils/cpf-formatter';
 import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { formatTelefone } from '../../../../shared/utils/telefone-formatter';
 import { cpfValidator } from '../../../../shared/validators/cpf-validator';
+import { emailValidator, normalizeEmail } from '../../../../shared/validators/email-validator';
+import {
+  comprimentoEnderecoValidator,
+  NUMERO_MAXIMO_ENDERECO,
+} from '../../../../shared/validators/endereco-validator';
+import { integerValidator } from '../../../../shared/validators/integer-validator';
 import { telefoneValidator } from '../../../../shared/validators/telefone-validator';
+import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
 import { CargosService } from '../../../cargos/services/cargos-service';
 import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioRequest } from '../../interfaces/funcionario-request';
 import { FuncionariosService } from '../../services/funcionarios-service';
+
+const DATA_MINIMA = new Date(1900, 0, 1);
+
+function normalizarDataSemHora(data: Date): Date {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate());
+}
+
+const dataNoIntervaloValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
+  if (control.value === null || control.value === '') return null;
+  if (!(control.value instanceof Date) || !Number.isFinite(control.value.getTime())) {
+    return { dataInvalida: true };
+  }
+
+  const data = normalizarDataSemHora(control.value);
+  const hoje = normalizarDataSemHora(new Date());
+
+  if (data < DATA_MINIMA) return { dataMuitoAntiga: true };
+  if (data > hoje) return { dataFutura: true };
+
+  return null;
+};
+
+const datasFuncionarioCoerentes: ValidatorFn = (
+  form: AbstractControl,
+): ValidationErrors | null => {
+  const nascimento = form.get('dataNascimento')?.value;
+  const admissao = form.get('dataAdmissao')?.value;
+
+  if (
+    !(nascimento instanceof Date) ||
+    !Number.isFinite(nascimento.getTime()) ||
+    !(admissao instanceof Date) ||
+    !Number.isFinite(admissao.getTime())
+  ) {
+    return null;
+  }
+
+  return normalizarDataSemHora(admissao) < normalizarDataSemHora(nascimento)
+    ? { admissaoAntesNascimento: true }
+    : null;
+};
 
 @Component({
   selector: 'app-funcionario-form',
@@ -45,13 +104,13 @@ import { FuncionariosService } from '../../services/funcionarios-service';
     FormHeader,
     ButtonModule,
     InputTextModule,
+    InputNumberModule,
     PasswordModule,
     InputMaskModule,
     DatePickerModule,
     SelectModule,
     KeyFilterModule,
     ReactiveFormsModule,
-    FormHeader,
     Card,
     FormField,
     DividerModule,
@@ -72,7 +131,13 @@ export class FuncionarioForm {
   private readonly cargosService = inject(CargosService);
   protected readonly blockspace = /^[^\s]+$/;
   protected readonly blockslashandhyphen = /^[^-/]+$/;
+  protected readonly numeroMaximoEndereco = NUMERO_MAXIMO_ENDERECO;
   protected readonly cargos = this.cargosService.cargos;
+  private readonly cargoOriginalId = signal<number | null>(null);
+  protected readonly cargosDisponiveis = computed(() => {
+    const originalId = this.cargoOriginalId();
+    return this.cargos().filter((cargo) => cargo.ativo || cargo.id === originalId);
+  });
   protected readonly loading = this.funcionariosService.loading;
   protected readonly hoje = new Date();
   protected minDataNascimento!: Date;
@@ -87,30 +152,44 @@ export class FuncionarioForm {
       value: role,
     })),
   );
-  protected readonly funcionarioForm = this.fb.nonNullable.group({
-    nome: ['', [Validators.required]],
-    cpf: ['', [Validators.required, cpfValidator]],
-    email: ['', [Validators.required, Validators.email]],
-    dataNascimento: this.fb.control<Date | null>(null, [Validators.required]),
-    endereco: this.fb.nonNullable.group({
-      logradouro: ['', [Validators.required]],
-      numero: ['', [Validators.required]],
-      bairro: ['', [Validators.required]],
-      cidade: ['', [Validators.required]],
-      estado: this.fb.control<string | null>(null, [Validators.required]),
-      complemento: [''],
-    }),
-    cep: ['', [Validators.required]],
-    telefone: ['', [Validators.required, telefoneValidator]],
-    cargo: this.fb.control<number | null>(null, [Validators.required]),
-    dataAdmissao: this.fb.control<Date | null>(null, [Validators.required]),
-    user: this.fb.nonNullable.group({
-      id: this.fb.control<number | undefined>(undefined),
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      password: ['', [Validators.required, Validators.maxLength(128)]],
-      role: this.fb.nonNullable.control<UserRole>('USER', [Validators.required]),
-    }),
-  });
+  protected readonly funcionarioForm = this.fb.nonNullable.group(
+    {
+      nome: ['', [Validators.required, comprimentoTextoValidator(3, 250)]],
+      cpf: ['', [Validators.required, cpfValidator]],
+      email: ['', [Validators.required, emailValidator]],
+      dataNascimento: this.fb.control<Date | null>(null, [
+        Validators.required,
+        dataNoIntervaloValidator,
+      ]),
+      endereco: this.fb.nonNullable.group({
+        logradouro: ['', [Validators.required, comprimentoEnderecoValidator()]],
+        numero: this.fb.control<number | null>(null, [
+          Validators.required,
+          integerValidator,
+          Validators.min(1),
+          Validators.max(NUMERO_MAXIMO_ENDERECO),
+        ]),
+        bairro: ['', [Validators.required, comprimentoEnderecoValidator()]],
+        cidade: ['', [Validators.required, comprimentoEnderecoValidator()]],
+        estado: this.fb.control<string | null>(null, [Validators.required]),
+        complemento: ['', [comprimentoEnderecoValidator(true)]],
+      }),
+      cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
+      telefone: ['', [Validators.required, telefoneValidator]],
+      cargo: this.fb.control<number | null>(null, [Validators.required]),
+      dataAdmissao: this.fb.control<Date | null>(null, [
+        Validators.required,
+        dataNoIntervaloValidator,
+      ]),
+      user: this.fb.nonNullable.group({
+        id: this.fb.control<number | undefined>(undefined),
+        username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+        password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(128)]],
+        role: this.fb.nonNullable.control<UserRole>('USER', [Validators.required]),
+      }),
+    },
+    { validators: datasFuncionarioCoerentes },
+  );
   protected readonly estados = ESTADOS_BRASIL;
 
   private readonly labels: Record<string, string> = {
@@ -204,6 +283,7 @@ export class FuncionarioForm {
 
   private preencherFormulario(funcionario: Funcionario): void {
     this.usernameOriginal = funcionario.user.username;
+    this.cargoOriginalId.set(funcionario.cargo.id);
 
     this.funcionarioForm.patchValue({
       nome: funcionario.nome,
@@ -212,10 +292,11 @@ export class FuncionarioForm {
       dataNascimento: localDateToDate(funcionario.dataNascimento),
       endereco: {
         logradouro: funcionario.endereco.logradouro,
-        numero: String(funcionario.endereco.numero),
+        numero: funcionario.endereco.numero,
         bairro: funcionario.endereco.bairro,
         cidade: funcionario.endereco.cidade,
         estado: funcionario.endereco.estado,
+        complemento: funcionario.endereco.complemento ?? '',
       },
       cep: formatCep(funcionario.cep),
       telefone: formatTelefone(funcionario.telefone),
@@ -243,34 +324,82 @@ export class FuncionarioForm {
 
   protected isInvalid(controlName: string): boolean {
     const control = this.funcionarioForm.get(controlName);
-    return !!control?.invalid && (control.touched || this.formSubmitted());
+    return (
+      !!control &&
+      (control.touched || this.formSubmitted()) &&
+      (control.invalid ||
+        (controlName === 'dataAdmissao' &&
+          this.funcionarioForm.hasError('admissaoAntesNascimento')))
+    );
   }
 
   protected getErrorMessage(controlName: string): string | null {
     const control = this.funcionarioForm.get(controlName);
 
-    if (!this.isInvalid(controlName) || !control?.errors) return null;
+    if (!this.isInvalid(controlName)) return null;
 
-    if (control.errors['required']) {
+    const errors = control?.errors;
+
+    if (errors?.['required']) {
       return `${this.labels[controlName]} é obrigatório`;
     }
 
-    if (control.errors['email']) {
+    if (errors?.['email']) {
       return `${this.labels[controlName]} está no formato incorreto`;
     }
 
-    if (control.errors['cpfInvalido'] || control.errors['telefoneInvalido']) {
+    if (errors?.['cpfInvalido'] || errors?.['telefoneInvalido']) {
       return `Informe um ${this.labels[controlName]} válido`;
     }
 
-    if (control.errors['minlength']) {
-      const { requiredLength } = control.errors['minlength'];
+    if (errors?.['pattern']) {
+      if (controlName === 'cep') {
+        return 'Preencha o CEP por completo, no formato 00000-000';
+      }
+      return `${this.labels[controlName]} é inválido`;
+    }
+
+    if (errors?.['minlength']) {
+      const { requiredLength } = errors['minlength'];
       return `${this.labels[controlName]} deve ter pelo menos ${requiredLength} caracteres`;
     }
 
-    if (control.errors['maxlength']) {
-      const { requiredLength } = control.errors['maxlength'];
+    if (errors?.['maxlength']) {
+      const { requiredLength } = errors['maxlength'];
       return `${this.labels[controlName]} deve ter no máximo ${requiredLength} caracteres`;
+    }
+
+    if (errors?.['inteiro']) {
+      return `${this.labels[controlName]} deve ser um número inteiro`;
+    }
+
+    if (errors?.['min']) {
+      const { min } = errors['min'];
+      return `${this.labels[controlName]} deve ser de no mínimo ${min}`;
+    }
+
+    if (errors?.['max']) {
+      const { max } = errors['max'];
+      return `${this.labels[controlName]} deve ser de no máximo ${Number(max).toLocaleString('pt-BR')}`;
+    }
+
+    if (errors?.['dataInvalida']) {
+      return 'Informe uma data válida';
+    }
+
+    if (errors?.['dataMuitoAntiga']) {
+      return `${this.labels[controlName]} não pode ser anterior a 01/01/1900`;
+    }
+
+    if (errors?.['dataFutura']) {
+      return `${this.labels[controlName]} não pode estar no futuro`;
+    }
+
+    if (
+      controlName === 'dataAdmissao' &&
+      this.funcionarioForm.hasError('admissaoAntesNascimento')
+    ) {
+      return 'A data de admissão não pode ser anterior à data de nascimento';
     }
 
     return `${this.labels[controlName]} é inválido`;
@@ -282,6 +411,7 @@ export class FuncionarioForm {
 
   protected onSubmit(): void {
     this.formSubmitted.set(true);
+    this.funcionarioForm.markAllAsTouched();
 
     if (this.funcionarioForm.invalid) {
       this.funcionarioForm.markAllAsDirty();
@@ -327,13 +457,19 @@ export class FuncionarioForm {
 
     return {
       ...formData,
+      nome: (formData.nome ?? '').trim(),
+      email: normalizeEmail(formData.email),
       dataNascimento: dateToLocalDate(formData.dataNascimento!),
       cargoId: formData.cargo!,
       dataAdmissao: dateToLocalDate(formData.dataAdmissao!),
       endereco: {
         ...endereco,
+        logradouro: (endereco.logradouro ?? '').trim(),
         numero: Number(endereco.numero),
+        bairro: (endereco.bairro ?? '').trim(),
+        cidade: (endereco.cidade ?? '').trim(),
         estado: endereco.estado!,
+        complemento: (endereco.complemento ?? '').trim(),
       },
       user: {
         ...userNormalizado,

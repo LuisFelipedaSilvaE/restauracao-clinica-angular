@@ -54,7 +54,7 @@ export class DialogAlterarSenhaF implements OnInit {
     return novaSenha?.value === control.value ? null : { novaSenhaInvalida: true };
   };
   protected form = this.fb.nonNullable.group({
-    novaSenha: ['', [Validators.required]],
+    novaSenha: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(128)]],
     confirmarNovaSenha: ['', [Validators.required, this.confirmarNovaSenha]],
   });
   private readonly formSubmitted = signal<boolean>(false);
@@ -99,12 +99,22 @@ export class DialogAlterarSenhaF implements OnInit {
       return `${this.labels[controlName]} é obrigatório`;
     }
 
+    if (control.errors['minlength']) {
+      const { requiredLength } = control.errors['minlength'];
+      return `${this.labels[controlName]} deve ter pelo menos ${requiredLength} caracteres`;
+    }
+
+    if (control.errors['maxlength']) {
+      const { requiredLength } = control.errors['maxlength'];
+      return `${this.labels[controlName]} deve ter no máximo ${requiredLength} caracteres`;
+    }
+
     return `${this.labels[controlName]} é inválido`;
   }
 
   cancelarAlteracao(): void {
     this.visible.set(false);
-    this.form.markAllAsDirty();
+    this.formSubmitted.set(false);
 
     setTimeout(() => {
       this.form.reset();
@@ -112,9 +122,15 @@ export class DialogAlterarSenhaF implements OnInit {
   }
 
   alterarSenha(): void {
+    this.formSubmitted.set(true);
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+
     this.usersService.alterarSenha(this.userId(), this.form.controls.novaSenha.value).subscribe({
       next: () => {
         this.visible.set(false);
+        this.formSubmitted.set(false);
+        this.form.reset();
         this.messageService.add({
           severity: 'success',
           summary: 'Senha atualizada!',

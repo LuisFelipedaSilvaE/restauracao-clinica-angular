@@ -90,7 +90,7 @@
         <p-select
           inputId="cargo"
           name="cargo"
-          [options]="cargos()"
+          [options]="cargosDisponiveis()"
           formControlName="cargo"
           optionLabel="nome"
           optionValue="id"
@@ -193,12 +193,14 @@
             required
             [errorMessage]="getErrorMessage('endereco.numero')"
           >
-            <input
-              pInputText
-              id="numero"
+            <p-inputnumber
+              inputId="numero"
               name="numero"
               formControlName="numero"
-              pKeyFilter="int"
+              [min]="1"
+              [max]="numeroMaximoEndereco"
+              [maxFractionDigits]="0"
+              [useGrouping]="false"
               placeholder="Nº"
               [invalid]="isInvalid('endereco.numero')"
               fluid
