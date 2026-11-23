@@ -1,6 +1,6 @@
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -9,6 +9,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
   LucideBedSingle,
@@ -34,6 +35,7 @@ import { CpfPipe } from '../../../../shared/pipes/cpf-pipe';
 import { TelefonePipe } from '../../../../shared/pipes/telefone-pipe';
 import { dateToLocalDate, localDateToDate } from '../../../../shared/utils/local-date';
 import { AcolhidosService } from '../../../acolhidos/services/acolhidos-service';
+import { Convenio } from '../../../convenios/interfaces/convenio';
 import { ConveniosService } from '../../../convenios/services/convenios-service';
 import { StatusTriagem } from '../../../triagens/enums/status-triagem';
 import { TriagensService } from '../../../triagens/services/triagens-service';
@@ -45,6 +47,12 @@ import { InternacoesService } from '../../services/internacoes-service';
 
 type ModoForm = 'registro' | 'atualizacao';
 
+interface ConvenioOpcao extends Convenio {
+  ocupadas: number;
+  vagasDisponiveis: number;
+  lotado: boolean;
+}
+
 const dataValida: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   if (control.value === null) return null;
   return control.value instanceof Date && Number.isFinite(control.value.getTime())
@@ -53,8 +61,11 @@ const dataValida: ValidatorFn = (control: AbstractControl): ValidationErrors | n
 };
 
 const datasInternacaoCoerentes: ValidatorFn = (form: AbstractControl): ValidationErrors | null => {
+  const saidaControl = form.get('dataSaidaPrevista');
+  if (saidaControl?.disabled) return null;
+
   const entrada = form.get('dataEntrada')?.value;
-  const saidaPrevista = form.get('dataSaidaPrevista')?.value;
+  const saidaPrevista = saidaControl?.value;
 
   return entrada instanceof Date && saidaPrevista instanceof Date && saidaPrevista < entrada
     ? { saidaPrevistaAntesEntrada: true }
@@ -94,6 +105,7 @@ export class InternacaoForm implements OnInit {
   readonly triagemId = input<string>();
 
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly acolhidosService = inject(AcolhidosService);
@@ -116,17 +128,37 @@ export class InternacaoForm implements OnInit {
   private readonly acolhidoSelecionadoId = signal<number | null>(null);
   private readonly convenioSelecionadoId = signal<number | null>(null);
 
-  private readonly saidaPrevistaInicial = (() => {
-    const data = new Date();
-    data.setMonth(data.getMonth() + 9);
-    return data;
-  })();
+  protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
+  protected readonly ocupacaoPorConvenio = computed(() => {
+    const mapa = new Map<number, number>();
+    for (const item of this.internacoesService.relatorioAtivasPorConvenio()) {
+      mapa.set(item.convenioId, item.quantidadeAtivas);
+    }
+    return mapa;
+  });
+
+  private readonly convenioComVagaValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    if (this.modo() !== 'registro' || control.value === null) return null;
+    const convenio = this.convenios().find((item) => item.id === control.value);
+    if (!convenio) return null;
+
+    const ocupadas = this.ocupacaoPorConvenio().get(convenio.id) ?? 0;
+    const disponiveis = convenio.maxVagas - ocupadas;
+    return convenio.maxVagas <= 0 || disponiveis <= 0 ? { convenioLotado: true } : null;
+  };
+
+  private readonly saidaPrevistaInicial = this.calcularSaidaPrevista(new Date());
 
   protected readonly internacaoForm = this.fb.group(
     {
       triagemId: this.fb.control<number | null>(null, [Validators.required]),
       acolhidoId: this.fb.control<number | null>(null, [Validators.required]),
-      convenioId: this.fb.control<number | null>(null, [Validators.required]),
+      convenioId: this.fb.control<number | null>(null, [
+        Validators.required,
+        this.convenioComVagaValidator,
+      ]),
       dataEntrada: this.fb.control<Date | null>(new Date(), [
         Validators.required,
         dataValida,
@@ -148,7 +180,6 @@ export class InternacaoForm implements OnInit {
     { validators: datasInternacaoCoerentes },
   );
 
-  protected readonly modo = computed<ModoForm>(() => (this.id() ? 'atualizacao' : 'registro'));
   protected readonly headerInfo = computed<InfoCardContent>(() => {
     const atualizacao = this.modo() === 'atualizacao';
 
@@ -189,6 +220,19 @@ export class InternacaoForm implements OnInit {
     const convenioAtual = this.registroAtual()?.convenio.id;
     return this.convenios().filter((convenio) => convenio.ativo || convenio.id === convenioAtual);
   });
+  protected readonly conveniosOpcoes = computed<ConvenioOpcao[]>(() => {
+    const ocupacao = this.ocupacaoPorConvenio();
+    return this.conveniosDisponiveis().map((convenio) => {
+      const ocupadas = ocupacao.get(convenio.id) ?? 0;
+      const vagasDisponiveis = Math.max(0, convenio.maxVagas - ocupadas);
+      return {
+        ...convenio,
+        ocupadas,
+        vagasDisponiveis,
+        lotado: convenio.maxVagas <= 0 || vagasDisponiveis <= 0,
+      };
+    });
+  });
   protected readonly convenioSelecionado = computed(() => {
     const convenioId = this.convenioSelecionadoId();
     return this.convenios().find((convenio) => convenio.id === convenioId) ?? null;
@@ -223,11 +267,24 @@ export class InternacaoForm implements OnInit {
       return;
     }
 
+    this.internacaoForm.controls.dataSaidaPrevista.disable({ emitEvent: false });
+    this.internacaoForm.controls.dataEntrada.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((dataEntrada) => {
+        if (dataEntrada instanceof Date && Number.isFinite(dataEntrada.getTime())) {
+          this.internacaoForm.controls.dataSaidaPrevista.setValue(
+            this.calcularSaidaPrevista(dataEntrada),
+            { emitEvent: false },
+          );
+        }
+      });
+
     forkJoin({
       triagens: this.triagensService.getAllTriagens(),
       acolhidos: this.acolhidosService.getAllAcolhidos(),
       convenios: this.conveniosService.getAllConvenios(),
       internacoes: this.internacoesService.getAllInternacoes(),
+      relatorioAtivas: this.internacoesService.getRelatorioAtivasPorConvenio(),
     }).subscribe({
       next: () => this.inicializarCriacao(),
       error: () => this.falhaAoCarregar(),
@@ -241,6 +298,8 @@ export class InternacaoForm implements OnInit {
     if (!triagem) return;
 
     this.internacaoForm.patchValue({ convenioId: triagem.convenio.id });
+    this.internacaoForm.controls.convenioId.markAsTouched();
+    this.internacaoForm.controls.convenioId.updateValueAndValidity();
     this.configurarMensalidade(triagem.convenio.id);
 
     if (this.acolhidoSelecionadoId() !== null) return;
@@ -265,6 +324,7 @@ export class InternacaoForm implements OnInit {
 
   protected onConvenioChange(convenioId: number | null): void {
     this.convenioSelecionadoId.set(convenioId);
+    this.internacaoForm.controls.convenioId.updateValueAndValidity();
     this.configurarMensalidade(convenioId);
   }
 
@@ -303,6 +363,7 @@ export class InternacaoForm implements OnInit {
     const errors = this.internacaoForm.get(campo)?.errors;
 
     if (errors?.['required']) return `Preencha o campo ${this.labels[campo]}.`;
+    if (errors?.['convenioLotado']) return 'Este convênio não possui vagas disponíveis no momento.';
     if (errors?.['dataInvalida']) return 'Informe uma data válida.';
     if (errors?.['entradaFutura']) return 'A data de entrada não pode estar no futuro.';
     if (errors?.['min']) return 'O valor da mensalidade deve ser maior que zero.';
@@ -358,6 +419,11 @@ export class InternacaoForm implements OnInit {
     }
     if (!convenio?.ativo) {
       this.avisoFormulario('Selecione um convênio ativo.');
+      return;
+    }
+    const ocupadas = this.ocupacaoPorConvenio().get(convenio.id) ?? 0;
+    if (convenio.maxVagas <= 0 || convenio.maxVagas - ocupadas <= 0) {
+      this.avisoFormulario('O convênio selecionado não possui vagas disponíveis.');
       return;
     }
     if (valor.dataEntrada! < localDateToDate(acolhido.dataNascimento)) {
@@ -474,7 +540,28 @@ export class InternacaoForm implements OnInit {
     }
 
     this.configurarMensalidade(this.internacaoForm.controls.convenioId.value, true);
+
+    const dataEntrada = this.internacaoForm.controls.dataEntrada.value;
+    if (dataEntrada instanceof Date && Number.isFinite(dataEntrada.getTime())) {
+      this.internacaoForm.controls.dataSaidaPrevista.setValue(
+        this.calcularSaidaPrevista(dataEntrada),
+        { emitEvent: false },
+      );
+    }
+
+    const convenioControl = this.internacaoForm.controls.convenioId;
+    convenioControl.updateValueAndValidity();
+    if (convenioControl.hasError('convenioLotado')) {
+      convenioControl.markAsTouched();
+    }
+
     this.carregando.set(false);
+  }
+
+  private calcularSaidaPrevista(dataEntrada: Date): Date {
+    const data = new Date(dataEntrada);
+    data.setMonth(data.getMonth() + 9);
+    return data;
   }
 
   private configurarMensalidade(convenioId: number | null, preservarValor = false): void {

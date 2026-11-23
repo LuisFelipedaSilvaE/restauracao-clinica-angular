@@ -199,9 +199,10 @@
                 inputId="convenioId"
                 name="convenioId"
                 formControlName="convenioId"
-                [options]="conveniosDisponiveis()"
+                [options]="conveniosOpcoes()"
                 optionLabel="descricao"
                 optionValue="id"
+                optionDisabled="lotado"
                 [filter]="true"
                 filterBy="descricao"
                 filterPlaceholder="Buscar convênio"
@@ -212,7 +213,36 @@
                 autocomplete="off"
                 fluid
                 (onChange)="onConvenioChange($event.value)"
-              />
+              >
+                <ng-template #selectedItem let-convenio>
+                  <span>
+                    {{ convenio.descricao }} ·
+                    @if (convenio.lotado) {
+                      Lotado ({{ convenio.ocupadas }}/{{ convenio.maxVagas }} vagas)
+                    } @else {
+                      {{ convenio.vagasDisponiveis }}/{{ convenio.maxVagas }}
+                      {{
+                        convenio.vagasDisponiveis === 1 ? 'vaga disponível' : 'vagas disponíveis'
+                      }}
+                    }
+                  </span>
+                </ng-template>
+                <ng-template #item let-convenio>
+                  <div class="flex min-w-0 flex-col">
+                    <span class="truncate font-medium">{{ convenio.descricao }}</span>
+                    <span class="truncate text-xs text-content-secondary">
+                      @if (convenio.lotado) {
+                        Lotado · {{ convenio.ocupadas }}/{{ convenio.maxVagas }} vagas ocupadas
+                      } @else {
+                        {{ convenio.vagasDisponiveis }} de {{ convenio.maxVagas }}
+                        {{
+                          convenio.vagasDisponiveis === 1 ? 'vaga disponível' : 'vagas disponíveis'
+                        }}
+                      }
+                    </span>
+                  </div>
+                </ng-template>
+              </p-select>
             </form-field>
 
             <form-field
@@ -232,6 +262,23 @@
                 [readonlyInput]="false"
                 [maxDate]="hoje"
                 [invalid]="isInvalid('dataEntrada')"
+                appendTo="body"
+                autocomplete="off"
+                fluid
+              />
+            </form-field>
+
+            <form-field
+              label="Previsão de saída"
+              inputId="dataSaidaPrevista"
+              hint="Calculada automaticamente pelo sistema (9 meses após a data de entrada)."
+            >
+              <p-datepicker
+                inputId="dataSaidaPrevista"
+                name="dataSaidaPrevista"
+                formControlName="dataSaidaPrevista"
+                placeholder="dd/mm/aaaa"
+                dateFormat="dd/mm/yy"
                 appendTo="body"
                 autocomplete="off"
                 fluid
