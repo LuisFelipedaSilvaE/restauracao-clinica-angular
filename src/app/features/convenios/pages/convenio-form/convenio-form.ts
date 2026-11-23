@@ -63,7 +63,7 @@ export class ConvenioForm implements OnInit {
 
   protected readonly loading = this.conveniosService.loading;
   protected readonly carregando = signal(false);
-  private readonly acolhidosAtivos = signal(0);
+  protected readonly acolhidosAtivos = signal(0);
   protected readonly formSubmitted = signal(false);
   protected readonly skeletonCampos = Array.from({ length: 5 });
   protected readonly maximoVagas = 2_147_483_647;
@@ -166,6 +166,14 @@ export class ConvenioForm implements OnInit {
         }
 
         this.acolhidosAtivos.set(acolhidosAtivos);
+        const maxVagasControl = this.convenioForm.controls.maxVagas;
+        maxVagasControl.setValidators([
+          Validators.required,
+          Validators.min(acolhidosAtivos),
+          Validators.max(this.maximoVagas),
+          integerValidator,
+        ]);
+        maxVagasControl.updateValueAndValidity();
         this.preencherFormulario(convenio);
       },
       error: () => {
@@ -240,6 +248,9 @@ export class ConvenioForm implements OnInit {
 
     if (control.errors['min']) {
       const { min } = control.errors['min'];
+      if (controlName === 'maxVagas' && this.acolhidosAtivos() > 0) {
+        return `Quantidade de vagas não pode ser menor que os ${this.acolhidosAtivos()} acolhidos ativos`;
+      }
       return `${this.labels[controlName]} deve ser de no mínimo ${min}`;
     }
 
