@@ -10,6 +10,7 @@ import { CargosService } from '../../services/cargos-service';
 import { MessageService } from 'primeng/api';
 import { Cargo } from '../../interfaces/cargo';
 import { CargoRequest } from '../../interfaces/cargo-request';
+import { comprimentoTextoValidator } from '../../../../shared/validators/texto-validator';
 
 @Component({
   selector: 'cargo-form',
@@ -40,7 +41,7 @@ export class CargoForm {
   });
   readonly cargo = input<Cargo>();
   protected readonly cargoForm = this.fb.group({
-    nome: ['', [Validators.required]],
+    nome: ['', [Validators.required, comprimentoTextoValidator(3, 250)]],
   });
   readonly visible = input.required<boolean>();
   readonly loading = input(false);
@@ -51,8 +52,12 @@ export class CargoForm {
   constructor() {
     effect(() => {
       const cargo = this.cargo();
+      this.formSubmitted.set(false);
 
-      if (!cargo) return;
+      if (!cargo) {
+        this.cargoForm.reset({ nome: '' });
+        return;
+      }
 
       this.cargoForm.patchValue({
         nome: cargo.nome,
@@ -61,15 +66,15 @@ export class CargoForm {
   }
 
   salvarAlteracoes(): void {
-    if (this.cargoForm.invalid) {
-      this.cargoForm.markAllAsDirty();
-      return;
-    }
+    this.formSubmitted.set(true);
+    this.cargoForm.markAllAsTouched();
+
+    if (this.cargoForm.invalid) return;
 
     const cargo = this.cargo();
 
     const cargoRequest: CargoRequest = {
-      nome: this.cargoForm.controls.nome.value!,
+      nome: this.cargoForm.controls.nome.value!.trim(),
     };
 
     const request$ = cargo
@@ -79,7 +84,8 @@ export class CargoForm {
     request$.subscribe({
       next: () => {
         this.visibleChange.emit(false);
-        this.cargoForm.reset();
+        this.formSubmitted.set(false);
+        this.cargoForm.reset({ nome: '' });
         this.messageService.add({
           severity: 'success',
           summary: cargo ? 'Cargo atualizado!' : 'Cargo criado!',
@@ -98,8 +104,24 @@ export class CargoForm {
   }
 
   getErrorMessage(controlName: string): string | null {
-    if (!this.isInvalid(controlName)) return null;
+    const control = this.cargoForm.get(controlName);
 
-    return `Nome do cargo é obrigatório`;
+    if (!this.isInvalid(controlName) || !control?.errors) return null;
+
+    if (control.errors['required']) {
+      return 'Nome do cargo é obrigatório';
+    }
+
+    if (control.errors['minlength']) {
+      const { requiredLength } = control.errors['minlength'];
+      return `Nome do cargo deve ter pelo menos ${requiredLength} caracteres`;
+    }
+
+    if (control.errors['maxlength']) {
+      const { requiredLength } = control.errors['maxlength'];
+      return `Nome do cargo deve ter no máximo ${requiredLength} caracteres`;
+    }
+
+    return 'Nome do cargo é inválido';
   }
 }

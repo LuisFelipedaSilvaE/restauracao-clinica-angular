@@ -32,7 +32,7 @@
         id="nome"
         name="nome"
         formControlName="nome"
-        placeholder="Ex.: Maria da Silva"
+        placeholder="Ex.: Enfermeiro"
         [invalid]="isInvalid('nome')"
         fluid
         autocomplete="off"
@@ -50,13 +50,12 @@
     />
 
     <p-button
-      type="submit"
-      form="cargoForm"
+      type="button"
       [label]="currentState().btnLabel"
       severity="primary"
       [loading]="loading()"
       [disabled]="loading()"
-      (click)="salvarAlteracoes(); formFocus.focusInvalidControl()"
+      (onClick)="salvarAlteracoes(); formFocus.focusInvalidControl()"
     />
   </ng-template>
 </p-dialog>

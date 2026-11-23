@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Card } from '../../../../shared/components/card/card';
 import {
   LucideDynamicIcon,
@@ -39,7 +39,7 @@ export class CargoCard {
   private readonly funcionariosService = inject(FuncionariosService);
   protected readonly funcionarios = this.funcionariosService.funcionarios;
   protected readonly totalColaboradores = computed(() => {
-    const total = this.funcionarios()?.filter((c) => c.id === this.cargo().id).length;
+    const total = this.funcionarios()?.filter((c) => c.cargo.id === this.cargo().id).length;
     return total == 1 ? `${total} Colaborador` : `${total} Colaboradores`;
   });
   protected readonly buttonConfig = computed(() => {
