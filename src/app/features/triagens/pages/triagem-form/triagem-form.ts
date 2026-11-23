@@ -1,3 +1,4 @@
+import { SyncInputMask } from '../../../../shared/directives/sync-input-mask';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -44,6 +45,7 @@ import { TriagensService } from '../../services/triagens-service';
     InputTextModule,
     SelectModule,
     InputMaskModule,
+    SyncInputMask,
     DatePickerModule,
     SkeletonModule,
     ReactiveFormsModule,

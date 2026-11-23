@@ -1,3 +1,4 @@
+import { SyncInputMask } from '../../../../shared/directives/sync-input-mask';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -39,6 +40,7 @@ import { InternacoesService } from '../../../internacoes/services/internacoes-se
     ButtonModule,
     InputTextModule,
     InputMaskModule,
+    SyncInputMask,
     InputNumberModule,
     ColorPickerModule,
     SelectButtonModule,
@@ -274,7 +276,7 @@ export class ConvenioForm implements OnInit {
 
     if (this.convenioForm.invalid) return;
 
-    const cnpj = this.convenioForm.controls.cnpj.value?.trim().toUpperCase();
+    const cnpj = this.convenioForm.controls.cnpj.value?.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     const data: ConvenioRequest = {
       descricao: this.convenioForm.controls.descricao.value ?? '',
       cnpj: cnpj || null,

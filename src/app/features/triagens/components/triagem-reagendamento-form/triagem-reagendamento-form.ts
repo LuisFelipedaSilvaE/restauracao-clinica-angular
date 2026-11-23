@@ -1,3 +1,4 @@
+import { SyncInputMask } from '../../../../shared/directives/sync-input-mask';
 import { RestoreDialogFocus } from '../../../../shared/directives/restore-dialog-focus';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, effect, inject, input, output, signal } from '@angular/core';
@@ -28,6 +29,7 @@ import { TriagensService } from '../../services/triagens-service';
     FormError,
     FormField,
     InputMaskModule,
+    SyncInputMask,
     ReactiveFormsModule,
   ],
   templateUrl: './triagem-reagendamento-form.html',

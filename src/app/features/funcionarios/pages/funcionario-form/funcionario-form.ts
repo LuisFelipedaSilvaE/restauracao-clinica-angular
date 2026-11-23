@@ -1,3 +1,4 @@
+import { SyncInputMask } from '../../../../shared/directives/sync-input-mask';
 import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, inject, input, signal } from '@angular/core';
@@ -107,6 +108,7 @@ const datasFuncionarioCoerentes: ValidatorFn = (
     InputNumberModule,
     PasswordModule,
     InputMaskModule,
+    SyncInputMask,
     DatePickerModule,
     SelectModule,
     KeyFilterModule,
