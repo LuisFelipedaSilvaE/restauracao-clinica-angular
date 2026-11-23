@@ -64,7 +64,7 @@ export class InternacaoCard {
       label: 'Excluir',
       visible: this.isAdmin,
       lucideIcon: LucideTrash2,
-      iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
+      iconClass: 'h-4 w-4 text-action-destructive mt-[-3.5px]',
       command: () =>
         this.excluirInternacao.emit({
           id: this.internacao().id,

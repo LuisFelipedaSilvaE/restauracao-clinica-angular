@@ -86,7 +86,7 @@ export class FuncionarioCard {
         label: 'Excluir',
         visible: this.isAdmin,
         lucideIcon: LucideTrash2,
-        iconClass: 'h-4 w-4 text-action-destructive -mt-[3.5px]',
+        iconClass: 'h-4 w-4 text-action-destructive mt-[-3.5px]',
         command: () =>
           this.excluirFuncionario.emit({
             id: this.funcionario().id,
