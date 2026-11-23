@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { UserRole } from '../guards/models/user-role.model';
+import { AuthService } from './auth-service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,11 +11,21 @@ import { UserRole } from '../guards/models/user-role.model';
 export class UsersService {
   private readonly baseAPIUrl = `${environment.apiUrl}/users`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly internalRoles = signal<UserRole[]>([]);
   readonly roles = this.internalRoles.asReadonly();
   private readonly rolesCarregadas = signal(false);
   private readonly internalLoading = signal<boolean>(false);
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalRoles.set([]);
+        this.rolesCarregadas.set(false);
+      }
+    });
+  }
 
   getAllRoles(forceRefresh = false): Observable<UserRole[]> {
     if (this.rolesCarregadas() && !forceRefresh) {

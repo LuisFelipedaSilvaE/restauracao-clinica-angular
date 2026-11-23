@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth-service';
 import { Convenio } from '../interfaces/convenio';
 import { ConvenioRequest } from '../interfaces/convenio-request';
 import { finalize, Observable, of, tap } from 'rxjs';
@@ -12,6 +13,7 @@ import { LoadingType } from '../../../shared/types/loading-type';
 export class ConveniosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/convenios`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   private readonly internalConvenios = signal<Convenio[]>([]);
   readonly convenios = this.internalConvenios.asReadonly();
@@ -24,6 +26,15 @@ export class ConveniosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalConvenios.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   private setLoading(type: LoadingType, value: boolean): void {
     this.internalLoading.update((loading) => ({ ...loading, [type]: value }));

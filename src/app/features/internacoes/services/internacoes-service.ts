@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
 import { ConveniosService } from '../../convenios/services/convenios-service';
@@ -19,6 +20,7 @@ export class InternacoesService {
   private readonly baseAPIUrl = `${environment.apiUrl}/internacoes`;
   private readonly http = inject(HttpClient);
   private readonly conveniosService = inject(ConveniosService);
+  private readonly authService = inject(AuthService);
 
   private readonly internalInternacoes = signal<Internacao[]>([]);
   readonly internacoes = computed(() => {
@@ -46,6 +48,17 @@ export class InternacoesService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalInternacoes.set([]);
+        this.listaCarregada.set(false);
+        this.internalRelatorioAtivasPorConvenio.set([]);
+        this.internalRelatorioEtapasPorConvenio.set([]);
+      }
+    });
+  }
 
   getAllInternacoes(forceRefresh = false): Observable<Internacao[]> {
     if (this.listaCarregada() && !forceRefresh) {

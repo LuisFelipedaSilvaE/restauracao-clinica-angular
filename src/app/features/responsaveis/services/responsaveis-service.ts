@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { Responsavel } from '../interfaces/responsavel';
 import { ResponsavelRequest } from '../interfaces/responsavel-request';
@@ -12,6 +13,7 @@ import { ResponsavelRequest } from '../interfaces/responsavel-request';
 export class ResponsaveisService {
   private readonly baseAPIUrl = `${environment.apiUrl}/responsaveis`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   private readonly internalResponsaveis = signal<Responsavel[]>([]);
   readonly responsaveis = this.internalResponsaveis.asReadonly();
@@ -24,6 +26,15 @@ export class ResponsaveisService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalResponsaveis.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   getAllResponsaveis(forceRefresh = false): Observable<Responsavel[]> {
     if (this.listaCarregada() && !forceRefresh) {

@@ -1,6 +1,7 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../core/services/auth-service';
 import { Funcionario } from '../interfaces/funcionario';
 import { finalize, map, Observable, of, switchMap, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
@@ -15,6 +16,7 @@ export class FuncionariosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/funcionarios`;
   private readonly http = inject(HttpClient);
   private readonly usersService = inject(UsersService);
+  private readonly authService = inject(AuthService);
   private readonly internalFuncionarios = signal<Funcionario[]>([]);
   readonly funcionarios = this.internalFuncionarios.asReadonly();
   private readonly listaCarregada = signal(false);
@@ -24,6 +26,15 @@ export class FuncionariosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalFuncionarios.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   createFuncionario(funcionario: FuncionarioRequest): Observable<Funcionario> {
     this.setLoading('mutation', true);

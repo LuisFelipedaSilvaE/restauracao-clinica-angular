@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
 import { Acolhido } from '../interfaces/acolhido';
@@ -13,6 +14,7 @@ import { AcolhidoRequest } from '../interfaces/acolhido-request';
 export class AcolhidosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/acolhidos`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   private readonly internalAcolhidos = signal<Acolhido[]>([]);
   readonly acolhidos = this.internalAcolhidos.asReadonly();
@@ -25,6 +27,15 @@ export class AcolhidosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalAcolhidos.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   getAllAcolhidos(forceRefresh = false): Observable<Acolhido[]> {
     if (this.listaCarregada() && !forceRefresh) {

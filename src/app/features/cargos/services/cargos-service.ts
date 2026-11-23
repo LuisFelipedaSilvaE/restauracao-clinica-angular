@@ -1,6 +1,7 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../core/services/auth-service';
 import { Cargo } from '../interfaces/cargo';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { LoadingType } from '../../../shared/types/loading-type';
@@ -12,6 +13,7 @@ import { CargoRequest } from '../interfaces/cargo-request';
 export class CargosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/cargos`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly internalCargos = signal<Cargo[]>([]);
   readonly cargos = this.internalCargos.asReadonly();
   private readonly listaCarregada = signal(false);
@@ -21,6 +23,15 @@ export class CargosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalCargos.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   createCargo(cargo: CargoRequest): Observable<Cargo> {
     this.setLoading('mutation', true);

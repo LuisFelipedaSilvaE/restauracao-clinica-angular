@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { Medicamento } from '../interfaces/medicamento';
 import { MedicamentoRequest } from '../interfaces/medicamento-request';
@@ -14,6 +15,7 @@ import { MovimentacaoEstoqueRequest } from '../interfaces/movimentacao-estoque-r
 export class MedicamentosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/medicamentos`;
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   private readonly internalMedicamentos = signal<Medicamento[]>([]);
 
@@ -32,6 +34,16 @@ export class MedicamentosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  constructor() {
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.internalMedicamentos.set([]);
+        this.internalMedicamentosEmAlerta.set([]);
+        this.listaCarregada.set(false);
+      }
+    });
+  }
 
   createMedicamento(medicamento: MedicamentoRequest): Observable<Medicamento> {
     this.setLoading('mutation', true);
