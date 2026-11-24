@@ -89,14 +89,14 @@ export class MedicamentoCard {
     {
       label: 'Registrar entrada',
       lucideIcon: LucideArrowDownToLine,
-      iconClass: 'h-4 w-4 text-action-secondary-text',
+      iconClass: 'h-4 w-4 text-action-success',
       command: () => this.onEntrada.emit(this.medicamento()),
     },
     {
       label: 'Registrar saída',
       visible: this.medicamento().quantidadeEstoque > 0,
       lucideIcon: LucideArrowUpFromLine,
-      iconClass: 'h-4 w-4 text-action-secondary-text',
+      iconClass: 'h-4 w-4 text-action-warning',
       command: () => this.onSaida.emit(this.medicamento()),
     },
     {
