@@ -1,5 +1,5 @@
 import { Component, input, signal } from '@angular/core';
-import { LucideDynamicIcon, LucideEllipsisVertical } from '@lucide/angular';
+import { LucideDynamicIcon, LucideEllipsis, LucideEllipsisVertical } from '@lucide/angular';
 import { MenuModule } from 'primeng/menu';
 import { AcaoMenu } from '../../interfaces/acao-menu';
 
@@ -8,7 +8,7 @@ import { AcaoMenu } from '../../interfaces/acao-menu';
   host: {
     class: 'inline-flex',
   },
-  imports: [MenuModule, LucideDynamicIcon, LucideEllipsisVertical],
+  imports: [MenuModule, LucideDynamicIcon, LucideEllipsis, LucideEllipsisVertical],
   templateUrl: './action-menu.html',
   styleUrl: './action-menu.css',
 })
@@ -18,4 +18,5 @@ export class ActionMenu {
   protected readonly expanded = signal(false);
   readonly actions = input.required<AcaoMenu[]>();
   readonly ariaLabel = input('Abrir menu de ações');
+  readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 }

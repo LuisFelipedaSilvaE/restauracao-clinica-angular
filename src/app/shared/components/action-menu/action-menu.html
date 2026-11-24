@@ -37,5 +37,9 @@
   [attr.aria-controls]="expanded() ? menuId : null"
   (click)="menu.toggle($event)"
 >
-  <svg lucideEllipsisVertical class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+  @if (orientation() === 'horizontal') {
+    <svg lucideEllipsis class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+  } @else {
+    <svg lucideEllipsisVertical class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+  }
 </button>
