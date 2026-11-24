@@ -166,25 +166,16 @@ export class Pagamentos {
 
   constructor() {
     effect(() => {
-      const internacoes = this.internacoes();
       const chave = this.internacaoIdsChave();
       if (chave === this.ultimaChaveAccordion) return;
 
       this.ultimaChaveAccordion = chave;
       this.primeiroIndice.set(0);
+      this.internacaoAberta.set(null);
       this.pagamentosCarregadosIds.set(new Set());
       this.carregandoPagamentosIds.set(new Set());
       this.erroPagamentosIds.set(new Set());
       this.resumosCarregadosIds.set(new Set());
-
-      if (internacoes.length === 0) {
-        this.internacaoAberta.set(null);
-        return;
-      }
-
-      this.internacaoAberta.set(
-        internacoes.find((internacao) => internacao.ativo)?.id ?? internacoes[0].id,
-      );
     });
 
     effect((onCleanup) => {
@@ -283,7 +274,7 @@ export class Pagamentos {
 
   protected onPageChange(event: PaginatorState): void {
     this.primeiroIndice.set(event.first ?? 0);
-    this.internacaoAberta.set(this.internacoesPaginadas()[0]?.id ?? null);
+    this.internacaoAberta.set(null);
   }
 
   protected pagamentosDaInternacao(internacaoId: number): Pagamento[] {
