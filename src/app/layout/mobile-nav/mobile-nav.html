@@ -28,7 +28,7 @@
               routerLinkActive
               #rla="routerLinkActive"
               [severity]="isRouteActive(route.route, rla.isActive) ? null : 'secondary'"
-              [text]="!isRouteActive(route.route, rla.isActive)"
+              [class.p-button-text]="!isRouteActive(route.route, rla.isActive)"
               [pButtonPT]="navButtonPt"
               fluid
               (click)="onNavigate()"
