@@ -7,7 +7,13 @@
   (deleteRequest)="confirmarExclusao.set(true)"
 />
 
-<p-tabs #abasProntuario [value]="abaAtiva()" (valueChange)="navegarParaAba($event)" scrollable>
+<p-tabs
+  #abasProntuario
+  [value]="abaAtiva()"
+  (valueChange)="navegarParaAba($event)"
+  class="rounded-xl overflow-hidden"
+  scrollable
+>
   <p-tablist [pt]="{ tabList: { 'aria-label': 'Seções do prontuário' } }">
     @for (aba of abas; track aba.route) {
       <p-tab [value]="aba.route">
