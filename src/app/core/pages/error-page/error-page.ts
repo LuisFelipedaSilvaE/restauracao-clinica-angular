@@ -50,4 +50,10 @@ export class ErrorPage {
   };
 
   protected readonly content = computed(() => this.errorContent[this.status()]);
+  protected readonly inicioUrl = computed(() =>
+    this.authService.hasRole('ADMIN') || this.authService.hasRole('USER') ? '/dashboard' : '/login',
+  );
+  protected readonly inicioLabel = computed(() =>
+    this.inicioUrl() === '/dashboard' ? 'Ir para o início' : 'Ir para o login',
+  );
 }

@@ -246,6 +246,7 @@ export const routes: Routes = [
     path: '**',
     title: 'Página não encontrada',
     component: ErrorPage,
+    canActivate: [authGuard],
     data: { status: 404 },
   },
 ];

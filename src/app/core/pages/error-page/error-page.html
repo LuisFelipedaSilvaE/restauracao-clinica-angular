@@ -5,7 +5,7 @@
     ></div>
 
     <div
-      class="absolute left-1/2 top-1/2 flex h-19 w-19 -translate-1/2 items-center justify-center rounded-full bg-white shadow-card"
+      class="absolute left-1/2 top-1/2 flex h-19 w-19 -translate-1/2 items-center justify-center rounded-full bg-surface-card shadow-card"
     >
       @if (status() === 403) {
         <svg
@@ -61,10 +61,10 @@
         </ng-template>
       </p-button>
     } @else {
-      <a pButton routerLink="/convenios">
+      <a pButton [routerLink]="inicioUrl()">
         <svg pButtonIcon lucideHouse class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
 
-        <span pButtonLabel>Ir para Convênios</span></a
+        <span pButtonLabel>{{ inicioLabel() }}</span></a
       >
       <p-button
         severity="secondary"
