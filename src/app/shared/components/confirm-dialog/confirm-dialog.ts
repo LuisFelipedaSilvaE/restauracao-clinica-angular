@@ -5,6 +5,9 @@ import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'confirm-dialog',
+  host: {
+    class: 'contents',
+  },
   imports: [RestoreDialogFocus, DialogModule, ButtonModule],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',

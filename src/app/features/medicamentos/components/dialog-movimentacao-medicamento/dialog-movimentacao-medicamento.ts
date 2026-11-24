@@ -46,6 +46,9 @@ const textoObrigatorio: ValidatorFn = (control: AbstractControl): ValidationErro
 
 @Component({
   selector: 'dialog-movimentacao-medicamento',
+  host: {
+    class: 'contents',
+  },
   imports: [
     RestoreDialogFocus,
     AutoFocusError,

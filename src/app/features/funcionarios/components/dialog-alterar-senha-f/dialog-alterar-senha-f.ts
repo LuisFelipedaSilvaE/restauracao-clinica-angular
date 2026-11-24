@@ -21,6 +21,9 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
 
 @Component({
   selector: 'dialog-alterar-senha-f',
+  host: {
+    class: 'contents',
+  },
   imports: [
     RestoreDialogFocus,
     AccessiblePassword,

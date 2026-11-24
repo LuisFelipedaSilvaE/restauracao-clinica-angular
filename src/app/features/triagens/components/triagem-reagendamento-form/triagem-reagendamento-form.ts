@@ -20,6 +20,9 @@ import { TriagensService } from '../../services/triagens-service';
 
 @Component({
   selector: 'triagem-reagendamento-form',
+  host: {
+    class: 'contents',
+  },
   imports: [
     RestoreDialogFocus,
     AutoFocusError,

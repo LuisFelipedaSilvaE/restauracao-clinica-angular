@@ -14,6 +14,9 @@ import { comprimentoTextoValidator } from '../../../../shared/validators/texto-v
 
 @Component({
   selector: 'cargo-form',
+  host: {
+    class: 'contents',
+  },
   imports: [
     RestoreDialogFocus,
     AutoFocusError,
