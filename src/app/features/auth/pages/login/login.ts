@@ -16,6 +16,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { KeyFilterModule } from 'primeng/keyfilter';
 
 import {
   LucideDynamicIcon,
@@ -40,6 +41,7 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
     AutoFocusError,
     ReactiveFormsModule,
     InputTextModule,
+    KeyFilterModule,
     PasswordModule,
     IconFieldModule,
     InputIconModule,
@@ -63,6 +65,7 @@ export class Login implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   protected readonly loginForm: FormGroup;
+  protected readonly blockspace = /^[^\s]+$/;
   protected readonly formSubmitted = signal<boolean>(false);
   protected readonly requestActive = signal<boolean>(false);
   protected readonly loginButtonContent = computed(() => (this.requestActive() ? '' : 'Entrar'));

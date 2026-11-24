@@ -53,6 +53,7 @@
             <input
               pInputText
               formControlName="usuario"
+              [pKeyFilter]="blockspace"
               [invalid]="isInvalid('usuario')"
               autocomplete="off"
               placeholder="seu.usuario"
@@ -75,6 +76,7 @@
               accessiblePassword
               #passwordInput
               formControlName="senha"
+              [pKeyFilter]="blockspace"
               [class.tracking-widest]="!passwordInput.unmasked"
               [invalid]="isInvalid('senha')"
               [toggleMask]="true"
