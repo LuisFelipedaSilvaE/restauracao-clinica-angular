@@ -69,7 +69,7 @@ export class InternacoesService {
 
     return this.http.get<Internacao[]>(this.baseAPIUrl).pipe(
       tap((internacoes) => {
-        this.internalInternacoes.set(internacoes);
+        this.internalInternacoes.set(this.ordenar(internacoes));
         this.listaCarregada.set(true);
       }),
       finalize(() => this.setLoading('list', false)),
@@ -105,7 +105,9 @@ export class InternacoesService {
 
     return this.http.post<Internacao>(this.baseAPIUrl, internacao).pipe(
       tap((novaInternacao) => {
-        this.internalInternacoes.update((internacoes) => [...internacoes, novaInternacao]);
+        this.internalInternacoes.update((internacoes) =>
+          this.ordenar([novaInternacao, ...internacoes]),
+        );
       }),
       finalize(() => this.setLoading('mutation', false)),
     );
@@ -171,9 +173,15 @@ export class InternacoesService {
 
   private substituirInternacaoNaLista(internacaoAtualizada: Internacao): void {
     this.internalInternacoes.update((internacoes) =>
-      internacoes.map((internacao) =>
-        internacao.id === internacaoAtualizada.id ? internacaoAtualizada : internacao,
+      this.ordenar(
+        internacoes.map((internacao) =>
+          internacao.id === internacaoAtualizada.id ? internacaoAtualizada : internacao,
+        ),
       ),
     );
+  }
+
+  private ordenar(internacoes: Internacao[]): Internacao[] {
+    return [...internacoes].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 }

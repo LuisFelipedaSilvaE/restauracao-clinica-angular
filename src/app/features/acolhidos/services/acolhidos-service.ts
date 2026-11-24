@@ -151,6 +151,6 @@ export class AcolhidosService {
   }
 
   private ordenarPorStatus(acolhidos: Acolhido[]): Acolhido[] {
-    return [...acolhidos].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+    return [...acolhidos].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 }

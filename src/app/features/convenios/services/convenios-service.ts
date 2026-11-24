@@ -60,7 +60,7 @@ export class ConveniosService {
   }
 
   private ordenarPorStatus(convenios: Convenio[]): Convenio[] {
-    return [...convenios].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+    return [...convenios].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 
   getAllConvenios(forceRefresh = false): Observable<Convenio[]> {

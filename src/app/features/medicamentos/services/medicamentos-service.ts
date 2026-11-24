@@ -50,7 +50,9 @@ export class MedicamentosService {
 
     return this.http.post<Medicamento>(this.baseAPIUrl, medicamento).pipe(
       tap((novoMedicamento) => {
-        this.internalMedicamentos.update((medicamentos) => [...medicamentos, novoMedicamento]);
+        this.internalMedicamentos.update((medicamentos) =>
+          this.ordenar([novoMedicamento, ...medicamentos]),
+        );
         this.sincronizarAlertaLocal(novoMedicamento);
       }),
       finalize(() => this.setLoading('mutation', false)),
@@ -125,7 +127,7 @@ export class MedicamentosService {
 
     return this.http.get<Medicamento[]>(this.baseAPIUrl).pipe(
       tap((medicamentos) => {
-        this.internalMedicamentos.set(medicamentos);
+        this.internalMedicamentos.set(this.ordenar(medicamentos));
         this.listaCarregada.set(true);
       }),
       finalize(() => {
@@ -154,10 +156,16 @@ export class MedicamentosService {
 
   private substituirMedicamentoNaLista(medicamentoAtualizado: Medicamento): void {
     this.internalMedicamentos.update((medicamentos) =>
-      medicamentos.map((medicamento) =>
-        medicamento.id === medicamentoAtualizado.id ? medicamentoAtualizado : medicamento,
+      this.ordenar(
+        medicamentos.map((medicamento) =>
+          medicamento.id === medicamentoAtualizado.id ? medicamentoAtualizado : medicamento,
+        ),
       ),
     );
+  }
+
+  private ordenar(medicamentos: Medicamento[]): Medicamento[] {
+    return [...medicamentos].sort((a, b) => b.id - a.id);
   }
 
   private atualizarSaldoNaLista(movimentacao: MovimentacaoEstoque): void {

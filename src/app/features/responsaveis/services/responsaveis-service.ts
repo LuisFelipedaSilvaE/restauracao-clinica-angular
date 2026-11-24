@@ -128,6 +128,6 @@ export class ResponsaveisService {
   }
 
   private ordenarPorStatus(responsaveis: Responsavel[]): Responsavel[] {
-    return [...responsaveis].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+    return [...responsaveis].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 }

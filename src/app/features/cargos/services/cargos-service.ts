@@ -130,6 +130,6 @@ export class CargosService {
   }
 
   private ordenarPorStatus(cargos: Cargo[]): Cargo[] {
-    return [...cargos].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+    return [...cargos].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 }

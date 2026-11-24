@@ -174,6 +174,6 @@ export class TriagensService {
       [StatusTriagem.CANCELADA]: 3,
     };
 
-    return [...triagens].sort((a, b) => ordem[a.status] - ordem[b.status]);
+    return [...triagens].sort((a, b) => ordem[a.status] - ordem[b.status] || b.id - a.id);
   }
 }

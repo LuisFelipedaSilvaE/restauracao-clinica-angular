@@ -160,6 +160,6 @@ export class FuncionariosService {
   }
 
   private ordenarPorStatus(funcionarios: Funcionario[]): Funcionario[] {
-    return [...funcionarios].sort((a, b) => Number(b.ativo) - Number(a.ativo));
+    return [...funcionarios].sort((a, b) => Number(b.ativo) - Number(a.ativo) || b.id - a.id);
   }
 }
