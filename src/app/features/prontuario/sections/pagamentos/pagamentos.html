@@ -27,11 +27,17 @@
       description="Pagamentos organizados por internação"
       [icon]="pagamentosIcon"
     >
+      @if (internacaoAtualIsenta()) {
+        <p-message severity="info" class="mb-4 block">
+          A internação atual possui isenção de pagamento.
+        </p-message>
+      }
+
       <p-accordion
         [value]="internacaoAberta()"
-        (valueChange)="internacaoAberta.set($event === null ? null : +$event)"
+        (valueChange)="internacaoAberta.set($event === null || $event === undefined ? null : +$event)"
       >
-        @for (internacao of internacoes(); track internacao.id) {
+        @for (internacao of internacoesPaginadas(); track internacao.id) {
           <p-accordion-panel [value]="internacao.id">
             <p-accordion-header>
               <div
@@ -79,10 +85,19 @@
 
             <p-accordion-content>
               <div class="flex min-w-0 flex-col gap-5 pt-1">
-                @if (!internacao.convenio.pagamento) {
-                  <p-message severity="warn">
-                    Esta internação possui isenção de pagamento.
-                  </p-message>
+                @if (carregandoPagamentosDaInternacao(internacao.id)) {
+                  <div class="flex min-w-0 flex-col gap-4" aria-busy="true">
+                    <span class="sr-only" role="status">Carregando pagamentos da internação...</span>
+                    <div class="flex flex-wrap items-center justify-center gap-2.5" aria-hidden="true">
+                      @for (_ of [1, 2, 3, 4]; track $index) {
+                        <p-skeleton width="13rem" height="4.75rem" borderRadius="0.75rem" />
+                      }
+                    </div>
+                    <div class="flex flex-col gap-2" aria-hidden="true">
+                      <p-skeleton width="100%" height="3.75rem" borderRadius="0.75rem" />
+                      <p-skeleton width="100%" height="3.75rem" borderRadius="0.75rem" />
+                    </div>
+                  </div>
                 } @else {
                   <div class="flex flex-wrap items-center justify-center gap-2.5">
                     @for (indicador of indicadores(internacao); track indicador.label) {
@@ -189,8 +204,24 @@
           </p-accordion-panel>
         }
       </p-accordion>
+
+      @if (internacoes().length > rowsPorPagina) {
+        <p-paginator
+          class="mt-4 block"
+          [first]="primeiroIndice()"
+          [rows]="rowsPorPagina"
+          [totalRecords]="internacoes().length"
+          (onPageChange)="onPageChange($event)"
+        />
+      }
     </prontuario-section-card>
   </section>
+} @else if (internacoesTotais().length > 0) {
+  <empty-list
+    [icon]="emptyPagamentosIcon"
+    title="Nenhuma internação com cobrança"
+    description="As internações deste acolhido possuem isenção de pagamento."
+  />
 } @else {
   <empty-list
     [icon]="emptyInternacoesIcon"

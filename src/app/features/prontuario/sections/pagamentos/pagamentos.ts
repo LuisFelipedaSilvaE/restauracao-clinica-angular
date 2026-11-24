@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, Signal, signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal, signal, untracked } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
 import {
   LucideBadgeDollarSign,
@@ -14,6 +14,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { MessageModule } from 'primeng/message';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { finalize, forkJoin } from 'rxjs';
@@ -56,6 +57,7 @@ interface ResumoInternacao {
     LucideHandCoins,
     LucideWallet,
     MessageModule,
+    PaginatorModule,
     PagamentoCard,
     ProntuarioSectionCard,
     SkeletonModule,
@@ -68,29 +70,37 @@ export class Pagamentos {
   private readonly outletData = inject(ROUTER_OUTLET_DATA) as Signal<ProntuarioOutletData>;
   private readonly pagamentosService = inject(PagamentosService);
 
+  protected readonly rowsPorPagina = 5;
+  protected readonly primeiroIndice = signal(0);
+  protected readonly internacoesTotais = computed(() => this.outletData().internacoes);
+  protected readonly internacaoAtualIsenta = computed(() =>
+    this.internacoesTotais().some((internacao) => internacao.ativo && !internacao.convenio.pagamento),
+  );
   protected readonly internacoes = computed(() =>
-    [...this.outletData().internacoes].sort((a, b) => {
-      if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
+    [...this.internacoesTotais()]
+      .filter((internacao) => internacao.convenio.pagamento)
+      .sort((a, b) => {
+        if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
 
-      const dataMaisRecente = b.dataEntrada.localeCompare(a.dataEntrada);
-      return dataMaisRecente !== 0 ? dataMaisRecente : b.id - a.id;
-    }),
+        const dataMaisRecente = b.dataEntrada.localeCompare(a.dataEntrada);
+        return dataMaisRecente !== 0 ? dataMaisRecente : b.id - a.id;
+      }),
+  );
+  protected readonly internacoesPaginadas = computed(() =>
+    this.internacoes().slice(this.primeiroIndice(), this.primeiroIndice() + this.rowsPorPagina),
   );
   private readonly internacaoIdsChave = computed(() =>
     this.internacoes()
       .map((internacao) => internacao.id)
       .join(','),
   );
-  private readonly carregandoPagamentos = signal(false);
-  private readonly chaveCarregada = signal<string | null>(null);
+  private readonly pagamentosCarregadosIds = signal<Set<number>>(new Set());
+  private readonly carregandoPagamentosIds = signal<Set<number>>(new Set());
+  private readonly erroPagamentosIds = signal<Set<number>>(new Set());
+  private readonly resumosCarregadosIds = signal<Set<number>>(new Set());
   private ultimaChaveAccordion: string | null = null;
 
-  protected readonly loading = computed(() => {
-    if (this.outletData().loading) return true;
-    const chave = this.internacaoIdsChave();
-    if (!chave) return false;
-    return this.carregandoPagamentos() || this.chaveCarregada() !== chave;
-  });
+  protected readonly loading = computed(() => this.outletData().loading);
   protected readonly mutationLoading = computed(() => this.pagamentosService.loading().mutation);
   protected readonly pagamentosIcon = LucideWalletCards;
   protected readonly emptyInternacoesIcon = LucideReceiptText;
@@ -161,6 +171,12 @@ export class Pagamentos {
       if (chave === this.ultimaChaveAccordion) return;
 
       this.ultimaChaveAccordion = chave;
+      this.primeiroIndice.set(0);
+      this.pagamentosCarregadosIds.set(new Set());
+      this.carregandoPagamentosIds.set(new Set());
+      this.erroPagamentosIds.set(new Set());
+      this.resumosCarregadosIds.set(new Set());
+
       if (internacoes.length === 0) {
         this.internacaoAberta.set(null);
         return;
@@ -174,33 +190,100 @@ export class Pagamentos {
     effect((onCleanup) => {
       if (this.outletData().loading) return;
 
-      const chave = this.internacaoIdsChave();
-      const ids = chave ? chave.split(',').map(Number) : [];
+      const visiveis = this.internacoesPaginadas();
+      const jaCarregados = untracked(() => this.resumosCarregadosIds());
+      const idsFaltantes = visiveis
+        .map((internacao) => internacao.id)
+        .filter((id) => !jaCarregados.has(id));
 
-      if (ids.length === 0) {
-        this.chaveCarregada.set('');
-        this.carregandoPagamentos.set(false);
-        return;
-      }
+      if (idsFaltantes.length === 0) return;
 
-      this.carregandoPagamentos.set(true);
-
-      const requisicoes = ids.flatMap((internacaoId) => [
-        this.pagamentosService.getPagamentosByInternacaoId(internacaoId),
-        this.pagamentosService.getResumoByInternacaoId(internacaoId),
-      ]);
-
-      const subscription = forkJoin(requisicoes)
-        .pipe(
-          finalize(() => {
-            this.chaveCarregada.set(chave);
-            this.carregandoPagamentos.set(false);
-          }),
-        )
-        .subscribe({ error: () => {} });
+      const subscription = forkJoin(
+        idsFaltantes.map((internacaoId) =>
+          this.pagamentosService.getResumoByInternacaoId(internacaoId),
+        ),
+      ).subscribe({
+        next: () => {
+          this.resumosCarregadosIds.update((atuais) => {
+            const proximo = new Set(atuais);
+            for (const id of idsFaltantes) proximo.add(id);
+            return proximo;
+          });
+        },
+        error: () => {},
+      });
 
       onCleanup(() => subscription.unsubscribe());
     });
+
+    effect((onCleanup) => {
+      if (this.outletData().loading) return;
+
+      const internacaoId = this.internacaoAberta();
+      if (internacaoId === null) return;
+
+      const visivel = this.internacoesPaginadas().some(
+        (internacao) => internacao.id === internacaoId,
+      );
+      if (!visivel) return;
+
+      const jaCarregado = untracked(() => this.pagamentosCarregadosIds().has(internacaoId));
+      const emCarregamento = untracked(() => this.carregandoPagamentosIds().has(internacaoId));
+      if (jaCarregado || emCarregamento) return;
+
+      this.erroPagamentosIds.update((atuais) => {
+        if (!atuais.has(internacaoId)) return atuais;
+        const proximo = new Set(atuais);
+        proximo.delete(internacaoId);
+        return proximo;
+      });
+      this.carregandoPagamentosIds.update((atuais) => {
+        const proximo = new Set(atuais);
+        proximo.add(internacaoId);
+        return proximo;
+      });
+
+      const subscription = this.pagamentosService
+        .getPagamentosByInternacaoId(internacaoId)
+        .pipe(
+          finalize(() => {
+            this.carregandoPagamentosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              proximo.delete(internacaoId);
+              return proximo;
+            });
+          }),
+        )
+        .subscribe({
+          next: () => {
+            this.pagamentosCarregadosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              proximo.add(internacaoId);
+              return proximo;
+            });
+          },
+          error: () => {
+            this.erroPagamentosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              proximo.add(internacaoId);
+              return proximo;
+            });
+          },
+        });
+
+      onCleanup(() => subscription.unsubscribe());
+    });
+  }
+
+  protected carregandoPagamentosDaInternacao(internacaoId: number): boolean {
+    if (this.carregandoPagamentosIds().has(internacaoId)) return true;
+    if (this.erroPagamentosIds().has(internacaoId)) return false;
+    return !this.pagamentosCarregadosIds().has(internacaoId);
+  }
+
+  protected onPageChange(event: PaginatorState): void {
+    this.primeiroIndice.set(event.first ?? 0);
+    this.internacaoAberta.set(this.internacoesPaginadas()[0]?.id ?? null);
   }
 
   protected pagamentosDaInternacao(internacaoId: number): Pagamento[] {
