@@ -1,35 +1,27 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   LucideDoorOpen,
-  LucideDynamicIcon,
-  LucideUsersRound,
+  LucideEye,
+  LucideLayers,
   LucidePencil,
   LucidePower,
   LucidePowerOff,
-  LucideLayers,
-  LucideIcon,
-  LucideEye,
   LucideTrash2,
+  LucideUsersRound,
 } from '@lucide/angular';
-import { IconColor } from '../../../../shared/directives/icon-color';
-import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
 import { BadgeModule } from 'primeng/badge';
-import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
-import { InfoCard } from '../../../../shared/components/info-card/info-card';
-import { ButtonModule, ButtonSeverity } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
-import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
-import { CustomBadge } from '../../../../shared/directives/custom-badge';
-import { TooltipModule } from 'primeng/tooltip';
 import { AuthService } from '../../../../core/services/auth-service';
-
-interface ToggleConvenioButton {
-  tooltipValue: string;
-  severity: ButtonSeverity;
-  icon: LucideIcon;
-}
+import { ActionMenu } from '../../../../shared/components/action-menu/action-menu';
+import { InfoCard } from '../../../../shared/components/info-card/info-card';
+import { CustomBadge } from '../../../../shared/directives/custom-badge';
+import { CustomProgressbar } from '../../../../shared/directives/custom-progressbar';
+import { IconColor } from '../../../../shared/directives/icon-color';
+import { AcaoMenu } from '../../../../shared/interfaces/acao-menu';
+import { InfoCardContent } from '../../../../shared/interfaces/info-card-content';
+import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
+import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
 
 @Component({
   selector: 'convenio-card',
@@ -40,25 +32,20 @@ interface ToggleConvenioButton {
       "!convenio()?.ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
   imports: [
-    LucideDynamicIcon,
+    ActionMenu,
     IconColor,
     CustomProgressbar,
     CustomBadge,
     BadgeModule,
     InfoCard,
-    ButtonModule,
     ProgressBarModule,
-    LucidePencil,
     LucideLayers,
-    TooltipModule,
-    RouterLink,
-    LucideEye,
-    LucideTrash2,
   ],
   templateUrl: './convenio-card.html',
   styleUrl: './convenio-card.css',
 })
 export class ConvenioCard {
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
 
@@ -89,14 +76,41 @@ export class ConvenioCard {
     const porcentagem = (this.convenio().acolhidosAtivos / this.convenio().maxVagas) * 100;
     return Math.ceil(porcentagem);
   });
-  readonly computedConvenioAtivoBtn = computed<ToggleConvenioButton>(() => {
-    const ativo = this.convenio().ativo;
 
-    return {
-      tooltipValue: ativo ? 'Desativar convênio' : 'Ativar convênio',
-      severity: ativo ? 'warn' : 'success',
-      icon: ativo ? LucidePowerOff : LucidePower,
-    };
+  protected readonly acoes = computed<AcaoMenu[]>(() => {
+    const convenio = this.convenio();
+
+    return [
+      {
+        label: 'Visualizar convênio',
+        lucideIcon: LucideEye,
+        iconClass: 'h-4.5 w-4.5 text-action-info',
+        command: () => this.router.navigate(['/convenios', convenio.id]),
+      },
+      {
+        label: 'Editar convênio',
+        visible: convenio.ativo,
+        lucideIcon: LucidePencil,
+        iconClass: 'h-4 w-4 text-action-secondary-text',
+        command: () => this.router.navigate(['/convenios', convenio.id, 'editar']),
+      },
+      {
+        label: convenio.ativo ? 'Desativar convênio' : 'Ativar convênio',
+        visible: this.isAdmin,
+        lucideIcon: convenio.ativo ? LucidePowerOff : LucidePower,
+        iconClass: convenio.ativo
+          ? 'h-4 w-4 text-action-warning'
+          : 'h-4 w-4 text-action-success',
+        command: () => this.toggleConvenio(),
+      },
+      {
+        label: 'Excluir convênio',
+        visible: this.isAdmin,
+        lucideIcon: LucideTrash2,
+        iconClass: 'h-4 w-4 text-action-destructive mt-[-3.5px]',
+        command: () => this.solicitarExclusao(),
+      },
+    ];
   });
 
   toggleConvenio(): void {
