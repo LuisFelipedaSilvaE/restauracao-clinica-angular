@@ -38,8 +38,16 @@
   <span class="text-xs font-medium uppercase tracking-wide text-content-secondary sm:hidden">
     Saldo
   </span>
-  <span class="text-sm text-content-primary">
-    {{ movimentacao().saldoAnterior | number: '1.0-0' }} →
+  <span
+    class="inline-flex items-center gap-1.5 text-sm leading-none tabular-nums text-content-primary sm:justify-center"
+  >
+    <span>{{ movimentacao().saldoAnterior | number: '1.0-0' }}</span>
+    <svg
+      lucideArrowBigRight
+      class="h-4 w-4 shrink-0 text-content-secondary"
+      aria-hidden="true"
+      focusable="false"
+    ></svg>
     <strong>{{ movimentacao().saldoPosterior | number: '1.0-0' }}</strong>
   </span>
 </div>

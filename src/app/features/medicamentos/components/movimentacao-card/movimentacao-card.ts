@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
-import { LucideArrowDownToLine, LucideArrowUpFromLine, LucideDynamicIcon } from '@lucide/angular';
+import {
+  LucideArrowBigRight,
+  LucideArrowDownToLine,
+  LucideArrowUpFromLine,
+  LucideDynamicIcon,
+} from '@lucide/angular';
 import { TagModule } from 'primeng/tag';
 import { IconColor } from '../../../../shared/directives/icon-color';
 import { TIPO_MOVIMENTACAO_LABELS, TipoMovimentacao } from '../../enums/tipo-movimentacao';
@@ -12,7 +17,7 @@ import { MovimentacaoEstoque } from '../../interfaces/movimentacao-estoque';
     class:
       'grid min-w-0 grid-cols-1 items-center gap-x-3 gap-y-3 rounded-xl border border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,1fr))] xl:gap-4 xl:p-4',
   },
-  imports: [CommonModule, IconColor, LucideDynamicIcon, TagModule],
+  imports: [CommonModule, IconColor, LucideArrowBigRight, LucideDynamicIcon, TagModule],
   templateUrl: './movimentacao-card.html',
   styleUrl: './movimentacao-card.css',
 })
