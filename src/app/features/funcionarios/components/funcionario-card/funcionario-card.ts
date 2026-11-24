@@ -24,7 +24,7 @@ import { ActionMenu } from '../../../../shared/components/action-menu/action-men
   selector: 'funcionario-card',
   host: {
     class:
-      'group relative grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-border-default bg-surface-card p-3 transition-colors sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] xl:gap-3 2xl:gap-4 2xl:p-4',
+      'group relative grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-border-default bg-surface-card p-3 transition-colors sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_48px] md:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_48px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_48px] xl:gap-3 2xl:gap-4 2xl:p-4',
     '[class]':
       "!funcionario().ativo ? `bg-surface-subtle! border-2 border-dashed! border-border-muted! before:pointer-events-none before:content-[''] before:backdrop-blur-[.5px] before:h-full before:w-full before:absolute before:left-0 before:top-0` : ''",
   },
