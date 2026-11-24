@@ -15,4 +15,5 @@ export interface Funcionario {
   cargo: Cargo;
   user: Usuario;
   dataAdmissao: string;
+  dataDemissao?: string | null;
 }
