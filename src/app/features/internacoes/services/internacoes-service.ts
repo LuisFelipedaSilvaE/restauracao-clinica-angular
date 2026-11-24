@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { finalize, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
@@ -82,6 +82,17 @@ export class InternacoesService {
     return this.http
       .get<Internacao>(`${this.baseAPIUrl}/${id}`)
       .pipe(finalize(() => this.setLoading('detail', false)));
+  }
+
+  getInternacoesByAcolhidoId(acolhidoId: number): Observable<Internacao[]> {
+    this.setLoading('list', true);
+
+    return this.http
+      .get<Internacao[]>(`${this.baseAPIUrl}/search/acolhido/${acolhidoId}`)
+      .pipe(
+        map((internacoes) => this.ordenar(internacoes)),
+        finalize(() => this.setLoading('list', false)),
+      );
   }
 
   countInternacoesAtivasByConvenio(convenioId: number): Observable<number> {

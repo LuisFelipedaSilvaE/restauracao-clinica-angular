@@ -16,6 +16,7 @@ import {
   LucideUserRound,
   LucideWalletCards,
 } from '@lucide/angular';
+import { Internacao } from '../internacoes/interfaces/internacao';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { ETAPA_TRATAMENTO_CONFIG } from '../internacoes/interfaces/etapa-tratamento-config';
 import { ResponsaveisService } from '../responsaveis/services/responsaveis-service';
@@ -37,6 +38,7 @@ export class Prontuario {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   protected readonly acolhido = signal<Acolhido | null>(null);
+  private readonly internacoes = signal<Internacao[]>([]);
   private readonly acolhidosService = inject(AcolhidosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly responsaveisService = inject(ResponsaveisService);
@@ -107,7 +109,9 @@ export class Prontuario {
     const acolhido = this.acolhido();
     if (!acolhido) return null;
 
-    const internacaoAtual = this.internacoesService.getInternacaoAtualDoAcolhido(acolhido.id);
+    const internacaoAtual = this.internacoes()
+      .filter((internacao) => internacao.ativo)
+      .sort((a, b) => b.dataEntrada.localeCompare(a.dataEntrada))[0];
     const etapaConfig = internacaoAtual
       ? ETAPA_TRATAMENTO_CONFIG[internacaoAtual.etapaTratamento]
       : null;
@@ -132,10 +136,7 @@ export class Prontuario {
 
   protected readonly outletData = computed<ProntuarioOutletData>(() => ({
     acolhido: this.headerData(),
-    internacoes: this.internacoesService
-      .internacoes()
-      .filter((internacao) => internacao.acolhido.id === this.acolhido()?.id)
-      .sort((a, b) => b.dataEntrada.localeCompare(a.dataEntrada)),
+    internacoes: [...this.internacoes()].sort((a, b) => b.dataEntrada.localeCompare(a.dataEntrada)),
     loading: this.detailLoading(),
   }));
 
@@ -161,12 +162,16 @@ export class Prontuario {
       }
 
       this.acolhido.set(null);
+      this.internacoes.set([]);
 
       const subscription = forkJoin({
         acolhido: this.acolhidosService.getAcolhidoById(idNumerico),
-        internacoes: this.internacoesService.getAllInternacoes(),
+        internacoes: this.internacoesService.getInternacoesByAcolhidoId(idNumerico),
       }).subscribe({
-        next: ({ acolhido }) => this.acolhido.set(acolhido),
+        next: ({ acolhido, internacoes }) => {
+          this.acolhido.set(acolhido);
+          this.internacoes.set(internacoes);
+        },
         error: () => this.voltarParaOrigem(),
       });
 
