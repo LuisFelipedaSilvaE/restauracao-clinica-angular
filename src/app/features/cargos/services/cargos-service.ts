@@ -115,11 +115,14 @@ export class CargosService {
   }
 
   private substituirCargoNaLista(cargoAtualizado: Cargo) {
-    this.internalCargos.update((cargos) =>
-      this.ordenarPorStatus(
-        cargos.map((cargo) => (cargo.id === cargoAtualizado.id ? cargoAtualizado : cargo)),
-      ),
-    );
+    this.internalCargos.update((cargos) => {
+      const existe = cargos.some((cargo) => cargo.id === cargoAtualizado.id);
+      const atualizada = existe
+        ? cargos.map((cargo) => (cargo.id === cargoAtualizado.id ? cargoAtualizado : cargo))
+        : [...cargos, cargoAtualizado];
+
+      return this.ordenarPorStatus(atualizada);
+    });
   }
 
   private atualizarStatusNaLista(id: number, ativo: boolean): void {

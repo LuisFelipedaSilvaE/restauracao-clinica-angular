@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
+import { AcolhidosService } from '../../acolhidos/services/acolhidos-service';
 import { ConveniosService } from '../../convenios/services/convenios-service';
 import { EtapasTratamentoPorConvenio } from '../interfaces/etapas-tratamento-por-convenio';
 import { Internacao } from '../interfaces/internacao';
@@ -19,6 +20,7 @@ import { InternacoesAtivasPorConvenio } from '../interfaces/internacoes-ativas-p
 export class InternacoesService {
   private readonly baseAPIUrl = `${environment.apiUrl}/internacoes`;
   private readonly http = inject(HttpClient);
+  private readonly acolhidosService = inject(AcolhidosService);
   private readonly conveniosService = inject(ConveniosService);
   private readonly authService = inject(AuthService);
 
@@ -27,9 +29,13 @@ export class InternacoesService {
     const conveniosPorId = new Map(
       this.conveniosService.convenios().map((convenio) => [convenio.id, convenio]),
     );
+    const acolhidosPorId = new Map(
+      this.acolhidosService.acolhidos().map((acolhido) => [acolhido.id, acolhido]),
+    );
 
     return this.internalInternacoes().map((internacao) => ({
       ...internacao,
+      acolhido: acolhidosPorId.get(internacao.acolhido.id) ?? internacao.acolhido,
       convenio: conveniosPorId.get(internacao.convenio.id) ?? internacao.convenio,
     }));
   });

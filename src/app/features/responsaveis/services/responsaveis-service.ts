@@ -118,13 +118,18 @@ export class ResponsaveisService {
   }
 
   private substituirResponsavelNaLista(responsavelAtualizado: Responsavel): void {
-    this.internalResponsaveis.update((responsaveis) =>
-      this.ordenarPorStatus(
-        responsaveis.map((responsavel) =>
-          responsavel.id === responsavelAtualizado.id ? responsavelAtualizado : responsavel,
-        ),
-      ),
-    );
+    this.internalResponsaveis.update((responsaveis) => {
+      const existe = responsaveis.some(
+        (responsavel) => responsavel.id === responsavelAtualizado.id,
+      );
+      const atualizada = existe
+        ? responsaveis.map((responsavel) =>
+            responsavel.id === responsavelAtualizado.id ? responsavelAtualizado : responsavel,
+          )
+        : [...responsaveis, responsavelAtualizado];
+
+      return this.ordenarPorStatus(atualizada);
+    });
   }
 
   private ordenarPorStatus(responsaveis: Responsavel[]): Responsavel[] {

@@ -1,7 +1,8 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth-service';
+import { CargosService } from '../../cargos/services/cargos-service';
 import { Funcionario } from '../interfaces/funcionario';
 import { finalize, map, Observable, of, switchMap, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
@@ -15,10 +16,18 @@ import { UsersService } from '../../../core/services/users-service';
 export class FuncionariosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/funcionarios`;
   private readonly http = inject(HttpClient);
+  private readonly cargosService = inject(CargosService);
   private readonly usersService = inject(UsersService);
   private readonly authService = inject(AuthService);
   private readonly internalFuncionarios = signal<Funcionario[]>([]);
-  readonly funcionarios = this.internalFuncionarios.asReadonly();
+  readonly funcionarios = computed(() => {
+    const cargosPorId = new Map(this.cargosService.cargos().map((cargo) => [cargo.id, cargo]));
+
+    return this.internalFuncionarios().map((funcionario) => ({
+      ...funcionario,
+      cargo: cargosPorId.get(funcionario.cargo.id) ?? funcionario.cargo,
+    }));
+  });
   private readonly listaCarregada = signal(false);
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
@@ -75,7 +84,7 @@ export class FuncionariosService {
 
   getAllFuncionarios(forceRefresh = false): Observable<Funcionario[]> {
     if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalFuncionarios());
+      return of(this.funcionarios());
     }
 
     this.setLoading('list', true);

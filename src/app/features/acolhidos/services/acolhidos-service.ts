@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
+import { ResponsaveisService } from '../../responsaveis/services/responsaveis-service';
 import { Acolhido } from '../interfaces/acolhido';
 import { AcolhidoRequest } from '../interfaces/acolhido-request';
 
@@ -14,10 +15,20 @@ import { AcolhidoRequest } from '../interfaces/acolhido-request';
 export class AcolhidosService {
   private readonly baseAPIUrl = `${environment.apiUrl}/acolhidos`;
   private readonly http = inject(HttpClient);
+  private readonly responsaveisService = inject(ResponsaveisService);
   private readonly authService = inject(AuthService);
 
   private readonly internalAcolhidos = signal<Acolhido[]>([]);
-  readonly acolhidos = this.internalAcolhidos.asReadonly();
+  readonly acolhidos = computed(() => {
+    const responsaveisPorId = new Map(
+      this.responsaveisService.responsaveis().map((responsavel) => [responsavel.id, responsavel]),
+    );
+
+    return this.internalAcolhidos().map((acolhido) => ({
+      ...acolhido,
+      responsavel: responsaveisPorId.get(acolhido.responsavel.id) ?? acolhido.responsavel,
+    }));
+  });
 
   private readonly listaCarregada = signal(false);
 
@@ -39,7 +50,7 @@ export class AcolhidosService {
 
   getAllAcolhidos(forceRefresh = false): Observable<Acolhido[]> {
     if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalAcolhidos());
+      return of(this.acolhidos());
     }
 
     this.setLoading('list', true);
@@ -133,13 +144,16 @@ export class AcolhidosService {
   }
 
   private substituirAcolhidoNaLista(acolhidoAtualizado: Acolhido): void {
-    this.internalAcolhidos.update((acolhidos) =>
-      this.ordenarPorStatus(
-        acolhidos.map((acolhido) =>
-          acolhido.id === acolhidoAtualizado.id ? acolhidoAtualizado : acolhido,
-        ),
-      ),
-    );
+    this.internalAcolhidos.update((acolhidos) => {
+      const existe = acolhidos.some((acolhido) => acolhido.id === acolhidoAtualizado.id);
+      const atualizada = existe
+        ? acolhidos.map((acolhido) =>
+            acolhido.id === acolhidoAtualizado.id ? acolhidoAtualizado : acolhido,
+          )
+        : [...acolhidos, acolhidoAtualizado];
+
+      return this.ordenarPorStatus(atualizada);
+    });
   }
 
   private atualizarStatusNaLista(id: number, ativo: boolean): void {

@@ -70,7 +70,7 @@ export class TriagensService {
 
   getAllTriagens(forceRefresh = false): Observable<Triagem[]> {
     if (this.listaCarregada() && !forceRefresh) {
-      return of(this.internalTriagens());
+      return of(this.triagens());
     }
 
     this.setLoading('list', true);

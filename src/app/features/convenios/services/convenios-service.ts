@@ -41,13 +41,16 @@ export class ConveniosService {
   }
 
   private substituirConvenioNaLista(convenioAtualizado: Convenio) {
-    this.internalConvenios.update((convenios) =>
-      this.ordenarPorStatus(
-        convenios.map((convenio) =>
-          convenio.id === convenioAtualizado.id ? convenioAtualizado : convenio,
-        ),
-      ),
-    );
+    this.internalConvenios.update((convenios) => {
+      const existe = convenios.some((convenio) => convenio.id === convenioAtualizado.id);
+      const atualizada = existe
+        ? convenios.map((convenio) =>
+            convenio.id === convenioAtualizado.id ? convenioAtualizado : convenio,
+          )
+        : [...convenios, convenioAtualizado];
+
+      return this.ordenarPorStatus(atualizada);
+    });
   }
 
   private atualizarStatusNaLista(id: number, ativo: boolean): void {
