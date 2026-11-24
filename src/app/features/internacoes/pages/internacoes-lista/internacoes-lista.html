@@ -51,14 +51,14 @@
           <div class="min-w-0 pb-2">
             <div class="flex min-w-0 flex-col gap-3">
               <div
-                class="hidden min-w-0 grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] items-center gap-2 border-x border-l-4 border-transparent px-3 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid md:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_36px] xl:gap-3 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] 2xl:gap-4 2xl:px-4"
+                class="hidden min-w-0 grid-cols-[minmax(0,240px)_minmax(0,1fr)_48px] items-center gap-2 border-x border-l-4 border-transparent px-3 text-xs font-semibold uppercase tracking-wide text-content-secondary sm:grid md:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_48px] xl:gap-3 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_48px] 2xl:gap-4 2xl:px-4"
               >
                 <span>Acolhido</span>
                 <span class="hidden text-center md:block">Data de entrada</span>
                 <span class="hidden text-center md:block">Saída / previsão</span>
                 <span class="hidden text-center md:block">Tempo internado</span>
                 <span class="text-center">Etapa</span>
-                <span class="justify-self-end text-center">Ações</span>
+                <span class="justify-self-center text-center">Ações</span>
               </div>
 
               <div role="list" aria-label="Resultados" class="flex min-w-0 flex-col gap-2">
@@ -67,7 +67,7 @@
                   @for (_ of skeletonCards; track $index) {
                     <div
                       aria-hidden="true"
-                      class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-l-4 border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_36px] md:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_36px] xl:gap-3 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_40px] 2xl:gap-4 2xl:p-4"
+                      class="grid min-w-0 grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-xl border border-l-4 border-border-default bg-surface-card p-3 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_48px] md:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_48px] xl:gap-3 2xl:grid-cols-[minmax(0,240px)_repeat(4,minmax(0,1fr))_48px] 2xl:gap-4 2xl:p-4"
                     >
                       <div class="flex min-w-0 items-center gap-3">
                         <p-skeleton size="2.5rem" borderRadius="0.5rem" class="shrink-0" />
@@ -100,7 +100,7 @@
                       <p-skeleton
                         size="2.25rem"
                         borderRadius="0.375rem"
-                        class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-auto sm:justify-self-end"
+                        class="col-start-2 row-start-1 row-span-2 justify-self-center sm:col-auto sm:row-auto sm:justify-self-center"
                       />
                     </div>
                   }
