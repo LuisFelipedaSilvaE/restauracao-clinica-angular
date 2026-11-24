@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideFunnelX,
@@ -82,6 +82,7 @@ export class AcolhidosLista implements OnInit {
   protected readonly busca = signal('');
   protected readonly convenioSelecionado = signal('todos');
   protected readonly situacaoSelecionada = signal('todos');
+  protected readonly first = signal(0);
   protected readonly dialogConfirmVisible = signal(false);
   protected readonly painelResponsaveis = signal<AccordionValue>(null);
   protected readonly totalResponsaveis = computed(
@@ -161,9 +162,18 @@ export class AcolhidosLista implements OnInit {
     },
   };
 
+  constructor() {
+    effect(() => {
+      this.busca();
+      this.convenioSelecionado();
+      this.situacaoSelecionada();
+      this.first.set(0);
+    });
+  }
+
   protected readonly acolhidosCardsFiltrados = computed<AcolhidoCardContent[]>(() => {
     const busca = this.normalizarTexto(this.busca());
-    const buscaNumerica = this.busca().replace(/\D/g, '');
+    const buscaNumerica = /[a-z]/i.test(busca) ? '' : busca.replace(/\D/g, '');
     const situacao = this.situacaoSelecionada();
     const convenio = this.convenioSelecionado();
 
@@ -284,8 +294,10 @@ export class AcolhidosLista implements OnInit {
 
   private normalizarTexto(valor: string): string {
     return valor
+      .trim()
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }

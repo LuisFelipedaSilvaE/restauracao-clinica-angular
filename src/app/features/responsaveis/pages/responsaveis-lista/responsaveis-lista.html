@@ -99,6 +99,8 @@
       [value]="responsaveisFiltrados()"
       [paginator]="true"
       [rows]="6"
+      [first]="first()"
+      (onPage)="first.set($event.first)"
       layout="list"
       [pt]="dataviewPt"
     >

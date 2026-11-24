@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -79,6 +79,7 @@ export class ResponsaveisLista implements OnInit {
   protected readonly loading = this.responsaveisService.loading;
   protected readonly busca = signal('');
   protected readonly situacaoSelecionada = signal<'todos' | 'ativos' | 'inativos'>('todos');
+  protected readonly first = signal(0);
   protected readonly dialogConfirmVisible = signal(false);
   protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly skeletonCards = Array.from({ length: 6 });
@@ -92,7 +93,7 @@ export class ResponsaveisLista implements OnInit {
 
   protected readonly responsaveisFiltrados = computed(() => {
     const busca = this.normalizarTexto(this.busca());
-    const buscaNumerica = this.busca().replace(/\D/g, '');
+    const buscaNumerica = /[a-z]/i.test(busca) ? '' : busca.replace(/\D/g, '');
     const situacao = this.situacaoSelecionada();
 
     return this.responsaveis().filter((responsavel) => {
@@ -146,6 +147,14 @@ export class ResponsaveisLista implements OnInit {
     const acao = this.acaoPendente();
     return acao?.tipo === 'status' && acao.novoStatus ? 'success' : 'danger';
   });
+
+  constructor() {
+    effect(() => {
+      this.busca();
+      this.situacaoSelecionada();
+      this.first.set(0);
+    });
+  }
 
   ngOnInit(): void {
     this.responsaveisService.getAllResponsaveis().subscribe();
@@ -242,8 +251,10 @@ export class ResponsaveisLista implements OnInit {
 
   private normalizarTexto(valor: string): string {
     return valor
+      .trim()
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }
