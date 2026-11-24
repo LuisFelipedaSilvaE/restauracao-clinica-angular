@@ -159,7 +159,7 @@ export class TriagemDetalhada {
     const config: Record<string, string> = {
       agendada: 'info',
       pendente: 'warn',
-      atrasada: 'error',
+      atrasada: 'danger',
       concluida: 'success',
       cancelada: 'secondary',
     };
