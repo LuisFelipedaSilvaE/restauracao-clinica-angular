@@ -312,8 +312,13 @@
           <form-field
             label="Valor da mensalidade"
             inputId="valorMensalidade"
-            required
+            [required]="convenioSelecionado()?.pagamento !== false"
             [errorMessage]="getErrorMessage('valorMensalidade')"
+            [hint]="
+              convenioSelecionado()?.pagamento === false
+                ? 'Convênio isento de mensalidade.'
+                : ''
+            "
           >
             <p-inputnumber
               inputId="valorMensalidade"
@@ -324,7 +329,6 @@
               locale="pt-BR"
               [minFractionDigits]="2"
               [maxFractionDigits]="2"
-              [readonly]="convenioSelecionado()?.pagamento === false"
               [invalid]="isInvalid('valorMensalidade')"
               placeholder="R$ 0,00"
               autocomplete="off"

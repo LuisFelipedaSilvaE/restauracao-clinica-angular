@@ -569,15 +569,17 @@ export class InternacaoForm implements OnInit {
     const convenio = this.convenios().find((item) => item.id === convenioId);
     const control = this.internacaoForm.controls.valorMensalidade;
 
-    if (convenio?.pagamento) {
-      control.setValidators([Validators.required, Validators.min(0.01), Validators.max(1_000_000)]);
-      if (!preservarValor && control.value === 0) control.setValue(null);
-    } else {
+    if (convenio?.pagamento === false) {
       control.setValidators([Validators.required, Validators.min(0), Validators.max(0)]);
-      if (!preservarValor || control.value === null) control.setValue(0);
+      if (!preservarValor || control.value === null) control.setValue(0, { emitEvent: false });
+      control.disable({ emitEvent: false });
+    } else {
+      control.setValidators([Validators.required, Validators.min(0.01), Validators.max(1_000_000)]);
+      if (!preservarValor && control.value === 0) control.setValue(null, { emitEvent: false });
+      control.enable({ emitEvent: false });
     }
 
-    control.updateValueAndValidity();
+    control.updateValueAndValidity({ emitEvent: false });
   }
 
   private falhaAoCarregar(): void {
