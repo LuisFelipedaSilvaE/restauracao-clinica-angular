@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   LucideBriefcase,
@@ -67,6 +67,7 @@ export class CargosLista implements OnInit {
   protected readonly skeletonCards = Array.from({ length: 6 });
   protected readonly busca = signal('');
   protected readonly situacaoSelecionada = signal<'todos' | 'ativos' | 'inativos'>('todos');
+  protected readonly first = signal(0);
   protected readonly situacoes = [
     { name: 'Todas as situações', code: 'todos' },
     { name: 'Ativos', code: 'ativos' },
@@ -131,6 +132,14 @@ export class CargosLista implements OnInit {
     const acao = this.acaoPendente();
     return acao?.tipo === 'status' && acao.dados.ativo ? 'success' : 'danger';
   });
+
+  constructor() {
+    effect(() => {
+      this.busca();
+      this.situacaoSelecionada();
+      this.first.set(0);
+    });
+  }
 
   ngOnInit(): void {
     this.cargosService.getAllCargos().subscribe();
@@ -200,8 +209,10 @@ export class CargosLista implements OnInit {
 
   private normalizarTexto(valor: string): string {
     return valor
+      .trim()
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }

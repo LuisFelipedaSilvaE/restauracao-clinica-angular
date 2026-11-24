@@ -130,6 +130,8 @@
         [value]="funcionariosCardsFiltrados()"
         [paginator]="true"
         [rows]="10"
+        [first]="first()"
+        (onPage)="first.set($event.first)"
         layout="list"
         [pt]="dataviewPt"
       >

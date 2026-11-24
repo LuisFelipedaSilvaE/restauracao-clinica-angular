@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import {
   LucideBriefcase,
@@ -71,33 +71,33 @@ export class FuncionariosLista implements OnInit {
   protected readonly painelCargos = signal<AccordionValue>(null);
   protected readonly totalCargos = computed(() => this.cargosService.cargos().length);
   protected readonly funcionariosCardsFiltrados = computed<FuncionarioCardContent[]>(() => {
-    const busca = (this.busca() || '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+    const busca = this.normalizarTexto(this.busca());
+    const buscaNumerica = /[a-z]/i.test(busca) ? '' : busca.replace(/\D/g, '');
     const statusFiltro = this.statusSelecionado();
     const mesFiltro = this.mesSelecionado() === 'todos' ? null : Number(this.mesSelecionado());
     const cargoFiltro =
-      this.cargoSelecionado() === 'todos' ? null : this.cargoSelecionado().toLowerCase();
+      this.cargoSelecionado() === 'todos'
+        ? null
+        : this.normalizarTexto(this.cargoSelecionado());
 
     const funcionariosFiltrados: Funcionario[] = this.funcionarios().filter((funcionario) => {
-      const nome = funcionario.nome.toLowerCase().replace(/\s/g, '');
-      const cpf = funcionario.cpf.replace(/\D/g, '') || '';
-      const email =
-        funcionario.email
-          .normalize('NFD')
-          .toLowerCase()
-          .replace(/[\W_\u0300-\u036f]/g, '') || '';
+      const nome = this.normalizarTexto(funcionario.nome);
+      const cpf = funcionario.cpf.replace(/\D/g, '');
+      const email = this.normalizarTexto(funcionario.email);
       const mesAniversario = localDateToDate(funcionario.dataNascimento);
 
       const validBusca =
-        !busca || nome.includes(busca) || cpf.includes(busca) || email.includes(busca);
+        !busca ||
+        nome.includes(busca) ||
+        (Boolean(buscaNumerica) && cpf.includes(buscaNumerica)) ||
+        email.includes(busca);
       const validStatus =
         statusFiltro === 'todos' ||
         (statusFiltro === 'ativo' ? funcionario.ativo : !funcionario.ativo);
       const validMes = mesFiltro === null || mesAniversario.getMonth() === mesFiltro;
       const validCargo =
-        cargoFiltro === null || funcionario.cargo?.nome.toLowerCase().includes(cargoFiltro);
+        cargoFiltro === null ||
+        this.normalizarTexto(funcionario.cargo?.nome).includes(cargoFiltro);
 
       return validBusca && validStatus && validMes && validCargo;
     });
@@ -150,10 +150,21 @@ export class FuncionariosLista implements OnInit {
   protected readonly cargoSelecionado = signal('todos');
   protected readonly statusSelecionado = signal('todos');
   protected readonly mesSelecionado = signal('todos');
+  protected readonly first = signal(0);
   protected readonly dialogConfirmVisible = signal<boolean>(false);
   protected readonly acaoPendente = signal<AcaoPendente | null>(null);
   protected readonly loading = this.funcionariosService.loading;
   protected readonly skeletonCards = Array.from({ length: 10 });
+
+  constructor() {
+    effect(() => {
+      this.busca();
+      this.cargoSelecionado();
+      this.statusSelecionado();
+      this.mesSelecionado();
+      this.first.set(0);
+    });
+  }
 
   ngOnInit(): void {
     this.funcionariosService.getAllFuncionarios().subscribe();
@@ -239,5 +250,14 @@ export class FuncionariosLista implements OnInit {
     this.cargoSelecionado.set('todos');
     this.statusSelecionado.set('todos');
     this.mesSelecionado.set('todos');
+  }
+
+  private normalizarTexto(valor?: string | null): string {
+    return (valor ?? '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }
