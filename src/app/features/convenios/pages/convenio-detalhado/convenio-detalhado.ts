@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import {
   LucideCheck,
   LucideDoorOpen,
@@ -114,26 +114,11 @@ export class ConvenioDetalhado implements OnInit {
     this.carregando.set(true);
 
     forkJoin({
-      convenio: this.conveniosService
-        .getAllConvenios()
-        .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico))),
+      convenio: this.conveniosService.getConvenioById(idNumerico),
       acolhidosAtivos: this.internacoesService.countInternacoesAtivasByConvenio(idNumerico),
     }).subscribe({
       next: ({ convenio, acolhidosAtivos }) => {
         this.carregando.set(false);
-
-        if (!convenio) {
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Convênio não encontrado',
-            detail: 'O registro solicitado não existe ou foi removido.',
-            life: 4000,
-          });
-
-          this.voltarParaLista();
-          return;
-        }
-
         this.convenio.set(convenio);
         this.acolhidosAtivos.set(acolhidosAtivos);
       },

@@ -81,6 +81,14 @@ export class ConveniosService {
     );
   }
 
+  getConvenioById(id: number): Observable<Convenio> {
+    this.setLoading('detail', true);
+
+    return this.http
+      .get<Convenio>(`${this.baseAPIUrl}/${id}`)
+      .pipe(finalize(() => this.setLoading('detail', false)));
+  }
+
   createConvenio(convenio: ConvenioRequest): Observable<Convenio> {
     this.setLoading('mutation', true);
 

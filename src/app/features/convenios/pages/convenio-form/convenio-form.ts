@@ -154,19 +154,11 @@ export class ConvenioForm implements OnInit {
     this.carregando.set(true);
 
     forkJoin({
-      convenio: this.conveniosService
-        .getAllConvenios()
-        .pipe(map((lista) => lista.find((convenio) => convenio.id === idNumerico))),
+      convenio: this.conveniosService.getConvenioById(idNumerico),
       acolhidosAtivos: this.internacoesService.countInternacoesAtivasByConvenio(idNumerico),
     }).subscribe({
       next: ({ convenio, acolhidosAtivos }) => {
         this.carregando.set(false);
-
-        if (!convenio) {
-          this.convenioNaoEncontrado();
-          return;
-        }
-
         this.acolhidosAtivos.set(acolhidosAtivos);
         const maxVagasControl = this.convenioForm.controls.maxVagas;
         maxVagasControl.setValidators([
@@ -203,17 +195,6 @@ export class ConvenioForm implements OnInit {
     if (valor.length !== 14) return valor;
 
     return `${valor.slice(0, 2)}.${valor.slice(2, 5)}.${valor.slice(5, 8)}/${valor.slice(8, 12)}-${valor.slice(12)}`;
-  }
-
-  private convenioNaoEncontrado(): void {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Convênio não encontrado',
-      detail: 'O registro solicitado não existe ou foi removido.',
-      life: 4000,
-    });
-
-    this.voltarParaLista();
   }
 
   protected isInvalid(controlName: string): boolean {
