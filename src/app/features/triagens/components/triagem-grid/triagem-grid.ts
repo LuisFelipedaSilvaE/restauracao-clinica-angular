@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideCalendarClock,
@@ -71,7 +71,23 @@ export class TriagemGrid {
 
     return config[this.statusSelecionado() as keyof typeof config] ?? config.AGENDADA;
   });
+  protected readonly first = signal(0);
   protected readonly skeletonCards = Array.from({ length: 10 });
+
+  constructor() {
+    let chaveAnterior: string | undefined;
+
+    effect(() => {
+      const chaveAtual = `${this.triagens()
+        .map((triagem) => triagem.id)
+        .join(',')}|${this.statusSelecionado()}`;
+
+      if (chaveAtual === chaveAnterior) return;
+
+      chaveAnterior = chaveAtual;
+      this.first.set(0);
+    });
+  }
   protected readonly dataviewPt = {
     root: {
       class: 'flex! flex-col gap-2',

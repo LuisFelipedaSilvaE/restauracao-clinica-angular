@@ -179,32 +179,25 @@ export class TriagensLista implements OnInit {
     return 'success';
   });
   protected readonly triagensFiltradas = computed<Triagem[]>(() => {
-    const busca = (this.busca() || '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+    const busca = this.normalizarTexto(this.busca());
+    const buscaNumerica = /[a-z]/i.test(busca) ? '' : busca.replace(/\D/g, '');
 
     const convenioFiltro = this.convenioSelecionado();
     const rangeDataFiltro = this.rangeDataSelecionado();
     const statusFiltro = this.statusSelecionado();
 
     const triagensFiltradas: Triagem[] = this.triagens().filter((triagem) => {
-      const nome =
-        triagem.nomePossivelAcolhido
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\W_\u0300-\u036f]/g, '') || '';
+      const nome = this.normalizarTexto(triagem.nomePossivelAcolhido);
 
-      const telefone = triagem.telefone.replace(/\D/g, '') || '';
+      const telefone = triagem.telefone.replace(/\D/g, '');
 
-      const convenioDesc =
-        triagem.convenio.descricao
-          .normalize('NFD')
-          .toLowerCase()
-          .replace(/[\W_\u0300-\u036f]/g, '') || '';
+      const convenioDesc = this.normalizarTexto(triagem.convenio.descricao);
 
       const validBusca =
-        !busca || nome.includes(busca) || telefone.includes(busca) || convenioDesc.includes(busca);
+        !busca ||
+        nome.includes(busca) ||
+        (Boolean(buscaNumerica) && telefone.includes(buscaNumerica)) ||
+        convenioDesc.includes(busca);
 
       const convenioValido =
         convenioFiltro === 'todos' || triagem.convenio.id === Number(convenioFiltro);
@@ -408,5 +401,14 @@ export class TriagensLista implements OnInit {
         });
       },
     });
+  }
+
+  private normalizarTexto(valor?: string | null): string {
+    return (valor ?? '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }

@@ -7,6 +7,8 @@
     [paginator]="!loading()"
     [attr.aria-busy]="loading()"
     [rows]="10"
+    [first]="first()"
+    (onPage)="first.set($event.first)"
     layout="list"
     [pt]="dataviewPt"
   >
