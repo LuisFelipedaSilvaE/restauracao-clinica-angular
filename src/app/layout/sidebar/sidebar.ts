@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { Logo } from '../../shared/components/logo/logo';
 import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/services/auth-service';
@@ -11,7 +12,15 @@ import { isNavigationRouteActive, navigationRoutesForRole } from '../navigation-
 
 @Component({
   selector: 'app-sidebar',
-  imports: [LucideDynamicIcon, LucideLogOut, Logo, ButtonModule, RouterModule, ProfileColor],
+  imports: [
+    LucideDynamicIcon,
+    LucideLogOut,
+    Logo,
+    ButtonModule,
+    DividerModule,
+    RouterModule,
+    ProfileColor,
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })

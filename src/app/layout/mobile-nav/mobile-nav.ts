@@ -17,6 +17,7 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
 import { AuthService } from '../../core/services/auth-service';
 import { ProfileColor } from '../../shared/directives/profile-color';
 import { isNavigationRouteActive, navigationRoutesForRole } from '../navigation-routes';
@@ -29,6 +30,7 @@ import { isNavigationRouteActive, navigationRoutesForRole } from '../navigation-
     CommonModule,
     RouterModule,
     ButtonModule,
+    DividerModule,
     LucideDynamicIcon,
     LucideLogOut,
     ProfileColor,
