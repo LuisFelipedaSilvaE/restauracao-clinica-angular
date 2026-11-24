@@ -68,6 +68,7 @@ export class Internacoes {
   protected readonly historico = computed(() =>
     this.internacoes().filter((internacao) => !internacao.ativo),
   );
+  protected readonly ultimasInternacoes = computed(() => this.historico().slice(0, 5));
   protected readonly skeletonHistorico = Array.from({ length: 3 });
 
   protected etapaConfig(internacao: Internacao) {

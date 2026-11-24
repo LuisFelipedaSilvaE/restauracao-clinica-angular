@@ -178,7 +178,7 @@
     >
       @if (historico().length > 0) {
         <div role="list" aria-label="Histórico de internações" class="flex min-w-0 flex-col gap-2">
-          @for (internacao of historico(); track internacao.id) {
+          @for (internacao of ultimasInternacoes(); track internacao.id) {
             <article
               role="listitem"
               class="grid min-w-0 gap-4 rounded-xl border border-border-default p-4 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))_auto] lg:items-center"
@@ -284,6 +284,18 @@
             </article>
           }
         </div>
+        @if (historico().length > 5) {
+          <div
+            class="mt-3 flex flex-col gap-2 border-t border-border-default pt-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p class="text-xs text-content-secondary">
+              Exibindo as 5 internações mais recentes de {{ historico().length }}.
+            </p>
+            <a pButton severity="secondary" [outlined]="true" size="small" routerLink="/internacoes">
+              <span pButtonLabel>Ver todas em Internações</span>
+            </a>
+          </div>
+        }
       } @else {
         <div class="flex items-center gap-3 py-2">
           <span
