@@ -1,0 +1,64 @@
+<div
+  role="search"
+  aria-label="Filtros da listagem"
+  class="flex flex-wrap items-center gap-2 rounded-xl border border-border-default bg-surface-card p-4"
+>
+  <p-iconfield class="min-w-70 basis-full grow md:basis-[55%]">
+    <p-inputicon>
+      <svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+    </p-inputicon>
+    <input
+      aria-label="Buscar convênio por descrição"
+      autocomplete="off"
+      pInputText
+      [ngModel]="busca()"
+      (ngModelChange)="buscaChange.emit($event)"
+      placeholder="Buscar por descrição do convênio..."
+      class="w-full placeholder:text-sm"
+    />
+  </p-iconfield>
+
+  <p-iconfield class="min-w-56 basis-56 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideHandCoins class="h-4.5 w-4.5" aria-hidden="true" focusable="false"></svg>
+    </p-inputicon>
+    <p-select
+      ariaLabel="Filtrar por obrigatoriedade de pagamento"
+      [options]="pagamentos"
+      [ngModel]="pagamentoSelecionado()"
+      (ngModelChange)="pagamentoSelecionadoChange.emit($event)"
+      optionLabel="name"
+      optionValue="code"
+      placeholder="Pagamento"
+      class="w-full pl-7.5"
+    >
+      <ng-template #selectedItem let-selectedOption>
+        <p class="truncate text-sm">
+          Pagamento: <span>{{ selectedOption.name }}</span>
+        </p>
+      </ng-template>
+    </p-select>
+  </p-iconfield>
+
+  <p-iconfield class="min-w-45 basis-45 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideSlidersHorizontal class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+    </p-inputicon>
+    <p-select
+      ariaLabel="Selecione a situação"
+      [options]="situacoes"
+      [ngModel]="situacaoSelecionada()"
+      (ngModelChange)="situacaoSelecionadaChange.emit($event)"
+      optionLabel="name"
+      optionValue="code"
+      placeholder="Selecione a situação"
+      class="w-full pl-7.5"
+    >
+      <ng-template #selectedItem let-selectedOption>
+        <p class="truncate text-sm">
+          Situação: <span>{{ selectedOption.name }}</span>
+        </p>
+      </ng-template>
+    </p-select>
+  </p-iconfield>
+</div>

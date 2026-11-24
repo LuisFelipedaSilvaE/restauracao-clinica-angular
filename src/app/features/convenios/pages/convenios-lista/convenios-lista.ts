@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import {
   LucideDoorOpen,
   LucideFolderX,
+  LucideFunnelX,
   LucideLayers,
   LucideLayoutGrid,
   LucidePlus,
+  LucideSearchX,
   LucideUsersRound,
 } from '@lucide/angular';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +15,11 @@ import { InfoCardContent } from '../../../../shared/interfaces/info-card-content
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
 import { ConvenioCardContent } from '../../interfaces/convenio-card-content';
 import { ConvenioCard } from '../../components/convenio-card/convenio-card';
+import {
+  FilterConveniosCard,
+  PagamentoConvenioFiltro,
+  SituacaoConvenioFiltro,
+} from '../../components/filter-convenios-card/filter-convenios-card';
 import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
 import { ConveniosService } from '../../services/convenios-service';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
@@ -35,9 +42,11 @@ type AcaoPendente =
   imports: [
     ButtonModule,
     LucidePlus,
+    LucideFunnelX,
     InfoCard,
     PageHeader,
     ConvenioCard,
+    FilterConveniosCard,
     EmptyList,
     ConfirmDialog,
     SkeletonModule,
@@ -48,6 +57,7 @@ type AcaoPendente =
 })
 export class ConveniosLista implements OnInit {
   protected readonly emptyConveniosIcon = LucideFolderX;
+  protected readonly emptySearchIcon = LucideSearchX;
   private readonly conveniosService = inject(ConveniosService);
   private readonly internacoesService = inject(InternacoesService);
   private readonly messageService = inject(MessageService);
@@ -56,12 +66,36 @@ export class ConveniosLista implements OnInit {
   private readonly acolhidosAtivosPorConvenio = signal<Record<number, number>>({});
   private readonly carregandoContagens = signal(false);
 
+  protected readonly busca = signal('');
+  protected readonly situacaoSelecionada = signal<SituacaoConvenioFiltro>('todos');
+  protected readonly pagamentoSelecionado = signal<PagamentoConvenioFiltro>('todos');
+
   protected readonly convenios = computed<ConvenioCardContent[]>(() => {
     return this.conveniosService.convenios().map((convenio) => {
       return {
         ...convenio,
         acolhidosAtivos: this.acolhidosAtivosPorConvenio()[convenio.id] ?? 0,
       };
+    });
+  });
+
+  protected readonly conveniosFiltrados = computed<ConvenioCardContent[]>(() => {
+    const busca = this.normalizarTexto(this.busca());
+    const situacao = this.situacaoSelecionada();
+    const pagamento = this.pagamentoSelecionado();
+
+    return this.convenios().filter((convenio) => {
+      const correspondeBusca = !busca || this.normalizarTexto(convenio.descricao).includes(busca);
+      const correspondeSituacao =
+        situacao === 'todos' ||
+        (situacao === 'ativos' && convenio.ativo) ||
+        (situacao === 'inativos' && !convenio.ativo);
+      const correspondePagamento =
+        pagamento === 'todos' ||
+        (pagamento === 'obrigatorio' && convenio.pagamento) ||
+        (pagamento === 'nao_obrigatorio' && !convenio.pagamento);
+
+      return correspondeBusca && correspondeSituacao && correspondePagamento;
     });
   });
 
@@ -198,5 +232,20 @@ export class ConveniosLista implements OnInit {
           );
         },
       });
+  }
+
+  protected clearFilters(): void {
+    this.busca.set('');
+    this.situacaoSelecionada.set('todos');
+    this.pagamentoSelecionado.set('todos');
+  }
+
+  private normalizarTexto(valor: string): string {
+    return valor
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 }
