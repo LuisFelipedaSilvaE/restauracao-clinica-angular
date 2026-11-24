@@ -17,7 +17,18 @@
 </div>
 
 @if (loading().list || medicamentos().length > 0) {
-  <medicamento-grid [medicamentos]="medicamentos()" [loading]="loading().list" />
+  <div class="flex flex-col gap-8">
+    <filter-medicamentos-card
+      [(busca)]="busca"
+      [(estoqueSelecionado)]="estoqueSelecionado"
+    />
+
+    <medicamento-grid
+      [medicamentos]="medicamentosFiltrados()"
+      [loading]="loading().list"
+      (limparFiltros)="clearFilters()"
+    />
+  </div>
 } @else {
   <empty-list
     [icon]="emptyMedicamentosIcon"

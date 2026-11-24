@@ -6,6 +6,8 @@
   [paginator]="!loading()"
   [attr.aria-busy]="loading()"
   [rows]="10"
+  [first]="first()"
+  (onPage)="first.set($event.first)"
   layout="list"
   [pt]="dataviewPt"
 >
@@ -65,7 +67,7 @@
             </div>
           }
         } @else {
-          @for (medicamento of items; track $index) {
+          @for (medicamento of items; track medicamento.id) {
             <medicamento-card
               role="listitem"
               [medicamento]="medicamento"
@@ -82,8 +84,16 @@
     <empty-list
       [icon]="emptySearchIcon"
       title="Nenhum medicamento encontrado"
-      description="Não há medicamentos para exibir."
+      description="Não encontramos resultados para os filtros aplicados. Tente ajustar os termos da busca ou limpar os filtros."
     >
+      <p-button
+        severity="secondary"
+        [text]="true"
+        (onClick)="limparFiltros.emit()"
+        label="Limpar filtros"
+      >
+        <svg lucideFunnelX class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+      </p-button>
     </empty-list>
   </ng-template>
 </p-dataview>

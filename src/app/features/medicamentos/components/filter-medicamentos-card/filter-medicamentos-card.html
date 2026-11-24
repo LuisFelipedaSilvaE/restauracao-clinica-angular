@@ -1,0 +1,42 @@
+<div
+  role="search"
+  aria-label="Filtros da listagem"
+  class="flex flex-wrap items-center gap-2 rounded-xl border border-border-default bg-surface-card p-4"
+>
+  <p-iconfield class="min-w-70 basis-full grow md:basis-[65%]">
+    <p-inputicon>
+      <svg lucideSearch class="h-4 w-4" aria-hidden="true" focusable="false"></svg>
+    </p-inputicon>
+    <input
+      aria-label="Buscar medicamento por nome"
+      autocomplete="off"
+      pInputText
+      [ngModel]="busca()"
+      (ngModelChange)="buscaChange.emit($event)"
+      placeholder="Buscar por nome do medicamento..."
+      class="w-full placeholder:text-sm"
+    />
+  </p-iconfield>
+
+  <p-iconfield class="min-w-56 basis-56 grow">
+    <p-inputicon class="absolute left-3 top-1/2 z-10 mt-0! flex -translate-y-1/2 items-center">
+      <svg lucideSlidersHorizontal class="h-5 w-5" aria-hidden="true" focusable="false"></svg>
+    </p-inputicon>
+    <p-select
+      ariaLabel="Filtrar por situação do estoque"
+      [options]="opcoesEstoque"
+      [ngModel]="estoqueSelecionado()"
+      (ngModelChange)="estoqueSelecionadoChange.emit($event)"
+      optionLabel="name"
+      optionValue="code"
+      placeholder="Selecione o estoque"
+      class="w-full pl-7.5"
+    >
+      <ng-template #selectedItem let-selectedOption>
+        <p class="truncate text-sm">
+          Estoque: <span>{{ selectedOption.name }}</span>
+        </p>
+      </ng-template>
+    </p-select>
+  </p-iconfield>
+</div>

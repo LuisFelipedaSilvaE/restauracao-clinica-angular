@@ -1,6 +1,7 @@
-import { Component, inject, input, output, signal } from '@angular/core';
-import { LucideSearchX } from '@lucide/angular';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { LucideFunnelX, LucideSearchX } from '@lucide/angular';
 import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -14,11 +15,13 @@ import { AuthService } from '../../../../core/services/auth-service';
 @Component({
   selector: 'medicamento-grid',
   imports: [
+    ButtonModule,
     DataViewModule,
     MedicamentoCard,
     DialogMovimentacaoMedicamento,
     ConfirmDialog,
     EmptyList,
+    LucideFunnelX,
     SkeletonModule,
   ],
   templateUrl: './medicamento-grid.html',
@@ -32,6 +35,7 @@ export class MedicamentoGrid {
   protected readonly isAdmin = this.authService.hasRole('ADMIN');
   readonly loading = input(false);
   readonly limparFiltros = output<void>();
+  protected readonly first = signal(0);
   protected readonly dialogVisible = signal<boolean>(false);
   protected readonly confirmarExclusao = signal<boolean>(false);
   protected readonly typeMovimentacao = signal<'entrada' | 'saida' | null>(null);
@@ -51,6 +55,21 @@ export class MedicamentoGrid {
       },
     },
   };
+
+  constructor() {
+    let chaveAnterior: string | undefined;
+
+    effect(() => {
+      const chaveAtual = this.medicamentos()
+        .map((medicamento) => medicamento.id)
+        .join(',');
+
+      if (chaveAtual === chaveAnterior) return;
+
+      chaveAnterior = chaveAtual;
+      this.first.set(0);
+    });
+  }
 
   aumentarQuantidadeEstoque(medicamento: Medicamento): void {
     this.movimentar('entrada', medicamento);
