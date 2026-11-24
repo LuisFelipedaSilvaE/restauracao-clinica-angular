@@ -76,9 +76,33 @@ export class Pagamentos {
   protected readonly internacaoAtualIsenta = computed(() =>
     this.internacoesTotais().some((internacao) => internacao.ativo && !internacao.convenio.pagamento),
   );
+  private readonly pagamentosCarregadosIds = signal<Set<number>>(new Set());
+  private readonly carregandoPagamentosIds = signal<Set<number>>(new Set());
+  private readonly erroPagamentosIds = signal<Set<number>>(new Set());
+  private readonly resumosCarregadosIds = signal<Set<number>>(new Set());
+  private ultimaChaveTotais: string | null = null;
+
+  private readonly pagamentosPorInternacao = computed(() => {
+    const grupos = new Map<number, Pagamento[]>();
+
+    for (const internacao of this.internacoesTotais()) {
+      grupos.set(internacao.id, []);
+    }
+
+    for (const pagamento of this.pagamentosService.pagamentos()) {
+      grupos.get(pagamento.internacaoId)?.push(pagamento);
+    }
+
+    return grupos;
+  });
+
   protected readonly internacoes = computed(() =>
     [...this.internacoesTotais()]
-      .filter((internacao) => internacao.convenio.pagamento)
+      .filter(
+        (internacao) =>
+          internacao.convenio.pagamento ||
+          (this.pagamentosPorInternacao().get(internacao.id)?.length ?? 0) > 0,
+      )
       .sort((a, b) => {
         if (a.ativo !== b.ativo) return a.ativo ? -1 : 1;
 
@@ -89,18 +113,26 @@ export class Pagamentos {
   protected readonly internacoesPaginadas = computed(() =>
     this.internacoes().slice(this.primeiroIndice(), this.primeiroIndice() + this.rowsPorPagina),
   );
-  private readonly internacaoIdsChave = computed(() =>
-    this.internacoes()
+  private readonly internacaoTotaisIdsChave = computed(() =>
+    this.internacoesTotais()
       .map((internacao) => internacao.id)
       .join(','),
   );
-  private readonly pagamentosCarregadosIds = signal<Set<number>>(new Set());
-  private readonly carregandoPagamentosIds = signal<Set<number>>(new Set());
-  private readonly erroPagamentosIds = signal<Set<number>>(new Set());
-  private readonly resumosCarregadosIds = signal<Set<number>>(new Set());
-  private ultimaChaveAccordion: string | null = null;
 
   protected readonly loading = computed(() => this.outletData().loading);
+  protected readonly verificandoIsentas = computed(
+    () =>
+      !this.loading() &&
+      this.internacoesTotais().some(
+        (internacao) =>
+          !internacao.convenio.pagamento &&
+          !this.pagamentosCarregadosIds().has(internacao.id) &&
+          !this.erroPagamentosIds().has(internacao.id),
+      ),
+  );
+  protected readonly carregandoSecao = computed(
+    () => this.loading() || this.verificandoIsentas(),
+  );
   protected readonly mutationLoading = computed(() => this.pagamentosService.loading().mutation);
   protected readonly pagamentosIcon = LucideWalletCards;
   protected readonly emptyInternacoesIcon = LucideReceiptText;
@@ -126,25 +158,11 @@ export class Pagamentos {
     },
   };
 
-  private readonly pagamentosPorInternacao = computed(() => {
-    const grupos = new Map<number, Pagamento[]>();
-
-    for (const internacao of this.internacoes()) {
-      grupos.set(internacao.id, []);
-    }
-
-    for (const pagamento of this.pagamentosService.pagamentos()) {
-      grupos.get(pagamento.internacaoId)?.push(pagamento);
-    }
-
-    return grupos;
-  });
-
   private readonly resumos = computed(() => {
     const resumosBackend = this.pagamentosService.resumos();
     const resumos = new Map<number, ResumoInternacao>();
 
-    for (const internacao of this.internacoes()) {
+    for (const internacao of this.internacoesTotais()) {
       const ativos = (this.pagamentosPorInternacao().get(internacao.id) ?? []).filter(
         (pagamento) => pagamento.status === StatusPagamento.ATIVO,
       );
@@ -166,16 +184,72 @@ export class Pagamentos {
 
   constructor() {
     effect(() => {
-      const chave = this.internacaoIdsChave();
-      if (chave === this.ultimaChaveAccordion) return;
+      const chave = this.internacaoTotaisIdsChave();
+      if (chave === this.ultimaChaveTotais) return;
 
-      this.ultimaChaveAccordion = chave;
+      this.ultimaChaveTotais = chave;
       this.primeiroIndice.set(0);
       this.internacaoAberta.set(null);
       this.pagamentosCarregadosIds.set(new Set());
       this.carregandoPagamentosIds.set(new Set());
       this.erroPagamentosIds.set(new Set());
       this.resumosCarregadosIds.set(new Set());
+    });
+
+    effect((onCleanup) => {
+      if (this.outletData().loading) return;
+
+      const carregados = untracked(() => this.pagamentosCarregadosIds());
+      const emCarregamento = untracked(() => this.carregandoPagamentosIds());
+      const comErro = untracked(() => this.erroPagamentosIds());
+
+      const isentasPendentes = this.internacoesTotais()
+        .filter((internacao) => !internacao.convenio.pagamento)
+        .map((internacao) => internacao.id)
+        .filter(
+          (id) => !carregados.has(id) && !emCarregamento.has(id) && !comErro.has(id),
+        );
+
+      if (isentasPendentes.length === 0) return;
+
+      this.carregandoPagamentosIds.update((atuais) => {
+        const proximo = new Set(atuais);
+        for (const id of isentasPendentes) proximo.add(id);
+        return proximo;
+      });
+
+      const subscription = forkJoin(
+        isentasPendentes.map((internacaoId) =>
+          this.pagamentosService.getPagamentosByInternacaoId(internacaoId),
+        ),
+      )
+        .pipe(
+          finalize(() => {
+            this.carregandoPagamentosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              for (const id of isentasPendentes) proximo.delete(id);
+              return proximo;
+            });
+          }),
+        )
+        .subscribe({
+          next: () => {
+            this.pagamentosCarregadosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              for (const id of isentasPendentes) proximo.add(id);
+              return proximo;
+            });
+          },
+          error: () => {
+            this.erroPagamentosIds.update((atuais) => {
+              const proximo = new Set(atuais);
+              for (const id of isentasPendentes) proximo.add(id);
+              return proximo;
+            });
+          },
+        });
+
+      onCleanup(() => subscription.unsubscribe());
     });
 
     effect((onCleanup) => {

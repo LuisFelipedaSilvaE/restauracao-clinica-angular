@@ -1,4 +1,4 @@
-@if (loading()) {
+@if (carregandoSecao()) {
   <section class="flex min-w-0 flex-col gap-3" aria-label="Carregando pagamentos" aria-busy="true">
     <span class="sr-only" role="status">Carregando pagamentos...</span>
 
@@ -105,6 +105,13 @@
                     }
                   </div>
 
+                  @if (!internacao.convenio.pagamento) {
+                    <p-message severity="info">
+                      Este convênio não exige pagamento. O histórico abaixo foi mantido apenas para
+                      consulta.
+                    </p-message>
+                  }
+
                   @if (pagamentosDaInternacao(internacao.id).length > 0) {
                     <div
                       class="flex min-w-0 flex-col gap-3 border-t border-border-default pt-6 pb-3 sm:flex-row sm:items-center sm:justify-between"
@@ -113,7 +120,7 @@
                         Pagamentos registrados
                       </h3>
 
-                      @if (internacao.ativo) {
+                      @if (internacao.ativo && internacao.convenio.pagamento) {
                         <p-button
                           class="w-full sm:w-auto"
                           styleClass="w-full sm:w-auto"
@@ -180,7 +187,7 @@
                           : 'Esta internação foi encerrada sem pagamentos registrados.'
                       "
                     >
-                      @if (internacao.ativo) {
+                      @if (internacao.ativo && internacao.convenio.pagamento) {
                         <p-button
                           label="Registrar primeiro pagamento"
                           [disabled]="mutationLoading()"
