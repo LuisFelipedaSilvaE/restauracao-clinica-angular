@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideBedSingle,
@@ -129,6 +129,7 @@ export class InternacoesLista implements OnInit {
   protected readonly convenioSelecionado = signal('todos');
   protected readonly etapaTratamentoSelecionada = signal('todos');
   protected readonly periodoEntradaSelecionado = signal<Date[] | null>(null);
+  protected readonly first = signal(0);
   protected readonly internacaoSelecionada = signal<Internacao | null>(null);
   protected readonly internacaoParaExclusao = signal<{ id: number; nome: string } | null>(null);
   protected readonly registrarAltaVisible = signal(false);
@@ -158,8 +159,19 @@ export class InternacoesLista implements OnInit {
     })),
   ];
 
+  constructor() {
+    effect(() => {
+      this.busca();
+      this.convenioSelecionado();
+      this.etapaTratamentoSelecionada();
+      this.periodoEntradaSelecionado();
+      this.first.set(0);
+    });
+  }
+
   protected readonly internacoesCardsFiltradas = computed<InternacaoCardContent[]>(() => {
     const busca = this.normalizarTexto(this.busca());
+    const buscaNumerica = /[a-z]/i.test(busca) ? '' : busca.replace(/\D/g, '');
     const convenioFiltro =
       this.convenioSelecionado() === 'todos' ? null : this.convenioSelecionado();
     const etapaFiltro =
@@ -172,8 +184,8 @@ export class InternacoesLista implements OnInit {
       const correspondeBusca =
         !busca ||
         this.normalizarTexto(internacao.acolhido.nome).includes(busca) ||
-        internacao.acolhido.cpf.replace(/\D/g, '').includes(busca) ||
-        this.normalizarTexto(internacao.acolhido.email).includes(busca);
+        (Boolean(buscaNumerica) &&
+          internacao.acolhido.cpf.replace(/\D/g, '').includes(buscaNumerica));
       const correspondeConvenio =
         convenioFiltro === null || String(internacao.convenio.id) === convenioFiltro;
       const correspondeEtapa = etapaFiltro === null || internacao.etapaTratamento === etapaFiltro;
@@ -259,9 +271,11 @@ export class InternacoesLista implements OnInit {
 
   private normalizarTexto(valor: string): string {
     return valor
+      .trim()
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\W_\u0300-\u036f]/g, '');
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
   }
 
   private dataDentroDoIntervalo(data: string, inicio: Date, fim: Date): boolean {
