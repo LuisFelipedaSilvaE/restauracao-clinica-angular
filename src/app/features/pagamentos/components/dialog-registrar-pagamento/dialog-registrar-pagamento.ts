@@ -82,10 +82,13 @@ export class DialogRegistrarPagamento {
   protected readonly dataEntrada = computed(() => localDateToDate(this.internacao().dataEntrada));
   protected readonly dataMaximaPagamento = computed(() => {
     const hoje = new Date();
+    hoje.setHours(23, 59, 59, 999);
+
     const dataSaida = this.internacao().dataSaida;
     if (!dataSaida) return hoje;
 
     const saida = localDateToDate(dataSaida);
+    saida.setHours(23, 59, 59, 999);
     return saida.getTime() < hoje.getTime() ? saida : hoje;
   });
   protected readonly contextIcon = LucideWalletCards;
