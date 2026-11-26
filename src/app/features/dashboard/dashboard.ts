@@ -26,7 +26,9 @@ import { forkJoin } from 'rxjs';
 import { Card } from '../../shared/components/card/card';
 import { InfoCard } from '../../shared/components/info-card/info-card';
 import { InfoCardContent } from '../../shared/interfaces/info-card-content';
+import { dateToLocalDate } from '../../shared/utils/local-date';
 import { ConveniosService } from '../convenios/services/convenios-service';
+import { EtapaTratamento } from '../internacoes/enums/etapa-tratamento';
 import { Internacao } from '../internacoes/interfaces/internacao';
 import { InternacoesService } from '../internacoes/services/internacoes-service';
 import { StatusTriagem } from '../triagens/enums/status-triagem';
@@ -113,14 +115,10 @@ export class Dashboard implements OnInit {
   );
 
   protected readonly indicadores = computed<InfoCardContent[]>(() => {
-    const relatorioAtivas = this.internacoesService.relatorioAtivasPorConvenio();
-    const relatorioEtapas = this.internacoesService.relatorioEtapasPorConvenio();
     const ativasPorConvenio = this.ativasPorConvenioMap();
+    const contagemPorEtapa = this.internacoesService.reportCountByEtapa();
 
-    const totalInternacoesAtivas = relatorioAtivas.reduce(
-      (total, item) => total + (Number(item.quantidadeAtivas) || 0),
-      0,
-    );
+    const totalInternacoesAtivas = this.internacoesService.reportCountAtivos();
     const vagasDisponiveis = this.conveniosService
       .convenios()
       .filter((convenio) => convenio.ativo)
@@ -134,14 +132,8 @@ export class Dashboard implements OnInit {
         (triagem) =>
           triagem.status === StatusTriagem.AGENDADA || triagem.status === StatusTriagem.ATRASADA,
       ).length;
-    const proximasDaAlta = relatorioEtapas.reduce(
-      (total, item) => total + (Number(item.quantidadeProximoAlta) || 0),
-      0,
-    );
-    const altasVencidas = relatorioEtapas.reduce(
-      (total, item) => total + (Number(item.quantidadeAltaVencida) || 0),
-      0,
-    );
+    const proximasDaAlta = contagemPorEtapa[EtapaTratamento.PROXIMO_ALTA] ?? 0;
+    const altasVencidas = contagemPorEtapa[EtapaTratamento.ALTA_VENCIDA] ?? 0;
 
     return [
       {
@@ -177,23 +169,19 @@ export class Dashboard implements OnInit {
     ];
   });
 
-  protected readonly mesesMovimentacao = computed<MesMovimentacao[]>(() => {
-    const internacoes = this.internacoesService.internacoes();
-    const hoje = new Date();
-    const meses = Array.from({ length: 6 }, (_, indice) => {
-      const data = new Date(hoje.getFullYear(), hoje.getMonth() - (5 - indice), 1);
-      const chave = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+  protected readonly mesesMovimentacao = computed<MesMovimentacao[]>(() =>
+    this.internacoesService.reportMovimentacaoMensal().map((item) => {
+      const data = new Date(item.ano, item.mes - 1, 1);
+      const chave = `${item.ano}-${String(item.mes).padStart(2, '0')}`;
 
       return {
         chave,
         label: new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(data).replace('.', ''),
-        entradas: internacoes.filter((internacao) => internacao.dataEntrada.startsWith(chave))
-          .length,
-        saidas: internacoes.filter((internacao) => internacao.dataSaida?.startsWith(chave)).length,
+        entradas: Number(item.entradas) || 0,
+        saidas: Number(item.saidas) || 0,
       };
-    });
-    return meses;
-  });
+    }),
+  );
 
   protected readonly dadosGrafico = computed<ChartData<'bar'>>(() => ({
     labels: this.mesesMovimentacao().map((mes) => mes.label),
@@ -364,12 +352,25 @@ export class Dashboard implements OnInit {
     this.carregando.set(true);
     this.falhaCarregamento.set(false);
 
+    const hoje = new Date();
+    const inicioMovimentacoes = dateToLocalDate(
+      new Date(hoje.getFullYear(), hoje.getMonth() - 5, 1),
+    );
+    const fimMovimentacoes = dateToLocalDate(new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0));
+
     forkJoin({
       convenios: this.conveniosService.getAllConvenios(forcarAtualizacao),
       internacoes: this.internacoesService.getAllInternacoes(forcarAtualizacao),
       triagens: this.triagensService.getAllTriagens(forcarAtualizacao),
       ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
       etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
+      countAtivos: this.internacoesService.getReportCountAtivos(),
+      proximasDaAlta: this.internacoesService.getReportCountByEtapa(EtapaTratamento.PROXIMO_ALTA),
+      altasVencidas: this.internacoesService.getReportCountByEtapa(EtapaTratamento.ALTA_VENCIDA),
+      movimentacaoMensal: this.internacoesService.getReportMovimentacaoMensal(
+        inicioMovimentacoes,
+        fimMovimentacoes,
+      ),
     }).subscribe({
       next: () => this.carregando.set(false),
       error: () => {
