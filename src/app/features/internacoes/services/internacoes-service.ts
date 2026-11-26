@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { finalize, map, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -7,12 +7,14 @@ import { LoadingType } from '../../../shared/types/loading-type';
 import { localDateToDate } from '../../../shared/utils/local-date';
 import { AcolhidosService } from '../../acolhidos/services/acolhidos-service';
 import { ConveniosService } from '../../convenios/services/convenios-service';
+import { EtapaTratamento } from '../enums/etapa-tratamento';
 import { EtapasTratamentoPorConvenio } from '../interfaces/etapas-tratamento-por-convenio';
 import { Internacao } from '../interfaces/internacao';
 import { InternacaoCreateRequest } from '../interfaces/internacao-create-request';
 import { InternacaoEndRequest } from '../interfaces/internacao-end-request';
 import { InternacaoUpdateRequest } from '../interfaces/internacao-update-request';
 import { InternacoesAtivasPorConvenio } from '../interfaces/internacoes-ativas-por-convenio';
+import { MovimentacaoMensal } from '../interfaces/movimentacao-mensal';
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +50,20 @@ export class InternacoesService {
   private readonly internalRelatorioEtapasPorConvenio = signal<EtapasTratamentoPorConvenio[]>([]);
   readonly relatorioEtapasPorConvenio = this.internalRelatorioEtapasPorConvenio.asReadonly();
 
+  private readonly internalReportCountTotal = signal(0);
+  readonly reportCountTotal = this.internalReportCountTotal.asReadonly();
+
+  private readonly internalReportCountAtivos = signal(0);
+  readonly reportCountAtivos = this.internalReportCountAtivos.asReadonly();
+
+  private readonly internalReportCountByEtapa = signal<Partial<Record<EtapaTratamento, number>>>(
+    {},
+  );
+  readonly reportCountByEtapa = this.internalReportCountByEtapa.asReadonly();
+
+  private readonly internalReportMovimentacaoMensal = signal<MovimentacaoMensal[]>([]);
+  readonly reportMovimentacaoMensal = this.internalReportMovimentacaoMensal.asReadonly();
+
   private readonly internalLoading = signal<Record<LoadingType, boolean>>({
     list: false,
     detail: false,
@@ -62,6 +78,10 @@ export class InternacoesService {
         this.listaCarregada.set(false);
         this.internalRelatorioAtivasPorConvenio.set([]);
         this.internalRelatorioEtapasPorConvenio.set([]);
+        this.internalReportCountTotal.set(0);
+        this.internalReportCountAtivos.set(0);
+        this.internalReportCountByEtapa.set({});
+        this.internalReportMovimentacaoMensal.set([]);
       }
     });
   }
@@ -107,14 +127,49 @@ export class InternacoesService {
 
   getRelatorioAtivasPorConvenio(): Observable<InternacoesAtivasPorConvenio[]> {
     return this.http
-      .get<InternacoesAtivasPorConvenio[]>(`${this.baseAPIUrl}/relatorios/ativas-por-convenio`)
+      .get<InternacoesAtivasPorConvenio[]>(`${this.baseAPIUrl}/report/ativas-por-convenio`)
       .pipe(tap((dados) => this.internalRelatorioAtivasPorConvenio.set(dados)));
   }
 
   getRelatorioEtapasPorConvenio(): Observable<EtapasTratamentoPorConvenio[]> {
     return this.http
-      .get<EtapasTratamentoPorConvenio[]>(`${this.baseAPIUrl}/relatorios/etapas-por-convenio`)
+      .get<EtapasTratamentoPorConvenio[]>(`${this.baseAPIUrl}/report/etapas-por-convenio`)
       .pipe(tap((dados) => this.internalRelatorioEtapasPorConvenio.set(dados)));
+  }
+
+  getReportCountTotal(): Observable<number> {
+    return this.http
+      .get<number>(`${this.baseAPIUrl}/report/count-total`)
+      .pipe(tap((total) => this.internalReportCountTotal.set(Number(total) || 0)));
+  }
+
+  getReportCountAtivos(): Observable<number> {
+    return this.http
+      .get<number>(`${this.baseAPIUrl}/report/count-ativos`)
+      .pipe(tap((total) => this.internalReportCountAtivos.set(Number(total) || 0)));
+  }
+
+  getReportCountByEtapa(stage: EtapaTratamento): Observable<number> {
+    const params = new HttpParams().set('stage', stage);
+
+    return this.http
+      .get<number>(`${this.baseAPIUrl}/report/count-by-etapas`, { params })
+      .pipe(
+        tap((total) =>
+          this.internalReportCountByEtapa.update((atuais) => ({
+            ...atuais,
+            [stage]: Number(total) || 0,
+          })),
+        ),
+      );
+  }
+
+  getReportMovimentacaoMensal(inicio: string, fim: string): Observable<MovimentacaoMensal[]> {
+    const params = new HttpParams().set('inicio', inicio).set('fim', fim);
+
+    return this.http
+      .get<MovimentacaoMensal[]>(`${this.baseAPIUrl}/report/movimentacao-mensal`, { params })
+      .pipe(tap((dados) => this.internalReportMovimentacaoMensal.set(dados)));
   }
 
   createInternacao(internacao: InternacaoCreateRequest): Observable<Internacao> {
