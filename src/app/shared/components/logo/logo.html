@@ -1,8 +1,9 @@
-<div class="flex items-center gap-2" [class]="wrapperClass()">
+<div class="flex items-center gap-3" [class]="wrapperClass()">
   <main-icon [iconClass]="iconClass()" [wrapperClass]="iconWrapperClass()" />
   @if (!hideText()) {
-    <span class="text-lg font-semibold text-content-primary" [class]="textClass()"
-      >Clínica Restauração</span
-    >
+    <span class="min-w-0 text-content-primary" [class]="textClass()">
+      <span class="block text-xs font-medium text-content-secondary">Comunidade Terapêutica</span>
+      <span class="block text-base font-semibold leading-tight">Casa de Acolhida Restauração</span>
+    </span>
   }
 </div>

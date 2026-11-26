@@ -8,8 +8,8 @@ export class PageTitleStrategy extends TitleStrategy {
   readonly announcement = signal('');
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    const title = this.buildTitle(snapshot) ?? 'Clínica Restauração';
-    this.title.setTitle(`${title} | Clínica Restauração`);
+    const title = this.buildTitle(snapshot) ?? 'Casa de Acolhida Restauração';
+    this.title.setTitle(`${title} | Casa de Acolhida Restauração`);
     this.announcement.set(`Página: ${title}`);
   }
 }

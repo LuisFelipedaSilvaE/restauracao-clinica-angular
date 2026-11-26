@@ -1,3 +1,4 @@
+import { MainIcon } from '../../../../shared/components/main-icon/main-icon';
 import { AccessiblePassword } from '../../../../shared/directives/accessible-password';
 import { AutoFocusError } from '../../../../shared/directives/auto-focus-error';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
@@ -20,7 +21,6 @@ import { KeyFilterModule } from 'primeng/keyfilter';
 
 import {
   LucideDynamicIcon,
-  LucideHeartHandshake,
   LucideLock,
   LucideLogIn,
   LucideUser,
@@ -38,6 +38,7 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
   providers: [],
   imports: [
     AccessiblePassword,
+    MainIcon,
     AutoFocusError,
     ReactiveFormsModule,
     InputTextModule,
@@ -50,7 +51,6 @@ import { FormField } from '../../../../shared/components/form-field/form-field';
     FormField,
     ToastModule,
     LucideDynamicIcon,
-    LucideHeartHandshake,
     LucideLock,
     LucideUser,
     LucideLockKeyhole,
