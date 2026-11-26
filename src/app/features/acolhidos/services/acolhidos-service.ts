@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { finalize, forkJoin, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth-service';
 import { LoadingType } from '../../../shared/types/loading-type';
@@ -8,6 +8,12 @@ import { localDateToDate } from '../../../shared/utils/local-date';
 import { ResponsaveisService } from '../../responsaveis/services/responsaveis-service';
 import { Acolhido } from '../interfaces/acolhido';
 import { AcolhidoRequest } from '../interfaces/acolhido-request';
+
+export interface IndicadoresAcolhidos {
+  total: number;
+  ativos: number;
+  inativos: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -38,6 +44,14 @@ export class AcolhidosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  getIndicadores(): Observable<IndicadoresAcolhidos> {
+    return forkJoin({
+      total: this.http.get<number>(`${this.baseAPIUrl}/report/count-all`),
+      ativos: this.http.get<number>(`${this.baseAPIUrl}/report/count-ativos`),
+      inativos: this.http.get<number>(`${this.baseAPIUrl}/report/count-inativos`),
+    });
+  }
 
   constructor() {
     effect(() => {

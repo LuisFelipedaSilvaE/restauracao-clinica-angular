@@ -4,11 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth-service';
 import { CargosService } from '../../cargos/services/cargos-service';
 import { Funcionario } from '../interfaces/funcionario';
-import { finalize, map, Observable, of, switchMap, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { FuncionarioRequest } from '../interfaces/funcionario-request';
 import { LoadingType } from '../../../shared/types/loading-type';
 import { dateToLocalDate } from '../../../shared/utils/local-date';
 import { UsersService } from '../../../core/services/users-service';
+
+export interface IndicadoresFuncionarios {
+  total: number;
+  ativos: number;
+  inativos: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +41,14 @@ export class FuncionariosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  getIndicadores(): Observable<IndicadoresFuncionarios> {
+    return forkJoin({
+      total: this.http.get<number>(`${this.baseAPIUrl}/report/count-all`),
+      ativos: this.http.get<number>(`${this.baseAPIUrl}/report/count-active`),
+      inativos: this.http.get<number>(`${this.baseAPIUrl}/report/count-inactive`),
+    });
+  }
 
   constructor() {
     effect(() => {

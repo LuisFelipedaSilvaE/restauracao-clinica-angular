@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideDoorOpen,
@@ -21,7 +22,7 @@ import {
   SituacaoConvenioFiltro,
 } from '../../components/filter-convenios-card/filter-convenios-card';
 import { ToggleConvenioDto } from '../../interfaces/toggle-convenio-dto';
-import { ConveniosService } from '../../services/convenios-service';
+import { ConveniosService, IndicadoresConvenios } from '../../services/convenios-service';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -29,7 +30,7 @@ import { MessageService } from 'primeng/api';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { AuthService } from '../../../../core/services/auth-service';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, Subscription } from 'rxjs';
 
 type AcaoPendente =
   { tipo: 'status'; dados: ToggleConvenioDto } | { tipo: 'exclusao'; id: number; nome: string };
@@ -99,32 +100,34 @@ export class ConveniosLista implements OnInit {
     });
   });
 
+  private readonly destroyRef = inject(DestroyRef);
+  private indicadoresRequest?: Subscription;
+  private readonly indicadores = signal<IndicadoresConvenios | null>(null);
+
   protected readonly infoConvenios = computed<InfoCardContent[]>(() => {
-    const lista = this.convenios();
-    const vagasTotais = lista.reduce((acc, m) => (m.ativo ? acc + m.maxVagas : acc), 0);
-    const vagasOcupadas = lista.reduce((acc, m) => (m.ativo ? acc + m.acolhidosAtivos : acc), 0);
+    const indicadores = this.indicadores();
 
     return [
       {
-        value: lista.length,
+        value: indicadores?.total ?? '—',
         label: 'Convênios',
         icon: LucideLayoutGrid,
         color: '#e7000b',
       },
       {
-        value: vagasTotais,
+        value: indicadores?.vagasTotais ?? '—',
         label: 'Vagas totais',
         icon: LucideLayers,
         color: '#0084d1',
       },
       {
-        value: vagasOcupadas,
+        value: indicadores?.vagasOcupadas ?? '—',
         label: 'Vagas ocupadas',
         icon: LucideUsersRound,
         color: '#e17100',
       },
       {
-        value: vagasTotais - vagasOcupadas,
+        value: indicadores?.vagasDisponiveis ?? '—',
         label: 'Vagas disponíveis',
         icon: LucideDoorOpen,
         color: '#00a63e',
@@ -175,6 +178,7 @@ export class ConveniosLista implements OnInit {
 
       this.conveniosService.deleteConvenio(acao.id).subscribe({
         next: () => {
+          this.carregarIndicadores();
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
@@ -194,7 +198,10 @@ export class ConveniosLista implements OnInit {
       : this.conveniosService.deactivateConvenio(acao.dados.id);
 
     acao$.subscribe({
-      next: () => this.dialogConfirmVisible.set(false),
+      next: () => {
+        this.carregarIndicadores();
+        this.dialogConfirmVisible.set(false);
+      },
     });
   }
 
@@ -213,6 +220,7 @@ export class ConveniosLista implements OnInit {
   }
 
   ngOnInit(): void {
+    this.carregarIndicadores();
     this.carregandoContagens.set(true);
 
     forkJoin({
@@ -238,6 +246,18 @@ export class ConveniosLista implements OnInit {
     this.busca.set('');
     this.situacaoSelecionada.set('todos');
     this.pagamentoSelecionado.set('todos');
+  }
+
+  private carregarIndicadores(): void {
+    this.indicadoresRequest?.unsubscribe();
+    this.indicadores.set(null);
+    this.indicadoresRequest = this.conveniosService
+      .getIndicadores()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (indicadores) => this.indicadores.set(indicadores),
+        error: () => {},
+      });
   }
 
   private normalizarTexto(valor: string): string {

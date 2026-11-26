@@ -4,8 +4,15 @@ import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth-service';
 import { Convenio } from '../interfaces/convenio';
 import { ConvenioRequest } from '../interfaces/convenio-request';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { finalize, forkJoin, Observable, of, tap } from 'rxjs';
 import { LoadingType } from '../../../shared/types/loading-type';
+
+export interface IndicadoresConvenios {
+  total: number;
+  vagasTotais: number;
+  vagasOcupadas: number;
+  vagasDisponiveis: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +33,19 @@ export class ConveniosService {
     mutation: false,
   });
   readonly loading = this.internalLoading.asReadonly();
+
+  getIndicadores(): Observable<IndicadoresConvenios> {
+    return forkJoin({
+      total: this.http.get<number>(`${this.baseAPIUrl}/report/count-all`),
+      vagasTotais: this.http.get<number>(`${this.baseAPIUrl}/report/total-vagas`),
+      vagasOcupadas: this.http.get<number>(`${this.baseAPIUrl}/report/total-ocupacao`),
+      vagasDisponiveis: this.getVagasDisponiveis(),
+    });
+  }
+
+  getVagasDisponiveis(): Observable<number> {
+    return this.http.get<number>(`${this.baseAPIUrl}/report/vagas-livres`);
+  }
 
   constructor() {
     effect(() => {

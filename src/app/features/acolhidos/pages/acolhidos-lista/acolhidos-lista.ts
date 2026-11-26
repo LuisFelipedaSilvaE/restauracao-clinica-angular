@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideFunnelX,
@@ -14,7 +24,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { DataViewModule } from 'primeng/dataview';
 import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
 import { InfoCard } from '../../../../shared/components/info-card/info-card';
@@ -25,7 +35,7 @@ import { FilterAcolhidosCard } from '../../components/filter-acolhidos-card/filt
 import { AcolhidoCardContent } from '../../interfaces/acolhido-card-content';
 import { FilterOption } from '../../interfaces/filter-option';
 import { ToggleAcolhidoDto } from '../../interfaces/toggle-acolhido-dto';
-import { AcolhidosService } from '../../services/acolhidos-service';
+import { AcolhidosService, IndicadoresAcolhidos } from '../../services/acolhidos-service';
 import { InternacoesService } from '../../../internacoes/services/internacoes-service';
 import { ResponsaveisLista } from '../../../responsaveis/pages/responsaveis-lista/responsaveis-lista';
 import { ResponsaveisService } from '../../../responsaveis/services/responsaveis-service';
@@ -122,25 +132,28 @@ export class AcolhidosLista implements OnInit {
     }),
   );
 
+  private readonly destroyRef = inject(DestroyRef);
+  private indicadoresRequest?: Subscription;
+  private readonly indicadores = signal<IndicadoresAcolhidos | null>(null);
+
   protected readonly infoAcolhidos = computed<InfoCardContent[]>(() => {
-    const acolhidos = this.acolhidos();
-    const ativos = acolhidos.filter((acolhido) => acolhido.ativo).length;
+    const indicadores = this.indicadores();
 
     return [
       {
-        value: acolhidos.length,
+        value: indicadores?.total ?? '—',
         label: 'Acolhidos cadastrados',
         icon: LucideUsersRound,
         color: '#155dfc',
       },
       {
-        value: ativos,
+        value: indicadores?.ativos ?? '—',
         label: 'Acolhidos ativos',
         icon: LucideUserRoundCheck,
         color: '#00a63e',
       },
       {
-        value: acolhidos.length - ativos,
+        value: indicadores?.inativos ?? '—',
         label: 'Acolhidos inativos',
         icon: LucideUserRoundX,
         color: '#6b7280',
@@ -243,6 +256,7 @@ export class AcolhidosLista implements OnInit {
       this.acolhidosService.deleteAcolhido(acao.id).subscribe({
         next: () => {
           this.responsaveisService.getAllResponsaveis(true).subscribe();
+          this.carregarIndicadores();
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
@@ -264,6 +278,7 @@ export class AcolhidosLista implements OnInit {
     acao$.subscribe({
       next: () => {
         this.responsaveisService.getAllResponsaveis(true).subscribe();
+        this.carregarIndicadores();
         this.dialogConfirmVisible.set(false);
       },
     });
@@ -284,12 +299,25 @@ export class AcolhidosLista implements OnInit {
   }
 
   ngOnInit(): void {
+    this.carregarIndicadores();
     if (this.painel() === 'responsaveis') this.painelResponsaveis.set('responsaveis');
 
     forkJoin({
       acolhidos: this.acolhidosService.getAllAcolhidos(),
       internacoes: this.internacoesService.getAllInternacoes(),
     }).subscribe();
+  }
+
+  private carregarIndicadores(): void {
+    this.indicadoresRequest?.unsubscribe();
+    this.indicadores.set(null);
+    this.indicadoresRequest = this.acolhidosService
+      .getIndicadores()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (indicadores) => this.indicadores.set(indicadores),
+        error: () => {},
+      });
   }
 
   private normalizarTexto(valor: string): string {

@@ -101,6 +101,7 @@ export class Dashboard implements OnInit {
   private readonly internacoesService = inject(InternacoesService);
   private readonly triagensService = inject(TriagensService);
 
+  private readonly vagasDisponiveis = signal<number | null>(null);
   protected readonly carregando = signal(true);
   protected readonly falhaCarregamento = signal(false);
   protected readonly skeletonIndicadores = Array.from({ length: 5 });
@@ -115,17 +116,10 @@ export class Dashboard implements OnInit {
   );
 
   protected readonly indicadores = computed<InfoCardContent[]>(() => {
-    const ativasPorConvenio = this.ativasPorConvenioMap();
     const contagemPorEtapa = this.internacoesService.reportCountByEtapa();
 
     const totalInternacoesAtivas = this.internacoesService.reportCountAtivos();
-    const vagasDisponiveis = this.conveniosService
-      .convenios()
-      .filter((convenio) => convenio.ativo)
-      .reduce((total, convenio) => {
-        const ocupadas = ativasPorConvenio.get(convenio.id) ?? 0;
-        return total + Math.max(0, convenio.maxVagas - ocupadas);
-      }, 0);
+    const vagasDisponiveis = this.vagasDisponiveis() ?? '—';
     const triagensPendentes = this.triagensService
       .triagens()
       .filter(
@@ -364,6 +358,7 @@ export class Dashboard implements OnInit {
       triagens: this.triagensService.getAllTriagens(forcarAtualizacao),
       ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
       etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
+      vagasDisponiveis: this.conveniosService.getVagasDisponiveis(),
       countAtivos: this.internacoesService.getReportCountAtivos(),
       proximasDaAlta: this.internacoesService.getReportCountByEtapa(EtapaTratamento.PROXIMO_ALTA),
       altasVencidas: this.internacoesService.getReportCountByEtapa(EtapaTratamento.ALTA_VENCIDA),
@@ -372,7 +367,10 @@ export class Dashboard implements OnInit {
         fimMovimentacoes,
       ),
     }).subscribe({
-      next: () => this.carregando.set(false),
+      next: ({ vagasDisponiveis }) => {
+        this.vagasDisponiveis.set(vagasDisponiveis);
+        this.carregando.set(false);
+      },
       error: () => {
         this.carregando.set(false);
         this.falhaCarregamento.set(true);

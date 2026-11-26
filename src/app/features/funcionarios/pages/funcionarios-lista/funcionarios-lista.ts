@@ -1,4 +1,6 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { FuncionarioCardContent } from '../../interfaces/funcionario-card-content';
 import {
   LucideBriefcase,
@@ -16,7 +18,7 @@ import { Funcionario } from '../../interfaces/funcionario';
 import { FuncionarioCard } from '../../components/funcionario-card/funcionario-card';
 import { FilterFuncionariosCard } from '../../components/filter-funcionarios-card/filter-funcionarios-card';
 import { EmptyList } from '../../../../shared/components/empty-list/empty-list';
-import { FuncionariosService } from '../../services/funcionarios-service';
+import { FuncionariosService, IndicadoresFuncionarios } from '../../services/funcionarios-service';
 import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../../../core/services/auth-service';
@@ -106,27 +108,28 @@ export class FuncionariosLista implements OnInit {
       return { ...funcionario, severity: 'warn' };
     });
   });
+  private readonly destroyRef = inject(DestroyRef);
+  private indicadoresRequest?: Subscription;
+  private readonly indicadores = signal<IndicadoresFuncionarios | null>(null);
+
   protected readonly infoFuncionarios = computed<InfoCardContent[]>(() => {
-    const funcionarios = this.funcionarios();
-    const total = funcionarios.length;
-    const ativos = funcionarios.filter((f) => f.ativo).length;
-    const inativos = funcionarios.filter((f) => !f.ativo).length;
+    const indicadores = this.indicadores();
 
     return [
       {
-        value: total,
+        value: indicadores?.total ?? '—',
         label: 'Total de funcionários',
         icon: LucideUsersRound,
         color: '#e7000b',
       },
       {
-        value: ativos,
+        value: indicadores?.ativos ?? '—',
         label: 'Ativos',
         icon: LucideBriefcase,
         color: '#00a63e',
       },
       {
-        value: inativos,
+        value: indicadores?.inativos ?? '—',
         label: 'Inativos',
         icon: LucideUsersRound,
         color: '#4a5565',
@@ -167,6 +170,7 @@ export class FuncionariosLista implements OnInit {
   }
 
   ngOnInit(): void {
+    this.carregarIndicadores();
     this.funcionariosService.getAllFuncionarios().subscribe();
   }
 
@@ -223,6 +227,7 @@ export class FuncionariosLista implements OnInit {
 
       this.funcionariosService.deleteFuncionario(acao.id).subscribe({
         next: () => {
+          this.carregarIndicadores();
           this.dialogConfirmVisible.set(false);
           this.messageService.add({
             severity: 'success',
@@ -240,7 +245,10 @@ export class FuncionariosLista implements OnInit {
       : this.funcionariosService.deactivateFuncionario(acao.dados.id);
 
     acao$.subscribe({
-      next: () => this.dialogConfirmVisible.set(false),
+      next: () => {
+        this.carregarIndicadores();
+        this.dialogConfirmVisible.set(false);
+      },
       error: () => {},
     });
   }
@@ -250,6 +258,18 @@ export class FuncionariosLista implements OnInit {
     this.cargoSelecionado.set('todos');
     this.statusSelecionado.set('todos');
     this.mesSelecionado.set('todos');
+  }
+
+  private carregarIndicadores(): void {
+    this.indicadoresRequest?.unsubscribe();
+    this.indicadores.set(null);
+    this.indicadoresRequest = this.funcionariosService
+      .getIndicadores()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (indicadores) => this.indicadores.set(indicadores),
+        error: () => {},
+      });
   }
 
   private normalizarTexto(valor?: string | null): string {
