@@ -80,44 +80,29 @@ export class InternacoesLista implements OnInit {
   };
 
   protected readonly infoInternacoes = computed<InfoCardContent[]>(() => {
-    const relatorioAtivas = this.internacoesService.relatorioAtivasPorConvenio();
-    const relatorioEtapas = this.internacoesService.relatorioEtapasPorConvenio();
-
-    const totais = relatorioEtapas.reduce((acc, item) => acc + (Number(item.total) || 0), 0);
-    const ativas = relatorioAtivas.reduce(
-      (acc, item) => acc + (Number(item.quantidadeAtivas) || 0),
-      0,
-    );
-    const proximasDaAlta = relatorioEtapas.reduce(
-      (acc, item) => acc + (Number(item.quantidadeProximoAlta) || 0),
-      0,
-    );
-    const altasVencidas = relatorioEtapas.reduce(
-      (acc, item) => acc + (Number(item.quantidadeAltaVencida) || 0),
-      0,
-    );
+    const contagemPorEtapa = this.internacoesService.reportCountByEtapa();
 
     return [
       {
-        value: totais,
+        value: this.internacoesService.reportCountTotal(),
         label: 'Internações totais',
         icon: LucideClipboardList,
         color: '#155dfc',
       },
       {
-        value: ativas,
+        value: this.internacoesService.reportCountAtivos(),
         label: 'Internações ativas',
         icon: LucideBedSingle,
         color: '#00a63e',
       },
       {
-        value: proximasDaAlta,
+        value: contagemPorEtapa[EtapaTratamento.PROXIMO_ALTA] ?? 0,
         label: 'Próximas da alta',
         icon: LucideBellRing,
         color: '#e17100',
       },
       {
-        value: altasVencidas,
+        value: contagemPorEtapa[EtapaTratamento.ALTA_VENCIDA] ?? 0,
         label: 'Altas vencidas',
         icon: LucideTriangleAlert,
         color: '#e7000b',
@@ -255,18 +240,23 @@ export class InternacoesLista implements OnInit {
   }
 
   protected recarregarRelatorios(): void {
-    forkJoin({
-      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
-      etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
-    }).subscribe();
+    this.carregarIndicadores().subscribe();
   }
 
   ngOnInit(): void {
     forkJoin({
       internacoes: this.internacoesService.getAllInternacoes(),
-      ativasPorConvenio: this.internacoesService.getRelatorioAtivasPorConvenio(),
-      etapasPorConvenio: this.internacoesService.getRelatorioEtapasPorConvenio(),
+      indicadores: this.carregarIndicadores(),
     }).subscribe();
+  }
+
+  private carregarIndicadores() {
+    return forkJoin({
+      total: this.internacoesService.getReportCountTotal(),
+      ativas: this.internacoesService.getReportCountAtivos(),
+      proximasDaAlta: this.internacoesService.getReportCountByEtapa(EtapaTratamento.PROXIMO_ALTA),
+      altasVencidas: this.internacoesService.getReportCountByEtapa(EtapaTratamento.ALTA_VENCIDA),
+    });
   }
 
   private normalizarTexto(valor: string): string {
