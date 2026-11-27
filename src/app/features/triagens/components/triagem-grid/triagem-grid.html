@@ -15,13 +15,13 @@
     <ng-template #list let-items>
       <div class="flex min-w-0 flex-col gap-2">
         <div
-          class="hidden min-w-0 items-center gap-2 sm:grid sm:grid-cols-4 xl:grid-cols-5 text-xs font-semibold uppercase tracking-wide text-content-secondary px-4"
+          class="hidden min-w-0 items-center gap-x-3 sm:grid sm:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] text-xs font-semibold uppercase tracking-wide text-content-secondary px-3.5"
         >
-          <span>Horário</span>
-          <span class="hidden sm:block text-center">Nome</span>
+          <span>Nome</span>
+          <span class="hidden sm:block text-center">Horário</span>
           <span class="hidden xl:block text-center">Data Agendada</span>
           <span class="block text-center">Convênio</span>
-          <span class="justify-self-end text-center">Ações</span>
+          <span class="justify-self-end text-right">Ações</span>
         </div>
 
         <div role="list" aria-label="Resultados" class="flex flex-col gap-2">
@@ -30,16 +30,16 @@
             @for (_ of skeletonCards; track $index) {
               <div
                 aria-hidden="true"
-                class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-4 xl:grid-cols-5 items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5"
+                class="grid grid-cols-[auto_1fr_auto] sm:grid-cols-[minmax(0,240px)_repeat(2,minmax(0,1fr))_36px] xl:grid-cols-[minmax(0,240px)_repeat(3,minmax(0,1fr))_40px] items-center gap-x-3 gap-y-2 rounded-xl border border-border-default bg-surface-card p-3.5"
               >
                 <div
-                  class="col-span-2 col-start-1 row-start-1 flex min-w-0 items-center gap-2.5 sm:col-span-1 sm:col-start-2 sm:max-w-full sm:justify-self-center"
+                  class="col-span-2 col-start-1 row-start-1 flex min-w-0 items-center gap-2.5 sm:col-span-1 sm:col-start-1 sm:max-w-full sm:justify-self-start"
                 >
                   <p-skeleton shape="circle" size="2.5rem" class="shrink-0" />
                   <p-skeleton width="8rem" height="1rem" />
                 </div>
                 <p-skeleton
-                  class="col-start-1 row-start-2 sm:col-start-1 sm:row-start-1"
+                  class="col-start-1 row-start-2 sm:col-start-2 sm:row-start-1 sm:justify-self-center"
                   width="3rem"
                   height="1rem"
                   borderRadius="0.25rem"
